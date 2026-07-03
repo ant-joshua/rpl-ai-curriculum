@@ -16,6 +16,22 @@
   - [07. Mastra AI](07-mastra-ai/)
 - **🚀 Advanced**
   - [08. Final Project](08-project/)
+  - [09. Testing (Elektif)](09-testing/)
 - **📚 Elektif**
   - [React Dasar](electives/01-react-intro.md)
+  - [Next.js](electives/02-nextjs.md)
   - [Docker](electives/03-docker.md)
+- **📋 Latihan**
+  - [Exercises JavaScript](exercises/01-js/)
+  - [Exercises DSA](exercises/02-dsa/)
+  - [Mini Projects](mini-projects/)
+  - [Project Ideas](projects/)
+- **🛠️ Referensi**
+  - [Glossary Istilah](glossary/)
+  - [Starter Templates](templates/)
+  - [Deployment Guides](guides/)
+- **👨‍🏫 Untuk Guru**
+  - [Panduan Mengajar](teacher-guide/)
+  - [Rubrik Penilaian](grading/)
+- **💼 Karir**
+  - [CV & Portfolio](career/)

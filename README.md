@@ -74,7 +74,8 @@ flowchart LR
 | 7 | **[Database SQL](06-node-express/03-database.md)** | 📐 Intermediate | 3 | Modul 6 |
 | 8 | **[Mastra AI — Agents & Tools](07-mastra-ai/)** | 📐 Intermediate | 8 | Modul 1, 3 |
 | 9 | **[Mastra AI — Memory & RAG](07-mastra-ai/04-rag.md)** | 🚀 Advanced | 4 | Modul 8 |
-| 10 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+| 10 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
+| 11 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
 
 ### Elektif (Tambahan)
 
@@ -140,6 +141,27 @@ Repo ini pure markdown — render otomatis di GitHub. Mulai dari [README](README
 | [Tailwind CSS](https://tailwindcss.com) | CSS framework | ✅ |
 | [Vercel](https://vercel.com) | Deploy frontend | ✅ (free tier) |
 | [Railway](https://railway.app) | Deploy backend | ✅ (free tier) |
+
+---
+
+## 📦 Supplementary Resources
+
+Selain modul, repo ini juga punya:
+
+| Sumber | Deskripsi |
+|--------|-----------|
+| [📋 Exercises](exercises/) | Latihan per modul (JS + DSA + others) |
+| [🎯 Mini Projects](mini-projects/) | 5 project kecil selesai 1-2 sesi |
+| [🚀 Project Ideas](projects/) | 15 ide project (easy → advanced + AI) |
+| [🛠️ Starter Templates](templates/) | Template TypeScript, Express, Mastra |
+| [📖 Glossary](glossary/) | Istilah teknis bahasa Indonesia |
+| [📦 Deployment Guides](guides/) | Vercel, Railway, VPS deployment steps |
+| [👨‍🏫 Teacher Guide](teacher-guide/) | Panduan ngajar per sesi (buat guru) |
+| [📊 Grading Rubric](grading/) | Rubrik penilaian tugas + final project |
+| [💼 Career Guide](career/) | CV, GitHub portfolio, LinkedIn tips |
+| [⚙️ CI/CD](.github/workflows/) | GitHub Actions auto-test + deploy |
+
+> Semua file `.md` — bisa dibaca langsung di GitHub atau lewat Docsify.
 
 ---
 
