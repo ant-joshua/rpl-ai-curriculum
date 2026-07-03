@@ -7,14 +7,15 @@
   - [🤖 AI Agent](paths/03-ai-agent.md)
 - **🌱 Beginner**
   - [01. JavaScript Fundamentals](01-js-fundamentals/)
-  - [02. TypeScript Basics](02-typescript/)
-  - [03. Web Basics](03-web-basics/)
-  - [04. Git & Deploy](04-git-deploy/)
+  - [02. Algorithms & Data Structures](02-algorithms-data-structures/)
+  - [03. TypeScript Basics](03-typescript/)
+  - [04. Web Basics](04-web-basics/)
+  - [05. Git & Deploy](05-git-deploy/)
 - **📐 Intermediate**
-  - [05. Node.js & Express](05-node-express/)
-  - [06. Mastra AI](06-mastra-ai/)
+  - [06. Node.js & Express](06-node-express/)
+  - [07. Mastra AI](07-mastra-ai/)
 - **🚀 Advanced**
-  - [07. Final Project](07-project/)
+  - [08. Final Project](08-project/)
 - **📚 Elektif**
   - [React Dasar](electives/01-react-intro.md)
   - [Docker](electives/03-docker.md)

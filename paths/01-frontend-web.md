@@ -30,9 +30,10 @@ flowchart LR
 | # | Modul | Minggu | Wajib |
 |---|-------|--------|-------|
 | 1 | JavaScript Fundamentals | 1-4 | ✅ |
-| 2 | TypeScript Basics | 5 | ✅ |
-| 3 | Web Basics (HTML/CSS/Tailwind) | 6-7 | ✅ |
-| 4 | Git & GitHub + Deploy | 5 | ✅ |
+| — | Algorithms & Data Structures | — | Opsional |
+| 3 | TypeScript Basics | 5 | ✅ |
+| 4 | Web Basics (HTML/CSS/Tailwind) | 6-7 | ✅ |
+| 5 | Git & GitHub + Deploy | 5 | ✅ |
 | — | React Dasar (Elektif) | 8 | ✅ (wajib di path ini) |
 | — | Final Project | 7-8 | ✅ |
 

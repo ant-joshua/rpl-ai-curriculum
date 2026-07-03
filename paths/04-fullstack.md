@@ -1,7 +1,7 @@
 # 🌐 Path Full-Stack Web (Recommended)
 
 > **Target:** Bisa bikin web app full-stack (frontend + backend + database + AI agent) + deploy.
-> **Estimasi:** 12 minggu ✅
+> **Estimasi:** 14 minggu ✅
 > **Output:** 1 web app live di internet, siap dipake portfolio.
 
 ---
@@ -11,8 +11,9 @@
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 flowchart LR
-  JS[JavaScript] --> TS[TypeScript]
+  JS[JavaScript] --> ALGO[Algo & DS]
   JS --> GIT[Git/GitHub]
+  ALGO --> TS[TypeScript]
   TS --> WEB[HTML/CSS/Tailwind]
   WEB --> NODE[Node.js/Express]
   NODE --> DB[Database SQL]
@@ -36,15 +37,16 @@ flowchart LR
 | # | Modul | Minggu | Wajib |
 |---|-------|--------|-------|
 | 1 | JavaScript Fundamentals | 1-4 | ✅ |
-| 2 | TypeScript Basics | 5 | ✅ |
-| 3 | Web Basics (HTML/CSS/Tailwind) | 6-7 | ✅ |
-| 4 | Git & GitHub + Deploy | 5 | ✅ |
-| 5 | Node.js & Express | 8 | ✅ |
-| 6 | Database SQL | 9 | ✅ |
-| 7 | Mastra AI — Agents & Tools | 7-8 | ✅ |
-| 8 | Mastra AI — Memory & RAG | 9 | ✅ |
-| 9 | Mastra AI — Workflows | 10 | ✅ |
-| — | Final Project | 10-12 | ✅ |
+| 2 | Algorithms & Data Structures | 5-6 | ✅ |
+| 3 | TypeScript Basics | 7 | ✅ |
+| 4 | Web Basics (HTML/CSS/Tailwind) | 8-9 | ✅ |
+| 5 | Git & GitHub + Deploy | 7 | ✅ |
+| 6 | Node.js & Express | 10 | ✅ |
+| 7 | Database SQL | 11 | ✅ |
+| 8 | Mastra AI — Agents & Tools | 9-10 | ✅ |
+| 9 | Mastra AI — Memory & RAG | 11 | ✅ |
+| 10 | Mastra AI — Workflows | 12 | ✅ |
+| — | Final Project | 12-14 | ✅ |
 
 ---
 
@@ -53,6 +55,7 @@ flowchart LR
 | Skill | Level |
 |-------|-------|
 | JavaScript (ES6+) | Mahir |
+| Algorithms & Data Structures | Intermediate |
 | TypeScript | Intermediate |
 | HTML/CSS/Tailwind | Intermediate |
 | Git & GitHub | Intermediate |

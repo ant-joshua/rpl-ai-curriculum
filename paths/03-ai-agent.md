@@ -1,7 +1,7 @@
 # 🤖 Path AI Agent
 
 > **Target:** Bisa bikin AI agents pake Mastra framework + tools + RAG
-> **Estimasi:** 8 minggu
+> **Estimasi:** 10 minggu
 > **Output:** AI agent with tools + memory + RAG, deploy sebagai API
 
 ---
@@ -32,12 +32,13 @@ flowchart LR
 | # | Modul | Minggu | Wajib |
 |---|-------|--------|-------|
 | 1 | JavaScript Fundamentals | 1-4 | ✅ |
-| 2 | TypeScript Basics | 5 | ✅ |
-| 3 | Git & GitHub | 5 | ✅ |
-| 4 | Node.js & Express (dasar) | 6 | ✅ |
-| 5 | Mastra AI — Agents & Tools | 7-8 | ✅ |
-| 6 | Mastra AI — Memory & RAG | 9-10 | ✅ |
-| 7 | Mastra AI — Workflows | 11 | ✅ |
+| 3 | TypeScript Basics | 5 | ✅ |
+| 5 | Git & GitHub | 5 | ✅ |
+| 6 | Node.js & Express (dasar) | 6 | ✅ |
+| 7 | Mastra AI — Agents & Tools | 7-8 | ✅ |
+| — | Mastra AI — Memory & RAG | 9-10 | ✅ |
+| — | Mastra AI — Workflows | 11 | ✅ |
+| — | Algorithms & Data Structures | — | Opsional |
 | — | Final Project | 10-12 | ✅ |
 
 ---

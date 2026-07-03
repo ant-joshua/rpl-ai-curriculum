@@ -1,7 +1,7 @@
 # ⚙️ Path Backend API
 
 > **Target:** Bisa bikin REST API pake Node.js + TypeScript + Database
-> **Estimasi:** 8 minggu
+> **Estimasi:** 10 minggu
 > **Output:** REST API production-ready + database + deploy
 
 ---
@@ -31,10 +31,11 @@ flowchart LR
 | # | Modul | Minggu | Wajib |
 |---|-------|--------|-------|
 | 1 | JavaScript Fundamentals | 1-4 | ✅ |
-| 2 | TypeScript Basics | 5 | ✅ |
-| 3 | Git & GitHub + Deploy | 5 | ✅ |
-| 4 | Node.js & Express | 6-7 | ✅ |
-| 5 | Database SQL | 8 | ✅ |
+| — | Algorithms & Data Structures | — | Opsional |
+| 3 | TypeScript Basics | 5 | ✅ |
+| 5 | Git & GitHub + Deploy | 5 | ✅ |
+| 6 | Node.js & Express | 6-7 | ✅ |
+| — | Database SQL | 8 | ✅ |
 | — | Docker (Elektif) | — | Opsional |
 | — | Final Project | 9-12 | ✅ |
 

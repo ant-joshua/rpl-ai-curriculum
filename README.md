@@ -66,14 +66,15 @@ flowchart LR
 | # | Modul | Level | Jam | Prasyarat |
 |---|-------|-------|-----|-----------|
 | 1 | **[JavaScript Fundamentals](01-js-fundamentals/)** | 🌱 Beginner | 8 | — |
-| 2 | **[TypeScript Basics](02-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
-| 3 | **[Web Basics (HTML/CSS/Tailwind)](03-web-basics/)** | 🌱 Beginner | 6 | — |
-| 4 | **[Git & GitHub + Deploy](04-git-deploy/)** | 🌱 Beginner | 4 | Modul 1 |
-| 5 | **[Node.js & Express](05-node-express/)** | 📐 Intermediate | 6 | Modul 1, 2 |
-| 6 | **[Database SQL](05-node-express/03-database.md)** | 📐 Intermediate | 3 | Modul 5 |
-| 7 | **[Mastra AI — Agents & Tools](06-mastra-ai/)** | 📐 Intermediate | 8 | Modul 1, 2 |
-| 8 | **[Mastra AI — Memory & RAG](06-mastra-ai/04-rag.md)** | 🚀 Advanced | 4 | Modul 7 |
-| 9 | **[Final Project](07-project/)** | 🚀 Advanced | 8 | Semua |
+| 2 | **[Algorithms & Data Structures](02-algorithms-data-structures/)** | 🌱 Beginner | 8 | Modul 1 |
+| 3 | **[TypeScript Basics](03-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
+| 4 | **[Web Basics (HTML/CSS/Tailwind)](04-web-basics/)** | 🌱 Beginner | 6 | — |
+| 5 | **[Git & GitHub + Deploy](05-git-deploy/)** | 🌱 Beginner | 4 | Modul 1 |
+| 6 | **[Node.js & Express](06-node-express/)** | 📐 Intermediate | 6 | Modul 1, 3 |
+| 7 | **[Database SQL](06-node-express/03-database.md)** | 📐 Intermediate | 3 | Modul 6 |
+| 8 | **[Mastra AI — Agents & Tools](07-mastra-ai/)** | 📐 Intermediate | 8 | Modul 1, 3 |
+| 9 | **[Mastra AI — Memory & RAG](07-mastra-ai/04-rag.md)** | 🚀 Advanced | 4 | Modul 8 |
+| 10 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
 
 ### Elektif (Tambahan)
 
