@@ -1,0 +1,20 @@
+- [🗺️ Beranda](/)
+- [📖 Cara Pakai](SETUP.md)
+- **🧭 Pilih Jalur**
+  - [🌐 Full-Stack Web (Recommended)](paths/04-fullstack.md)
+  - [🎨 Frontend Web](paths/01-frontend-web.md)
+  - [⚙️ Backend API](paths/02-backend-api.md)
+  - [🤖 AI Agent](paths/03-ai-agent.md)
+- **🌱 Beginner**
+  - [01. JavaScript Fundamentals](01-js-fundamentals/)
+  - [02. TypeScript Basics](02-typescript/)
+  - [03. Web Basics](03-web-basics/)
+  - [04. Git & Deploy](04-git-deploy/)
+- **📐 Intermediate**
+  - [05. Node.js & Express](05-node-express/)
+  - [06. Mastra AI](06-mastra-ai/)
+- **🚀 Advanced**
+  - [07. Final Project](07-project/)
+- **📚 Elektif**
+  - [React Dasar](electives/01-react-intro.md)
+  - [Docker](electives/03-docker.md)
