@@ -85,6 +85,21 @@ flowchart LR
 | [Docker](electives/03-docker.md) | 🚀 Advanced | 3 |
 | [Next.js](electives/02-nextjs.md) | 🚀 Advanced | 6 |
 
+## 🏆 Capstone Projects
+
+Project besar yang ngetes semua skill. Cocok buat final project atau portofolio.
+
+| # | Capstone | AI Fitur |
+|---|----------|----------|
+| 1 | [AI Study Assistant](capstones/01-ai-study-assistant/) | AI tutor, quiz generator, RAG |
+| 2 | [AI Travel Planner](capstones/02-ai-travel-planner/) | Agent itinerary, weather, budget |
+| 3 | [E-Commerce + AI](capstones/03-ecommerce-ai/) | Product recs, semantic search, chatbot |
+| 4 | [AI Content Hub](capstones/04-ai-content-hub/) | AI write, summarize, auto-tag |
+| 5 | [Coding Bootcamp](capstones/05-coding-bootcamp/) | AI code review, exercise gen, tutor |
+| 6 | [Community Q&A](capstones/06-community-qa/) | AI answer suggestions, auto-tag, moderation |
+
+> Tiap capstone punya sprint plan 8 minggu, data model, API spec, dan rubrik penilaian.
+
 ---
 
 ## Cara Pakai Repo Ini

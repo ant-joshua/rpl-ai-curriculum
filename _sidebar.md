@@ -21,6 +21,13 @@
   - [React Dasar](electives/01-react-intro.md)
   - [Next.js](electives/02-nextjs.md)
   - [Docker](electives/03-docker.md)
+- **🏆 Capstone Projects**
+  - [1. AI Study Assistant](capstones/01-ai-study-assistant/)
+  - [2. AI Travel Planner](capstones/02-ai-travel-planner/)
+  - [3. E-Commerce + AI](capstones/03-ecommerce-ai/)
+  - [4. AI Content Hub](capstones/04-ai-content-hub/)
+  - [5. Coding Bootcamp](capstones/05-coding-bootcamp/)
+  - [6. Community Q&A](capstones/06-community-qa/)
 - **📋 Latihan**
   - [Exercises JavaScript](exercises/01-js/)
   - [Exercises DSA](exercises/02-dsa/)
