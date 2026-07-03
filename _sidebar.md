@@ -6,6 +6,7 @@
   - [⚙️ Backend API](paths/02-backend-api.md)
   - [🤖 AI Agent](paths/03-ai-agent.md)
 - **🌱 Beginner**
+  - [00. Fundamental Pemrograman & Web](00-fundamentals/)
   - [01. JavaScript Fundamentals](01-js-fundamentals/)
   - [02. Algorithms & Data Structures](02-algorithms-data-structures/)
   - [03. TypeScript Basics](03-typescript/)
@@ -14,6 +15,8 @@
 - **📐 Intermediate**
   - [06. Node.js & Express](06-node-express/)
   - [07. Mastra AI](07-mastra-ai/)
+  - [10. Design Patterns](10-design-patterns/)
+  - [11. System Design](11-system-design/)
 - **🚀 Advanced**
   - [08. Final Project](08-project/)
   - [09. Testing (Elektif)](09-testing/)
