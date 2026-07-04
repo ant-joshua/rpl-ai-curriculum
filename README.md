@@ -95,9 +95,8 @@ flowchart LR
 
 | Modul | Level | Jam |
 |-------|-------|-----|
-| [React Dasar](electives/01-react-intro.md) | 📐 Intermediate | 6 |
-| [Docker](electives/03-docker.md) | 🚀 Advanced | 3 |
-| [Next.js](electives/02-nextjs.md) | 🚀 Advanced | 6 |
+|| [React Dasar](electives/01-react-intro.md) | 📐 Intermediate | 6 |
+|| [Next.js](electives/02-nextjs.md) | 🚀 Advanced | 6 |
 
 ## 🏆 Capstone Projects
 
