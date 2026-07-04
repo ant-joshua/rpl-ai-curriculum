@@ -68,3 +68,14 @@
 | 41 | Monitoring & Error Tracking | [Quiz](../41-monitoring/quiz.md) |
 | 43 | Search Implementation | [Quiz](../43-search-implementation/quiz.md) |
 | 45 | Internationalization | [Quiz](../45-internationalization/quiz.md) |
+| 46 | Debugging & DevTools | [Quiz](../46-debugging-devtools/quiz.md) |
+| 47 | Team Git Workflow | [Quiz](../47-team-git-workflow/quiz.md) |
+| 48 | Portfolio Project Series | [Quiz](../48-portfolio-project-series/quiz.md) |
+| 49 | Production-Ready Code | [Quiz](../49-production-ready-code/quiz.md) |
+| 50 | Microservices Hands-On | [Quiz](../50-microservices-hands-on/quiz.md) |
+| 51 | LKS Competition Prep | [Quiz](../51-lks-competition-prep/quiz.md) |
+| 52 | Indonesian Tech Ecosystem | [Quiz](../52-indonesian-tech-ecosystem/quiz.md) |
+| 53 | AI Coding Agents | [Quiz](../53-ai-coding-agents/quiz.md) |
+| 54 | Prompt Engineering for Dev | [Quiz](../54-prompt-engineering-dev/quiz.md) |
+| 55 | AI Documentation & Spec | [Quiz](../55-ai-docs-spec/quiz.md) |
+| 56 | Advanced AI Workflow | [Quiz](../56-advanced-ai-dev/quiz.md) |

@@ -115,6 +115,17 @@ flowchart LR
 || 43 | **[Search Implementation](43-search-implementation/)** | 🚀 Advanced | 4 | Modul 6 |
 || 44 | **[Digital Portfolio & Branding](44-portfolio-branding/)** | 🌱 Beginner | 4 | Modul 4 |
 || 45 | **[Internationalization (i18n)](45-internationalization/)** | 🚀 Advanced | 4 | Modul 20 |
+|| 46 | **[Debugging & DevTools](46-debugging-devtools/)** | 📐 Intermediate | 4 | Modul 1, 4 |
+|| 47 | **[Team Git Workflow](47-team-git-workflow/)** | 📐 Intermediate | 4 | Modul 5 |
+|| 48 | **[Portfolio Project Series](48-portfolio-project-series/)** | 🚀 Advanced | 5 | Modul 6, 11 |
+|| 49 | **[Production-Ready Code](49-production-ready-code/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 50 | **[Microservices Hands-On](50-microservices-hands-on/)** | 🚀 Advanced | 4 | Modul 21 |
+|| 51 | **[LKS Competition Prep](51-lks-competition-prep/)** | 🚀 Advanced | 3 | Modul 4, 6, 11 |
+|| 52 | **[Indonesian Tech Ecosystem](52-indonesian-tech-ecosystem/)** | 📐 Intermediate | 4 | Modul 19 |
+|| 53 | **[AI Coding Agents & Workflow](53-ai-coding-agents/)** | 🚀 Advanced | 4 | Modul 1, 38 |
+|| 54 | **[Prompt Engineering for Dev](54-prompt-engineering-dev/)** | 📐 Intermediate | 4 | Modul 1 |
+|| 55 | **[AI Documentation & Spec](55-ai-docs-spec/)** | 🚀 Advanced | 4 | Modul 38 |
+|| 56 | **[Advanced AI Workflow](56-advanced-ai-dev/)** | 🚀 Advanced | 4 | Modul 38, 53, 54 |
 
 ### Elektif
 
