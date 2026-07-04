@@ -12,6 +12,9 @@
   - [03. TypeScript Basics](03-typescript/)
   - [04. Web Basics](04-web-basics/)
   - [05. Git & Deploy](05-git-deploy/)
+  - [25. Soft Skills & Professional](25-soft-skills/)
+  - [26. Pragmatic Programming](26-pragmatic-programming/)
+  - [27. Linux Terminal](27-linux-terminal/)
 - **📐 Intermediate**
   - [06. Node.js & Express](06-node-express/)
   - [07. Mastra AI](07-mastra-ai/)
@@ -30,6 +33,7 @@
   - [22. Monorepo](22-monorepo/)
   - [23. System Runtime & Async](23-system-runtime/)
   - [24. Resilience Patterns](24-resilience-patterns/)
+  - [28. REST API Design](28-rest-api-design/)
 - **🚀 Advanced**
   - [08. Final Project](08-project/)
   - [09. Testing (Elektif)](09-testing/)
