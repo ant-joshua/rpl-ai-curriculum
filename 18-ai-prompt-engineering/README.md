@@ -1,7 +1,50 @@
 # Modul 18: AI Prompt Engineering untuk Developer RPL
 
-> **Target:** SMK RPL — siswa yang udah pakai ChatGPT buat nyontek coding.
+> **Level:** 🛠️ Intermediate  
+> **Jam:** 4 (2 sesi × 2 jam)  
+> **Prasyarat:** Pengalaman coding di bahasa apapun (PHP/JS/TS)  
+> **Output:** Prompt library + Mastra prompt template  
+
+> **Target:** SMK RPL — siswa yang udah pakai ChatGPT buat nyontek coding.  
 > **Filosofi:** Bukan anti-AI. Tapi AI itu alat, bukan pengganti otak. Lo yang koding, AI yang bantu. Bukan sebaliknya.
+
+---
+
+## Tujuan Pembelajaran
+
+Setelah modul ini, kamu bisa:
+- Bedain teknik prompt zero-shot, few-shot, chain-of-thought, role prompting
+- Nulis prompt efektif untuk coding, debugging, dan dokumentasi
+- Pake structured output (JSON mode) buat hasil konsisten
+- Improve prompt secara iteratif
+- Generate kode, test, dan dokumentasi dengan AI
+- Implement Mastra prompt templates di project
+- Kelola versi prompt dan terapkan etika penggunaan AI
+
+---
+
+## Materi
+
+| Sesi | Topik | File |
+|------|-------|------|
+| 1 | Prompt Techniques — zero-shot, few-shot, chain-of-thought, role prompting, structured output, iterative refinement | [01-prompt-techniques.md](01-prompt-techniques.md) |
+| 2 | Prompt for Code & Production — code gen, unit test, API doc, error explain, code review, Mastra templates, prompt versioning, ethics | [02-prompt-code-production.md](02-prompt-code-production.md) |
+
+---
+
+## Output Akhir Modul
+
+> **Prompt Library + Mastra Prompt Template** — kumpulan prompt reusable dan template Mastra untuk berbagai skenario coding.
+
+---
+
+## AI Prompt Exercises
+
+Sepanjang modul, latihan pake AI:
+- "Bandingin output zero-shot vs few-shot untuk task yang sama"
+- "Refine prompt sampe hasilnya sesuai"
+- "Generate test case dari deskripsi fungsi"
+- "Bikin prompt template Mastra untuk code review"
 
 ---
 
@@ -318,7 +361,7 @@ Ini bukan anti-AI. Ini **pro-AI dengan kendali**. Lo supirnya, AI cuma navigator
 
 | ❌ Buruk | ✅ Baik |
 |----------|---------|
-| "Buatin CRUD user" | "Buat migration + model User dengan field: name, email, role (enum: admin/kasir). Pake Laravel 11. Jangan generate controller." |
+| "Buatin CRUD user" | "Buat migration + Model User dengan field: name, email, role (enum: admin/kasir). Pake Laravel 11. Jangan generate controller." |
 | "Fix error ini" | "Error: Call to undefined method. Kode saya: [kode]. Saya udah cek namespace dan use statement — masih error. Bantu analisis." |
 | "Jelasin OOP" | "Jelasin konsep inheritance di PHP OOP pake analogi warung kopi. Saya udah paham class sama object." |
 | "Buatin test" | "Buat unit test pake PHPUnit untuk fungsi hitungDiskon(). Logic: diskon 10% kalau total > 100k, 20% kalau > 500k. Test edge case: 0, 100k, 500k, 1jt." |
@@ -381,3 +424,4 @@ Pilih jalan 2. Start now.
 - [Cursor AI](https://cursor.sh) — AI-native editor
 - [OpenAI Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
 - [Anthropic Prompt Engineering Guide](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering)
+- [Mastra AI](https://mastra.ai) — AI agent framework

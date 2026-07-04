@@ -1,44 +1,38 @@
+<img src="https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="TypeScript" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 03. TypeScript Basics
 
 > **Level:** 🌱 Beginner  
-> **Jam:** 4 (2 minggu x 2 sesi)  
+> **Jam:** 4 (2 minggu × 2 sesi)  
 > **Prasyarat:** JavaScript Fundamentals  
-> **Output:** Project JavaScript di-refactor ke TypeScript
+> **Output:** Project JavaScript di-refactor ke TypeScript  
 
-## Kenapa TypeScript?
+## Tujuan Pembelajaran
 
-```typescript
-// JavaScript - error baru kelihatan pas dijalanin
-function add(a, b) { return a + b; }
-console.log(add("5", 10)); // "510" - bug!
+Setelah modul ini, kamu bisa:
+- Paham kenapa TypeScript dan bedanya sama JavaScript
+- Nulis tipe data dasar (string, number, boolean, union, literal)
+- Bikin interface & type alias buat object
+- Nulis function pake tipe, generic, dan overload
+- Konfigurasi tsconfig.json dan compile TypeScript
 
-// TypeScript - error kelihatan pas ngetik
-function add(a: number, b: number): number { return a + b; }
-console.log(add("5", 10)); // ERROR!
-```
+## Materi
 
-## Tipe Dasar
+| Sesi | Topik | File |
+|------|-------|------|
+| 1 | Type basics — tipe data, type inference, union, literal types | [01-basics.md](01-basics.md) |
+| 2 | Types & Interfaces — object types, interface vs type, optional, readonly | [02-types-interfaces.md](02-types-interfaces.md) |
+| 3 | Functions & Generics — function types, overload, generics, constraints | [03-functions-generics.md](03-functions-generics.md) |
+| 4 | tsconfig & Project — tsconfig.json, strict mode, compiling, project references | [04-tsconfig-project.md](04-tsconfig-project.md) |
 
-```typescript
-let nama: string = "Budi";
-let umur: number = 17;
-let isActive: boolean = true;
-let random: any = "bebas";  // Hindari
-```
+## Output Akhir Modul
 
-## Interface
+> **Refactor Project** — ambil project JavaScript minggu sebelumnya, tambahin tipe TypeScript, interface, generic function. Compile & jalanin tanpa error.
 
-```typescript
-interface Student {
-  name: string;
-  age: number;
-  grade?: string;  // opsional
-}
+## AI Prompt Exercises
 
-const student: Student = { name: "Budi", age: 17 };
-```
-
-## Latihan
-
-1. Refactor semua project JS minggu 1-4 ke TypeScript
-2. Bikin interface Student, Product, Order dan function-function-nya
+Sepanjang modul, latihan pake AI:
+- "Explain this type error and how to fix it"
+- "Convert this JavaScript function to TypeScript with proper types"
+- "Generate an interface for this API response"
+- "Refactor this code to use generics"

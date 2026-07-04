@@ -1,8 +1,55 @@
+<img src="https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Cybersecurity" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # Modul 14: Cybersecurity untuk Web Developer
 
-> **Target:** Siswa SMK RPL yang udah bisa bikin web app pake Express.js  
-> **Tujuan:** Paham ancaman keamanan paling umum dan cara ngelindungin aplikasi  
-> **Level:** Praktis, langsung bisa dipake
+> **Level:** 🟡 Intermediate
+> **Jam:** 8 (4 sesi × 2 jam)
+> **Prasyarat:** Express.js, Prisma, JWT basics
+> **Output:** Secure Express API dengan proteksi OWASP Top 10
+
+## Tujuan Pembelajaran
+
+Setelah modul ini, kamu bisa:
+- Paham dan cegah OWASP Top 10 vulnerability
+- Prevent SQL Injection & NoSQL Injection pake parameterized query
+- Implement XSS protection (sanitasi, CSP headers)
+- Pasang CSRF protection & SameSite cookies
+- Hash password pake bcrypt + JWT secure practices
+- Konfigurasi CORS, HTTPS, rate limiting, helmet
+- Setup dependency scanning & secrets management
+- Bikin CI/CD security pipeline sederhana
+
+## Materi
+
+| Sesi | Topik | File |
+|------|-------|------|
+| 1 | OWASP Top 10 & Injection Attacks | [01-owasp-injection.md](01-owasp-injection.md) |
+| 2 | XSS & CSRF | [02-xss-csrf.md](02-xss-csrf.md) |
+| 3 | Secure Auth, CORS & HTTPS | [03-auth-cors-https.md](03-auth-cors-https.md) |
+| 4 | DevSecOps — Dependency & CI/CD Security | [04-devsecops.md](04-devsecops.md) |
+
+## Output Akhir Modul
+
+> **Secure Express API** — REST API lengkap dengan:
+> - [ ] SQL Injection protection (parameterized query/ORM)
+> - [ ] XSS sanitasi input & output + CSP header
+> - [ ] CSRF token + SameSite cookie
+> - [ ] bcrypt hashing + JWT (expiry, httpOnly)
+> - [ ] CORS whitelist origin
+> - [ ] HTTPS redirect + rate limiting
+> - [ ] Helmet security headers
+> - [ ] npm audit + Snyk scan di CI
+> - [ ] .env + .gitignore aman
+
+## AI Prompt Exercises
+
+Sepanjang modul, latihan pake AI:
+- "Audit this Express endpoint for OWASP Top 10 vulnerabilities"
+- "Explain why this SQL query is vulnerable and fix it"
+- "Generate a security checklist for my Express API"
+- "Write a CSP policy for a blog that embeds YouTube videos"
+- "Find the security bugs in this auth middleware"
+- "Create a Snyk GitHub Action workflow for npm audit"
 
 ---
 

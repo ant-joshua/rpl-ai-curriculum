@@ -1,6 +1,31 @@
-# Modul 16: Aplikasi Real-Time
+<img src="https://images.pexels.com/photos/1181472/pexels-photo-1181472.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Real-Time" style="width:100%;border-radius:12px;margin:12px 0;">
 
-**Target:** SMK RPL — siswa yang sudah bisa bikin REST API dan ingin menambahkan fitur real-time.
+# 16. Aplikasi Real-Time
+
+> **Level:** 🚀 Intermediate  
+> **Jam:** 8 (4 minggu × 2 sesi)  
+> **Prasyarat:** REST API (express), JavaScript/TypeScript dasar  
+> **Output:** Real-time chat app dengan WebSocket & Socket.IO + deployment siap scaling
+
+---
+
+## Tujuan Pembelajaran
+
+Setelah modul ini, kamu bisa:
+- Paham perbedaan polling, SSE, dan WebSocket serta kapan pakai masing-masing
+- Bikin WebSocket server & client pakai library `ws`
+- Implementasi real-time chat dengan Socket.IO (emit, on, broadcast, rooms, namespace)
+- Nambahin typing indicator, presence, dan notifikasi real-time
+- Scaling WebSocket dengan Redis adapter
+- Handle graceful shutdown, rate limiting, dan monitoring koneksi WebSocket
+
+## Materi
+
+| Sesi | Topik | File |
+|------|-------|------|
+| 1 | WebSocket Protocol & ws Library | [01-websocket-basics.md](01-websocket-basics.md) |
+| 2 | Socket.IO — Events, Rooms, Namespace | [02-socketio.md](02-socketio.md) |
+| 3 | Scaling & Production WebSocket | [03-scaling-production.md](03-scaling-production.md) |
 
 ---
 
@@ -42,7 +67,7 @@ WebSocket mulai sebagai permintaan HTTP biasa, lalu **di-upgrade** jadi koneksi 
 ```
 Client                           Server
   |                                |
-  |--- GET /chat HTTP/1.1 --------→|
+  |--- GET /chat HTTP/1.1 -------→|
   |    Host: server.com            |
   |    Upgrade: websocket          |
   |    Connection: Upgrade         |
@@ -85,11 +110,11 @@ npm install express socket.io
 
 ### 4.2 Server Dasar
 
-```javascript
-// server.js
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+```typescript
+// server.ts
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
 const server = http.createServer(app);
@@ -138,7 +163,7 @@ server.listen(3000, () => {
 
 ### 5.1 Emit & On (Kirim & Terima)
 
-```javascript
+```typescript
 // Server
 io.on('connection', (socket) => {
   // Menerima event dari client
@@ -159,7 +184,7 @@ socket.on('halo', (msg) => {
 
 ### 5.2 Broadcast (Kirim ke Semua Kecuali Pengirim)
 
-```javascript
+```typescript
 // Server — kirim ke semua client kecuali pengirim
 socket.broadcast.emit('user-mengetik', { user: 'Budi' });
 
@@ -169,7 +194,7 @@ io.emit('pesan-baru', { teks: 'Announcement!' });
 
 ### 5.3 Rooms (Grup)
 
-```javascript
+```typescript
 // Join room
 socket.join('kelas-12-rpl');
 
@@ -198,19 +223,19 @@ socket.broadcast.to('room').emit() → room lain kecuali pengirim
 
 ```
 chat-app/
-  ├── server.js
+  ├── server.ts
   ├── package.json
   └── public/
       └── index.html
 ```
 
-### Step 2: Server.js Lengkap
+### Step 2: Server.ts Lengkap
 
-```javascript
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
+```typescript
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import path from 'path';
 
 const app = express();
 const server = http.createServer(app);
@@ -218,7 +243,7 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-const chatHistory = [];  // simpan 50 pesan terakhir
+const chatHistory: { id: number; user: string; teks: string; waktu: string }[] = [];
 
 io.on('connection', (socket) => {
   console.log('User join:', socket.id);
@@ -227,7 +252,7 @@ io.on('connection', (socket) => {
   socket.emit('chat-history', chatHistory);
 
   // Denger pesan baru
-  socket.on('chat-message', (data) => {
+  socket.on('chat-message', (data: { user: string; teks: string }) => {
     const msg = {
       id: Date.now(),
       user: data.user,
@@ -243,7 +268,7 @@ io.on('connection', (socket) => {
   });
 
   // Typing indicator
-  socket.on('typing', (user) => {
+  socket.on('typing', (user: string) => {
     socket.broadcast.emit('user-typing', user);
   });
 
@@ -288,7 +313,6 @@ server.listen(3000);
     const socket = io();
     const user = 'User-' + Math.random().toString(36).substr(2, 4);
 
-    // Render pesan
     function addMessage(msg) {
       const div = document.getElementById('messages');
       const el = document.createElement('div');
@@ -297,15 +321,12 @@ server.listen(3000);
       div.scrollTop = div.scrollHeight;
     }
 
-    // History chat
     socket.on('chat-history', (history) => {
       history.forEach(addMessage);
     });
 
-    // Pesan baru dari siapa pun (termasuk kita)
     socket.on('chat-message', addMessage);
 
-    // Kirim pesan
     function sendMessage() {
       const input = document.getElementById('msgInput');
       if (input.value.trim() === '') return;
@@ -318,7 +339,6 @@ server.listen(3000);
       if (e.key === 'Enter') sendMessage();
     };
 
-    // Typing indicator
     let typingTimer;
     document.getElementById('msgInput').oninput = () => {
       socket.emit('typing', user);
@@ -341,7 +361,7 @@ server.listen(3000);
 ### Step 4: Jalankan
 
 ```bash
-node server.js
+npx tsx server.ts
 # Buka http://localhost:3000 di dua tab browser
 ```
 
@@ -358,9 +378,9 @@ node server.js
 
 Notifikasi berbeda dari chat — biasanya muncul sebagai **toast/popup** atau **badge counter**.
 
-```javascript
+```typescript
 // Server — kirim notifikasi ke room tertentu
-function kirimNotif(userId, judul, body) {
+function kirimNotif(userId: string, judul: string, body: string) {
   io.to(`user-${userId}`).emit('notifikasi', {
     id: Date.now(),
     judul,
@@ -395,7 +415,7 @@ socket.on('notifikasi', (notif) => {
 - **Read/unread:** simpan status read di database, kirim unread count saat user connect.
 - **Sound:** mainkan audio pendek (`new Audio('/notif.mp3').play()`) saat notifikasi masuk.
 
-```javascript
+```typescript
 // Client — join room berdasarkan user setelah connect
 socket.on('connect', () => {
   const userId = localStorage.getItem('userId');
@@ -403,7 +423,7 @@ socket.on('connect', () => {
 });
 
 // Server
-socket.on('join-user-room', (userId) => {
+socket.on('join-user-room', (userId: string) => {
   socket.join(`user-${userId}`);
 });
 ```
@@ -421,18 +441,15 @@ Client: [input aktif] → emit('typing', username)
                      → setelah 1 detik tidak mengetik → emit('stop-typing')
 Server: broadcast('user-typing') kecuali pengirim
 Client: tampilkan teks "X sedang mengetik..."
-
-Client: [berhenti] → Server broadcast stop → hilangkan teks
 ```
 
 ### 8.2 Cursor Position (Live Cursor)
 
 Berguna di dokumen kolaboratif (Google Docs-like). Kirim posisi kursor tiap kali user gerakin mouse/klik.
 
-```javascript
+```typescript
 // Client — kirim posisi cursor
 document.addEventListener('mousemove', (e) => {
-  // Throttle — kirim maks tiap 50ms biar nggak spam
   if (lastCursorSend && Date.now() - lastCursorSend < 50) return;
   lastCursorSend = Date.now();
 
@@ -444,17 +461,16 @@ document.addEventListener('mousemove', (e) => {
 });
 
 // Client — render cursor orang lain
-const cursors = {};
+const cursors: Record<string, HTMLElement> = {};
 
 socket.on('cursor-update', (data) => {
   if (!cursors[data.user]) {
-    // Buat elemen cursor baru
     const el = document.createElement('div');
     el.className = 'remote-cursor';
     el.textContent = '🖱️ ' + data.user;
     el.style.position = 'fixed';
     el.style.pointerEvents = 'none';
-    el.style.zIndex = 9999;
+    el.style.zIndex = '9999';
     document.body.appendChild(el);
     cursors[data.user] = el;
   }
@@ -481,18 +497,18 @@ socket.on('disconnect', () => {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 2px 6px;
-  transition: left 0.1s, top 0.1s;  /* smooth movement */
+  transition: left 0.1s, top 0.1s;
 }
 ```
 
 ### 8.3 Presence (Online/Offline)
 
-```javascript
+```typescript
 // Server — track user online
-const onlineUsers = new Map();
+const onlineUsers = new Map<string, string>();
 
 io.on('connection', (socket) => {
-  socket.on('user-online', (username) => {
+  socket.on('user-online', (username: string) => {
     onlineUsers.set(socket.id, username);
     io.emit('presence-update', Array.from(onlineUsers.values()));
   });
@@ -530,14 +546,18 @@ socket.on('presence-update', (users) => {
 | **Notifikasi** | User-specific room, tampilkan toast + badge. |
 | **Collaboration** | Cursor position, typing indicator, presence — semua pakai event real-time. |
 
----
+## Output Akhir Modul
 
-## Latihan
+> **Real-Time Chat App** — aplikasi chat real-time dengan WebSocket yang bisa discale secara horizontal pakai Redis adapter. Fitur: multiple rooms, typing indicator, presence, notifikasi, dan monitoring koneksi.
 
-1. **Chat dengan room:** Modifikasi chat app supaya user bisa bikin room baru dan join room tertentu.
-2. **Gambar di chat:** Tambah fitur kirim gambar base64 lewat WebSocket.
-3. **Private message:** Implementasi DM (direct message) pakai room `user-${id}`.
-4. **Reaction:** Tambah emoji reaction di pesan — broadcast reaction event ke room.
+## AI Prompt Exercises
+
+Sepanjang modul, latihan pake AI:
+- "Explain this WebSocket handshake step by step"
+- "Debug this Socket.IO event — client emits but server doesn't receive"
+- "Refactor this chat server to use TypeScript interfaces"
+- "Generate load test script for this WebSocket server with 100 concurrent connections"
+- "Review this Redis adapter config for production readiness"
 
 ---
 
