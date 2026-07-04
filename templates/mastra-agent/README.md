@@ -1,31 +1,29 @@
 # Mastra AI Agent Starter
 
+Mastra agent with Express server exposing chat endpoint.
+
+## Setup
+
 ```bash
-npx degit rpl-ai-curriculum/templates/mastra-agent my-agent
-cd my-agent
+cp .env.example .env
+# Edit .env with your OPENAI_API_KEY
+```
+
+## Run
+
+```bash
 npm install
 npm run dev
 ```
 
-## Structure
+## Endpoints
 
-```
-src/mastra/
-  index.ts       # Mastra instance
-  agents/        # Agent definitions
-  tools/         # Custom tools
-```
+- `POST /api/chat` — Send chat message `{ "message": "Hello!" }`
+- `GET /api/health` — Health check
 
-## Commands
+## Build
 
 ```bash
-npm run dev      # Start Mastra Studio (port 4111)
-npm run build   # Build
-```
-
-## Env Variables
-
-```env
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
+npm run build
+npm start
 ```

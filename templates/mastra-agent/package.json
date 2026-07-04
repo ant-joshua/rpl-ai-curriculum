@@ -1,0 +1,24 @@
+{
+  "name": "mastra-agent-starter",
+  "version": "1.0.0",
+  "description": "Mastra AI agent starter",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@mastra/core": "^0.1.17",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mastra": "^0.1.17",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
