@@ -1,4 +1,4 @@
-# 03. Web Basics (HTML/CSS/Tailwind)
+# 04. Web Basics (HTML/CSS/Tailwind)
 
 > **Level:** 🌱 Beginner  
 > **Jam:** 6 (3 minggu x 2 sesi)  

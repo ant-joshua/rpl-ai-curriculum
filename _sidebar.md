@@ -30,13 +30,13 @@
   - [22. Monorepo](22-monorepo/)
   - [23. System Runtime & Async](23-system-runtime/)
   - [24. Resilience Patterns](24-resilience-patterns/)
-|- **🚀 Advanced**
+- **🚀 Advanced**
   - [08. Final Project](08-project/)
   - [09. Testing (Elektif)](09-testing/)
 - **📚 Elektif**
   - [React Dasar](electives/01-react-intro.md)
   - [Next.js](electives/02-nextjs.md)
-|- **🏆 Capstone Projects**
+- **🏆 Capstone Projects**
   - [1. AI Study Assistant](capstones/01-ai-study-assistant/)
   - [2. AI Travel Planner](capstones/02-ai-travel-planner/)
   - [3. E-Commerce + AI](capstones/03-ecommerce-ai/)

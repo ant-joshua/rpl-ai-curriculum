@@ -1,4 +1,4 @@
-# 04. Git & GitHub + Deploy
+# 05. Git & GitHub + Deploy
 
 > **Level:** 🌱 Beginner  
 > **Jam:** 4 (2 minggu x 2 sesi)  

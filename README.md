@@ -68,34 +68,32 @@ flowchart LR
 > Urutan: dari kiri ke kanan di roadmap. Tiap modul butuh modul sebelumnya.
 
 || # | Modul | Level | Jam | Prasyarat |
-||---|-------|-------|-----|-----------|
+|---|---|---|---|---|---|
 || 0 | **[Fundamental Pemrograman & Web](00-fundamentals/)** | 🌱 Beginner | 4 | — |
 || 1 | **[JavaScript Fundamentals](01-js-fundamentals/)** | 🌱 Beginner | 8 | Modul 0 |
 || 2 | **[Algorithms & Data Structures](02-algorithms-data-structures/)** | 🌱 Beginner | 8 | Modul 1 |
 || 3 | **[TypeScript Basics](03-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
 || 4 | **[Web Basics (HTML/CSS/Tailwind)](04-web-basics/)** | 🌱 Beginner | 6 | Modul 0 |
 || 5 | **[Git & GitHub + Deploy](05-git-deploy/)** | 🌱 Beginner | 4 | Modul 0 |
-|| 6 | **[Node.js & Express](06-node-express/)** | 📐 Intermediate | 6 | Modul 1, 3 |
-|| 7 | **[Database SQL](06-node-express/03-database.md)** | 📐 Intermediate | 3 | Modul 6 |
-|| 8 | **[Mastra AI — Agents & Tools](07-mastra-ai/)** | 📐 Intermediate | 8 | Modul 1, 3 |
-|| 9 | **[Mastra AI — Memory & RAG](07-mastra-ai/04-rag.md)** | 🚀 Advanced | 4 | Modul 8 |
-|| 10 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
-|| 11 | **[Design Patterns](10-design-patterns/)** | 📐 Intermediate | 6 | Modul 3 |
-|| 12 | **[System Design](11-system-design/)** | 📐 Intermediate | 4 | Modul 6 |
-|| 13 | **[UI/UX Design](12-ui-ux-design/)** | 📐 Intermediate | 6 | — |
-|| 14 | **[Flutter Mobile](13-flutter-mobile/)** | 📐 Intermediate | 8 | Modul 3 |
-|| 15 | **[Cybersecurity for Dev](14-cybersecurity/)** | 📐 Intermediate | 4 | Modul 6 |
-|| 16 | **[Agile & Scrum](15-agile-scrum/)** | 📐 Intermediate | 3 | — |
-|| 17 | **[Realtime Apps (WebSocket)](16-realtime-apps/)** | 🚀 Advanced | 4 | Modul 6 |
-|| 18 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
-|| 19 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
-|| 20 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
-|| 21 | **[Frontend Frameworks](20-frontend-frameworks/)** | 📐 Intermediate | 6 | Modul 4 |
-|| 22 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
-|| 23 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
-|| 24 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
-|| 25 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
-|| 26 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+|| 6 | **[Node.js & Express + Database SQL](06-node-express/)** | 📐 Intermediate | 9 | Modul 1, 3 |
+|| 7 | **[Mastra AI — Agents, Tools, Memory & RAG](07-mastra-ai/)** | 📐 Intermediate | 12 | Modul 1, 3 |
+|| 8 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+|| 9 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
+|| 10 | **[Design Patterns](10-design-patterns/)** | 📐 Intermediate | 6 | Modul 3 |
+|| 11 | **[System Design](11-system-design/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 12 | **[UI/UX Design](12-ui-ux-design/)** | 📐 Intermediate | 6 | — |
+|| 13 | **[Flutter Mobile](13-flutter-mobile/)** | 📐 Intermediate | 8 | Modul 3 |
+|| 14 | **[Cybersecurity for Dev](14-cybersecurity/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 15 | **[Agile & Scrum](15-agile-scrum/)** | 📐 Intermediate | 3 | — |
+|| 16 | **[Realtime Apps (WebSocket)](16-realtime-apps/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 17 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
+|| 18 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
+|| 19 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
+|| 20 | **[Frontend Frameworks](20-frontend-frameworks/)** | 📐 Intermediate | 6 | Modul 4 |
+|| 21 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 22 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
+|| 23 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
+|| 24 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
 
 ### Elektif (Tambahan)
 

@@ -1,4 +1,4 @@
-# 02. TypeScript Basics
+# 03. TypeScript Basics
 
 > **Level:** 🌱 Beginner  
 > **Jam:** 4 (2 minggu x 2 sesi)  
