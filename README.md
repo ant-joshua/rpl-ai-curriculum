@@ -86,7 +86,10 @@ flowchart LR
 || 18 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
 || 19 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
 || 20 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
-|| 21 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+|| 21 | **[Frontend Frameworks](20-frontend-frameworks/)** | 📐 Intermediate | 6 | Modul 4 |
+|| 22 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 23 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
+|| 24 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
 
 ### Elektif (Tambahan)
 
