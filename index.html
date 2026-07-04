@@ -7,8 +7,9 @@
   <meta name="description" content="Kurikulum Rekayasa Perangkat Lunak Era AI untuk SMK — Dari nol sampai deploy AI-powered web app">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 
-  <!-- Docsify Core -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/dark.css">
+  <!-- Docsify Core — load both; toggled via media -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/dark.css" id="docsify-theme">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" id="docsify-theme-light" disabled>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== ROOT VARIABLES ===== */
+    /* ===== ROOT — DARK (default) ===== */
     :root {
       --bg-primary: #070b14;
       --bg-secondary: #0d1321;
@@ -50,38 +51,30 @@
       --font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
       --mono: 'JetBrains Mono', 'Fira Code', monospace;
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --docsify-bg: #0d1321;
+      --docsify-text: #b8c5d6;
+      --docsify-sidebar-bg: #0d1321;
     }
 
-    /* ===== THEMES ===== */
-    html[data-theme="ocean"] {
-      --accent: #3b82f6;
-      --accent-hover: #60a5fa;
-      --accent-glow: rgba(59, 130, 246, 0.15);
-      --accent-subtle: rgba(59, 130, 246, 0.06);
-    }
-    html[data-theme="forest"] {
-      --accent: #22c55e;
-      --accent-hover: #4ade80;
-      --accent-glow: rgba(34, 197, 94, 0.15);
-      --accent-subtle: rgba(34, 197, 94, 0.06);
-    }
-    html[data-theme="royal"] {
-      --accent: #a855f7;
-      --accent-hover: #c084fc;
-      --accent-glow: rgba(168, 85, 247, 0.15);
-      --accent-subtle: rgba(168, 85, 247, 0.06);
-    }
-    html[data-theme="rose"] {
-      --accent: #ec4899;
-      --accent-hover: #f472b6;
-      --accent-glow: rgba(236, 72, 153, 0.15);
-      --accent-subtle: rgba(236, 72, 153, 0.06);
-    }
-    html[data-theme="sun"] {
-      --accent: #eab308;
-      --accent-hover: #facc15;
-      --accent-glow: rgba(234, 179, 8, 0.18);
-      --accent-subtle: rgba(234, 179, 8, 0.06);
+    /* ===== LIGHT MODE ===== */
+    html[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --bg-elevated: #ffffff;
+      --border: #e2e8f0;
+      --border-light: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent: #ea580c;
+      --accent-hover: #c2410c;
+      --accent-glow: rgba(234, 88, 12, 0.1);
+      --accent-subtle: rgba(234, 88, 12, 0.05);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.1);
     }
 
     /* ===== GLOBAL ===== */
@@ -106,7 +99,6 @@
     .sidebar::-webkit-scrollbar { width: 4px; }
     .sidebar::-webkit-scrollbar-track { background: transparent; }
     .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-    .sidebar::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
 
     .sidebar > h1 {
       background: linear-gradient(135deg, var(--bg-secondary) 0%, transparent 100%);
@@ -138,7 +130,6 @@
       padding: 7px 20px 7px 24px;
       border-left: 2px solid transparent;
       transition: all 0.2s var(--ease);
-      position: relative;
     }
     .sidebar ul li a:hover {
       color: var(--text-secondary) !important;
@@ -178,11 +169,24 @@
       font-weight: 600;
     }
 
+    /* ===== SIDEBAR OVERRIDES (docsify dark.css messes with sidebar colors) ===== */
+    html[data-theme="light"] .sidebar,
+    html[data-theme="light"] .sidebar > h1,
+    html[data-theme="light"] .sidebar ul li a,
+    html[data-theme="light"] .sidebar ul li strong {
+      color: var(--text-primary) !important;
+    }
+    html[data-theme="light"] .sidebar ul li a { color: var(--text-muted) !important; }
+    html[data-theme="light"] .sidebar ul li a:hover { color: var(--text-secondary) !important; }
+
     /* ===== COVER ===== */
     .cover {
       background: var(--bg-primary) !important;
       position: relative;
       overflow: hidden;
+    }
+    html[data-theme="light"] .cover {
+      background: linear-gradient(180deg, #fef9f4 0%, var(--bg-primary) 100%) !important;
     }
     .cover::before {
       content: '';
@@ -203,6 +207,11 @@
       background-size: 60px 60px;
       pointer-events: none;
       opacity: 0.5;
+    }
+    html[data-theme="light"] .cover::after {
+      background-image:
+        linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
     }
 
     .cover-main {
@@ -232,7 +241,6 @@
       font-family: var(--font-heading) !important;
       font-size: 52px !important;
       font-weight: 900 !important;
-      color: var(--text-primary) !important;
       margin-bottom: 12px !important;
       letter-spacing: -1.5px;
       line-height: 1.15 !important;
@@ -241,37 +249,12 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    html[data-theme="ocean"] .cover-main h1 {
-      background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #3b82f6 100%);
+    html[data-theme="light"] .cover-main h1 {
+      background: linear-gradient(135deg, #ea580c 0%, #f59e0b 50%, #ea580c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    html[data-theme="forest"] .cover-main h1 {
-      background: linear-gradient(135deg, #22c55e 0%, #a3e635 50%, #22c55e 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    html[data-theme="royal"] .cover-main h1 {
-      background: linear-gradient(135deg, #a855f7 0%, #f472b6 50%, #a855f7 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    html[data-theme="rose"] .cover-main h1 {
-      background: linear-gradient(135deg, #ec4899 0%, #fb7185 50%, #ec4899 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    html[data-theme="sun"] .cover-main h1 {
-      background: linear-gradient(135deg, #eab308 0%, #facc15 50%, #f59e0b 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
     .cover-main h1 .anchor span { background: none !important; -webkit-text-fill-color: transparent; }
 
     .cover-main blockquote {
@@ -282,6 +265,9 @@
       margin: 24px 0 36px !important;
       border-left: 3px solid var(--accent) !important;
       box-shadow: var(--shadow-sm);
+    }
+    html[data-theme="light"] .cover-main blockquote {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
     }
     .cover-main blockquote p {
       font-size: 18px !important;
@@ -368,6 +354,10 @@
       font-weight: 700 !important;
       color: var(--text-primary) !important;
     }
+    html[data-theme="light"] .markdown-section h1,
+    html[data-theme="light"] .markdown-section h2,
+    html[data-theme="light"] .markdown-section h3,
+    html[data-theme="light"] .markdown-section h4 { color: var(--text-primary) !important; }
 
     .markdown-section h1 {
       font-size: 38px !important;
@@ -454,6 +444,9 @@
       border-radius: 4px;
       border: 1px solid var(--border);
     }
+    html[data-theme="light"] .markdown-section code {
+      background: #f1f5f9 !important;
+    }
     .markdown-section pre {
       background: var(--bg-card) !important;
       border: 1px solid var(--border) !important;
@@ -461,6 +454,9 @@
       padding: 24px !important;
       box-shadow: var(--shadow-sm);
       position: relative;
+    }
+    html[data-theme="light"] .markdown-section pre {
+      background: #f8fafc !important;
     }
     .markdown-section pre::before {
       content: '';
@@ -523,6 +519,9 @@
     .markdown-section table tr:hover td { background: var(--bg-card-hover); }
     .markdown-section table tr:last-child td { border-bottom: none; }
 
+    /* ===== Docsify light overrides ===== */
+    html[data-theme="light"] .markdown-section table thead th { color: var(--text-muted) !important; }
+
     /* ===== BLOCKQUOTE ===== */
     .markdown-section blockquote {
       border-left: none !important;
@@ -545,6 +544,11 @@
     }
     .markdown-section blockquote p { color: var(--text-secondary) !important; font-size: 15px !important; }
 
+    /* Docsify light blockquote overrides */
+    html[data-theme="light"] .markdown-section blockquote {
+      background: var(--accent-subtle) !important;
+    }
+
     /* ===== MERMAID ===== */
     .mermaid {
       background: var(--bg-card);
@@ -556,6 +560,7 @@
       text-align: center;
       box-shadow: var(--shadow-sm);
     }
+    html[data-theme="light"] .mermaid { background: #ffffff; }
     .mermaid svg { max-width: 100%; height: auto; }
 
     /* ===== LISTS ===== */
@@ -594,7 +599,6 @@
       outline: none;
     }
     .search input::placeholder { color: var(--text-muted); }
-    .search .clear-button { display: none; }
     .search .search-dropdown {
       background: var(--bg-card) !important;
       border: 1px solid var(--border) !important;
@@ -687,8 +691,8 @@
       animation: loader-spin 0.8s linear infinite;
     }
 
-    /* ===== THEME SWITCHER ===== */
-    .theme-switcher-btn {
+    /* ===== THEME TOGGLE ===== */
+    .theme-toggle {
       position: fixed;
       bottom: 24px;
       right: 24px;
@@ -698,8 +702,6 @@
       border-radius: 50%;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-size: 20px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -707,105 +709,27 @@
       box-shadow: var(--shadow-lg);
       transition: all 0.3s var(--ease);
       backdrop-filter: blur(12px);
+      font-size: 22px;
+      line-height: 1;
     }
-    .theme-switcher-btn:hover {
+    .theme-toggle:hover {
       transform: scale(1.1);
       border-color: var(--accent);
-      color: var(--accent);
       box-shadow: 0 8px 32px var(--accent-glow);
     }
 
-    .theme-switcher-panel {
-      position: fixed;
-      bottom: 84px;
-      right: 24px;
-      z-index: 9998;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(20px);
-      display: none;
-      min-width: 220px;
-      animation: panel-in 0.25s var(--ease);
-    }
-    .theme-switcher-panel.open { display: block; }
-
-    @keyframes panel-in {
-      from { opacity: 0; transform: translateY(12px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .theme-switcher-panel .switcher-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .theme-swatches {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .theme-swatch {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s var(--ease);
-      position: relative;
-    }
-    .theme-swatch:hover {
-      transform: scale(1.15);
-    }
-    .theme-swatch.active {
-      border-color: var(--text-primary);
-      box-shadow: 0 0 0 3px var(--bg-elevated), 0 0 0 5px var(--accent);
-    }
-    .theme-swatch[data-theme="default"] { background: #FF6B35; }
-    .theme-swatch[data-theme="ocean"] { background: #3b82f6; }
-    .theme-swatch[data-theme="forest"] { background: #22c55e; }
-    .theme-swatch[data-theme="royal"] { background: #a855f7; }
-    .theme-swatch[data-theme="rose"] { background: #ec4899; }
-    .theme-swatch[data-theme="sun"] { background: #eab308; }
-
-    .theme-swatch .tooltip {
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-      font-weight: 500;
-    }
-    .theme-swatch:hover .tooltip { opacity: 1; }
+    /* Docsify theme override labels */
+    html[data-theme="light"] .theme-toggle { background: #ffffff; border-color: #e2e8f0; }
 
     /* ===== SCROLLBAR ===== */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
 
     /* ===== PRINT ===== */
     @media print {
       .sidebar, .sidebar-toggle, .docsify-copy-code-button, .app-nav,
-      .theme-switcher-btn, .theme-switcher-panel { display: none !important; }
+      .theme-toggle { display: none !important; }
       .markdown-section { max-width: 100% !important; padding: 20px !important; }
       body { background: #fff !important; color: #111 !important; }
       .markdown-section p { color: #333 !important; }
@@ -826,10 +750,7 @@
       .cover-main blockquote p { font-size: 15px !important; }
       .cover-main .cover-buttons { flex-direction: column; align-items: center; }
       .cover-main .cover-buttons a { width: 100%; max-width: 280px; justify-content: center; }
-      .markdown-section table { font-size: 13px; }
-      .markdown-section pre { padding: 16px !important; }
-      .theme-switcher-btn { bottom: 16px; right: 16px; width: 42px; height: 42px; }
-      .theme-switcher-panel { right: 16px; bottom: 72px; }
+      .theme-toggle { bottom: 16px; right: 16px; width: 42px; height: 42px; font-size: 18px; }
     }
     @media (max-width: 480px) {
       .cover-main { padding: 16px 12px 32px; }
@@ -847,74 +768,42 @@
     </div>
   </div>
 
-  <!-- ===== THEME SWITCHER UI ===== -->
-  <button class="theme-switcher-btn" id="themeBtn" title="Ganti tema">🎨</button>
-  <div class="theme-switcher-panel" id="themePanel">
-    <div class="switcher-label">Pilih Tema</div>
-    <div class="theme-swatches">
-      <div class="theme-swatch active" data-theme="default">
-        <span class="tooltip">Default</span>
-      </div>
-      <div class="theme-swatch" data-theme="ocean">
-        <span class="tooltip">Ocean</span>
-      </div>
-      <div class="theme-swatch" data-theme="forest">
-        <span class="tooltip">Forest</span>
-      </div>
-      <div class="theme-swatch" data-theme="royal">
-        <span class="tooltip">Royal</span>
-      </div>
-      <div class="theme-swatch" data-theme="rose">
-        <span class="tooltip">Rose</span>
-      </div>
-      <div class="theme-swatch" data-theme="sun">
-        <span class="tooltip">Sun</span>
-      </div>
-    </div>
-  </div>
+  <!-- ===== THEME TOGGLE ===== -->
+  <button class="theme-toggle" id="themeToggle" title="Ganti tema">🌙</button>
 
   <script>
-    // ===== THEME SWITCHER =====
+    // ===== DARK/LIGHT TOGGLE =====
     (function() {
-      var btn = document.getElementById('themeBtn');
-      var panel = document.getElementById('themePanel');
-      var swatches = document.querySelectorAll('.theme-swatch');
+      var btn = document.getElementById('themeToggle');
       var html = document.documentElement;
+      var darkSheet = document.getElementById('docsify-theme');
+      var lightSheet = document.getElementById('docsify-theme-light');
 
-      // Load saved theme
-      var saved = localStorage.getItem('rpl-theme');
-      if (saved) {
-        html.setAttribute('data-theme', saved);
-        swatches.forEach(function(s) {
-          s.classList.toggle('active', s.getAttribute('data-theme') === saved);
-        });
+      var isDark = localStorage.getItem('rpl-theme') !== 'light';
+
+      function applyTheme(dark) {
+        if (dark) {
+          html.removeAttribute('data-theme');
+          btn.textContent = '🌙';
+          btn.title = 'Mode terang';
+          darkSheet.removeAttribute('disabled');
+          lightSheet.setAttribute('disabled', 'disabled');
+          localStorage.setItem('rpl-theme', 'dark');
+        } else {
+          html.setAttribute('data-theme', 'light');
+          btn.textContent = '☀️';
+          btn.title = 'Mode gelap';
+          darkSheet.setAttribute('disabled', 'disabled');
+          lightSheet.removeAttribute('disabled');
+          localStorage.setItem('rpl-theme', 'light');
+        }
       }
 
-      // Toggle panel
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        panel.classList.toggle('open');
-      });
-      document.addEventListener('click', function() {
-        panel.classList.remove('open');
-      });
-      panel.addEventListener('click', function(e) { e.stopPropagation(); });
+      applyTheme(isDark);
 
-      // Switch theme
-      swatches.forEach(function(swatch) {
-        swatch.addEventListener('click', function() {
-          var theme = this.getAttribute('data-theme');
-          if (!theme || theme === 'default') {
-            html.removeAttribute('data-theme');
-            localStorage.removeItem('rpl-theme');
-          } else {
-            html.setAttribute('data-theme', theme);
-            localStorage.setItem('rpl-theme', theme);
-          }
-          swatches.forEach(function(s) { s.classList.remove('active'); });
-          this.classList.add('active');
-          panel.classList.remove('open');
-        });
+      btn.addEventListener('click', function() {
+        var currentlyDark = html.getAttribute('data-theme') !== 'light';
+        applyTheme(!currentlyDark);
       });
     })();
   </script>
