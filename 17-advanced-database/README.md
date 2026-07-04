@@ -281,12 +281,140 @@ ROLLBACK TO SAVEPOINT sp1;
 COMMIT;
 ```
 
-### 4.4 Best Practices
+### 4.5 Transaction Isolation Levels
 
-- Selalu gunakan `BEGIN` eksplisit untuk operasi multi-tabel.
-- Handle error dengan `ROLLBACK` di blok `EXCEPTION`.
-- Jaga transaksi tetap pendek — jangan menunggu input user di dalam transaksi.
-- Jangan nested transaction (tidak didukung PostgreSQL — hanya savepoint).
+Isolation level ngontrol gimana transaksi "lihat" perubahan dari transaksi lain yang jalan bersamaan. Ada 4 level di PostgreSQL:
+
+| Level | Dirty Read | Non-Repeatable Read | Phantom Read | Use Case |
+|-------|-----------|---------------------|--------------|----------|
+| `READ UNCOMMITTED` | ❌ (PG treat as RC) | ❌ | ❌ | Jarang dipake |
+| `READ COMMITTED` (default) | ✅ Aman | ❌ Bisa beda | ❌ Bisa beda | Web apps umum |
+| `REPEATABLE READ` | ✅ Aman | ✅ Aman | ❌ Bisa beda | Laporan keuangan |
+| `SERIALIZABLE` | ✅ Aman | ✅ Aman | ✅ Aman | Tabungan, transaksi kritis |
+
+**Dirty Read:** Baca data yang belum di-COMMIT. PostgreSQL ga punya ini bahkan di level terendah.
+
+**Non-Repeatable Read:** Baca baris yang sama 2x, dapet hasil beda karena transaksi lain udah ngubah:
+```sql
+-- Transaksi A                            -- Transaksi B
+BEGIN;                                     BEGIN;
+SELECT saldo FROM rekening WHERE id=1;    
+-- saldo = 100rb                           
+                                           UPDATE rekening SET saldo=50rb WHERE id=1;
+                                           COMMIT;
+SELECT saldo FROM rekening WHERE id=1;    
+-- saldo = 50rb (beda!)                   
+COMMIT;
+```
+
+**Phantom Read:** Query filter yang sama 2x, dapet baris beda karena transaksi lain nambahin data baru.
+
+**Contoh pake REPEATABLE READ:**
+```sql
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+SELECT SUM(saldo) FROM rekening WHERE user_id = 1;
+-- 200rb
+
+-- Transaksi lain transfer masuk 50rb & commit
+-- Transaksi ini masih liat 200rb (konsisten)
+
+SELECT SUM(saldo) FROM rekening WHERE user_id = 1;
+-- Masih 200rb — REPEATABLE READ menjamin konsistensi
+
+COMMIT;
+-- Next query baru liat data terbaru
+```
+
+**Pilih level mana?**
+| Level | Recommended buat |
+|-------|-----------------|
+| `READ COMMITTED` | Default. Kebanyakan web app. |
+| `REPEATABLE READ` | Laporan, histori, billing — butuh snapshot konsisten |
+| `SERIALIZABLE` | Keuangan, antrian, race condition sensitif — tapi siap-siap retry |
+
+> **⚠️ Makin tinggi isolation, makin banyak conflict/rollback.** SERIALIZABLE bisa nge-drop transaksi kalo detect konflik — harus pake retry logic di aplikasi.
+
+### 4.6 Transaksi di Aplikasi (Node.js)
+
+Pake library `pg` — transaksi manual:
+
+```typescript
+import { Pool } from 'pg';
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+async function transferMoney(fromId: number, toId: number, amount: number) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    
+    await client.query(
+      'UPDATE rekening SET saldo = saldo - $1 WHERE id = $2',
+      [amount, fromId]
+    );
+    
+    // Kalo error di sini, ROLLBACK otomatis
+    await client.query(
+      'UPDATE rekening SET saldo = saldo + $1 WHERE id = $2',
+      [amount, toId]
+    );
+    
+    await client.query('COMMIT');
+    console.log('Transfer berhasil');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Transfer gagal, di-rollback:', err);
+    throw err; // Lempar ke caller buat di-handle
+  } finally {
+    client.release(); // Kembalikan koneksi ke pool
+  }
+}
+```
+
+**Pattern: Transaction with retry on serialization error:**
+```typescript
+async function executeWithRetry<T>(
+  fn: (client: PoolClient) => Promise<T>,
+  maxRetries = 3
+): Promise<T> {
+  const client = await pool.connect();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await client.query('BEGIN');
+      const result = await fn(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (err: any) {
+      await client.query('ROLLBACK');
+      // Cuma retry kalo error serialization (40001)
+      if (err.code === '40001' && attempt < maxRetries) {
+        const backoff = Math.min(100 * Math.pow(2, attempt - 1), 2000);
+        await new Promise(r => setTimeout(r, backoff));
+        continue;
+      }
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+  throw new Error('Gagal setelah retry max');
+}
+
+// Pake:
+await executeWithRetry(async (client) => {
+  await client.query('UPDATE ...');
+  await client.query('UPDATE ...');
+});
+```
+
+### 4.4 Best Practices Transaksi
+
+- **Transaksi pendek.** Jangan input user atau API call di dalam transaksi.
+- **Error handling wajib.** Setiap BEGIN harus ada COMMIT/ROLLBACK — pake try/catch/finally.
+- **Test isolation level.** Paling rendah yang cukup — jangan SERIALIZABLE kalo ga perlu.
+- **Retry serialization failure.** Kode `40001` — transaksi gagal karena konflik, tinggal ulang.
+- **Jangan nested transaction.** PostgreSQL ga punya nested transaction — pake SAVEPOINT aja.
 
 ---
 

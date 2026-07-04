@@ -90,7 +90,8 @@ flowchart LR
 || 22 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
 || 23 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
 || 24 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
-|| 25 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+|| 25 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
+|| 26 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
 
 ### Elektif (Tambahan)
 
