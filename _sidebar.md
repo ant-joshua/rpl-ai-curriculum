@@ -18,6 +18,7 @@
   - [35. HTML & CSS Dasar](35-html-css-intro/)
   - [36. Web Architecture](36-web-architecture/)
   - [37. Database Intro](37-database-intro/)
+  - [44. Portfolio & Branding](44-portfolio-branding/)
 - **📐 Intermediate**
   - [06. Node.js & Express](06-node-express/)
   - [07. Mastra AI](07-mastra-ai/)
@@ -39,6 +40,7 @@
   - [28. REST API Design](28-rest-api-design/)
   - [29. Cloud Computing](29-cloud-computing/)
   - [33. Data Visualization](33-data-visualization/)
+  - [42. File Upload & Storage](42-file-upload/)
 - **🚀 Advanced**
   - [08. Final Project](08-project/)
   - [09. Testing (Elektif)](09-testing/)
@@ -46,6 +48,12 @@
   - [31. Auth & Identity](31-auth-identity/)
   - [32. Performance](32-performance/)
   - [34. PWA & Offline](34-pwa-offline/)
+  - [38. AI Dev Workflow](38-ai-dev-workflow/)
+  - [39. Payment Integration](39-payment-integration/)
+  - [40. Background Jobs](40-background-jobs/)
+  - [41. Monitoring & Error](41-monitoring/)
+  - [43. Search](43-search-implementation/)
+  - [45. i18n](45-internationalization/)
 - **📚 Elektif**
   - [React Dasar](electives/01-react-intro.md)
   - [Next.js](electives/02-nextjs.md)

@@ -20,6 +20,7 @@
 | 35 | HTML & CSS Intro | [Quiz](../35-html-css-intro/quiz.md) |
 | 36 | Web Architecture | [Quiz](../36-web-architecture/quiz.md) |
 | 37 | Database Intro | [Quiz](../37-database-intro/quiz.md) |
+| 44 | Portfolio & Branding | [Quiz](../44-portfolio-branding/quiz.md) |
 
 ---
 
@@ -40,6 +41,7 @@
 | 28 | REST API Design | [Quiz](../28-rest-api-design/quiz.md) |
 | 29 | Cloud Computing | [Quiz](../29-cloud-computing/quiz.md) |
 | 33 | Data Visualization | [Quiz](../33-data-visualization/quiz.md) |
+| 42 | File Upload & Storage | [Quiz](../42-file-upload/quiz.md) |
 
 ---
 
@@ -60,3 +62,9 @@
 | 31 | Authentication & Identity | [Quiz](../31-auth-identity/quiz.md) |
 | 32 | Performance Optimization | [Quiz](../32-performance/quiz.md) |
 | 34 | PWA & Offline Apps | [Quiz](../34-pwa-offline/quiz.md) |
+| 38 | AI-Assisted Dev Workflow | [Quiz](../38-ai-dev-workflow/quiz.md) |
+| 39 | Payment Integration | [Quiz](../39-payment-integration/quiz.md) |
+| 40 | Background Jobs & Queue | [Quiz](../40-background-jobs/quiz.md) |
+| 41 | Monitoring & Error Tracking | [Quiz](../41-monitoring/quiz.md) |
+| 43 | Search Implementation | [Quiz](../43-search-implementation/quiz.md) |
+| 45 | Internationalization | [Quiz](../45-internationalization/quiz.md) |

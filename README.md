@@ -107,8 +107,16 @@ flowchart LR
 || 35 | **[HTML & CSS Dasar](35-html-css-intro/)** | 🌱 Beginner | 4 | Modul 0 |
 || 36 | **[Frontend & Backend Architecture](36-web-architecture/)** | 🌱 Beginner | 4 | Modul 0 |
 || 37 | **[Database Introduction](37-database-intro/)** | 🌱 Beginner | 4 | Modul 0 |
+|| 38 | **[AI-Assisted Dev Workflow](38-ai-dev-workflow/)** | 🚀 Advanced | 4 | Modul 1 |
+|| 39 | **[Payment Integration](39-payment-integration/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 40 | **[Background Jobs & Queue](40-background-jobs/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 41 | **[Monitoring & Error Tracking](41-monitoring/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 42 | **[File Upload & Storage](42-file-upload/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 43 | **[Search Implementation](43-search-implementation/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 44 | **[Digital Portfolio & Branding](44-portfolio-branding/)** | 🌱 Beginner | 4 | Modul 4 |
+|| 45 | **[Internationalization (i18n)](45-internationalization/)** | 🚀 Advanced | 4 | Modul 20 |
 
-### Elektif (Tambahan)
+### Elektif
 
 | Modul | Level | Jam |
 |-------|-------|-----|
