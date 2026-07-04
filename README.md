@@ -67,40 +67,40 @@ flowchart LR
 
 > Urutan: dari kiri ke kanan di roadmap. Tiap modul butuh modul sebelumnya.
 
-|| # | Modul | Level | Jam | Prasyarat |
-|---|---|---|---|---|---|
-|| 0 | **[Fundamental Pemrograman & Web](00-fundamentals/)** | 🌱 Beginner | 4 | — |
-|| 1 | **[JavaScript Fundamentals](01-js-fundamentals/)** | 🌱 Beginner | 8 | Modul 0 |
-|| 2 | **[Algorithms & Data Structures](02-algorithms-data-structures/)** | 🌱 Beginner | 8 | Modul 1 |
-|| 3 | **[TypeScript Basics](03-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
-|| 4 | **[Web Basics (HTML/CSS/Tailwind)](04-web-basics/)** | 🌱 Beginner | 6 | Modul 0 |
-|| 5 | **[Git & GitHub + Deploy](05-git-deploy/)** | 🌱 Beginner | 4 | Modul 0 |
-|| 6 | **[Node.js & Express + Database SQL](06-node-express/)** | 📐 Intermediate | 9 | Modul 1, 3 |
-|| 7 | **[Mastra AI — Agents, Tools, Memory & RAG](07-mastra-ai/)** | 📐 Intermediate | 12 | Modul 1, 3 |
-|| 8 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
-|| 9 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
-|| 10 | **[Design Patterns](10-design-patterns/)** | 📐 Intermediate | 6 | Modul 3 |
-|| 11 | **[System Design](11-system-design/)** | 📐 Intermediate | 4 | Modul 6 |
-|| 12 | **[UI/UX Design](12-ui-ux-design/)** | 📐 Intermediate | 6 | — |
-|| 13 | **[Flutter Mobile](13-flutter-mobile/)** | 📐 Intermediate | 8 | Modul 3 |
-|| 14 | **[Cybersecurity for Dev](14-cybersecurity/)** | 📐 Intermediate | 4 | Modul 6 |
-|| 15 | **[Agile & Scrum](15-agile-scrum/)** | 📐 Intermediate | 3 | — |
-|| 16 | **[Realtime Apps (WebSocket)](16-realtime-apps/)** | 🚀 Advanced | 4 | Modul 6 |
-|| 17 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
-|| 18 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
-|| 19 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
-|| 20 | **[Frontend Frameworks](20-frontend-frameworks/)** | 📐 Intermediate | 6 | Modul 4 |
-|| 21 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
-|| 22 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
-|| 23 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
-|| 24 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
+| # | Modul | Level | Jam | Prasyarat |
+|---|---|---|---|---|
+| 0 | **[Fundamental Pemrograman & Web](00-fundamentals/)** | 🌱 Beginner | 4 | — |
+| 1 | **[JavaScript Fundamentals](01-js-fundamentals/)** | 🌱 Beginner | 8 | Modul 0 |
+| 2 | **[Algorithms & Data Structures](02-algorithms-data-structures/)** | 🌱 Beginner | 8 | Modul 1 |
+| 3 | **[TypeScript Basics](03-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
+| 4 | **[Web Basics (HTML/CSS/Tailwind)](04-web-basics/)** | 🌱 Beginner | 6 | Modul 0 |
+| 5 | **[Git & GitHub + Deploy](05-git-deploy/)** | 🌱 Beginner | 4 | Modul 0 |
+| 6 | **[Node.js & Express + Database SQL](06-node-express/)** | 📐 Intermediate | 9 | Modul 1, 3 |
+| 7 | **[Mastra AI — Agents, Tools, Memory & RAG](07-mastra-ai/)** | 📐 Intermediate | 12 | Modul 1, 3 |
+| 8 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+| 9 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
+| 10 | **[Design Patterns](10-design-patterns/)** | 📐 Intermediate | 6 | Modul 3 |
+| 11 | **[System Design](11-system-design/)** | 📐 Intermediate | 4 | Modul 6 |
+| 12 | **[UI/UX Design](12-ui-ux-design/)** | 📐 Intermediate | 6 | — |
+| 13 | **[Flutter Mobile](13-flutter-mobile/)** | 📐 Intermediate | 8 | Modul 3 |
+| 14 | **[Cybersecurity for Dev](14-cybersecurity/)** | 📐 Intermediate | 4 | Modul 6 |
+| 15 | **[Agile & Scrum](15-agile-scrum/)** | 📐 Intermediate | 3 | — |
+| 16 | **[Realtime Apps (WebSocket)](16-realtime-apps/)** | 🚀 Advanced | 4 | Modul 6 |
+| 17 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
+| 18 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
+| 19 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
+| 20 | **[Frontend Frameworks](20-frontend-frameworks/)** | 📐 Intermediate | 6 | Modul 4 |
+| 21 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
+| 22 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
+| 23 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
+| 24 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
 
 ### Elektif (Tambahan)
 
 | Modul | Level | Jam |
 |-------|-------|-----|
-|| [React Dasar](electives/01-react-intro.md) | 📐 Intermediate | 6 |
-|| [Next.js](electives/02-nextjs.md) | 🚀 Advanced | 6 |
+| [React Dasar](electives/01-react-intro.md) | 📐 Intermediate | 6 |
+| [Next.js](electives/02-nextjs.md) | 🚀 Advanced | 6 |
 
 ## 🏆 Capstone Projects
 
