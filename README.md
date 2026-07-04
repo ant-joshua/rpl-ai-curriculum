@@ -93,7 +93,17 @@ flowchart LR
 | 21 | **[Docker](21-docker/)** | 🚀 Advanced | 4 | Modul 6 |
 | 22 | **[Monorepo](22-monorepo/)** | 🚀 Advanced | 3 | Modul 6 |
 | 23 | **[System Runtime & Async](23-system-runtime/)** | 📐 Intermediate | 8 | Modul 1 |
-| 24 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
+|| 24 | **[Resilience Patterns](24-resilience-patterns/)** | 🚀 Advanced | 6 | Modul 6, 18 |
+|| 25 | **[Soft Skills & Professional](25-soft-skills/)** | 🌱 Beginner | 4 | — |
+|| 26 | **[Pragmatic Programming & Clean Code](26-pragmatic-programming/)** | 🌱 Beginner | 4 | Modul 1 |
+|| 27 | **[Linux Terminal Mastery](27-linux-terminal/)** | 🌱 Beginner | 4 | Modul 0 |
+|| 28 | **[REST API Design & Documentation](28-rest-api-design/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 29 | **[Cloud Computing & Serverless](29-cloud-computing/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 30 | **[GraphQL & tRPC](30-graphql-trpc/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 31 | **[Auth & Identity Deep Dive](31-auth-identity/)** | 🚀 Advanced | 5 | Modul 6 |
+|| 32 | **[Performance Optimization](32-performance/)** | 🚀 Advanced | 4 | Modul 4 |
+|| 33 | **[Data Visualization](33-data-visualization/)** | 📐 Intermediate | 4 | Modul 4 |
+|| 34 | **[PWA & Offline-First](34-pwa-offline/)** | 🚀 Advanced | 5 | Modul 4 |
 
 ### Elektif (Tambahan)
 

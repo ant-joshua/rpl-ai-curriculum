@@ -34,9 +34,15 @@
   - [23. System Runtime & Async](23-system-runtime/)
   - [24. Resilience Patterns](24-resilience-patterns/)
   - [28. REST API Design](28-rest-api-design/)
+  - [29. Cloud Computing](29-cloud-computing/)
+  - [33. Data Visualization](33-data-visualization/)
 - **🚀 Advanced**
   - [08. Final Project](08-project/)
   - [09. Testing (Elektif)](09-testing/)
+  - [30. GraphQL & tRPC](30-graphql-trpc/)
+  - [31. Auth & Identity](31-auth-identity/)
+  - [32. Performance](32-performance/)
+  - [34. PWA & Offline](34-pwa-offline/)
 - **📚 Elektif**
   - [React Dasar](electives/01-react-intro.md)
   - [Next.js](electives/02-nextjs.md)
