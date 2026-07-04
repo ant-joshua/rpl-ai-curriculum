@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/7325498/pexels-photo-7325498.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Coding" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 01. JavaScript Fundamentals
 
 > **Level:** 🌱 Beginner  

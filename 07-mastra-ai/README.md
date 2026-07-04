@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/8386437/pexels-photo-8386437.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="AI Agents" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 06. Mastra AI Framework
 
 > **Level:** 📐 Intermediate -> 🚀 Advanced  

@@ -8,6 +8,8 @@
 [![Mastra](https://img.shields.io/badge/Mastra-AI%20Framework-FF6B35?style=flat-square)](https://mastra.ai)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org)
 
+<img src="https://images.pexels.com/photos/5530437/pexels-photo-5530437.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&dpr=1" alt="Student" style="width:100%;border-radius:12px;margin:16px 0;"> 
+
 ---
 
 ## Pilih Jalur Belajar
@@ -56,6 +58,8 @@ flowchart LR
   style Intermediate fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
   style Advanced fill:#0f3460,stroke:#4a4a6a,color:#e0e0e0
 ```
+
+<img src="https://images.pexels.com/photos/8386437/pexels-photo-8386437.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&dpr=1" alt="AI Future" style="width:100%;border-radius:12px;margin:16px 0;">
 
 ---
 
@@ -171,6 +175,8 @@ Repo ini pure markdown — render otomatis di GitHub. Mulai dari [README](README
 | [Tailwind CSS](https://tailwindcss.com) | CSS framework | ✅ |
 | [Vercel](https://vercel.com) | Deploy frontend | ✅ (free tier) |
 | [Railway](https://railway.app) | Deploy backend | ✅ (free tier) |
+
+<img src="https://images.pexels.com/photos/37730211/pexels-photo-37730211.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&dpr=1" alt="Database Server" style="width:100%;border-radius:12px;margin:16px 0;">
 
 ---
 

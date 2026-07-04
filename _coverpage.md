@@ -1,3 +1,5 @@
+[![RPL AI Curriculum](https://images.pexels.com/photos/12899191/pexels-photo-12899191.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=1 ":no-zoom")](README.md)
+
 # 🗺️ RPL AI Curriculum
 
 > **Kurikulum Rekayasa Perangkat Lunak Era AI**

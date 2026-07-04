@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/37730211/pexels-photo-37730211.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Backend" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 05. Node.js & Express + Database
 
 > **Level:** 📐 Intermediate  

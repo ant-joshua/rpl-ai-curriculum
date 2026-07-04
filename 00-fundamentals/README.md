@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/5530437/pexels-photo-5530437.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Students" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 00. Fundamental Pemrograman & Web
 
 > **Level:** 🌱 Beginner (sebelum mulai coding)  
