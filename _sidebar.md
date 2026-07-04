@@ -70,3 +70,5 @@
   - [Rubrik Penilaian](grading/)
 - **💼 Karir**
   - [CV & Portfolio](career/)
+- **📝 Quiz**
+  - [Semua Quiz](quiz/)
