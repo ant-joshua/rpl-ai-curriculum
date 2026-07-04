@@ -4,16 +4,412 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RPL AI Curriculum</title>
-  <meta name="description" content="Kurikulum Rekayasa Perangkat Lunak Era AI untuk SMK">
+  <meta name="description" content="Kurikulum Rekayasa Perangkat Lunak Era AI untuk SMK — Dari nol sampai deploy AI-powered web app">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+
+  <!-- Docsify Core -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/dark.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse@1.3.5/dist/docsify-sidebar-collapse.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== ROOT VARIABLES ===== */
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #1a2035;
+      --bg-hover: #1f2937;
+      --border: #2d3748;
+      --border-light: #374151;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #FF6B35;
+      --accent-hover: #ff8250;
+      --accent-glow: rgba(255, 107, 53, 0.15);
+      --accent-dim: rgba(255, 107, 53, 0.08);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.3);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* ===== GLOBAL ===== */
+    * { box-sizing: border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      background: var(--bg-secondary) !important;
+      border-right: 1px solid var(--border) !important;
+      font-family: var(--font);
+      width: 300px;
+    }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .sidebar > h1 {
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+      border-bottom: 1px solid var(--border);
+      padding: 20px 20px;
+      margin: 0;
+    }
+    .sidebar > h1 a {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent) !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar > h1 a:before { content: '🤖'; font-size: 20px; }
+    .sidebar ul { padding: 8px 0; }
+    .sidebar ul li { margin: 0; }
+    .sidebar ul li a {
+      color: var(--text-secondary) !important;
+      font-size: 14px;
+      font-weight: 400;
+      padding: 6px 20px;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .sidebar ul li a:hover {
+      color: var(--accent) !important;
+      background: var(--accent-dim);
+      border-left-color: var(--accent);
+    }
+    .sidebar ul li.active > a {
+      color: var(--accent) !important;
+      font-weight: 600;
+      border-left-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .sidebar ul li strong {
+      color: var(--text-primary) !important;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 12px 20px 4px;
+      display: block;
+      opacity: 0.6;
+    }
+
+    /* ===== COVER PAGE ===== */
+    .cover {
+      background: linear-gradient(135deg, #0a0e17 0%, #111827 40%, #1a2035 70%, #0a0e17 100%) !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 40%, var(--accent-glow) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 60%, rgba(59,130,246,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .cover-main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+    .cover-main h1 {
+      font-size: 48px !important;
+      font-weight: 800 !important;
+      color: var(--text-primary) !important;
+      margin-bottom: 16px !important;
+      letter-spacing: -1px;
+    }
+    .cover-main h1 .anchor span { color: var(--accent) !important; }
+    .cover-main blockquote {
+      border: none !important;
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 0 32px !important;
+    }
+    .cover-main blockquote p {
+      font-size: 20px !important;
+      color: var(--text-secondary) !important;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    .cover-main blockquote p:first-child {
+      font-size: 18px !important;
+      color: var(--accent) !important;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .cover-main a {
+      display: inline-block;
+      padding: 14px 32px !important;
+      border-radius: var(--radius) !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+      transition: all 0.3s !important;
+      margin: 4px 8px !important;
+    }
+    .cover-main a:first-of-type {
+      background: var(--accent) !important;
+      color: #fff !important;
+      border: 2px solid var(--accent) !important;
+    }
+    .cover-main a:first-of-type:hover {
+      background: var(--accent-hover) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+    .cover-main a:last-of-type {
+      background: transparent !important;
+      color: var(--text-primary) !important;
+      border: 2px solid var(--border) !important;
+    }
+    .cover-main a:last-of-type:hover {
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+      transform: translateY(-2px);
+    }
+    .cover-main p:last-child { margin-top: 32px; }
+    .cover-main p:last-child img {
+      height: 28px;
+      margin: 0 6px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .cover-main p:last-child img:hover { opacity: 1; }
+
+    /* ===== MAIN CONTENT ===== */
+    .content {
+      font-family: var(--font);
+    }
+    .markdown-section {
+      max-width: 960px !important;
+      padding: 40px 60px 80px !important;
+    }
+    .markdown-section h1,
+    .markdown-section h2,
+    .markdown-section h3,
+    .markdown-section h4 {
+      font-weight: 700 !important;
+      color: var(--text-primary) !important;
+    }
+    .markdown-section h1 {
+      font-size: 36px !important;
+      letter-spacing: -0.5px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 32px;
+    }
+    .markdown-section h2 {
+      font-size: 26px !important;
+      margin-top: 40px;
+      color: var(--text-primary) !important;
+    }
+    .markdown-section h2 .anchor span { color: var(--accent) !important; }
+    .markdown-section h3 {
+      font-size: 20px !important;
+      margin-top: 32px;
+    }
+    .markdown-section p { color: var(--text-secondary); font-size: 16px; }
+    .markdown-section a {
+      color: var(--accent) !important;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .markdown-section a:hover { border-bottom-color: var(--accent); }
+
+    /* ===== CODE BLOCKS ===== */
+    .markdown-section code {
+      font-family: var(--mono) !important;
+      background: var(--bg-card) !important;
+      color: var(--accent) !important;
+      font-size: 13px !important;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .markdown-section pre {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius) !important;
+      padding: 20px !important;
+      box-shadow: var(--shadow);
+    }
+    .markdown-section pre code {
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      color: var(--text-primary) !important;
+      font-size: 13px !important;
+      line-height: 1.6;
+    }
+
+    /* ===== TABLES ===== */
+    .markdown-section table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin: 20px 0;
+    }
+    .markdown-section table thead th {
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 14px 16px;
+      border: none;
+      border-bottom: 2px solid var(--border);
+    }
+    .markdown-section table td {
+      padding: 12px 16px;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .markdown-section table tr:nth-child(2n) td {
+      background: var(--bg-card);
+    }
+    .markdown-section table tr:hover td {
+      background: var(--bg-hover);
+    }
+    .markdown-section table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ===== BLOCKQUOTE ===== */
+    .markdown-section blockquote {
+      border-left: 4px solid var(--accent) !important;
+      background: var(--accent-dim) !important;
+      padding: 16px 24px !important;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 24px 0;
+    }
+    .markdown-section blockquote p {
+      color: var(--text-secondary) !important;
+      font-size: 15px !important;
+    }
+
+    /* ===== MERMAID ===== */
+    .mermaid {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      text-align: center;
+    }
+    .mermaid svg { max-width: 100%; height: auto; }
+
+    /* ===== LISTS ===== */
+    .markdown-section ul li,
+    .markdown-section ol li {
+      color: var(--text-secondary);
+      margin: 4px 0;
+    }
+
+    /* ===== HORIZONTAL RULES ===== */
+    .markdown-section hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 40px 0;
+    }
+
+    /* ===== SCROLL TO TOP ===== */
+    .app-nav a { color: var(--text-secondary) !important; }
+    .app-nav a:hover { color: var(--accent) !important; }
+
+    /* ===== SEARCH ===== */
+    .search input {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-sm) !important;
+      color: var(--text-primary) !important;
+      font-family: var(--font);
+      padding: 10px 16px !important;
+    }
+    .search input:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* ===== COPY CODE BUTTON ===== */
+    .docsify-copy-code-button {
+      background: var(--bg-hover) !important;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 6px !important;
+      font-size: 12px !important;
+      padding: 4px 12px !important;
+      transition: all 0.2s;
+    }
+    .docsify-copy-code-button:hover {
+      background: var(--accent) !important;
+      color: #fff !important;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar { width: 260px !important; }
+      .markdown-section { padding: 24px 20px !important; }
+      .markdown-section h1 { font-size: 28px !important; }
+      .cover-main { padding: 40px 20px; }
+      .cover-main h1 { font-size: 32px !important; }
+      .cover-main blockquote p { font-size: 16px !important; }
+    }
+
+    /* ===== SIDEBAR TOGGLE ===== */
+    .sidebar-toggle { background: var(--bg-secondary) !important; padding: 8px !important; }
+    .sidebar-toggle span { background: var(--accent) !important; }
+
+    /* ===== LOADING ===== */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .content-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60vh;
+      color: var(--accent);
+      font-size: 24px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <div class="content-loader">🗺️ Memuat...</div>
+  </div>
+
   <script>
     window.$docsify = {
-      name: 'RPL AI Curriculum',
+      name: '',
       repo: '',
       loadSidebar: true,
       subMaxLevel: 4,
@@ -21,49 +417,110 @@
       search: {
         maxAge: 86400000,
         paths: 'auto',
-        placeholder: 'Cari...',
-        noData: 'Hasil tidak ditemukan',
+        placeholder: 'Cari modul...',
+        noData: 'Tidak ditemukan 😅',
         depth: 4
       },
       themeColor: '#FF6B35',
       coverpage: true,
       auto2top: true,
-      formatUpdated: '{YYYY}-{MM}-{DD}',
+      formatUpdated: '{DD} {MM} {YYYY}',
       plugins: [
         function(hook, vm) {
           hook.afterEach(function(html) {
-            return html.replace(/<a href="http/g, '<a target="_blank" href="http');
+            return html
+              .replace(/<a href="(?!(?:#|javascript:))/g, '<a target="_blank" href="')
+              .replace(/<h([1-6])>/g, '<h$1 class="docsify-heading">');
           });
         }
       ]
     };
   </script>
+
+  <!-- Docsify Core -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+
+  <!-- Docsify Plugins -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse@1.3.5/dist/docsify-sidebar-collapse.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <!-- Mermaid + Docsify integration -->
+  <script src="//cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script>
+    // Initialize Mermaid with dark theme
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       theme: 'dark',
-      flowchart: { useMaxWidth: true, htmlLabels: true }
+      themeVariables: {
+        primaryColor: '#1a2035',
+        primaryTextColor: '#f1f5f9',
+        primaryBorderColor: '#FF6B35',
+        lineColor: '#FF6B35',
+        secondaryColor: '#111827',
+        tertiaryColor: '#0a0e17',
+        fontFamily: 'Inter, sans-serif'
+      },
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis',
+        padding: 16
+      },
+      sequence: { useMaxWidth: true, showSequenceNumbers: true }
+    });
+
+    // Docsify hook — find lang-mermaid code blocks, replace with .mermaid divs, render
+    function renderAllMermaid() {
+      // Find code blocks with lang-mermaid class
+      document.querySelectorAll('code.lang-mermaid').forEach(function(codeEl) {
+        var pre = codeEl.closest('pre');
+        if (!pre) return;
+        // Skip if already processed (has sibling .mermaid div)
+        if (pre.nextElementSibling && pre.nextElementSibling.classList.contains('mermaid-processed')) return;
+
+        var code = codeEl.textContent.trim();
+        if (!code) return;
+
+        // Create mermaid div
+        var div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = code;
+
+        // Insert after pre, mark as processed
+        pre.parentNode.insertBefore(div, pre.nextSibling);
+        pre.style.display = 'none';
+      });
+
+      // Render all unrendered mermaid divs
+      document.querySelectorAll('.mermaid:not(.mermaid-processed)').forEach(function(el) {
+        if (el.querySelector('svg')) return;
+        try {
+          mermaid.run({ nodes: [el] });
+          el.classList.add('mermaid-processed');
+        } catch(e) {
+          console.warn('Mermaid render error:', e);
+        }
+      });
+    }
+
+    // Debounced render
+    var mermaidTimeout;
+    function scheduleMermaid() {
+      clearTimeout(mermaidTimeout);
+      mermaidTimeout = setTimeout(renderAllMermaid, 300);
+    }
+
+    // Hook into Docsify lifecycle
+    document.addEventListener('DOMContentLoaded', function() {
+      scheduleMermaid();
+      // Watch for content changes
+      var target = document.getElementById('main') || document.querySelector('.content');
+      if (target) {
+        var observer = new MutationObserver(function() { scheduleMermaid(); });
+        observer.observe(target, { childList: true, subtree: true });
+      }
     });
   </script>
-  <style>
-    :root {
-      --docsifytabs-border-color: #4a4a6a;
-      --docsifytabs-tab-highlight: #FF6B35;
-    }
-    .sidebar { background: #0d1117; }
-    .sidebar ul li a { color: #c9d1d9; }
-    .sidebar ul li a:hover { color: #FF6B35; }
-    .markdown-section code { background: #161b22; color: #ffa657; font-size: 14px; }
-    .markdown-section pre { background: #161b22; border: 1px solid #30363d; }
-    .markdown-section table tr:nth-child(2n) { background: #161b22; }
-    .markdown-section blockquote { border-left: 4px solid #FF6B35; color: #8b949e; }
-    .cover { background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #16213e 100%) !important; }
-    .anchor span { color: #FF6B35; }
-  </style>
-</head>
+</body>
 </html>
