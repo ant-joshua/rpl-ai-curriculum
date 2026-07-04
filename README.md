@@ -78,7 +78,15 @@ flowchart LR
 || 10 | **[Testing — Vitest & Integration](09-testing/)** | 🚀 Advanced (Elektif) | 4 | Modul 6 |
 || 11 | **[Design Patterns](10-design-patterns/)** | 📐 Intermediate | 6 | Modul 3 |
 || 12 | **[System Design](11-system-design/)** | 📐 Intermediate | 4 | Modul 6 |
-|| 13 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
+|| 13 | **[UI/UX Design](12-ui-ux-design/)** | 📐 Intermediate | 6 | — |
+|| 14 | **[Flutter Mobile](13-flutter-mobile/)** | 📐 Intermediate | 8 | Modul 3 |
+|| 15 | **[Cybersecurity for Dev](14-cybersecurity/)** | 📐 Intermediate | 4 | Modul 6 |
+|| 16 | **[Agile & Scrum](15-agile-scrum/)** | 📐 Intermediate | 3 | — |
+|| 17 | **[Realtime Apps (WebSocket)](16-realtime-apps/)** | 🚀 Advanced | 4 | Modul 6 |
+|| 18 | **[Advanced Database](17-advanced-database/)** | 🚀 Advanced | 4 | Modul 7 |
+|| 19 | **[AI Prompt Engineering](18-ai-prompt-engineering/)** | 🚀 Advanced | 3 | Modul 1 |
+|| 20 | **[Technical Interview](19-technical-interview/)** | 🚀 Advanced | 4 | Semua |
+|| 21 | **[Final Project](08-project/)** | 🚀 Advanced | 8 | Semua |
 
 ### Elektif (Tambahan)
 
