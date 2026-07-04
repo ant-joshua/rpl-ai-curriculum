@@ -104,6 +104,9 @@ flowchart LR
 || 32 | **[Performance Optimization](32-performance/)** | 🚀 Advanced | 4 | Modul 4 |
 || 33 | **[Data Visualization](33-data-visualization/)** | 📐 Intermediate | 4 | Modul 4 |
 || 34 | **[PWA & Offline-First](34-pwa-offline/)** | 🚀 Advanced | 5 | Modul 4 |
+|| 35 | **[HTML & CSS Dasar](35-html-css-intro/)** | 🌱 Beginner | 4 | Modul 0 |
+|| 36 | **[Frontend & Backend Architecture](36-web-architecture/)** | 🌱 Beginner | 4 | Modul 0 |
+|| 37 | **[Database Introduction](37-database-intro/)** | 🌱 Beginner | 4 | Modul 0 |
 
 ### Elektif (Tambahan)
 

@@ -15,6 +15,9 @@
   - [25. Soft Skills & Professional](25-soft-skills/)
   - [26. Pragmatic Programming](26-pragmatic-programming/)
   - [27. Linux Terminal](27-linux-terminal/)
+  - [35. HTML & CSS Dasar](35-html-css-intro/)
+  - [36. Web Architecture](36-web-architecture/)
+  - [37. Database Intro](37-database-intro/)
 - **📐 Intermediate**
   - [06. Node.js & Express](06-node-express/)
   - [07. Mastra AI](07-mastra-ai/)
