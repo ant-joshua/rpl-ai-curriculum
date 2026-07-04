@@ -61,13 +61,13 @@
       --bg-primary: #f8fafc;
       --bg-secondary: #f1f5f9;
       --bg-card: #ffffff;
-      --bg-card-hover: #f8fafc;
+      --bg-card-hover: #f1f5f9;
       --bg-elevated: #ffffff;
       --border: #e2e8f0;
       --border-light: #cbd5e1;
       --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
       --accent: #ea580c;
       --accent-hover: #c2410c;
       --accent-glow: rgba(234, 88, 12, 0.1);
@@ -168,6 +168,7 @@
       opacity: 0.4;
       font-weight: 600;
     }
+    html[data-theme="light"] .sidebar ul li strong { opacity: 0.6; }
 
     /* ===== SIDEBAR OVERRIDES (docsify dark.css messes with sidebar colors) ===== */
     html[data-theme="light"] .sidebar,
@@ -178,6 +179,7 @@
     }
     html[data-theme="light"] .sidebar ul li a { color: var(--text-muted) !important; }
     html[data-theme="light"] .sidebar ul li a:hover { color: var(--text-secondary) !important; }
+    html[data-theme="light"] .sidebar ul li.active > a { color: var(--accent) !important; }
 
     /* ===== COVER ===== */
     .cover {
@@ -458,6 +460,7 @@
     html[data-theme="light"] .markdown-section pre {
       background: #f8fafc !important;
     }
+    html[data-theme="light"] .markdown-section pre::after { color: var(--text-secondary) !important; opacity: 0.7; }
     .markdown-section pre::before {
       content: '';
       position: absolute;
@@ -520,7 +523,7 @@
     .markdown-section table tr:last-child td { border-bottom: none; }
 
     /* ===== Docsify light overrides ===== */
-    html[data-theme="light"] .markdown-section table thead th { color: var(--text-muted) !important; }
+    html[data-theme="light"] .markdown-section table thead th { color: var(--text-secondary) !important; background: #eef2f6 !important; }
 
     /* ===== BLOCKQUOTE ===== */
     .markdown-section blockquote {
@@ -561,6 +564,16 @@
       box-shadow: var(--shadow-sm);
     }
     html[data-theme="light"] .mermaid { background: #ffffff; }
+    html[data-theme="light"] .mermaid .label text,
+    html[data-theme="light"] .mermaid .nodeLabel,
+    html[data-theme="light"] .mermaid .edgeLabel,
+    html[data-theme="light"] .mermaid .sectionTitle,
+    html[data-theme="light"] .mermaid text { fill: #1e293b !important; }
+    html[data-theme="light"] .mermaid .edgePath .path { stroke: #94a3b8 !important; }
+    html[data-theme="light"] .mermaid .node rect,
+    html[data-theme="light"] .mermaid .node circle,
+    html[data-theme="light"] .mermaid .node polygon { stroke: #cbd5e1 !important; fill: #f8fafc !important; }
+    html[data-theme="light"] .mermaid .cluster rect { fill: #f1f5f9 !important; stroke: #cbd5e1 !important; }
     .mermaid svg { max-width: 100%; height: auto; }
 
     /* ===== LISTS ===== */
