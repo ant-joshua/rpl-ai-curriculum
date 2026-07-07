@@ -91,3 +91,5 @@
   - [CV & Portfolio](career/)
 - **📝 Quiz**
   - [Semua Quiz](quiz/)
+- **📊 Progress**
+  - [Dashboard Progress](assets/dashboard.html)
