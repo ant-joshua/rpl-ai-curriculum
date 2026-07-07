@@ -97,3 +97,5 @@
   - [Semua Slide](slides/)
 - **📄 PDF**
   - [Export PDF](pdf-export/)
+- **🏢 Case Studies**
+  - [Studi Kasus](case-studies/)
