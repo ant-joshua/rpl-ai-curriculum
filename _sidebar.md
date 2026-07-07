@@ -93,5 +93,7 @@
   - [Semua Quiz](quiz/)
 - **📊 Progress**
   - [Dashboard Progress](assets/dashboard.html)
+- **🎞️ Slide Deck**
+  - [Semua Slide](slides/)
 - **📄 PDF**
   - [Export PDF](pdf-export/)
