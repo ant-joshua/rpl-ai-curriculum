@@ -1,0 +1,2 @@
+# Redirect root to docsify
+/  /index.html  200
