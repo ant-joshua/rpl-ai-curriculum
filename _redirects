@@ -1,2 +1,5 @@
 # Redirect root to docsify
 /  /index.html  200
+
+# Redirect subpath _sidebar.md ke root — Docsify pake per-directory sidebar
+/:module/_sidebar.md  /_sidebar.md  200

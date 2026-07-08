@@ -124,6 +124,11 @@
       repo: '',
       loadSidebar: true,
       subMaxLevel: 4,
+      alias: {
+        '/_sidebar.md': '/_sidebar.md',
+        '/:item/_sidebar.md': '/_sidebar.md',
+        '/:item/:sub/_sidebar.md': '/_sidebar.md'
+      },
       search: {
         maxAge: 86400000,
         paths: 'auto',
