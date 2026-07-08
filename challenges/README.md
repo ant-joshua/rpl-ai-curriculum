@@ -1495,6 +1495,35 @@ Template untuk tracking progress siswa per challenge:
 | W9: Testing | 🟡 Medium | 4h | Vitest, supertest, TDD | W3, W6 |
 | W10: Final Project | 🔴 Expert | 2w | All skills | W1-W9 |
 
+### System Design Challenges
+
+| Challenge | Focus | Time | Skills Tested |
+|-----------|-------|------|---------------|
+| SD1: URL Shortener | read-heavy, hash | 4h | Caching, DB sharding, REST |
+| SD2: Chat System | real-time, scale | 5h | WebSocket, pub/sub, state |
+| SD3: E-commerce | consistency vs perf | 5h | Product catalog, cart, payment |
+| SD4: Social Feed | write-heavy, timeline | 6h | News feed, fan-out, ranking |
+| SD5: Rate Limiter | distributed, token bucket | 3h | Redis, sliding window |
+
+### Tips Menyelesaikan Challenge
+
+1. **Baca dulu** — pahami problem sepenuhnya sebelum nulis kode
+2. **Buat test dulu** — define expected behavior, lalu implement
+3. **Commit per step** — jangan nulis 100 baris baru commit
+4. **Cari feedback** — PR ke pair/teman, minta code review
+5. **Jangan overthink** — simple solution > perfect architecture
+6. **Timebox** — kalau mentok 30 menit, minta hint
+
+### Scoring Rubric
+
+| Kriteria | Poin | Deskripsi |
+|----------|------|-----------|
+| Functional | 40 | Semua fitur jalan sesuai spec |
+| Code Quality | 25 | Bersih, DRY, consistent naming |
+| Error Handling | 10 | Validasi, edge cases, try-catch |
+| Testing | 15 | Unit test + coverage > 80% |
+| Documentation | 10 | README, JSDoc, komentar 'why' |
+
 ---
 
 ### Challenge Completion Badges
@@ -1511,3 +1540,81 @@ Template untuk tracking progress siswa per challenge:
 ---
 
 Selamat coding! 🚀
+
+## 🎯 Challenge Solutions Approach
+
+### W1: HTML Landing Page
+- Gunakan semantic HTML (header, main, section, footer)
+- Flexbox untuk nav, Grid untuk card grid
+- CSS custom properties untuk warna tema
+- Responsive: mobile-first, 3 breakpoint (mobile, tablet, desktop)
+- Commit per section, deploy ke CF Pages
+
+### W3: Express CRUD
+- Struktur: routes/ → controllers/ → services/
+- Validasi input pake Zod + middleware
+- Error handler centralized (app.use(errorHandler))
+- Pagination: ?page=1&limit=10
+- Test: supertest + vitest
+
+### W7: AI Agent (Mastra)
+1. Definisikan tool dulu (search, calculate, summarize)
+2. Buat agent dengan tools + instructions
+3. Test agent dengan berbagai input edge case
+4. Evaluasi output dengan metrics (relevansi, accuracy)
+5. Tambah memory (working + archival) untuk context
+6. Deploy agent ke cloud (Railway / CF Workers)
+
+### W10: Final Project
+- Sprint 1 (3 hari): setup + fitur core (CRUD)
+- Sprint 2 (3 hari): auth + validasi + error handling
+- Sprint 3 (3 hari): testing + deployment + docs
+- Sprint 4 (hari bebas): polish + prezentasi
+
+### Submission Format
+```markdown
+## Challenge: [Nama]
+## Tech Stack: [tools]
+## Deployment: [URL]
+## Repo: [GitHub URL]
+## Screenshots: [link]
+## Time Spent: [jam]
+## Reflection: [apa yg dipelajari, kesulitan]
+```
+
+
+## 📚 Resources per Challenge
+
+| Challenge | Docs | Tools |
+|-----------|------|-------|
+| W1: Landing Page | MDN HTML/CSS, web.dev/learn | CodePen, Figma, Chrome DevTools |
+| W2: Todo CLI | Node.js fs docs, commander.js | Node.js, npx, npm scripts |
+| W3: Express CRUD | Express.js guide, Prisma docs | Thunder Client, Prisma Studio |
+| W4: SQL | PostgreSQL docs, pg exercises | pgAdmin, DBeaver, SQLite |
+| W5: Fullstack | Next.js docs, Tailwind docs | Vercel, Railway, PlanetScale |
+| W6: JWT Auth | JWT.io, bcrypt docs | Postman, jose library |
+| W7: AI Agent | Mastra docs, Open AI API | Mastra CLI, LangSmith |
+| W8: Docker Deploy | Docker docs, Railway guides | Docker Desktop, Docker Hub |
+| W9: Testing | Vitest docs, Testing Library | Vitest UI, c8 coverage |
+
+## 🏆 Completion Badges
+
+| Challenge | Bronze | Silver | Gold |
+|-----------|--------|--------|------|
+| W1 | 3 sections, responsive | +CSS animations | +Dark mode, a11y score 95+ |
+| W2 | CRUD + persist to file | +sort/filter/search | +test suite, error handling |
+| W3 | Basic CRUD | +validation, pagination | +auth, rate limiting, docs |
+| W4 | 3 tables SELECT | +JOIN, subquery | +index optimization, EXPLAIN |
+| W5 | CRUD FE+BE | +auth, pagination | +deploy, CI/CD, test |
+| W6 | Register + login | +refresh token, roles | +OAuth2, 2FA |
+| W7 | Simple agent | +tools, RAG | +memory, multi-agent, deploy |
+| W8 | Dockerfile + compose | +multi-stage, .env | +CI/CD, Docker Hub auto |
+| W9 | 5 unit tests | +integration, mock | +E2E, coverage 90%+ |
+| W10 | MVP deployed | +full test, CI/CD | +monitoring, analytics |
+
+### Leaderboard Points
+- Bronze = 10 pts, Silver = 25 pts, Gold = 50 pts
+- Submit video demo (max 3 menit) = bonus 5 pts
+- Code review 3 peer PR = bonus 10 pts
+- 500+ pts = RPL Certification + LinkedIn recommendation
+
