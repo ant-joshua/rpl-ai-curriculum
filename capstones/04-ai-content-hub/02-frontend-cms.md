@@ -457,4 +457,4 @@ Implementasi sidebar responsif:
 - [React Toast Pattern](https://react-hot-toast.com/)
 
 ---
-**Capstone 4 — Sesi 2: Frontend CMS & Content Management.** Lanjut ke [Sesi 3: AI Integration & Deployment](03-ai-deploy.md).
+**Capstone 4 — Sesi 2: Frontend CMS & Content Management.** Lanjut ke [Sesi 3: AI Integration & Deployment](03-ai-features-deploy.md).

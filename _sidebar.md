@@ -78,12 +78,21 @@
 - **📋 Latihan**
   - [Exercises JavaScript](exercises/01-js/)
   - [Exercises DSA](exercises/02-dsa/)
+  - [Exercises TypeScript](exercises/03-ts/)
+  - [Exercises Web](exercises/04-web/)
+  - [Exercises Git](exercises/05-git/)
+  - [Exercises Node.js](exercises/06-node/)
+  - [Exercises Mastra AI](exercises/07-mastra/)
+  - [Challenges](challenges/)
   - [Mini Projects](mini-projects/)
   - [Project Ideas](projects/)
 - **🛠️ Referensi**
   - [Glossary Istilah](glossary/)
   - [Starter Templates](templates/)
   - [Deployment Guides](guides/)
+  - [Quiz](quiz/)
+  - [Video Production](video-guide/)
+  - [Certification](certification/)
 - **👨‍🏫 Untuk Guru**
   - [Panduan Mengajar](teacher-guide/)
   - [Rubrik Penilaian](grading/)
