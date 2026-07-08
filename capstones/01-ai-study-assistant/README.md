@@ -4,6 +4,18 @@
 
 ---
 
+## 📚 Sesi Pembelajaran
+
+Capstone ini dibagi menjadi 3 sesi. Mulai dari perencanaan, implementasi, hingga deployment dan testing.
+
+| Sesi | Deskripsi | Durasi |
+|------|-----------|--------|
+| [01 — Perencanaan Proyek](01-project-plan.md) | Product requirements, tech stack decision, arsitektur, user stories, milestone planning | 2 minggu |
+| [02 — Implementasi](02-implementation.md) | LLM integration, RAG pipeline, frontend React, database design, code structure | 4 minggu |
+| [03 — Deployment & Testing](03-deployment-testing.md) | Testing strategy, deployment (Vercel/CF/Railway), monitoring, demo prep, presentasi | 2 minggu |
+
+---
+
 ## 1. Overview
 
 AI Study Assistant adalah aplikasi web yang memungkinkan mahasiswa bertanya tentang materi kuliah dalam bahasa alami. Sistem menjawab berdasarkan dokumen referensi (PDF/teks) yang diunggah dosen, menggunakan pipeline **Retrieval-Augmented Generation (RAG)** yang diorkestrasi oleh **Mastra agent**. Agen AI memiliki akses ke tools — menjalankan kode Python, mencari web, membaca file — plus memori percakapan per sesi agar konteks tidak hilang.
@@ -37,14 +49,16 @@ Target pengguna: mahasiswa S1 RPL/SI semester 3–5. Capstone ini dikerjakan **b
 
 Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
-1. **Merancang** arsitektur RAG sederhana — chunking, embedding, retrieval.
-2. **Mengintegrasikan** framework agen (Mastra) dengan tools kustom dan memory.
-3. **Membangun** REST API FastAPI dengan endpoint CRUD dan streaming.
-4. **Memodelkan** data relasional untuk konten kursus, dokumen, percakapan.
-5. **Menerapkan** vector search (pgvector) untuk semantic retrieval.
-6. **Mengelola** sesi dan memori percakapan secara terstruktur.
-7. **Menguji** pipeline AI dengan eval set sederhana (faithfulness, relevansi).
-8. **Mendeploy** aplikasi ke cloud (Render/Railway) atau VPS.
+1. **Merancang** arsitektur RAG sederhana — chunking, embedding, retrieval, dan reranking.
+2. **Mengintegrasikan** framework agen (Mastra) dengan tools kustom dan memory management.
+3. **Membangun** REST API FastAPI dengan endpoint CRUD, streaming (SSE), dan validasi Pydantic.
+4. **Memodelkan** data relasional untuk konten kursus, dokumen, percakapan, dan feedback.
+5. **Menerapkan** vector search (pgvector) dengan indexing IVFFlat untuk semantic retrieval.
+6. **Mengelola** sesi dan memori percakapan secara terstruktur dengan konteks yang terisolasi per kursus.
+7. **Menguji** pipeline AI dengan eval set — faithfulness, context recall, dan answer relevancy.
+8. **Mendeploy** aplikasi ke cloud (Render/Railway/Vercel) dengan CI/CD pipeline dan monitoring.
+9. **Mengelola** role-based access control (student vs lecturer) dengan JWT dan middleware.
+10. **Menyusun** dokumentasi API (Swagger), README proyek, dan presentasi demo.
 
 ---
 
@@ -368,4 +382,9 @@ Jika tidak tahu, akui. Jangan halusinasi.
 
 ---
 
-> **Estimasi word count:** ~1.600 kata. Dokumen ini adalah spesifikasi acuan untuk seluruh capstone. Jika ada perubahan requirement, update README dan beri tahu tim.
+> **Estimasi word count:** ~2.400 kata. Dokumen ini adalah spesifikasi acuan untuk seluruh capstone. Jika ada perubahan requirement, update README dan beri tahu tim.
+
+---
+
+| [Sesi 1: Perencanaan](01-project-plan.md) | [Sesi 2: Implementasi](02-implementation.md) | [Sesi 3: Deployment & Testing](03-deployment-testing.md) |
+|---|---|---|

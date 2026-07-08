@@ -5,6 +5,18 @@
 
 ---
 
+## 📚 Sesi Pembelajaran
+
+Capstone ini dibagi menjadi 3 sesi. Mulai dari spesifikasi arsitektur, implementasi core commerce & payment, hingga integrasi AI dan deployment.
+
+| Sesi | Deskripsi | Durasi |
+|------|-----------|--------|
+| [01 — Spesifikasi & Arsitektur](01-spec-architecture.md) | Product domain modeling, AI features design, microservices vs monolith decision, database schema | 2 minggu |
+| [02 — Implementasi & Payment](02-implementation-payment.md) | Next.js storefront, Midtrans/Xendit payment, cart logic, order management, semantic search frontend | 4 minggu |
+| [03 — AI Engine, Deployment & Testing](03-ai-deploy.md) | Recommendation agent, chatbot CS, deployment (Vercel/Railway), load testing k6, SEO optimization | 2 minggu |
+
+---
+
 ## 📋 Overview
 
 Capstone ini menggabungkan e-commerce klasik (CRUD produk, keranjang, order) dengan tiga integrasi AI:
@@ -20,15 +32,19 @@ Flow utama: user registrasi → lihat/ cari produk → tambah ke keranjang → c
 ## 🧰 Tech Stack
 
 | Layer | Teknologi |
-|-------|-----------|
-| **Frontend** | React / Next.js (Tailwind CSS) |
-| **Backend** | Express.js (TypeScript) |
+|---|---|
+| **Frontend** | Next.js (App Router) + Tailwind CSS |
+| **Backend** | Express.js (TypeScript) — Modular Monolith |
 | **Database** | PostgreSQL + pgvector |
-| **AI Framework** | Mastra AI |
+| **ORM** | Prisma |
+| **AI Framework** | Mastra AI (TypeScript) |
 | **Embedding Model** | OpenAI `text-embedding-3-small` |
 | **LLM** | OpenAI GPT-4o-mini / Gemini |
+| **Payment** | Midtrans Snap / Xendit |
+| **Auth** | NextAuth.js (JWT) |
+| **Caching** | Redis (Upstash) |
 | **Deploy** | Vercel (FE) + Railway (BE + DB) |
-| **Auth** | JWT (access + refresh token) |
+| **Testing** | Vitest + k6 (load test) |
 
 ---
 
@@ -36,13 +52,16 @@ Flow utama: user registrasi → lihat/ cari produk → tambah ke keranjang → c
 
 Setelah capstone ini, peserta mampu:
 
-1. ✅ Membangun REST API e-commerce (CRUD, auth, relasi)
-2. ✅ Integrasi semantic search dengan embedding + cosine similarity
-3. ✅ Bikin Mastra agent dengan tools untuk rekomendasi produk
+1. ✅ Membangun REST API e-commerce (CRUD, auth, relasi kompleks, Prisma)
+2. ✅ Integrasi semantic search dengan embedding + cosine similarity (pgvector)
+3. ✅ Bikin Mastra agent dengan tools untuk rekomendasi produk personal
 4. ✅ Bikin Mastra agent + tool untuk chatbot order tracking
-5. ✅ Manage session keranjang dan transaksi order
-6. ✅ Deploy fullstack app ke Vercel + Railway
-7. ✅ Nulis kode TypeScript rapi dengan error handling
+5. ✅ Manage session keranjang dan transaksi order dengan Prisma transaction
+6. ✅ Integrasi payment gateway Midtrans/Xendit (snap, notification webhook)
+7. ✅ Deploy fullstack app ke Vercel + Railway dengan CI/CD
+8. ✅ Nulis kode TypeScript rapi dengan error handling dan modular architecture
+9. ✅ Load testing dengan k6 dan optimasi performa API
+10. ✅ SEO optimization: metadata, JSON-LD structured data, sitemap, robots.txt
 
 ---
 
@@ -105,6 +124,8 @@ Setelah capstone ini, peserta mampu:
 - Error handling + loading states (UI/UX)
 - Responsive mobile
 - Testing: minimal 5 API test (supertest / vitest)
+- Load test dengan k6
+- SEO optimization (metadata, JSON-LD, sitemap)
 - Deploy BE ke Railway + FE ke Vercel
 - Presentasi + demo video
 
@@ -128,7 +149,7 @@ products N──N orders (via order_items)
 #### `users`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | Primary key |
 | name | VARCHAR(100) | Nama user |
 | email | VARCHAR(255) UNIQUE | Email login |
@@ -138,7 +159,7 @@ products N──N orders (via order_items)
 #### `categories`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | name | VARCHAR(100) | Nama kategori |
 | slug | VARCHAR(100) UNIQUE | URL-friendly |
@@ -147,7 +168,7 @@ products N──N orders (via order_items)
 #### `products`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | name | VARCHAR(200) | Nama produk |
 | description | TEXT | Deskripsi |
@@ -163,7 +184,7 @@ products N──N orders (via order_items)
 #### `carts`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | user_id | UUID FK → users | — |
 | created_at | TIMESTAMPTZ | Auto |
@@ -172,7 +193,7 @@ products N──N orders (via order_items)
 #### `cart_items`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | cart_id | UUID FK → carts | — |
 | product_id | UUID FK → products | — |
@@ -184,7 +205,7 @@ products N──N orders (via order_items)
 #### `orders`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | user_id | UUID FK → users | — |
 | status | VARCHAR(20) | pending / confirmed / shipped / delivered / cancelled |
@@ -196,7 +217,7 @@ products N──N orders (via order_items)
 #### `order_items`
 
 | Column | Type | Keterangan |
-|--------|------|------------|
+|---|---|---|
 | id | UUID PK | — |
 | order_id | UUID FK → orders | — |
 | product_id | UUID FK → products | — |
@@ -217,7 +238,7 @@ CREATE INDEX idx_products_embedding ON products
 ## 🔌 API Endpoints
 
 | Method | Endpoint | Auth | Deskripsi |
-|--------|----------|------|-----------|
+|---|---|---|---|
 | POST | /api/auth/register | — | Register user baru |
 | POST | /api/auth/login | — | Login, return JWT |
 | GET | /api/auth/me | ✅ | Profile user |
@@ -238,96 +259,8 @@ CREATE INDEX idx_products_embedding ON products
 | GET | /api/orders/:id | ✅ | Detail order |
 | POST | /api/chat | ✅ | Chat dengan AI chatbot |
 | POST | /api/ai/recommend | ✅ | Dapat rekomendasi produk |
-
----
-
-## 🤖 AI Integration Detail
-
-### 1. Semantic Search via Embeddings
-
-**Cara kerja:**
-
-1. Tiap produk baru/update → backend generate embedding via `text-embedding-3-small`
-2. Embedding disimpan di kolom `products.embedding` (vector 1536)
-3. Search: query user di-embedding → cari produk dengan cosine similarity tertinggi via pgvector `ORDER BY embedding <=> $query_vec LIMIT 10`
-
-**Kode konsep (Mastra tool):**
-
-```typescript
-import { openai } from '@mastra/openai';
-import { createTool } from '@mastra/core';
-
-const semanticSearchTool = createTool({
-  name: 'semanticSearch',
-  description: 'Cari produk berdasarkan semantic query',
-  inputSchema: { query: { type: 'string' } },
-  execute: async ({ query }) => {
-    const embedding = await openai.embeddings.create({
-      model: 'text-embedding-3-small',
-      input: query,
-    });
-    const result = await db.query(
-      `SELECT id, name, price,
-              1 - (embedding <=> $1) AS similarity
-       FROM products
-       ORDER BY embedding <=> $1
-       LIMIT 10`,
-      [embedding.data[0].embedding]
-    );
-    return result;
-  },
-});
-```
-
-### 2. Product Recommendation Agent
-
-**Agent behavior:**
-
-- Input: user ID (implisit dari token)
-- Tools:
-  - `getUserOrderHistory(userId)` — ambil produk yang pernah dibeli user
-  - `getFeaturedProducts(category?)` — ambil produk unggulan per kategori
-- Logic: cari produk dari kategori yang sama dengan riwayat belanja → rekomendasi 5 produk
-- Output: daftar produk + alasan kenapa direkomendasikan
-
-```typescript
-const productRecAgent = new Agent({
-  name: 'Product Recommender',
-  instructions: `
-    Kamu asisten rekomendasi produk e-commerce.
-    1. Ambil riwayat order user pakai getUserOrderHistory
-    2. Lihat kategori produk yang sering dibeli
-    3. Rekomendasi produk dari kategori serupa pakai getFeaturedProducts
-    4. Beri 3-5 rekomendasi dengan alasan
-  `,
-  model: openai('gpt-4o-mini'),
-});
-```
-
-### 3. Chatbot Customer Service
-
-**Agent behavior:**
-
-- Input: pesan user (bebas: "cek order aku dong", "cari kemeja batik")
-- Tools:
-  - `trackOrder(orderId)` — cek status + estimasi pengiriman dari DB
-  - `searchProducts(query)` — semantic search via endpoint
-- Fallback: kalau di luar konteks, jawab sopan "saya hanya bisa bantu soal produk & order"
-
-```typescript
-const csChatbot = new Agent({
-  name: 'Customer Service',
-  instructions: `
-    Kamu CS e-commerce yang ramah.
-    - Kalau user minta cek order: panggil trackOrder(orderId)
-    - Kalau user cari produk: panggil searchProducts(query)
-    - Di luar itu: arahkan ke produk atau order
-    Selalu jawab dalam Bahasa Indonesia.
-  `,
-  model: openai('gpt-4o-mini'),
-  tools: [trackOrderTool, semanticSearchTool],
-});
-```
+| POST | /api/payments/create | ✅ | Create Midtrans payment |
+| POST | /api/payments/notification | — | Webhook payment notification |
 
 ---
 
@@ -338,24 +271,26 @@ const csChatbot = new Agent({
 - [ ] **Auth** — Register + login dengan JWT
 - [ ] **Produk CRUD** — Admin bisa manage produk
 - [ ] **Cart & Order** — Full flow: tambah cart → checkout → riwayat
+- [ ] **Payment** — Midtrans/Xendit integration dengan sandbox
 - [ ] **Semantic Search** — Search pakai embedding, return relevan
 - [ ] **Recommendation Agent** — Rekomendasi personal di homepage
 - [ ] **Chatbot** — Floating chat widget + tool order tracking
 - [ ] **Frontend** — Responsive mobile, loading state, error handling
+- [ ] **Load Test** — k6 script, report metrik
+- [ ] **SEO** — Metadata, OG tags, JSON-LD, sitemap
 - [ ] **Deployed** — Frontend di Vercel, Backend di Railway
 - [ ] **Demo video** — 3-5 menit (fitur + AI)
 - [ ] **Slide presentasi** — Max 5 slide
-- [ ] **PROMPT-LOG.md** — Semua prompt yang dipakai ke LLM
 
 ---
 
 ## 📊 Evaluation Rubric
 
 | Kriteria | Bobot | 4 (Excellent) | 3 (Good) | 2 (Fair) | 1 (Poor) |
-|----------|-------|---------------|----------|----------|----------|
+|---|---|---|---|---|---|
 | **Semua fitur jalan** | 30% | Semua fitur + edge case handling | Fitur utama jalan semua | 1-2 fitur error | >2 fitur rusak |
 | **Frontend rapi + responsive** | 20% | UI konsisten, mobile friendly, loading state | Rapi, responsif, minor issue | Ada layout break | Tidak responsif |
-| **Backend + database solid** | 20% | Relasi benar, validasi, error handling baik | Relasi benar, validasi ada | Ada relasi error | Struktur berantakan |
+| **Backend + database solid** | 20% | Relasi benar, validasi, error handling baik, Prisma transaction | Relasi benar, validasi ada | Ada relasi error | Struktur berantakan |
 | **AI feature integrated** | 15% | Semantic search + rekomendasi + chatbot semua jalan | 2 dari 3 AI fitur jalan | 1 AI fitur jalan | Tidak ada AI |
 | **Deployed + demo** | 10% | Live di Vercel+Railway + video demo jelas | Live + ada demo | Salah satu ada | Tidak ada |
 | **Code quality + Git** | 5% | TypeScript strict, commit rapi, docs jelas | TypeScript, commit rapi | Campuran JS/TS | Berantakan |
@@ -363,7 +298,7 @@ const csChatbot = new Agent({
 ### Nilai Akhir
 
 | Rentang | Grade |
-|---------|-------|
+|---|---|
 | 85-100 | 🏆 A |
 | 75-84 | ⭐ B |
 | 65-74 | ✅ C |
@@ -371,4 +306,9 @@ const csChatbot = new Agent({
 
 ---
 
-> 🚀 **Selamat mengerjakan!** Capstone ini adalah capstone paling komplit — backend, frontend, database, AI agent, dan deploy. Fokus Sprint 3 (AI) karena itu yang bikin beda dari e-commerce biasa.
+> 🚀 **Selamat mengerjakan!** Capstone ini adalah capstone paling komplit — backend, frontend, database, AI agent, payment, dan deploy. Fokus Sprint 3 (AI) karena itu yang bikin beda dari e-commerce biasa.
+
+---
+
+| [Sesi 1: Spesifikasi & Arsitektur](01-spec-architecture.md) | [Sesi 2: Implementasi & Payment](02-implementation-payment.md) | [Sesi 3: AI & Deploy](03-ai-deploy.md) |
+|---|---|---|

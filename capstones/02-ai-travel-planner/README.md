@@ -7,6 +7,18 @@
 
 ---
 
+## 📚 Sesi Pembelajaran
+
+Capstone ini dibagi menjadi 3 sesi. Mulai dari analisis kebutuhan, implementasi frontend & backend, hingga deployment dan scaling.
+
+| Sesi | Deskripsi | Durasi |
+|------|-----------|--------|
+| [01 — Requirements & Design](01-requirements-design.md) | User stories, API design (Amadeus/Skyscanner), recommendation algorithm, wireframe | 2 minggu |
+| [02 — Frontend & Backend](02-frontend-backend.md) | Next.js + Tailwind, map integration, itinerary builder, auth (NextAuth), Hono backend | 4 minggu |
+| [03 — Deployment & Scaling](03-deployment-scaling.md) | Deployment (Railway/Vercel), Redis caching, rate limiting, cost optimization, monitoring | 2 minggu |
+
+---
+
 ## 1. Overview
 
 AI Travel Planner adalah aplikasi web full-stack yang membantu pengguna merencanakan perjalanan wisata secara cerdas. Pengguna memasukkan destinasi, durasi, dan anggaran — sistem secara otomatis menghasilkan itinerary harian yang dioptimalkan menggunakan agen AI.
@@ -29,16 +41,18 @@ Proyek ini mensimulasikan siklus pengembangan perangkat lunak profesional: anali
 
 ## 2. Tech Stack
 
-| Layer         | Teknologi                                                                 |
-|---------------|---------------------------------------------------------------------------|
-| **Frontend**  | React + Vite + Tailwind CSS                                               |
-| **Backend**   | Node.js + Hono / Fastify / Express (pilih satu, konsisten)                |
-| **Database**  | PostgreSQL / SQLite (dev) — wajib SQL relations                           |
-| **AI Agent**  | Mastra framework (tools: weatherCheck, budgetOptimizer, placeRecommender) |
-| **Auth**      | JWT (jsonwebtoken) atau session-based                                     |
-| **Testing**   | Vitest / Jest (unit + integration), Playwright / Supertest (E2E)          |
-| **Deploy**    | Docker + Docker Compose, deploy ke Railway / Render / VPS                 |
-| **ORM**       | Drizzle ORM / Prisma / Knex (pilih satu, wajib migration-based)          |
+| Layer | Teknologi |
+|---|---|
+| **Frontend** | Next.js + React + Tailwind CSS |
+| **Backend** | Node.js + Hono / Fastify / Express (pilih satu, konsisten) |
+| **Database** | PostgreSQL / SQLite (dev) — wajib SQL relations |
+| **AI Agent** | Mastra framework (tools: weatherCheck, budgetOptimizer, placeRecommender) |
+| **Auth** | NextAuth.js / JWT (jsonwebtoken) |
+| **Testing** | Vitest / Jest (unit + integration), Playwright / Supertest (E2E) |
+| **Deploy** | Docker + Docker Compose, deploy ke Railway / Render / VPS |
+| **ORM** | Drizzle ORM / Prisma / Knex (pilih satu, wajib migration-based) |
+| **Caching** | Redis (Upstash / ioredis) |
+| **Maps** | Leaflet / Mapbox |
 
 ---
 
@@ -46,13 +60,16 @@ Proyek ini mensimulasikan siklus pengembangan perangkat lunak profesional: anali
 
 Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
-1. **LO-1:** Merancang REST API dengan resource modeling, validasi, dan error handling yang tepat.
-2. **LO-2:** Mengimplementasikan CRUD + relasi SQL menggunakan ORM dengan migration.
-3. **LO-3:** Mengintegrasikan agen AI (Mastra) ke endpoint API sebagai decision engine.
-4. **LO-4:** Menulis automated test untuk unit, integration, dan mock external API.
+1. **LO-1:** Merancang REST API dengan resource modeling, validasi Zod, dan error handling yang tepat.
+2. **LO-2:** Mengimplementasikan CRUD + relasi SQL menggunakan ORM dengan migration versioning.
+3. **LO-3:** Mengintegrasikan agen AI (Mastra) ke endpoint API sebagai decision engine untuk generate itinerary.
+4. **LO-4:** Menulis automated test untuk unit, integration, dan mock external API (OpenWeather, Amadeus).
 5. **LO-5:** Menerapkan Scrum dalam pengembangan: user stories, sprint backlog, daily standup, sprint review.
 6. **LO-6:** Mendokumentasikan API dengan OpenAPI/Swagger dan menyusun README proyek.
-7. **LO-7:** Mendeploy aplikasi ke production dengan Docker.
+7. **LO-7:** Mendeploy aplikasi ke production dengan Docker Compose dan CI/CD pipeline.
+8. **LO-8:** Mengoptimalkan biaya API eksternal dengan caching strategy dan rate limiting.
+9. **LO-9:** Membangun UI interaktif dengan drag-drop itinerary builder dan integrasi peta.
+10. **LO-10:** Memonitoring aplikasi production dengan structured logging, health check, dan metrik performa.
 
 ---
 
@@ -62,13 +79,13 @@ Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
 **Goal:** Setup proyek, database, autentikasi, CRUD trips.
 
-| ID  | User Story                                                              | Acceptance Criteria                                                  |
-|-----|-------------------------------------------------------------------------|----------------------------------------------------------------------|
-| S1-1| Pengguna dapat register & login (JWT)                                   | Endpoint POST /auth/register, POST /auth/login return token          |
-| S1-2| Pengguna dapat membuat trip baru (destinasi, durasi, budget)            | POST /trips, validasi input, return trip object                      |
-| S1-3| Pengguna dapat melihat daftar trip miliknya                             | GET /trips, pagination, filter by status                             |
-| S1-4| Pengguna dapat mengupdate & menghapus trip                              | PUT /trips/:id, DELETE /trips/:id, authorization check               |
-| S1-5| Database migration & seeding data dummy                                 | Migration create trips + trip_days + activities tables               |
+| ID | User Story | Acceptance Criteria |
+|---|---|---|
+| S1-1 | Pengguna dapat register & login (JWT) | Endpoint POST /auth/register, POST /auth/login return token |
+| S1-2 | Pengguna dapat membuat trip baru (destinasi, durasi, budget) | POST /trips, validasi input, return trip object |
+| S1-3 | Pengguna dapat melihat daftar trip miliknya | GET /trips, pagination, filter by status |
+| S1-4 | Pengguna dapat mengupdate & menghapus trip | PUT /trips/:id, DELETE /trips/:id, authorization check |
+| S1-5 | Database migration & seeding data dummy | Migration create trips + trip_days + activities tables |
 
 **Deliverables Sprint 1:**
 - [x] Repository GitHub dengan branch strategy (main, develop, feat/*).
@@ -83,13 +100,13 @@ Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
 **Goal:** CRUD trip_days & activities, logika generate itinerary otomatis.
 
-| ID  | User Story                                                              | Acceptance Criteria                                                  |
-|-----|-------------------------------------------------------------------------|----------------------------------------------------------------------|
-| S2-1| Pengguna dapat menambah hari perjalanan ke trip                         | POST /trips/:id/days, auto-urut day_number                          |
-| S2-2| Pengguna dapat menambah aktivitas ke hari tertentu                      | POST /trips/:id/days/:dayId/activities, include time, place, cost    |
-| S2-3| Pengguna dapat reorder aktivitas dalam sehari (drag-drop API)           | PATCH /activities/:id/reorder, update urutan                         |
-| S2-4| Sistem generate itinerary otomatis via AI agent                         | POST /trips/:id/generate, panggil Mastra, return itinerary json      |
-| S2-5| Validasi budget — total biaya aktivitas tidak melebihi budget trip      | Middleware cek total cost sebelum insert activity                    |
+| ID | User Story | Acceptance Criteria |
+|---|---|---|
+| S2-1 | Pengguna dapat menambah hari perjalanan ke trip | POST /trips/:id/days, auto-urut day_number |
+| S2-2 | Pengguna dapat menambah aktivitas ke hari tertentu | POST /trips/:id/days/:dayId/activities, include time, place, cost |
+| S2-3 | Pengguna dapat reorder aktivitas dalam sehari (drag-drop API) | PATCH /activities/:id/reorder, update urutan |
+| S2-4 | Sistem generate itinerary otomatis via AI agent | POST /trips/:id/generate, panggil Mastra, return itinerary json |
+| S2-5 | Validasi budget — total biaya aktivitas tidak melebihi budget trip | Middleware cek total cost sebelum insert activity |
 
 **Deliverables Sprint 2:**
 - [x] Endpoints trip_days & activities CRUD.
@@ -104,14 +121,14 @@ Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
 **Goal:** Tiga tools Mastra agent berfungsi penuh, response caching, error handling.
 
-| ID  | User Story                                                              | Acceptance Criteria                                                  |
-|-----|-------------------------------------------------------------------------|----------------------------------------------------------------------|
-| S3-1| Mastra agent tool `weatherCheck` — cek cuaca per lokasi & tanggal        | Agent return suhu, kondisi, rekomendasi pakaian                      |
-| S3-2| Mastra agent tool `budgetOptimizer` — alokasi budget harian              | Agent split total budget menjadi alokasi per hari & kategori         |
-| S3-3| Mastra agent tool `placeRecommender` — rekomendasi tempat & rating       | Agent return list tempat dengan nama, kategori, estimasi biaya       |
-| S3-4| Full AI generate: sistem kirim prompt → agent olah data → simpan hasil | Pipeline: fetch data → call agent → parse JSON → insert ke database |
-| S3-5| Caching hasil AI (Redis / in-memory) agar tidak panggil ulang           | Cache key: `${location}_${date}`, TTL 1 jam                         |
-| S3-6| Graceful error handling saat agent timeout atau rate-limit              | Fallback: return warning + partial result, jangan crash             |
+| ID | User Story | Acceptance Criteria |
+|---|---|---|
+| S3-1 | Mastra agent tool `weatherCheck` — cek cuaca per lokasi & tanggal | Agent return suhu, kondisi, rekomendasi pakaian |
+| S3-2 | Mastra agent tool `budgetOptimizer` — alokasi budget harian | Agent split total budget menjadi alokasi per hari & kategori |
+| S3-3 | Mastra agent tool `placeRecommender` — rekomendasi tempat & rating | Agent return list tempat dengan nama, kategori, estimasi biaya |
+| S3-4 | Full AI generate: sistem kirim prompt → agent olah data → simpan hasil | Pipeline: fetch data → call agent → parse JSON → insert ke database |
+| S3-5 | Caching hasil AI (Redis / in-memory) agar tidak panggil ulang | Cache key: `${location}_${date}`, TTL 1 jam |
+| S3-6 | Graceful error handling saat agent timeout atau rate-limit | Fallback: return warning + partial result, jangan crash |
 
 **Deliverables Sprint 3:**
 - [x] Implementasi ketiga tools Mastra agent.
@@ -126,15 +143,15 @@ Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
 **Goal:** Frontend lengkap, E2E test, Dockerize, deploy.
 
-| ID  | User Story                                                              | Acceptance Criteria                                                  |
-|-----|-------------------------------------------------------------------------|----------------------------------------------------------------------|
-| S4-1| Halaman dashboard — daftar trip + status                                | React component, fetch GET /trips, loading & error state             |
-| S4-2| Halaman detail trip — itinerary per hari, drag-drop aktivitas           | Tampilkan day cards, reorder via drag-drop, update via API           |
-| S4-3| Halaman generate — tombol "Generate Itinerary" + loading + result       | Panggil POST /trips/:id/generate, tampilkan hasil, simpan            |
-| S4-4| Halaman auth — login & register form                                    | Validasi client-side, error message dari server                      |
-| S4-5| E2E test — register → buat trip → generate → lihat itinerary            | Playwright / Supertest, test critical path                           |
-| S4-6| Docker Compose — backend + frontend + database                          | `docker compose up` jalan, semua service connected                  |
-| S4-7| Deploy ke production (Railway / Render / VPS)                          | Public URL, environment variables, database connection string        |
+| ID | User Story | Acceptance Criteria |
+|---|---|---|
+| S4-1 | Halaman dashboard — daftar trip + status | React component, fetch GET /trips, loading & error state |
+| S4-2 | Halaman detail trip — itinerary per hari, drag-drop aktivitas | Tampilkan day cards, reorder via drag-drop, update via API |
+| S4-3 | Halaman generate — tombol "Generate Itinerary" + loading + result | Panggil POST /trips/:id/generate, tampilkan hasil, simpan |
+| S4-4 | Halaman auth — login & register form | Validasi client-side, error message dari server |
+| S4-5 | E2E test — register → buat trip → generate → lihat itinerary | Playwright / Supertest, test critical path |
+| S4-6 | Docker Compose — backend + frontend + database | `docker compose up` jalan, semua service connected |
+| S4-7 | Deploy ke production (Railway / Render / VPS) | Public URL, environment variables, database connection string |
 
 **Deliverables Sprint 4:**
 - [x] Frontend React dengan semua halaman fungsional.
@@ -155,50 +172,50 @@ trips 1 ──── * trip_days 1 ──── * activities
 
 ### Table: `trips`
 
-| Column         | Type         | Constraints                     |
-|----------------|--------------|----------------------------------|
-| id             | UUID         | PK, default uuid_generate_v4()  |
-| user_id        | UUID         | FK → users.id, NOT NULL         |
-| destination    | VARCHAR(255) | NOT NULL                        |
-| duration_days  | INTEGER      | NOT NULL, >= 1                  |
-| total_budget   | DECIMAL(12,2)| NOT NULL, >= 0                  |
-| currency       | VARCHAR(3)   | DEFAULT 'IDR'                   |
-| status         | ENUM         | 'draft','active','completed'    |
-| weather_data   | JSONB        | NULLABLE, hasil cache cuaca     |
-| created_at     | TIMESTAMPTZ  | DEFAULT NOW()                   |
-| updated_at     | TIMESTAMPTZ  | AUTO-UPDATE                     |
+| Column | Type | Constraints |
+|---|---|---|
+| id | UUID | PK, default uuid_generate_v4() |
+| user_id | UUID | FK → users.id, NOT NULL |
+| destination | VARCHAR(255) | NOT NULL |
+| duration_days | INTEGER | NOT NULL, >= 1 |
+| total_budget | DECIMAL(12,2) | NOT NULL, >= 0 |
+| currency | VARCHAR(3) | DEFAULT 'IDR' |
+| status | ENUM | 'draft','active','completed' |
+| weather_data | JSONB | NULLABLE, hasil cache cuaca |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() |
+| updated_at | TIMESTAMPTZ | AUTO-UPDATE |
 
 ### Table: `trip_days`
 
-| Column         | Type         | Constraints                     |
-|----------------|--------------|----------------------------------|
-| id             | UUID         | PK                              |
-| trip_id        | UUID         | FK → trips.id, ON DELETE CASCADE|
-| day_number     | INTEGER      | NOT NULL, UNIQUE(trip_id, day_number) |
-| date           | DATE         | NULLABLE                        |
-| daily_budget   | DECIMAL(12,2)| NULLABLE                        |
-| notes          | TEXT         | NULLABLE                        |
-| created_at     | TIMESTAMPTZ  | DEFAULT NOW()                   |
+| Column | Type | Constraints |
+|---|---|---|
+| id | UUID | PK |
+| trip_id | UUID | FK → trips.id, ON DELETE CASCADE |
+| day_number | INTEGER | NOT NULL, UNIQUE(trip_id, day_number) |
+| date | DATE | NULLABLE |
+| daily_budget | DECIMAL(12,2) | NULLABLE |
+| notes | TEXT | NULLABLE |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() |
 
 ### Table: `activities`
 
-| Column         | Type         | Constraints                     |
-|----------------|--------------|----------------------------------|
-| id             | UUID         | PK                              |
-| trip_day_id    | UUID         | FK → trip_days.id, ON DELETE CASCADE |
-| name           | VARCHAR(255) | NOT NULL                        |
-| description    | TEXT         | NULLABLE                        |
-| category       | ENUM         | 'attraction','food','transport','hotel','shopping','other' |
-| start_time     | TIME         | NULLABLE                        |
-| end_time       | TIME         | NULLABLE                        |
-| place_name     | VARCHAR(255) | NULLABLE                        |
-| latitude       | DECIMAL(10,7)| NULLABLE                        |
-| longitude      | DECIMAL(10,7)| NULLABLE                        |
-| estimated_cost | DECIMAL(12,2)| DEFAULT 0                       |
-| currency       | VARCHAR(3)   | DEFAULT 'IDR'                   |
-| sort_order     | INTEGER      | DEFAULT 0                       |
-| is_ai_generated| BOOLEAN      | DEFAULT FALSE                   |
-| created_at     | TIMESTAMPTZ  | DEFAULT NOW()                   |
+| Column | Type | Constraints |
+|---|---|---|
+| id | UUID | PK |
+| trip_day_id | UUID | FK → trip_days.id, ON DELETE CASCADE |
+| name | VARCHAR(255) | NOT NULL |
+| description | TEXT | NULLABLE |
+| category | ENUM | 'attraction','food','transport','hotel','shopping','other' |
+| start_time | TIME | NULLABLE |
+| end_time | TIME | NULLABLE |
+| place_name | VARCHAR(255) | NULLABLE |
+| latitude | DECIMAL(10,7) | NULLABLE |
+| longitude | DECIMAL(10,7) | NULLABLE |
+| estimated_cost | DECIMAL(12,2) | DEFAULT 0 |
+| currency | VARCHAR(3) | DEFAULT 'IDR' |
+| sort_order | INTEGER | DEFAULT 0 |
+| is_ai_generated | BOOLEAN | DEFAULT FALSE |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() |
 
 ### Indexes
 
@@ -214,27 +231,27 @@ CREATE INDEX idx_trips_status ON trips(status);
 
 ## 6. API Endpoints
 
-| Method | Endpoint                              | Auth | Description                              | Status Codes            |
-|--------|---------------------------------------|------|------------------------------------------|-------------------------|
-| POST   | /api/auth/register                    | No   | Register user baru                       | 201, 400, 409           |
-| POST   | /api/auth/login                       | No   | Login, return JWT                        | 200, 401                |
-| GET    | /api/auth/me                          | Yes  | Profile user saat ini                    | 200, 401                |
-| GET    | /api/trips                            | Yes  | List trips milik user (paginated)        | 200, 401                |
-| POST   | /api/trips                            | Yes  | Buat trip baru                           | 201, 400                |
-| GET    | /api/trips/:id                        | Yes  | Detail trip + days + activities          | 200, 404                |
-| PUT    | /api/trips/:id                        | Yes  | Update trip                              | 200, 400, 404           |
-| DELETE | /api/trips/:id                        | Yes  | Hapus trip (cascade)                     | 204, 404                |
-| GET    | /api/trips/:id/days                   | Yes  | List semua hari dalam trip               | 200, 404                |
-| POST   | /api/trips/:id/days                   | Yes  | Tambah hari baru                         | 201, 400                |
-| PATCH  | /api/trips/:id/days/:dayId            | Yes  | Update daily budget / notes              | 200, 400, 404           |
-| DELETE | /api/trips/:id/days/:dayId            | Yes  | Hapus hari + aktivitas di dalamnya       | 204, 404                |
-| GET    | /api/days/:dayId/activities           | Yes  | List aktivitas per hari (urut sort_order)| 200, 404                |
-| POST   | /api/days/:dayId/activities           | Yes  | Tambah aktivitas                         | 201, 400, 422 (budget)  |
-| PUT    | /api/activities/:id                   | Yes  | Update aktivitas                         | 200, 400, 404           |
-| DELETE | /api/activities/:id                   | Yes  | Hapus aktivitas                          | 204, 404                |
-| PATCH  | /api/activities/:id/reorder           | Yes  | Ubah sort_order aktivitas                | 200, 400, 404           |
-| POST   | /api/trips/:id/generate               | Yes  | Generate itinerary via AI agent          | 200, 400, 503 (AI down) |
-| GET    | /api/trips/:id/weather                | Yes  | Get cached weather data                  | 200, 404                |
+| Method | Endpoint | Auth | Description | Status Codes |
+|---|---|---|---|---|
+| POST | /api/auth/register | No | Register user baru | 201, 400, 409 |
+| POST | /api/auth/login | No | Login, return JWT | 200, 401 |
+| GET | /api/auth/me | Yes | Profile user saat ini | 200, 401 |
+| GET | /api/trips | Yes | List trips milik user (paginated) | 200, 401 |
+| POST | /api/trips | Yes | Buat trip baru | 201, 400 |
+| GET | /api/trips/:id | Yes | Detail trip + days + activities | 200, 404 |
+| PUT | /api/trips/:id | Yes | Update trip | 200, 400, 404 |
+| DELETE | /api/trips/:id | Yes | Hapus trip (cascade) | 204, 404 |
+| GET | /api/trips/:id/days | Yes | List semua hari dalam trip | 200, 404 |
+| POST | /api/trips/:id/days | Yes | Tambah hari baru | 201, 400 |
+| PATCH | /api/trips/:id/days/:dayId | Yes | Update daily budget / notes | 200, 400, 404 |
+| DELETE | /api/trips/:id/days/:dayId | Yes | Hapus hari + aktivitas di dalamnya | 204, 404 |
+| GET | /api/days/:dayId/activities | Yes | List aktivitas per hari (urut sort_order) | 200, 404 |
+| POST | /api/days/:dayId/activities | Yes | Tambah aktivitas | 201, 400, 422 (budget) |
+| PUT | /api/activities/:id | Yes | Update aktivitas | 200, 400, 404 |
+| DELETE | /api/activities/:id | Yes | Hapus aktivitas | 204, 404 |
+| PATCH | /api/activities/:id/reorder | Yes | Ubah sort_order aktivitas | 200, 400, 404 |
+| POST | /api/trips/:id/generate | Yes | Generate itinerary via AI agent | 200, 400, 503 (AI down) |
+| GET | /api/trips/:id/weather | Yes | Get cached weather data | 200, 404 |
 
 ### Response Format (standar)
 
@@ -292,49 +309,16 @@ Error response:
      (OpenWeather)     (in-memory)       Google Places / dummy
 ```
 
-### Agent Definition (contoh kode Mastra)
-
-```typescript
-// src/agents/travelAgent.ts
-import { Agent } from '@mastra/core/agent';
-import { weatherCheck } from '../tools/weatherCheck';
-import { budgetOptimizer } from '../tools/budgetOptimizer';
-import { placeRecommender } from '../tools/placeRecommender';
-
-export const travelAgent = new Agent({
-  name: 'Travel Planner Agent',
-  instructions: `
-    Kamu adalah asisten perencana perjalanan.
-    Berdasarkan input destinasi, durasi, dan budget pengguna:
-    1. Gunakan weatherCheck untuk cek cuaca setiap hari.
-    2. Gunakan budgetOptimizer untuk alokasi budget harian.
-    3. Gunakan placeRecommender untuk rekomendasi tempat.
-    4. Kembalikan itinerary dalam format JSON strict.
-  `,
-  tools: {
-    weatherCheck,
-    budgetOptimizer,
-    placeRecommender,
-  },
-  model: {
-    provider: 'OPEN_AI',
-    name: 'gpt-4o-mini',
-    apiKey: process.env.OPENAI_API_KEY,
-  },
-});
-```
-
 ### Tool Specifications
 
 #### 1. `weatherCheck`
 
-| Parameter | Type   | Description                            |
-|-----------|--------|----------------------------------------|
-| location  | string | Nama kota/destinasi                    |
-| date      | string | Format YYYY-MM-DD                      |
+| Parameter | Type | Description |
+|---|---|---|
+| location | string | Nama kota/destinasi |
+| date | string | Format YYYY-MM-DD |
 
 **Output:**
-
 ```json
 {
   "temperature": 28.5,
@@ -346,14 +330,13 @@ export const travelAgent = new Agent({
 
 #### 2. `budgetOptimizer`
 
-| Parameter   | Type   | Description                        |
-|-------------|--------|------------------------------------|
-| totalBudget | number | Total budget perjalanan            |
-| durationDays| number | Durasi trip dalam hari             |
-| preferences | object | Prioritas: accommodation, food, etc|
+| Parameter | Type | Description |
+|---|---|---|
+| totalBudget | number | Total budget perjalanan |
+| durationDays | number | Durasi trip dalam hari |
+| preferences | object | Prioritas: accommodation, food, etc |
 
 **Output:**
-
 ```json
 {
   "dailyAllocations": [
@@ -366,14 +349,13 @@ export const travelAgent = new Agent({
 
 #### 3. `placeRecommender`
 
-| Parameter  | Type   | Description                       |
-|------------|--------|-----------------------------------|
-| location   | string | Destinasi                         |
-| category   | string | attraction / food / hotel         |
+| Parameter | Type | Description |
+|---|---|---|
+| location | string | Destinasi |
+| category | string | attraction / food / hotel |
 | maxResults | number | Maksimal rekomendasi (default: 5) |
 
 **Output:**
-
 ```json
 {
   "places": [
@@ -390,28 +372,14 @@ export const travelAgent = new Agent({
 }
 ```
 
-### AI Pipeline Flow
-
-1. **Trigger:** Client panggil `POST /api/trips/:id/generate`.
-2. **Fetch Context:** Backend ambil data trip (destinasi, durasi, budget) dari DB.
-3. **Build Prompt:** Buat prompt terstruktur → kirim ke Mastra agent.
-4. **Agent Execution:**
-   - Agent panggil `weatherCheck(location, date)` untuk setiap hari.
-   - Agent panggil `budgetOptimizer(budget, days, preferences)`.
-   - Agent panggil `placeRecommender(location, 'attraction')` + `placeRecommender(location, 'food')`.
-5. **Parse Output:** Parse JSON dari agent.
-6. **Save:** Simpan `trip_days` dan `activities` hasil AI ke database (tandai `is_ai_generated = true`).
-7. **Cache:** Simpan hasil weather ke kolom `weather_data` di trips.
-8. **Return:** Response detail trip dengan itinerary lengkap.
-
 ### Error Handling Strategy
 
-| Skenario                   | Response                                  |
-|----------------------------|-------------------------------------------|
-| Agent timeout (>15 detik)  | 503 Service Unavailable + retry button    |
-| Tool external API down     | Partial result + warning message          |
-| Budget tidak mencukupi     | 422 Unprocessable + detail alokasi        |
-| Invalid JSON dari agent    | Retry 1x, gagal → fallback manual input   |
+| Skenario | Response |
+|---|---|
+| Agent timeout (>15 detik) | 503 Service Unavailable + retry button |
+| Tool external API down | Partial result + warning message |
+| Budget tidak mencukupi | 422 Unprocessable + detail alokasi |
+| Invalid JSON dari agent | Retry 1x, gagal → fallback manual input |
 
 ---
 
@@ -439,25 +407,25 @@ export const travelAgent = new Agent({
 
 ## 9. Evaluation Rubric
 
-| Kriteria                    | Bobot | 4 (Sangat Baik)                                      | 3 (Baik)                                      | 2 (Cukup)                                    | 1 (Kurang)                                   |
-|-----------------------------|-------|------------------------------------------------------|-----------------------------------------------|-----------------------------------------------|----------------------------------------------|
-| **REST API Design**         | 15%   | Semua endpoint RESTful, status codes tepat, validasi input lengkap, error handling konsisten | Sebagian besar endpoint sesuai REST, error handling ada tapi tidak konsisten | Endpoint ada tapi kurang RESTful (method salah, status code asal) | Endpoint tidak lengkap atau tidak berfungsi |
-| **Database & ORM**          | 10%   | Migration clean, relasi terjaga, index optimal, seeding data dummy lengkap | Migration ada, relasi benar, seeding minimal | Migration ada tapi manual, relasi kurang tepat | Tidak pakai migration, relasi salah         |
-| **AI Integration**          | 25%   | 3 tools Mastra berfungsi penuh, pipeline generate smooth, caching, error handling AI | 2 tools berfungsi, pipeline generate ada, error handling minimal | 1 tool berfungsi, generate manual tanpa agent | Tidak ada integrasi AI                      |
-| **Testing**                 | 15%   | Unit test >10, integration >5, mock external API, coverage >70%. Bonus: E2E | Unit test >5, integration >3, coverage report ada | Test ada tapi minimal (<5), coverage <30%    | Tidak ada test                              |
-| **Frontend**                | 15%   | Semua halaman fungsional, loading state, error state, responsive, drag-drop | Halaman utama fungsional, responsive, minor bug | Beberapa halaman tidak jalan, tidak responsive | Frontend tidak ada atau tidak fungsional    |
-| **Deployment & DevOps**     | 10%   | Docker Compose jalan, deploy production URL publik, environment variable rapi | Docker Compose jalan, belum di-deploy | Dockerfile ada tapi tidak jalan             | Tidak ada Docker / deployment               |
-| **Dokumentasi & Scrum**     | 10%   | README lengkap, OpenAPI spec, sprint backlog rapi, retrospective ada | README cukup, beberapa endpoint didokumentasi | README minimal, tidak ada backlog            | Tidak ada dokumentasi                       |
+| Kriteria | Bobot | 4 (Sangat Baik) | 3 (Baik) | 2 (Cukup) | 1 (Kurang) |
+|---|---|---|---|---|---|
+| **REST API Design** | 15% | Semua endpoint RESTful, status codes tepat, validasi input lengkap, error handling konsisten | Sebagian besar endpoint sesuai REST, error handling ada tapi tidak konsisten | Endpoint ada tapi kurang RESTful (method salah, status code asal) | Endpoint tidak lengkap atau tidak berfungsi |
+| **Database & ORM** | 10% | Migration clean, relasi terjaga, index optimal, seeding data dummy lengkap | Migration ada, relasi benar, seeding minimal | Migration ada tapi manual, relasi kurang tepat | Tidak pakai migration, relasi salah |
+| **AI Integration** | 25% | 3 tools Mastra berfungsi penuh, pipeline generate smooth, caching, error handling AI | 2 tools berfungsi, pipeline generate ada, error handling minimal | 1 tool berfungsi, generate manual tanpa agent | Tidak ada integrasi AI |
+| **Testing** | 15% | Unit test >10, integration >5, mock external API, coverage >70%. Bonus: E2E | Unit test >5, integration >3, coverage report ada | Test ada tapi minimal (<5), coverage <30% | Tidak ada test |
+| **Frontend** | 15% | Semua halaman fungsional, loading state, error state, responsive, drag-drop | Halaman utama fungsional, responsive, minor bug | Beberapa halaman tidak jalan, tidak responsive | Frontend tidak ada atau tidak fungsional |
+| **Deployment & DevOps** | 10% | Docker Compose jalan, deploy production URL publik, environment variable rapi | Docker Compose jalan, belum di-deploy | Dockerfile ada tapi tidak jalan | Tidak ada Docker / deployment |
+| **Dokumentasi & Scrum** | 10% | README lengkap, OpenAPI spec, sprint backlog rapi, retrospective ada | README cukup, beberapa endpoint didokumentasi | README minimal, tidak ada backlog | Tidak ada dokumentasi |
 
 ### Konversi Nilai Akhir
 
 | Rentang Skor | Nilai Huruf |
-|--------------|-------------|
-| 85–100       | A           |
-| 75–84        | B           |
-| 65–74        | C           |
-| 50–64        | D           |
-| < 50         | E           |
+|---|---|
+| 85–100 | A |
+| 75–84 | B |
+| 65–74 | C |
+| 50–64 | D |
+| < 50 | E |
 
 ---
 
@@ -470,5 +438,8 @@ export const travelAgent = new Agent({
 - [REST API Best Practices — Microsoft](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 
 ---
+
+| [Sesi 1: Requirements & Design](01-requirements-design.md) | [Sesi 2: Frontend & Backend](02-frontend-backend.md) | [Sesi 3: Deployment & Scaling](03-deployment-scaling.md) |
+|---|---|---|
 
 *Dokumen ini adalah bagian dari kurikulum RPL — Rekayasa Perangkat Lunak. Dapat diperbarui setiap semester.*

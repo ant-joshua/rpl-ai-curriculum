@@ -1,12 +1,37 @@
 # Capstone 5: Coding Bootcamp Platform — Spesifikasi Proyek
 
-## 1. Gambaran Umum
+> Platform LMS coding bootcamp dengan AI Code Review, AI Exercise Generator, dan AI Tutor. Dibangun dengan TypeScript, Express.js, Mastra AI, PostgreSQL.
+
+## 📋 Ringkasan Proyek
 
 Coding Bootcamp Platform adalah aplikasi web learning management system (LMS) khusus untuk pembelajaran pemrograman. Platform ini menyediakan kursus terstruktur berbasis teks dan kode, dengan tiga fitur AI utama: **AI Code Review** yang meninjau kode mahasiswa secara otomatis, **AI Exercise Generator** yang membuat soal latihan baru berdasarkan topik, dan **AI Tutor** yang menjawab pertanyaan konseptual mahasiswa. Ketiga fitur ini didukung oleh satu agen Mastra yang dilengkapi tiga tool terpisah.
 
 Mahasiswa dapat mengerjakan tugas coding langsung di editor browser, mengirimkan solusi, dan menerima feedback otomatis dari AI. Instruktur dapat mengelola kursus, melihat submission mahasiswa, dan memantau perkembangan kelas.
 
-Proyek ini dikerjakan dalam **4 sprint × 2 minggu** (total 8 minggu) menggunakan **TypeScript, Express.js, Mastra AI framework, dan PostgreSQL**.
+Proyek ini dikerjakan dalam **4 sprint × 2 minggu** (total 8 minggu).
+
+---
+
+## 📅 Sesi Pembelajaran
+
+Capstone ini dibagi menjadi 4 sesi pertemuan:
+
+| Sesi | Topik | Durasi | Link |
+|------|-------|--------|------|
+| 1 | Platform Design & Auth System | 2 minggu | [view](01-platform-design.md) |
+| 2 | Content Delivery & Code Execution | 2 minggu | [view](02-content-delivery.md) |
+| 3 | AI Tutor & Review System | 2 minggu | [view](03-ai-tutor.md) |
+| 4 | Dashboard, Testing & Deployment | 2 minggu | [view](04-deploy-scale.md) |
+
+**Total durasi**: 8 minggu (4 sprint × 2 minggu)
+
+---
+
+## 1. Gambaran Umum
+
+Coding Bootcamp Platform adalah aplikasi web learning management system (LMS) khusus untuk pembelajaran pemrograman. Platform ini menyediakan kursus terstruktur berbasis teks dan kode, dengan tiga fitur AI utama: **AI Code Review** yang meninjau kode mahasiswa secara otomatis, **AI Exercise Generator** yang membuat soal latihan baru berdasarkan topik, dan **AI Tutor** yang menjawab pertanyaan konseptual mahasiswa. Ketiga fitur ini didukung oleh satu agen Mastra yang dilengkapi tiga tool terpisah.
+
+Mahasiswa dapat mengerjakan tugas coding langsung di editor browser, mengirimkan solusi, dan menerima feedback otomatis dari AI. Instruktur dapat mengelola kursus, melihat submission mahasiswa, dan memantau perkembangan kelas.
 
 ---
 
@@ -43,68 +68,9 @@ Setelah menyelesaikan capstone ini, mahasiswa mampu:
 
 ---
 
-## 4. Fitur per Sprint (4×2 Minggu)
+## 4. Data Model
 
-### Sprint 1: Fondasi Backend & Manajemen User
-
-| ID | Fitur | Keterangan |
-|----|-------|------------|
-| S1.1 | Setup proyek TypeScript + Express + Drizzle + PG | Struktur folder, konfigurasi env, koneksi database, migrasi awal |
-| S1.2 | Model User & Auth | Tabel `users` (id, email, password_hash, role, name, created_at). Register, login, refresh token, logout. Middleware verifyToken + requireRole |
-| S1.3 | Role-based access control | Middleware `authorize('admin','instructor','student')`. Endpoint admin untuk list users |
-| S1.4 | Model Course & Lesson | Tabel `courses` (id, title, description, instructor_id, created_at) dan `lessons` (id, course_id, title, content, order, type: 'text'|'code') |
-| S1.5 | CRUD Course & Lesson (admin/instructor) | API lengkap untuk manage kursus dan pelajaran |
-
-**Deliverable Sprint 1**: Server running, auth flow bekerja (register/login/protected routes), CRUD course & lesson via Postman.
-
-### Sprint 2: Submission & Code Execution
-
-| ID | Fitur | Keterangan |
-|----|-------|------------|
-| S2.1 | Model Submission | Tabel `submissions` (id, lesson_id, user_id, code, language, status: 'pending'|'reviewed', created_at) |
-| S2.2 | CodeMirror editor | Halaman lesson dengan editor code inline. Submit code → POST /api/submissions |
-| S2.3 | Submission API | Create submission, list submissions per lesson/user |
-| S2.4 | Code execution sandbox | Docker container untuk menjalankan kode (Python/JS). Output ditangkap dan dikembalikan |
-| S2.5 | Test submission flow | Vitest: submission → execution → response lengkap |
-
-**Deliverable Sprint 2**: Mahasiswa bisa menulis kode di browser, submit, dan melihat output eksekusi.
-
-### Sprint 3: Integrasi AI dengan Mastra
-
-| ID | Fitur | Keterangan |
-|----|-------|------------|
-| S3.1 | Setup Mastra agent | Install mastra, definisi agent dengan tools: reviewCode, generateExercise, explainConcept |
-| S3.2 | Tool: reviewCode | Menerima `code` + `language` + `lessonContext`. Output: saran, error detection, best practices |
-| S3.3 | Tool: generateExercise | Menerima `topic` + `difficulty`(easy/medium/hard) + `count`. Output: array soal dengan test case |
-| S3.4 | Tool: explainConcept | Menerima `question` + `contextCourse`. Output: penjelasan konseptual |
-| S3.5 | Model CodeReview | Tabel `code_reviews` (id, submission_id, reviewer: 'ai'|'instructor', summary, line_comments JSONB, score, created_at) |
-| S3.6 | Auto-review on submission | Hook setelah submission → panggil agent reviewCode → simpan hasil ke `code_reviews` |
-| S3.7 | Tampilkan review ke mahasiswa | Halaman detail submission dengan hasil review AI |
-| S3.8 | AI Exercise Generator page | Halaman instructor untuk generate soal → simpan sebagai draft lesson |
-| S3.9 | AI Tutor chat | Halaman chat per lesson, mahasiswa tanya → agent explainConcept → tampilkan jawaban |
-
-**Deliverable Sprint 3**: Submission otomatis direview AI. Instructor bisa generate soal. Mahasiswa bisa chat AI tutor.
-
-### Sprint 4: Dashboard, Grading, & Deployment
-
-| ID | Fitur | Keterangan |
-|----|-------|------------|
-| S4.1 | Dashboard mahasiswa | Progress kursus, submission terbaru, score rata-rata |
-| S4.2 | Dashboard instruktur | List submission per lesson, statistik kelas |
-| S4.3 | Manual grading override | Instructor bisa mereview ulang submission dan mengganti score AI |
-| S4.4 | Notification system | Email atau in-app notif ketika review selesai |
-| S4.5 | Unit test & integration test | Vitest coverage > 70% |
-| S4.6 | E2E test dengan Playwright | Alur kritis: login → buka lesson → submit code → lihat review |
-| S4.7 | CI/CD dengan GitHub Actions | Lint → test → build → deploy |
-| S4.8 | Dokumentasi API (Swagger/OpenAPI) | Endpoint documentation auto-generated |
-
-**Deliverable Sprint 4**: Aplikasi lengkap, terdeploy, dengan dokumentasi API dan CI/CD pipeline.
-
----
-
-## 5. Data Model
-
-### Entity Relationship Diagram (textual)
+### Entity Relationship Diagram
 
 ```
 users ──< courses (instructor_id)
@@ -186,16 +152,9 @@ lessons <──> exercises (generated AI, nullable instructor_id)
 | test_cases | jsonb | Nullable, array [{input, expected_output}] |
 | created_at | timestamptz | default now() |
 
-### Relasi Kunci
-- Satu kursus memiliki banyak lessons (1:N).
-- Satu lesson memiliki banyak submissions (1:N).
-- Satu submission memiliki satu code_review (1:1).
-- Satu instructor dapat mengelola banyak courses (1:N).
-- Satu mahasiswa dapat mengirim banyak submissions (1:N).
-
 ---
 
-## 6. API Endpoints
+## 5. API Endpoints
 
 | Method | Endpoint | Role | Deskripsi |
 |--------|----------|------|-----------|
@@ -251,7 +210,7 @@ Error response:
 
 ---
 
-## 7. Detail Integrasi AI (Mastra Agent)
+## 6. Detail Integrasi AI (Mastra Agent)
 
 ### Arsitektur
 
@@ -284,7 +243,7 @@ Express.js Route Handler
     └── Return response ke client
 ```
 
-### Definisi Mastra Agent (TypeScript)
+### Definisi Mastra Agent
 
 ```typescript
 import { Agent } from '@mastra/core';
@@ -301,34 +260,9 @@ Gunakan bahasa Indonesia. Berikan contoh kode jika relevan.`,
 });
 ```
 
-### Tool Specifications
-
-**reviewCodeTool**
-- **Trigger**: Otomatis setelah submission.
-- **Schema input**: `{ code: string, language: 'javascript' | 'python' | 'typescript', lessonContext: string }`
-- **Schema output**: `{ summary: string, lineComments: Array<{line: number, message: string, severity: 'error'|'warning'|'suggestion'}>, score: number }`
-- **Prompt template**: "Review kode {language} berikut dalam konteks materi: {lessonContext}. Berikan skor 0-100, daftar komentar per baris, dan ringkasan."
-
-**generateExerciseTool**
-- **Trigger**: Manual oleh instruktur via endpoint POST /api/ai/generate-exercise.
-- **Schema input**: `{ topic: string, difficulty: 'easy'|'medium'|'hard', count: number }`
-- **Schema output**: `{ exercises: Array<{title: string, description: string, starterCode: string, testCases: Array<{input: string, expectedOutput: string}>}> }`
-- **Prompt template**: "Buat {count} soal coding {difficulty} tentang {topic}. Sertakan test case untuk setiap soal."
-
-**explainConceptTool**
-- **Trigger**: Manual oleh mahasiswa via endpoint POST /api/ai/explain.
-- **Schema input**: `{ question: string, courseContext: string }`
-- **Schema output**: `{ explanation: string, relatedTopics: string[], codeExample?: string }`
-- **Prompt template**: "Jelaskan konsep berikut dalam konteks kursus {courseContext}: {question}. Berikan contoh kode jika relevan."
-
-### Error Handling AI
-
-- Jika agent gagal merespons (timeout/error), submission tetap tersimpan dengan status `pending`. Cron job retry 3× dengan exponential backoff.
-- Setiap panggilan AI dicatat di tabel `ai_logs` (id, agent_name, tool_name, input, output, duration_ms, success boolean) untuk debugging dan monitoring biaya.
-
 ---
 
-## 8. Deliverables Checklist
+## 7. Deliverables Checklist
 
 ### Wajib
 - [ ] Repository GitHub dengan README, LICENSE, .gitignore
@@ -358,7 +292,7 @@ Gunakan bahasa Indonesia. Berikan contoh kode jika relevan.`,
 
 ---
 
-## 9. Rubrik Evaluasi
+## 8. Rubrik Evaluasi
 
 | Kriteria | Bobot | 4 (Sangat Baik) | 3 (Baik) | 2 (Cukup) | 1 (Kurang) |
 |----------|-------|------------------|----------|------------|------------|
@@ -377,15 +311,4 @@ Gunakan bahasa Indonesia. Berikan contoh kode jika relevan.`,
 
 ---
 
-## 10. Timeline & Milestone
-
-| Minggu | Sprint | Fokus | Milestone |
-|--------|--------|-------|-----------|
-| 1–2 | Sprint 1 | Auth, CRUD Course & Lesson | API foundation siap |
-| 3–4 | Sprint 2 | Submission & Code Execution | Mahasiswa bisa submit & execute |
-| 5–6 | Sprint 3 | Integrasi AI Mastra | AI review, generate, tutor live |
-| 7–8 | Sprint 4 | Dashboard, Testing, Deployment | Aplikasi siap deploy |
-
----
-
-*Dokumen ini adalah spesifikasi proyek Capstone 5 — Coding Bootcamp Platform. Mahasiswa wajib membaca seluruh spesifikasi sebelum memulai pengerjaan. Perubahan terhadap spesifikasi harus disetujui oleh penguji. Estimasi total: ~1500+ baris kode (backend) + konfigurasi infrastructure.*
+*Dokumen ini adalah spesifikasi proyek Capstone 5 — Coding Bootcamp Platform.*
