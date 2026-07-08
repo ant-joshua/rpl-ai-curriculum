@@ -1,8 +1,18 @@
 # 2. Integration Test dengan Supertest
 
-## Setup
+## Bedanya Unit Test vs Integration Test
 
-Install dependensi:
+| Unit Test | Integration Test |
+|-----------|-----------------|
+| Test satu function | Test alur antar komponen |
+| Mock semua dependensi | Pake dependensi beneran (atau lightweight) |
+| Cepet (ms) | Lebih lambat (detik) |
+| Ga kena DB/file system | Kena DB/file system |
+| Error = function salah | Error = komunikasi antar komponen salah |
+
+Integration test = **test sistem secara vertikal** — route → controller → middleware → DB.
+
+## Setup
 
 ```bash
 npm install express
@@ -98,11 +108,49 @@ describe("POST /api/todos", () => {
 });
 ```
 
-> **PENTING:** Antar-test bisa saling ganggu kalo pake shared state (array `todos`). Solusi: reset tiap test pake `beforeEach`. Karena kita pake module-level variabel, perlu export fungsi reset atau bikin ulang app tiap test.
+> **PENTING:** Antar-test bisa saling ganggu kalo pake shared state (array `todos`). Solusi: reset tiap test.
 
-## Testing DB dengan In-Memory
+## Reset State Antar Test
 
-Alternatif: pake database ringan (SQLite in-memory) biar test ga kena data produksi.
+Karena module-level state, export fungsi reset:
+
+```typescript
+// app.ts — tambah di akhir
+export const resetTodos = () => {
+  todos = [];
+  nextId = 1;
+};
+```
+
+```typescript
+// app.test.ts — tambah setup
+import { beforeAll, afterEach } from "vitest";
+import { app, resetTodos } from "./app";
+
+beforeAll(() => resetTodos());
+
+afterEach(() => resetTodos()); // reset tiap test biar independen
+```
+
+## Supertest Tips
+
+```typescript
+// Kirim header
+request.get("/api/protected").set("Authorization", "Bearer token");
+
+// Kirim query params
+request.get("/api/users").query({ page: 1, limit: 10 });
+
+// Upload file
+request.post("/api/upload").attach("file", "path/to/file.pdf");
+
+// Parsing response
+request.get("/api/todos").expect("Content-Type", /json/).expect(200);
+```
+
+## Testing DB dengan SQLite In-Memory
+
+Paling praktis buat integration test DB:
 
 ```typescript
 // db.ts
@@ -138,6 +186,14 @@ export class TodoRepository {
     const info = stmt.run(title);
     return this.db.prepare("SELECT * FROM todos WHERE id = ?").get(info.lastInsertRowid);
   }
+
+  findById(id: number) {
+    return this.db.prepare("SELECT * FROM todos WHERE id = ?").get(id);
+  }
+
+  deleteById(id: number) {
+    return this.db.prepare("DELETE FROM todos WHERE id = ?").run(id);
+  }
 }
 ```
 
@@ -153,7 +209,7 @@ describe("TodoRepository", () => {
   let repo: TodoRepository;
 
   beforeEach(() => {
-    db = createDb(); // in-memory
+    db = createDb(); // fresh in-memory DB tiap test
     repo = new TodoRepository(db);
   });
 
@@ -177,12 +233,22 @@ describe("TodoRepository", () => {
     repo.create("Todo B");
     expect(repo.findAll()).toHaveLength(2);
   });
+
+  it("findById returns specific todo", () => {
+    const created = repo.create("Find me");
+    const found = repo.findById(created.id);
+    expect(found.title).toBe("Find me");
+  });
+
+  it("deleteById removes todo", () => {
+    const created = repo.create("Delete me");
+    repo.deleteById(created.id);
+    expect(repo.findAll()).toHaveLength(0);
+  });
 });
 ```
 
 ## Auth Test
-
-Simulasi middleware auth:
 
 ```typescript
 // auth.ts
@@ -233,9 +299,9 @@ describe("authMiddleware", () => {
 });
 ```
 
-## Test Fixtures
+## Test Fixtures — Data Factory
 
-Biar ga nulis data manual tiap test, pake factory function:
+Biar ga nulis data manual tiap test:
 
 ```typescript
 // fixtures.ts
@@ -251,6 +317,14 @@ export const buildTodoList = (count: number) =>
     id: i + 1,
     title: `Task ${i + 1}`,
   }));
+
+export const buildUser = (overrides?: Partial<{ name: string; email: string }>) => ({
+  id: crypto.randomUUID(),
+  name: "Budi",
+  email: "budi@example.com",
+  active: true,
+  ...overrides,
+});
 ```
 
 ```typescript
@@ -275,8 +349,21 @@ describe("buildTodoList", () => {
   it("creates N todos", () => {
     expect(buildTodoList(5)).toHaveLength(5);
   });
+
+  it("creates sequential tasks", () => {
+    const list = buildTodoList(3);
+    expect(list[1].title).toBe("Task 2");
+  });
 });
 ```
+
+## Pitfalls Integration Test
+
+1. **Shared DB state** — Test pake DB yang sama bikin data bentrok. Solusi: fresh DB tiap test (in-memory / transaction rollback)
+2. **Test too slow** — Kalo >10 detik, test jadi males dijalanin. Pake parallel execution
+3. **Ga test error path** — Test cuma response 200, skip 400/404/500
+4. **Order-dependent test** — Test 1 insert data, Test 2 expect data itu ada. Kalo jalan sendiri-sendiri, Test 2 fail
+5. **Hardcoded port** — Pake supertest tanpa port (langsung pass Express app), bukan `app.listen()`
 
 ## Latihan
 
@@ -287,3 +374,5 @@ describe("buildTodoList", () => {
 3. **Error handler test** — Bikin global error handler middleware Express. Test: route yang throw error, route dengan invalid JSON body, route dengan parameter invalid (misal `id` bukan angka). Pastikan response punya format error konsisten: `{ error: string, status: number }`
 
 4. **Product repository dengan SQLite** — Bikin `ProductRepository` (create, findAll, findByCategory, updateStock). Pake SQLite in-memory + fixtures. Test: insert product, find by category, update stock jadi 0, hapus product
+
+5. **Pagination integration test** — Bikin endpoint `GET /api/items?page=1&limit=10`. Test: page valid, page melebihi data, limit default, limit maksimum. Pastikan response format: `{ data: [], meta: { page, limit, total, totalPages } }`

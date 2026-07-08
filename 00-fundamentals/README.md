@@ -4,12 +4,47 @@
 
 > **Level:** 🌱 Beginner (sebelum mulai coding)  
 > **Jam:** 4 (2 sesi)  
-> **Prasyarat:** — (bisa komputer)  
+> **Prasyarat:** — (bisa komputer + koneksi internet)  
 > **Output:** Paham gambaran besar — API, frontend, backend, database, gimana internet bekerja
 
 ---
 
+## 🎯 Learning Objectives
+
+Setelah selesai module ini, lo bakal bisa:
+
+| No | Objective | Sesi |
+|----|-----------|------|
+| 1 | Jelaskan gimana client & server ngobrol lewat internet | 1 |
+| 2 | Bedain frontend sama backend dengan contoh nyata | 1 |
+| 3 | Baca & pahami URL structure (protocol, domain, path, query) | 1 |
+| 4 | Sebutin HTTP methods (GET/POST/PUT/DELETE) dan kapan pakenya | 1 |
+| 5 | Paham HTTP status codes (200, 404, 500, dll) | 1 |
+| 6 | Jelaskan konsep API pake analogi restoran | 2 |
+| 7 | Bedain SQL vs NoSQL database | 2 |
+| 8 | Tulis query SQL dasar (SELECT, INSERT) | 2 |
+| 9 | Paham gimana deployment kerja (Vercel, Railway, VPS) | 2 |
+| 10 | Pakai terminal dasar (ls, cd, mkdir, node, npm) | 2 |
+| 11 | Paham konsep Git & version control | 2 |
+
+---
+
+## 📋 Daftar Sesi
+
+| # | Sesi | Durasi | Deskripsi |
+|---|------|--------|-----------|
+| 1 | [🌐 Gimana Internet & HTTP Bekerja](01-internet-http.md) | 2 jam | Client-server, HTTP, URL, frontend/backend, DNS & hosting |
+| 2 | [🔌 API, Database & Deployment](02-api-database-deploy.md) | 2 jam | REST API, SQL/NoSQL, deployment, terminal, Git |
+
+> Mulai dari [Sesi 1](01-internet-http.md) dulu, lalu lanjut [Sesi 2](02-api-database-deploy.md).
+
+---
+
 ## 📋 Sesi 1: Gimana Internet & Web Bekerja
+
+Konten lengkap di **[01-internet-http.md](01-internet-http.md)** 👈
+
+### Ringkasan:
 
 ### 1.1 Client — Server
 
@@ -84,9 +119,15 @@ protocol    domain       path     query
 | 404 Not Found | Ga ada | Cek URL |
 | 500 Internal Server Error | Server error | Bukan lo salahnya |
 
+> 📖 **Baca selengkapnya:** [Sesi 1 — Internet & HTTP](01-internet-http.md) termasuk latihan analisa website, tebak status code, flowchart, dan roleplay!
+
 ---
 
 ## 📋 Sesi 2: API, Database, Deployment
+
+Konten lengkap di **[02-api-database-deploy.md](02-api-database-deploy.md)** 👈
+
+### Ringkasan:
 
 ### 2.1 Apa itu API?
 
@@ -186,6 +227,8 @@ Kenapa penting:
 - Kerja tim tanpa tabrakan
 - Portfolio GitHub
 
+> 📖 **Baca selengkapnya:** [Sesi 2 — API, Database & Deployment](02-api-database-deploy.md) termasuk latihan REST API, design database, terminal challenge, dan Git simulation!
+
 ---
 
 ## 📋 Ringkasan Visual
@@ -210,18 +253,45 @@ LOKAL                        INTERNET
 
 ```
 Module 1: JavaScript     (Bikin logic)
-Module 2: DSA            (Bikin algoritma efisien)
-Module 3: TypeScript     (Bikin kode lebih aman)
-Module 4: Web Basics     (Bikin Frontend — yang dilihat user)
-Module 5: Git & Deploy   (Bikin kode aman + online)
-Module 6: Node/Express   (Bikin Backend — API + server logic)
-Module 7: Mastra AI      (Bikin AI Agent)
+Module 2: DSA           (Bikin algoritma efisien)
+Module 3: TypeScript    (Bikin kode lebih aman)
+Module 4: Web Basics    (Bikin Frontend — yang dilihat user)
+Module 5: Git & Deploy  (Bikin kode aman + online)
+Module 6: Node/Express  (Bikin Backend — API + server logic)
+Module 7: Mastra AI     (Bikin AI Agent)
 Module 8-9: Project     (Gabungin semua)
 ```
 
 ---
 
-## 📝 Latihan
+## 🧠 Peta Belajar: Modul Ini vs Sisanya
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   00. FUNDAMENTAL (INI)                  │
+│     Paham cara internet kerja + API + database + Git    │
+└──────────┬──────────┬──────────┬──────────┬─────────────┘
+           │          │          │          │
+           ▼          ▼          ▼          ▼
+    ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+    │ 01. JS  │ │ 02. DSA │ │ 03. TS  │ │ 04. Web │
+    │ Logic   │ │ Efisien │ │ Type    │ │ Frontend│
+    └─────────┘ └─────────┘ └─────────┘ └─────────┘
+                                        │
+                                        ▼
+                               ┌─────────────────┐
+                               │ 05. Git + Deploy │
+                               │ 06. Backend      │
+                               │ 07. AI Agent     │
+                               │ 08-09. Project   │
+                               └─────────────────┘
+```
+
+---
+
+## 📝 Latihan Module (Ringkasan)
+
+### 🔥 Latihan Wajib
 
 1. **Analisa Website:**
    Buka https://github.com. Coba tebak:
@@ -234,5 +304,40 @@ Module 8-9: Project     (Gabungin semua)
    - Liat story temen pake method apa? → GET
    - Edit bio pake method apa? → PUT/PATCH
 
-3. **Client-Server:**
+3. **Client-Server Flowchart:**
    Gambar flowchart sederhana: lo buka tokopedia → cari "sepatu" → liat hasil. Tandain mana client, server, database, API.
+
+### 🤔 Refleksi Diri
+
+Setelah selesai module 00, jawab pertanyaan ini buat diri sendiri:
+
+1. **Sebelum vs Sesudah:** Apa yang paling berubah dari pemahaman lo tentang internet?
+2. **Analogi Sendiri:** Coba bikin analogi lo sendiri tentang API (selain restoran). Misal: API itu kayak __ karena __.
+3. **Gambaran Karir:** Dari Frontend, Backend, atau Fullstack — yang mana yang paling menarik buat lo? Kenapa?
+4. **Koneksi Kehidupan Nyata:** Pilih 3 aplikasi yang lo pake tiap hari (IG, Gojek, TikTok). Coba breakdown mana frontend, backend, API, dan database-nya.
+5. **Ketakutan Terbesar:** Apa yang paling lo khawatirin sebelum mulai coding? Tulis, taruh di sini. Pas udah 3 bulan, balik lagi liat — pasti udah ketawa.
+
+### 📖 Latihan Per-Sesi (Lengkap)
+
+Latihan detail + studi kasus ada di file sesi masing-masing:
+
+| Sesi | File | Yang Dipelajari |
+|------|------|-----------------|
+| 1 | [01-internet-http.md](01-internet-http.md) | Analisa website beneran, tebak status code, flowchart client-server, roleplay request-response |
+| 2 | [02-api-database-deploy.md](02-api-database-deploy.md) | Tebak REST method, design database Todo List, terminal challenge, Git simulation, deployment decision |
+
+---
+
+## ✅ Checklist: Lo Siap Lanjut Kalo...
+
+- [ ] Bisa jelasin client-server ke adik/temen pake analogi sendiri
+- [ ] Paham bedanya GET, POST, PUT, DELETE
+- [ ] Tau kapan nemu 404 vs 500 vs 401
+- [ ] Bisa breakdown URL jadi protocol, domain, path, query
+- [ ] Bisa jelasin API pake analogi restoran
+- [ ] Tau bedanya SQL sama NoSQL
+- [ ] Pernah buka terminal dan jalanin `ls`, `cd`, `mkdir`
+- [ ] Paham konsep Git secara garis besar
+- [ ] Udah explore file [01-internet-http.md](01-internet-http.md) dan [02-api-database-deploy.md](02-api-database-deploy.md)
+
+> **Udah siap?** Lanjut ke **Module 1: JavaScript** 🚀

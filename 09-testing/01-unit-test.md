@@ -1,5 +1,14 @@
 # 1. Unit Test dengan Vitest
 
+## Apa itu Unit Test?
+
+Unit test = test fungsi **individual** — kode terkecil di aplikasi. Konsep: pisahin kode dari dependensi eksternal (DB, API, file system) biar test cepet & deterministik.
+
+Rule of thumb:
+- Satu `it()` = satu **behavior**, bukan satu function
+- Test harus **independen** — urutan jalan ga ngaruh
+- Kode test = dokumentasi hidup — kalo senior baca test lo, ngerti behavior kode
+
 ## Setup Vitest
 
 ```bash
@@ -17,6 +26,19 @@ npx tsc --init
     "test:watch": "vitest"
   }
 }
+```
+
+`vitest.config.ts` — (opsional) biar konfigurasi rapi:
+
+```typescript
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    globals: true,        // describe/it/expect tanpa import
+    environment: "node",
+  },
+});
 ```
 
 Bikin file `calculator.ts`:
@@ -56,7 +78,21 @@ describe("add", () => {
 });
 ```
 
-## Matchers
+**Struktur AAA:** Arrange → Act → Assert
+```typescript
+it("divides positive numbers", () => {
+  // Arrange — siapin input/output
+  const a = 10, b = 2, expected = 5;
+  
+  // Act — panggil function
+  const result = divide(a, b);
+  
+  // Assert — verifikasi
+  expect(result).toBe(expected);
+});
+```
+
+## Matchers — Toolbox
 
 | Matcher | Fungsi |
 |---------|--------|
@@ -66,6 +102,8 @@ describe("add", () => {
 | `toThrow(err?)` | Function throws |
 | `toBeGreaterThan(n)` | `> n` |
 | `toBeDefined()` | Not undefined |
+| `toHaveLength(n)` | Array/string length |
+| `toHaveProperty(key, val?)` | Object punya property |
 
 ```typescript
 describe("matchers demo", () => {
@@ -84,6 +122,14 @@ describe("matchers demo", () => {
   it("toBeGreaterThan", () => {
     expect(getMax([1, 5, 3])).toBeGreaterThan(4);
   });
+
+  it("toHaveLength for array", () => {
+    expect([1, 2, 3]).toHaveLength(3);
+  });
+
+  it("toHaveProperty for objects", () => {
+    expect({ id: 1, name: "test" }).toHaveProperty("name");
+  });
 });
 ```
 
@@ -101,6 +147,14 @@ describe("vi.fn", () => {
     expect(mock(3)).toBe(6);
     expect(mock).toHaveBeenCalledWith(3);
     expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it("tracks multiple calls", () => {
+    const mock = vi.fn();
+    mock("a");
+    mock("b");
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(mock.mock.calls).toEqual([["a"], ["b"]]);
   });
 });
 ```
@@ -135,9 +189,14 @@ describe("getUser", () => {
 });
 ```
 
+**Mocking best practices:**
+- Mock **external** dependencies (API, DB, file system), bukan internal functions
+- Kalo bisa pake dependency injection daripada mock module
+- Reset mock antar test pake `beforeEach(() => vi.clearAllMocks())`
+
 ## Testing Pure Functions
 
-Pure function = input sama -> output sama, no side effects. Paling gampang di-test.
+Pure function = input sama → output sama, no side effects. Paling gampang di-test.
 
 ```typescript
 // utils.ts
@@ -151,12 +210,17 @@ export const toRupiah = (amount: number): string => {
 export const filterActive = <T extends { active: boolean }>(items: T[]): T[] => {
   return items.filter((item) => item.active);
 };
+
+export const calculateDiscount = (price: number, percent: number): number => {
+  if (percent < 0 || percent > 100) throw new Error("Invalid percent");
+  return price - (price * percent) / 100;
+};
 ```
 
 ```typescript
 // utils.test.ts
 import { describe, it, expect } from "vitest";
-import { toRupiah, filterActive } from "./utils";
+import { toRupiah, filterActive, calculateDiscount } from "./utils";
 
 describe("toRupiah", () => {
   it("formats number to IDR", () => {
@@ -165,6 +229,10 @@ describe("toRupiah", () => {
 
   it("handles zero", () => {
     expect(toRupiah(0)).toBe("Rp0,00");
+  });
+
+  it("handles large numbers", () => {
+    expect(toRupiah(1000000)).toBe("Rp1.000.000,00");
   });
 });
 
@@ -180,6 +248,21 @@ describe("filterActive", () => {
 
   it("returns empty array if none active", () => {
     expect(filterActive([{ id: 1, active: false }])).toEqual([]);
+  });
+
+  it("returns all items if all active", () => {
+    const items = [{ id: 1, active: true }, { id: 2, active: true }];
+    expect(filterActive(items)).toHaveLength(2);
+  });
+});
+
+describe("calculateDiscount", () => {
+  it("calculates 10% discount", () => {
+    expect(calculateDiscount(100000, 10)).toBe(90000);
+  });
+
+  it("throws on invalid percent", () => {
+    expect(() => calculateDiscount(100, 150)).toThrow("Invalid percent");
   });
 });
 ```
@@ -219,8 +302,46 @@ describe("fetchUser", () => {
 
     await expect(fetchUser(1)).rejects.toThrow("Network error");
   });
+
+  it("throws on network exception", async () => {
+    vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("Network timeout"));
+
+    await expect(fetchUser(1)).rejects.toThrow("Network timeout");
+  });
 });
 ```
+
+## beforeEach & afterEach — Setup & Teardown
+
+Biar test ga saling ganggu, reset state tiap test:
+
+```typescript
+describe("counter", () => {
+  let counter: number;
+
+  beforeEach(() => {
+    counter = 0; // reset tiap test
+  });
+
+  it("starts at 0", () => {
+    expect(counter).toBe(0);
+  });
+
+  it("can increment", () => {
+    counter++;
+    expect(counter).toBe(1);
+  });
+  // Test 2 ga kena efek Test 1 karena beforeEach reset
+});
+```
+
+## Pitfalls Yang Sering Kejadian
+
+1. **Test saling ganggu** — Shared state antar test (array, object) harus di-reset di `beforeEach`
+2. **Test too broad** — Satu `it()` test 3-4 behavior beda. Pisahin!
+3. **Mock overuse** — Mock terlalu banyak bikin test fragile. Kalo ganti implementasi, test ikutan rusak padahal behavior sama
+4. **Ga test edge case** — Kebanyakan coba "happy path" doang, lupa null/undefined/empty/negative
+5. **Test pake real network** — API call di unit test bikin lambat & flaky. Pake mock
 
 ## Latihan
 
@@ -231,3 +352,5 @@ describe("fetchUser", () => {
 3. **String utility test** — Bikin function `capitalizeWords(str: string): string`. Test: string kosong, satu kata, beberapa kata, all caps input, mixed case input
 
 4. **Async user search** — Bikin function `searchUsers(keyword: string)` yang pake `fetch` ke dummy API. Test: mock fetch sukses return array, mock fetch kosong, mock fetch error. Pake `vi.spyOn` + `mockResolvedValueOnce`
+
+5. **Date formatter** — Bikin `formatDate(date: Date, format: 'short' | 'long' | 'iso'): string`. Test: valid date di berbagai format, invalid date (throw error), leap year date, epoch

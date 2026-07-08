@@ -1,6 +1,6 @@
 # Modul 17: Database Lanjutan
 
-**Tujuan Pembelajaran:** Setelah mempelajari modul ini, siswa mampu:
+Tujuan Pembelajaran:** Setelah mempelajari modul ini, siswa mampu:
 - Memahami dan menggunakan berbagai jenis JOIN
 - Membedakan Subquery dan CTE serta kapan menggunakannya
 - Menggunakan Window Functions untuk analisis data
@@ -8,6 +8,17 @@
 - Merancang strategi indexing yang efektif
 - Memahami konsep connection pooling
 - Menganalisis performa query dengan EXPLAIN ANALYZE
+- Mengelola backup & recovery dengan pg_dump dan WAL archiving
+
+---
+
+## 📚 Sesi Pembelajaran
+
+| # | Sesi | Topik | Durasi |
+|---|------|-------|--------|
+| 1 | [Indexing & Query Optimization](01-indexing-optimization.md) | Index types (B-tree, Hash, GIN/BRIN), EXPLAIN ANALYZE, query optimization, composite/partial/covering index | 2 jam |
+| 2 | [Transaction & Isolation](02-transactions-isolation.md) | ACID, BEGIN/COMMIT/ROLLBACK, isolation levels, deadlock detection, MVCC, locking strategies | 2 jam |
+| 3 | [Scaling & Backup](03-scaling-backup.md) | Connection pooling, cursor pagination, read replicas, sharding, pg_dump, PITR, monitoring | 2 jam |
 
 ---
 
