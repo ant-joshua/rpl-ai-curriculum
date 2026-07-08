@@ -66,7 +66,9 @@ Kontainer **tidak punya OS sendiri**. Semua kontainer di host yang sama pakai ke
 - **Ringan** — ukuran image hanya berisi binary + dependensi, bukan OS utuh
 - **Efisien** — RAM dipakai bareng, nggak duplikasi per kontainer
 
-> ⚠️ **Catatan:** Di Windows/macOS, Docker jalan di dalam VM Linux kecil (pakai WSL2 atau HyperKit). Tapi pengalaman pakainya sama.
+> **Catatan:** Di Windows/macOS, Docker jalan di dalam VM Linux kecil (pakai WSL2 atau HyperKit). Tapi pengalaman pakainya sama.
+>
+> **Penting:** Docker tidak bisa jalan native di Windows tanpa WSL2 karena kontainer bergantung pada kernel Linux. Pastikan WSL2 sudah terinstall sebelum menggunakan Docker Desktop.
 
 ---
 

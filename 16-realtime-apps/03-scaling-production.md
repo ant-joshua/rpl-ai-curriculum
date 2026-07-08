@@ -501,3 +501,5 @@ const io = new Server(server, {
 3. **Graceful shutdown + auto-reconnect:** Simulasi shutdown server. Client harus otomatis reconnect ke server lain dalam < 2 detik. Tampilkan counter reconnect di client.
 
 4. **Health check endpoint:** Bikin endpoint `/health` yang return status server: uptime, connected clients, memory usage, Redis connection status. Pakai `process.memoryUsage()` dan ping Redis.
+
+> **Tips:** Saat menggunakan Redis adapter, pastikan koneksi Redis menggunakan Sentinel atau Cluster untuk menghindari single point of failure di production. Redis yang down akan memutus komunikasi antar server WebSocket.

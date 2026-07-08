@@ -349,3 +349,5 @@ Prompt AI:
 | Code Gen Pipeline | "Generate implementasi dari spesifikasi ini" |
 | Responsible AI | "Analisis hallucination risk di kode ini" |
 | Security Checklist | "Buat checklist security untuk AI review" |
+Praktik akhir: pilih satu repo kamu, setup GitHub Action dengan AI code review, dokumentasikan hasilnya di README.
+Praktik: buat GitHub Issue template untuk AI feature request — include problem, expected behavior, acceptance criteria. Gunakan AI untuk generate PR description dari issue body.

@@ -285,3 +285,31 @@ async function runAudit(url: string): Promise<void> {
 4. **Console Mastery** — Buka console di halaman manapun. Coba: `$0`, `$()`, `$$()`, `copy()`, `console.table()`, `console.time()`. Dokumentasi hasilnya.
 
 5. **Performance Record** — Rekam performance halaman. Identifikasi 1 long task. Jelaskan apa yg terjadi dan gimana cara fix-nya.
+
+## 🔬 Performance Optimization Checklist
+
+| Area | Tool | Action |
+|------|------|--------|
+| Network | DevTools Network | Cari request lambat, waterfall analysis |
+| Rendering | DevTools Performance | Record interaction, cari long task |
+| Memory | DevTools Memory | Heap snapshot, deteksi memory leak |
+| Bundle | webpack-bundle-analyzer | Cari dependency gede yang gak perlu |
+
+### Common Performance Issues
+
+1. **Layout thrashing** — baca lalu tulis DOM berulang dalam loop → batch read/write
+2. **Forced reflow** — akses ,  setelah ubah style → cache value
+3. **Too many listeners** — tiap item di list punya event listener sendiri → event delegation
+4. **Unoptimized images** — kirim 5MB foto mentah → responsive images + WebP + lazy loading
+
+**Praktik mandiri:** Ambil aplikasi Next.js atau React yang kamu buat sebelumnya. Buka DevTools → Performance → Record saat navigasi antar halaman. Identifikasi:
+
+1. Berapa lama First Paint?
+2. Apa yang blocking render pertama (long task)?
+3. Berapa ukuran total JavaScript yang di-download?
+4. Apakah ada render-blocking CSS/JS?
+
+Tulis temuan di README kamu.
+Praktik tambahan: install React DevTools, record Profiler, cari 1 wasted render, fix dengan React.memo atau useMemo.
+Jika kamu baru mulai debugging, fokus ke pola yang paling sering terjadi — state tidak update dan CORS error handle 80% kasus.
+Setelah debugging, catat root cause dan solusi di wiki tim agar tidak repeat.

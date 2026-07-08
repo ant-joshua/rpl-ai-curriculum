@@ -562,3 +562,5 @@ Sepanjang modul, latihan pake AI:
 ---
 
 *Modul ini ditulis untuk siswa SMK RPL yang sudah familiar dengan Express dan REST API. Selanjutnya: deployment WebSocket ke production (Redis adapter, sticky sessions, scaling).*
+
+> **Catatan:** WebSocket cocok untuk aplikasi dua arah seperti chat dan kolaborasi, sementara Socket.IO menyederhanakan implementasi dengan fitur auto-reconnect dan fallback transport. Pahami kapan menggunakan masing-masing teknologi untuk hasil optimal.

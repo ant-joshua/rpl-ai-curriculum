@@ -612,3 +612,5 @@ server.listen(3000, () => console.log('Chat server jalan di http://localhost:300
 3. **Direct message (DM):** Implementasi DM di atas Socket.IO. Client kirim `{ to: "socketId", text: "halo" }`. Server forward ke target. Hint: pakai `io.to(socketId).emit()`.
 
 4. **File sharing via Base64:** Tambah fitur kirim gambar di chat. Client baca file → `FileReader.readAsDataURL()` → emit `send-image` → server broadcast ke room sebagai `<img src="data:...">`.
+
+> **Tips:** Saat mengirim file lewat Socket.IO, perhatikan ukuran maksimal yang diizinkan oleh `maxHttpBufferSize` (default 1 MB). Untuk file besar, gunakan upload terpisah dan kirim URL-nya saja melalui event Socket.IO agar tidak membebani koneksi real-time.

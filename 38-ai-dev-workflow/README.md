@@ -85,3 +85,18 @@ Setiap sesi mengandung **4 latihan** yang mengharuskan peserta menulis prompt ke
 - [Cursor](https://cursor.sh)
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
+
+---
+
+## Tips Menggunakan Modul Ini
+
+| Tips | Penjelasan |
+|------|------------|
+| **Praktik Langsung** | Jangan hanya baca — buka AI tool dan praktikkan setiap prompt yang diajarkan |
+| **Dokumentasikan Prompt** | Catat prompt yang berhasil dan yang gagal. Analisis perbedaannya untuk belajar meramu prompt efektif |
+| **Review Output AI** | Biasakan membaca dan memahami setiap baris kode hasil AI sebelum menggunakannya |
+| **Kombinasikan Tools** | Coba beberapa AI tool (Cline, Copilot, Claude Code) dan bandingkan hasilnya untuk satu tugas yang sama |
+| **Belajar dari Error** | Ketika AI menghasilkan kode error, jangan langsung minta fix — coba debug sendiri dulu, baru minta bantuan AI |
+| **Konsisten** | Gunakan AI secara rutin, bukan hanya saat deadline. Semakin sering pakai, semakin efektif prompt-mu |
+
+Modul ini dirancang agar kamu bisa langsung mempraktikkan setiap konsep dengan AI tool pilihanmu. Jangan ragu bereksperimen dengan variasi prompt — kemampuan meramu prompt yang baik adalah keterampilan yang akan terus berguna sepanjang karir development-mu.

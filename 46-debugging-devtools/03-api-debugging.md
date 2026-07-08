@@ -445,3 +445,4 @@ Simulasi API response tanpa backend real.
 4. **CORS Debug** — Buat frontend sederhana (HTML+JS) fetch dari origin berbeda. Catat CORS error. Fix dengan setting cors middleware di server.
 
 5. **Mock Server Setup** — Buat Postman mock server untuk 3 endpoint. Test dari REST Client .http file.
+Berikut contoh debugging fetch error: saat endpoint return 500, cek Network tab → Preview/Response. Response JSON biasanya berisi stack trace atau error message. Salin error ke Sentry search atau Google untuk see common solutions.

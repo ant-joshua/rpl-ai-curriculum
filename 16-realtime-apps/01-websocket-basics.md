@@ -267,3 +267,5 @@ server.listen(3000, () => {
 3. **WebSocket ping monitor:** Bikin server yang track round-trip time (RTT) tiap client. Catat waktu kirim ping, hitung selisih pas pong balik. Log client yang RTT-nya > 500ms.
 
 4. **Room system manual:** Implementasi room system tanpa library — client kirim `{ command: "join", room: "lobby" }`. Server track client per room. Broadcast dalam room aja. Client bisa join multiple rooms.
+
+> **Tips:** Saat menggunakan library `ws`, selalu handle event `error` pada tiap koneksi agar server tidak crash mendadak saat satu client bermasalah. Ini praktik penting dalam production.

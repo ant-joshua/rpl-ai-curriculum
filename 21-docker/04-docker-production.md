@@ -497,6 +497,7 @@ volumes:
 - **Resource limits:** `--memory`, `--cpus` — cegah satu kontainer boros semua resource
 - **Best practices:** `.dockerignore`, non-root user, specific tag, layer cache, scan vulnerability
 - **DinD:** Docker-in-Docker untuk CI/CD pipeline
+- **Monitoring:** Selalu pantau resource usage kontainer dengan `docker stats` untuk mendeteksi bottleneck sejak dini
 
 ---
 <table>

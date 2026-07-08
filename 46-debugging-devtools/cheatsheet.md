@@ -93,3 +93,46 @@ Sentry.captureException(err);
 ## Link Cepat
 - [Module README](.)
 - [Quiz](quiz.md)
+
+### Rekomendasi Tools Debugging 2026
+
+| Kategori | Tool | Use Case |
+|----------|------|----------|
+| API | Postman / Insomnia | Test REST/GraphQL endpoint, collection runner |
+| API | Bruno | Open source, offline-first, git-friendly |
+| Database | TablePlus / Beekeeper | UI database client, visual query builder |
+| Logging | Datadog / Grafana Loki | Centralized log aggregation, search, alert |
+| APM | Sentry / Datadog APM | Error tracking, performance tracing, span view |
+| Network | Wireshark / Charles | Packet-level inspection, HTTPS decryption |
+| Mobile | Reactotron / Flutter DevTools | Debug Redux, network, async storage |
+
+### Checklist Debugging Harian
+
+- [ ] Cek console error (browser + server)
+- [ ] Network tab — status code 4xx/5xx? Response time?
+- [ ] Application tab — localStorage/cookies sesuai?
+- [ ] Lighthouse — skor performance, accessibility
+- [ ] Sentry/Datadog — error rate naik?
+- [ ] Server log — ada stack trace baru?
+
+### Latihan Tambahan
+
+1. **Memory Leak Detection** — Buka halaman, ambil heap snapshot. Interaksi 30 detik, ambil snapshot kedua. Bandingkan — object apa yang nambah tapi gak ke-free? Filter "detached" untuk cari DOM nodes yang masih dipegang JavaScript.
+2. **Performance Record** — Record 5 detik interaction di halaman kamu. Identifikasi 1 long task (>50ms) dan jelaskan penyebabnya.
+3. **Network Waterfall** — Muat halaman, screenshot waterfall. Identifikasi 1 resource yang blocking render dan 1 yang bisa di-lazy load.
+4. **React Profiler** — Record render sequence. Cari 1 component yang re-render tanpa perlu (props tidak berubah). Fix dengan React.memo atau useMemo.
+5. **Debugging Node.js** — Jalanin , buka , set breakpoint di route handler, inspect variable scope.
+
+5. **Debugging Node.js** — Jalanin `node --inspect app.js`, buka `chrome://inspect`, set breakpoint di route handler, inspect variable scope.
+
+
+### Pola Debugging Umum
+
+| Pola | Gejala | Solusi |
+|------|--------|--------|
+| State tidak update | UI tidak berubah setelah setState | Cek apakah state benar diubah (immutable), atau ada stale closure |
+| Infinite loop | useEffect + state update dependency | Pastikan dependency array lengkap, atau pake useReducer |
+| CORS error | Console: "No 'Access-Control-Allow-Origin'" | Tambah header backend, atau proxy dev server |
+| 404 API | Fetch ke URL salah | Cek Network tab → Request URL, bandingkan dengan docs |
+| Memory leak | Halaman makin lambat seiring waktu | Cleanup useEffect, hapus event listener, abort fetch on unmount |
+| Hydration error | Next.js: "Text content mismatch" | Hapus browser-only code dari SSR, wrap dengan useEffect |

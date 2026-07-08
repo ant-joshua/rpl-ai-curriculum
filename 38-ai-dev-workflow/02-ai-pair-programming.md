@@ -329,3 +329,37 @@ Prompt AI untuk generate commit message dari diff:
 | Debug | "Error X terjadi saat input Y. Bantu debug" |
 | Error Analysis | "Analisis error stack trace ini, cari root cause" |
 | Commit Message | "Generate conventional commit dari git diff" |
+
+
+### Perbandingan: AI Pair Programming vs Traditional Workflow
+
+| Aspek | Traditional | AI-Assisted |
+|-------|-------------|-------------|
+| Boilerplate | Tulis manual, copy-paste template | Generate dari prompt |
+| Debugging | Manual trace, breakpoint, console.log | AI analisis stack trace, suggest fix |
+| Refactoring | Manual refactor, test ulang | AI refactor + generate test baru |
+| Documentation | Tulis docs terpisah | AI generate JSDoc, README, API docs dari kode |
+| Code Review | Review manual oleh senior | AI review setiap PR, senior review hasil AI |
+| Onboarding | Baca docs, tracing kode manual | AI explain codebase, generate context |
+| Migration | Manual search-replace, trial error | AI handle regex + mapping, propose migration plan |
+
+### Kapan Pake AI, Kapan Manual?
+
+| Pake AI | Manual |
+|---------|--------|
+| Generate boilerplate, CRUD, routes | Business logic domain-specific |
+| Debug error yang jelas (TypeError, 500) | Debug race condition, concurrency |
+| Refactor kode yang modular | Arsitektur decision, database schema |
+| Generate test untuk fungsi pure | Test setup complex (auth, multi-service) |
+| Dokumentasi dan JSDoc | Security-sensitive code, crypto logic |
+
+### Pengukuran Produktivitas AI Dev Workflow
+
+| Metrik | Before AI | After AI | Improvement |
+|--------|-----------|----------|-------------|
+| Waktu buat CRUD API | 4 jam | 1 jam | 75% |
+| Waktu code review per PR | 2 jam | 30 menit | 75% |
+| Coverage test | 60% | 85% | +25% |
+| Bug di production / release | 8 | 3 | 62% |
+| Onboarding developer baru | 2 minggu | 5 hari | 60% |
+Test: tulis prompt untuk generate 10 test case untuk fungsi login. Validasi edge cases: empty field, wrong password, user not found, rate limit exceeded, SQL injection attempt, XSS payload, expired token, invalid email format, unverified email, account locked.

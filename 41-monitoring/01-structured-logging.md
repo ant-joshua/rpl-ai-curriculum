@@ -291,3 +291,11 @@ JSON structure bikin integrasi ke ELK (Elasticsearch, Logstash, Kibana), Datadog
 3. Implementasikan child logger per-request dengan correlation ID (UUID). Tampilkan bagaimana log dari route `/api/users/:id` dan `/api/orders` memiliki `requestId` yang berbeda tapi konsisten dalam satu request. Tulis kode middleware + contoh output JSON.
 
 4. Buat script log rotation sederhana: simpan log ke `logs/app.log`, rotasi harian, simpan 7 hari terakhir. Pake `pino-roll` atau `logrotate` config. Tulis konfigurasi lengkap dan cara testing rotasi-nya.
+
+## 🔄 Debugging Workflow
+
+1. Identifikasi gejala (error message, slow response, high memory)
+2. Reproduksi — cari langkah minimal untuk trigger masalah
+3. Isolasi — narrowing down lokasi (file → function → baris)
+4. Root cause — kenapa ini terjadi?
+5. Fix + verify — perbaiki, pastikan tidak muncul lagi

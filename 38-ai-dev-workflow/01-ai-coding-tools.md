@@ -232,33 +232,42 @@ def get_top_scorers(students: list, threshold: int) -> list:
 
 ---
 
-### Latihan 1.4 — AI Explain Code
+### Latihan 1.5 — AI Generate Error Handling
 
-Berikan kode berikut ke AI dengan prompt *"Explain this code baris per baris. Bahasa Indonesia."*
+Prompt AI untuk menambahkan error handling ke fungsi berikut. Target: handle FileNotFoundError, ValueError, KeyboardInterrupt dengan pesan yang informatif.
 
 ```python
-@dataclass
-class Stack:
-    items: list = field(default_factory=list)
-
-    def push(self, item): self.items.append(item)
-    def pop(self): return self.items.pop()
-    def peek(self): return self.items[-1] if self.items else None
-    def is_empty(self): return len(self.items) == 0
-
-def is_balanced(expression: str) -> bool:
-    stack = Stack()
-    pairs = {')': '(', '}': '{', ']': '['}
-    for char in expression:
-        if char in pairs.values():
-            stack.push(char)
-        elif char in pairs:
-            if stack.is_empty() or stack.pop() != pairs[char]:
-                return False
-    return stack.is_empty()
+def process_data_files(file_paths: list[str]) -> list[dict]:
+    results = []
+    for path in file_paths:
+        with open(path, 'r') as f:
+            data = json.load(f)
+            results.append(data)
+    return results
 ```
 
-**Output:** penjelasan per baris dalam Bahasa Indonesia. Screenshot hasil explain dari AI.
+**Output:** kode dengan try/except lengkap + prompt AI yang digunakan.
+
+---
+
+### Latihan 1.6 — Refactor dengan Design Pattern
+
+Prompt AI untuk refactor kode berikut menggunakan Strategy Pattern:
+
+```python
+def export_data(data: list[dict], format: str) -> str:
+    if format == 'csv':
+        import csv; ...
+    elif format == 'json':
+        import json; return json.dumps(data, indent=2)
+    elif format == 'xml':
+        ...
+    elif format == 'yaml':
+        ...
+    return result
+```
+
+**Output:** kode dengan Strategy Pattern + penjelasan dari AI tentang keuntungan pattern ini.
 
 ---
 
@@ -271,3 +280,31 @@ def is_balanced(expression: str) -> bool:
 | Rename | Copilot / Cline | "Rename variable d jadi..." |
 | Optimasi | Cline | "Optimasi O(n²) jadi O(n)..." |
 | Explain | Cline / Claude Code | "Explain code baris per baris..." |
+
+
+### AI Prompt Patterns for Code Generation
+
+| Pattern | Prompt | Use Case |
+|---------|--------|----------|
+| **Role + Task + Context** | "Kamu expert React. Buat custom hook useDebounce dengan TypeScript." | Generate specific code |
+| **Iterative refinement** | "Tambah loading state, error boundary, dan retry logic." | Evolve generated code |
+| **Example-driven** | "Contoh: User { id, name, email }. Buat type UserDTO dengan validasi Zod." | Ensure output shape |
+| **Test-first** | "Buat test dulu, lalu implementasi: function sumEven(numbers) return sum of even numbers." | TDD via AI |
+| **Refactor instruction** | "Refactor jadi 3 function kecil dengan nama deskriptif, tambah error handling." | Improve code quality |
+| **Explain + simplify** | "Jelaskan kode ini dalam 3 kalimat, lalu simplify tanpa ubah behavior." | Understanding legacy |
+
+### Praktik Prompt Engineering Harian
+
+1. **Mulai dari problem description** — jangan "tulis kode", tapi "buat fungsi yang handle X dengan constraint Y"
+2. **Iterasi, bukan satu-shot** — AI jarang perfect di prompt pertama. Minta koreksi spesifik
+3. **Constrains di awal** — sebut batasan ("tanpa library tambahan", "ES2021+", "responsif mobile")
+4. **Review hasil AI** — jangan copy paste blind. AI bisa halusinasi API yang gak ada
+5. **Version control prompt** — simpan prompt penting di comments atau file prompt.md
+
+### Latihan Prompt Engineering
+
+1. Prompt AI untuk generate REST API endpoint createUser dengan validasi, logging, error handling. Bandingkan hasil dari 3 varian prompt (satu kalimat, structured, role+context)
+2. Minta AI jelaskan kode legacy ular kamu. Beri prompt yang menghasilkan penjelasan maksimal 200 kata
+3. Prompt AI untuk konversi JavaScript ke TypeScript dengan strict mode
+4. Prompt AI untuk generate unit test dari function existing. Bandingkan hasil jika prompt disertai sample input/output vs tidak
+5. Prompt AI untuk buat PR description dari diff code kamu

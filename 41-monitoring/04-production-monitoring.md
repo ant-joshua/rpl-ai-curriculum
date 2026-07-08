@@ -504,3 +504,13 @@ created 50 concurrent connections per request instead of reusing pool.
 3. Implementasikan AlertManager: hitung error rate per service dalam window 5 menit, kirim alert kalo threshold 10 error terlewati. Reset counter setelah alert. Integrasikan ke Express error handler. Tulis kode lengkap.
 
 4. Buat memory monitoring: log memory usage (rss, heapTotal, heapUsed) tiap 5 menit, kirim alert kalo heapUsed > 400MB. Buat DB query profiler untuk Prisma/ORM — log query yang > 200ms. Tulis kode lengkap.
+Praktik: jalanin top - 14:07:05 up 7 days, 23:59,  1 user,  load average: 3.09, 3.18, 3.25
+Tasks: 101 total,   1 running, 100 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  9.8 us,  9.2 sy,  0.0 ni, 79.9 id,  0.0 wa,  0.0 hi,  1.1 si,  0.0 st 
+MiB Mem :   7802.2 total,    380.7 free,   5840.1 used,   2179.8 buff/cache     
+MiB Swap:   2048.0 total,      0.0 free,   2048.0 used.   1962.1 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+ 398031 midory    20   0   26.7g 273428  79360 S 120.0   3.4     38,56 ffmpeg-+
+ 398110 midory    20   0   26.8g 369548  85120 S 110.0   4.6     38,59 ffmpeg-+
+ 398597 midory    20   0   26.7g 531680  78848 S 110.0   6.7     38,55 ffmpeg-+ atau  buat lihat resource usage realtime.

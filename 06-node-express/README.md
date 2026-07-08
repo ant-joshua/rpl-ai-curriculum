@@ -60,3 +60,5 @@ Sepanjang modul, latihan pake AI:
 - "Review this Express route — what error cases am I missing?"
 - "Convert this Express route from JavaScript to TypeScript"
 - "Generate curl commands to test this REST endpoint"
+- "Explain the difference between global middleware and route-specific middleware in Express"
+- "Create a custom error class hierarchy for API errors (validation, auth, not-found)"

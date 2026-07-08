@@ -59,3 +59,5 @@ socket.on('response', (data) => { ... });
 - [Module README](README.md)
 - [Quiz](quiz.md)
 - [Socket.IO Docs](https://socket.io/docs/v4/)
+
+Semua koneksi WebSocket harus menggunakan WSS (WebSocket Secure) di production untuk mencegah eavesdropping dan man-in-the-middle attacks.

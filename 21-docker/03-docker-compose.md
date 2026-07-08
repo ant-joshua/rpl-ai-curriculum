@@ -354,6 +354,7 @@ services:
 - `depends_on` = urutan start; `restart` = kebijakan restart
 - File `.env` untuk variable yang bisa di-substitute di compose file
 - Perintah: `up -d`, `down`, `logs -f`, `exec`, `ps`, `build`
+- Dengan Compose, tim developer bisa menjalankan seluruh stack cukup dengan satu perintah — konsisten di semua lingkungan
 
 ---
 <table>
