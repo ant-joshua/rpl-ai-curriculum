@@ -190,6 +190,56 @@ ALTER TABLE questions ADD COLUMN search_vector tsvector
 CREATE INDEX idx_questions_search ON questions USING GIN(search_vector);
 ```
 
+### Question Detail dengan View Count
+
+```typescript
+// routes/question.routes.ts
+router.get('/questions/:id', async (req, res) => {
+  const question = await db.transaction(async (tx) => {
+    // Increment view count
+    await tx.update(questions)
+      .set({ viewCount: sql`view_count + 1` })
+      .where(eq(questions.id, req.params.id));
+
+    // Ambil detail + answers + tags
+    return await tx.query.questions.findFirst({
+      where: eq(questions.id, req.params.id),
+      with: {
+        author: { columns: { id: true, username: true, reputation: true } },
+        tags: { with: { tag: true } },
+        answers: {
+          orderBy: [desc(answers.votesCount)],
+          with: {
+            author: { columns: { id: true, username: true, reputation: true } },
+          },
+        },
+      },
+    });
+  });
+
+  if (!question) throw new AppError(404, 'NOT_FOUND', 'Pertanyaan tidak ditemukan');
+  res.json({ status: 'success', data: question });
+});
+```
+
+### Sort Options untuk Question List
+
+```typescript
+type SortOption = 'newest' | 'votes' | 'active' | 'unanswered';
+
+function getOrderBy(sort: SortOption) {
+  switch (sort) {
+    case 'newest': return [desc(questions.createdAt)];
+    case 'votes': return [desc(questions.voteCount)];
+    case 'active': return [desc(questions.updatedAt)];
+    case 'unanswered': return [asc(questions.updatedAt)];
+    default: return [desc(questions.createdAt)];
+  }
+}
+```
+
+Pilihan sorting membantu user menemukan pertanyaan yang relevan. Sort `unanswered` menampilkan pertanyaan tanpa jawaban diterima — berguna untuk kolaborasi komunitas.
+
 ## 🛠️ Latihan
 
 ### Latihan 1: Inisialisasi Proyek
@@ -280,6 +330,42 @@ Tulis integration test:
 
 **Kriteria sukses**: Semua test passing, coverage ≥60%.
 
+### Latihan 8: Sorting & Filter Options
+
+Perkaya query parameter:
+
+1. Sorting: `?sort=votes` (by vote count), `?sort=active` (by last activity), `?sort=unanswered`
+2. Multiple tag filter: `?tags=javascript,typescript` (OR logic)
+3. Date range: `?from=2025-01-01&to=2025-12-31`
+4. Status filter: `?status=unanswered` (pertanyaan tanpa accepted answer)
+5. Response metadata: `X-Total-Count` header
+
+**Kriteria sukses**: Semua opsi sorting dan filter berfungsi dengan benar.
+
+### Latihan 9: Transaction & Data Consistency
+
+Implementasi database transaction untuk operasi multi-step:
+
+1. Bungkus create question + attach tags dalam satu transaction
+2. Bungkus create vote + update reputation dalam satu transaction
+3. Bungkus accept answer + update reputation penulis dalam satu transaction
+4. Rollback semua perubahan jika salah satu langkah gagal
+5. Test concurrent vote dari 2 user bersamaan
+
+**Kriteria sukses**: Semua operasi multi-step atomic, tidak ada data inconsistent saat concurrent access.
+
+### Latihan 10: Error Class & Consistent Response
+
+Buat error handling terstruktur:
+
+1. Class `AppError` dengan properti `statusCode`, `code`, `message`
+2. Error codes spesifik: `VALIDATION_ERROR`, `NOT_FOUND`, `UNAUTHORIZED`, `FORBIDDEN`, `CONFLICT`
+3. Consistent response format: `{ status, data, message, errors? }`
+4. Async wrapper yang catch error otomatis: `asyncHandler(fn)`
+5. Map error dari library (Zod, Drizzle) ke format AppError
+
+**Kriteria sukses**: Semua response konsisten, error mapping berfungsi, tidak ada unhandled promise rejection.
+
 ## 📚 Referensi
 
 - [Express.js Routing Guide](https://expressjs.com/en/guide/routing.html)
@@ -287,6 +373,7 @@ Tulis integration test:
 - [Drizzle ORM Documentation](https://orm.drizzle.team)
 - [Zod Validation](https://zod.dev)
 - [Stack Overflow API Pattern](https://stackapps.com/)
+- [PostgreSQL Transaction](https://www.postgresql.org/docs/current/tutorial-transactions.html)
 
 ---
 **Capstone 6 — Sesi 1: Product Design & Q&A Core.** Lanjut ke [Sesi 2: Real-time Features & AI Integration](02-real-time-features.md).

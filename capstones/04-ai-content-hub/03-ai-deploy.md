@@ -149,6 +149,114 @@ Untuk mengurangi biaya API, implementasi caching sederhana:
 - Invalidate cache saat artikel diupdate
 - Gunakan Map in-memory atau Redis untuk production
 
+```typescript
+// services/cache.service.ts
+export class CacheService {
+  private store = new Map<string, { value: unknown; expiresAt: number }>();
+
+  async get<T>(key: string): Promise<T | null> {
+    const entry = this.store.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiresAt) {
+      this.store.delete(key);
+      return null;
+    }
+    return entry.value as T;
+  }
+
+  async set(key: string, value: unknown, ttlMs: number): Promise<void> {
+    this.store.set(key, { value, expiresAt: Date.now() + ttlMs });
+  }
+
+  async invalidate(pattern: string): Promise<void> {
+    const regex = new RegExp(pattern);
+    for (const key of this.store.keys()) {
+      if (regex.test(key)) this.store.delete(key);
+    }
+  }
+}
+
+// Contoh: cache summarize
+const cache = new CacheService();
+async function getSummary(articleId: string) {
+  const cached = await cache.get<string>(`summary:${articleId}`);
+  if (cached) return cached;
+
+  const summary = await aiService.summarizeArticle(articleId);
+  await cache.set(`summary:${articleId}`, summary, 3600_000); // 1 jam
+  return summary;
+}
+```
+
+### Rate Limiting untuk AI Endpoints
+
+AI endpoints mahal per panggilan. Proteksi dengan rate limiting:
+
+```typescript
+// middleware/rateLimit.ts
+import rateLimit from 'express-rate-limit';
+
+export const aiRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 menit
+  max: 10, // max 10 request per menit per IP
+  message: {
+    status: 'error',
+    error: {
+      code: 'RATE_LIMIT',
+      message: 'Terlalu banyak request AI. Coba lagi dalam 1 menit.',
+    },
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Penggunaan di route
+router.post('/ai/write', authenticate, aiRateLimit, aiController.writeArticle);
+```
+
+### Logging AI Calls ke Database
+
+Simpan history setiap AI call untuk monitoring:
+
+```typescript
+// services/ai-logger.service.ts
+import { db } from '../db';
+import { aiLogs } from '../db/schema';
+
+interface AILogEntry {
+  userId: string;
+  toolName: string;
+  inputTokens: number;
+  outputTokens: number;
+  durationMs: number;
+  success: boolean;
+  errorMessage?: string;
+}
+
+export class AILogger {
+  async log(entry: AILogEntry) {
+    await db.insert(aiLogs).values({
+      ...entry,
+      createdAt: new Date(),
+    });
+  }
+
+  async getStats(userId: string) {
+    const stats = await db.query.aiLogs.findMany({
+      where: eq(aiLogs.userId, userId),
+      orderBy: [desc(aiLogs.createdAt)],
+      limit: 100,
+    });
+
+    const totalCalls = stats.length;
+    const failedCalls = stats.filter(l => !l.success).length;
+    const avgDuration = stats.reduce((s, l) => s + l.durationMs, 0) / totalCalls;
+
+    return { totalCalls, failedCalls, avgDuration, calls: stats };
+  }
+}
+```
+
 ### Testing dengan Mock LLM
 
 Unit test AI tools dengan mocking LLM response:
@@ -329,6 +437,42 @@ Buat dokumentasi dan demo:
 
 **Kriteria sukses**: Dokumentasi lengkap, demo script bisa dijalankan dari awal sampai akhir.
 
+### Latihan 8: AI Call Logging & Monitoring
+
+Buat sistem logging untuk AI calls:
+
+1. Buat tabel `ai_logs` di database (userId, toolName, inputTokens, outputTokens, durationMs, success, errorMessage)
+2. Implementasi AILogger service yang mencatat setiap AI call
+3. Buat endpoint `GET /api/admin/ai-stats` untuk monitoring
+4. Tampilkan statistik: total calls, failed %, average duration
+5. Alert jika failure rate > 10% dalam 1 jam
+
+**Kriteria sukses**: Semua AI call tercatat, dashboard monitoring menampilkan statistik.
+
+### Latihan 9: Rate Limiting & Security
+
+Proteksi AI endpoints:
+
+1. Install `express-rate-limit` 
+2. Set rate limit: 10 AI calls per menit per user
+3. Implementasi API key untuk akses eksternal (third-party)
+4. Tambahkan helmet untuk security headers
+5. CORS configuration untuk frontend origin saja
+
+**Kriteria sukses**: Rate limit blocking request berlebih, security headers aktif.
+
+### Latihan 10: SEO & Analytics Dashboard
+
+Optimasi SEO dan analytics:
+
+1. Generate sitemap.xml otomatis dari artikel published
+2. Tambahkan JSON-LD structured data (Article schema) di setiap artikel
+3. Open Graph meta tags (og:title, og:description, og:image)
+4. Analytics dashboard: total views, top articles, views per day chart
+5. View tracking middleware: increment view_count setiap artikel diakses
+
+**Kriteria sukses**: Sitemap valid, JSON-LD valid (test dengan Google Rich Results), analytics menampilkan data akurat.
+
 ## 📚 Referensi
 
 - [Mastra AI Documentation](https://mastra.ai/docs)
@@ -336,6 +480,8 @@ Buat dokumentasi dan demo:
 - [Docker Multi-stage Builds](https://docs.docker.com/build/building/multi-stage/)
 - [Swagger/OpenAPI Guide](https://swagger.io/docs/specification/about/)
 - [Vitest Mocking](https://vitest.dev/guide/mocking.html)
+- [express-rate-limit](https://github.com/express-rate-limit/express-rate-limit)
+- [Google Rich Results Test](https://search.google.com/test/rich-results)
 
 ---
 **Capstone 4 — Sesi 3: AI Integration & Deployment.** Kembali ke [Index Capstone 4](README.md).

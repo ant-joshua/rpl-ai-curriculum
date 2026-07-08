@@ -728,7 +728,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://user:pass@db:5432/rpl_ai
+      - DATABASE_URL=postgresql://user:***@db:5432/rpl_ai
     depends_on:
       - db
   db:
@@ -744,9 +744,103 @@ volumes:
   pgdata:
 ```
 
+### 23. WebSocket Chat — Real-time Messaging
+Buat chat room sederhana pake `ws` library.
+
+```ts
+// Starter code
+import { WebSocketServer, WebSocket } from 'ws';
+
+const wss = new WebSocketServer({ port: 8080 });
+
+// TODO: Simpan daftar client
+// TODO: Broadcast pesan ke semua client
+// TODO: Handle client disconnect
+```
+
+**Bonus:** Tambah fitur username, typing indicator, room separation.
+
+### 24. File Upload — Multer + Validation
+Upload file gambar pake Multer. Validasi tipe file, ukuran max.
+
+```ts
+import multer from 'multer';
+import path from 'path';
+import express from 'express';
+
+const app = express();
+
+// TODO: Konfigurasi storage destination + filename
+// TODO: Filter hanya image (jpeg, png, webp, gif)
+// TODO: Limit ukuran file 5MB
+// TODO: Route POST /api/upload — handle single file
+// TODO: Route GET /api/uploads/:filename — serve static
+```
+
+### 25. JWT Authentication — Login + Protected Routes
+Implementasi JWT auth dari scratch. Refresh token, role-based access.
+
+```ts
+// Starter: auth middleware
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+interface AuthRequest extends Request {
+  user?: { id: string; role: string };
+}
+
+// TODO: Middleware verifyToken — parse token dari Authorization header
+// TODO: Middleware requireRole('admin') — cek role user
+// TODO: Route POST /api/login — generate access + refresh token
+// TODO: Route POST /api/refresh — regenerate access token
+// TODO: Blacklist token pas logout (redis atau in-memory set)
+```
+
+### 26. Rate Limiting — Prevent Abuse
+Implementasi rate limiter pake `express-rate-limit`.
+
+```ts
+import rateLimit from 'express-rate-limit';
+
+// TODO: Rate limit 100 request per 15 menit per IP
+// TODO: Rate limit khusus untuk /api/auth — 5 request per menit
+// TODO: Custom error message ketika kena limit
+// TODO: Skip rate limit untuk IP tertentu (whitelist)
+// TODO: Simpan hit count di Redis untuk production
+```
+
+### 27. Integration Testing — Supertest + Vitest
+Tulis integration test untuk Express API pake supertest.
+
+```ts
+import request from 'supertest';
+import { describe, it, expect, beforeAll } from 'vitest';
+import app from '../src/app';
+
+// TODO: Test GET /api/notes return array
+// TODO: Test POST /api/notes return 201 + note object
+// TODO: Test POST /api/notes tanpa body return 400
+// TODO: Test GET /api/notes/:id return single note
+// TODO: Test DELETE /api/notes/:id return 204
+// TODO: Test protected route tanpa token return 401
+```
+
+### 28. Background Job — Queue + Worker
+Proses task berat di background pake BullMQ + Redis.
+
+```ts
+import { Queue, Worker } from 'bullmq';
+
+// TODO: Buat queue untuk email sending
+// TODO: Buat worker yang proses job dari queue
+// TODO: Job retry kalau gagal (max 3 kali)
+// TODO: Job scheduling — kirim report setiap jam
+// TODO: Monitor queue status via API endpoint
+```
+
 ---
 
-## 🧪 Cara Jalanin
+
 
 ```bash
 # Setup
@@ -761,4 +855,70 @@ npx tsx src/index.ts
 # Test pake curl
 curl http://localhost:3000
 curl -X POST http://localhost:3000/notes -H "Content-Type: application/json" -d '{"title":"Test"}'
+```
+
+## 🚀 Advanced Patterns
+
+### 29. Error Handling Middleware — Centralized
+```ts
+import { Request, Response, NextFunction } from "express";
+
+class AppError extends Error {
+  constructor(
+    public statusCode: number,
+    public message: string,
+    public isOperational = true
+  ) {
+    super(message);
+  }
+}
+
+// TODO: Buat error handler middleware (err, req, res, next)
+// TODO: Handle AppError vs unknown error beda response
+// TODO: Development: return stack trace, Production: jangan
+// TODO: Log error ke file/console
+// TODO: Handle async errors tanpa try-catch manual (wrapper)
+```
+
+### 30. Database Migration — Drizzle ORM
+```ts
+// TODO: Definisikan schema pake Drizzle
+// TODO: Generate migration file
+// TODO: Run migration up/down
+// TODO: Seed data awal
+// TODO: Migration test di CI/CD
+```
+
+
+### 31. Webhook Handler — Stripe Integration
+```ts
+import express from "express";
+
+const app = express();
+// TODO: Parse raw body untuk webhook signature verification
+// TODO: Verify Stripe signature pake Stripe library
+// TODO: Handle event: checkout.session.completed
+// TODO: Handle event: customer.subscription.updated
+// TODO: Update database sesuai event type
+// TODO: Return 200 ASAP, process async
+```
+
+### 32. GraphQL API — Apollo Server
+```ts
+import { ApolloServer, gql } from "apollo-server-express";
+
+// TODO: Define schema (typeDefs) untuk Note + User
+// TODO: Implement resolvers: Query, Mutation
+// TODO: Add context untuk auth
+// TODO: DataLoader untuk N+1 problem
+// TODO: Subscription untuk real-time
+```
+
+### 33. Server-Sent Events (SSE) — Push Notification
+```ts
+// TODO: Endpoint GET /api/events — keep-alive connection
+// TODO: Kirim event every 5 detik (heartbeat)
+// TODO: Broadcast event ke semua connected client
+// TODO: Handle client disconnect
+// TODO: Filter event by user ID
 ```

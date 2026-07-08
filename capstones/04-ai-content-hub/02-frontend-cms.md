@@ -105,6 +105,164 @@ Gunakan React Context untuk mengelola state global:
 
 Token JWT disimpan di `localStorage` dan dikirim via header `Authorization` di setiap request ke backend.
 
+### Auth Context Implementation
+
+```typescript
+// lib/auth-context.tsx
+'use client';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { api } from './api-client';
+
+interface AuthState {
+  user: { id: string; name: string; email: string } | null;
+  token: string | null;
+  isLoading: boolean;
+}
+
+interface AuthContextType extends AuthState {
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AuthState>({
+    user: null,
+    token: null,
+    isLoading: true,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.users.me().then(user => {
+        setState({ user, token, isLoading: false });
+      }).catch(() => {
+        localStorage.removeItem('token');
+        setState({ user: null, token: null, isLoading: false });
+      });
+    } else {
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const { token, user } = await api.auth.login(email, password);
+    localStorage.setItem('token', token);
+    setState({ user, token, isLoading: false });
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    const { token, user } = await api.auth.register(name, email, password);
+    localStorage.setItem('token', token);
+    setState({ user, token, isLoading: false });
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setState({ user: null, token: null, isLoading: false });
+  };
+
+  return (
+    <AuthContext.Provider value={{ ...state, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+}
+```
+
+### Auto-Save Draft dengan localStorage
+
+Auto-save mencegah kehilangan data saat menulis artikel panjang:
+
+```typescript
+// hooks/useAutoSave.ts
+import { useEffect, useRef } from 'react';
+
+const DRAFT_KEY_PREFIX = 'draft:';
+
+export function useAutoSave(articleId: string | undefined, data: {
+  title: string;
+  content: string;
+  tagIds: string[];
+}, intervalMs = 30000) {
+  const key = articleId
+    ? `${DRAFT_KEY_PREFIX}${articleId}`
+    : `${DRAFT_KEY_PREFIX}new`;
+  const prevData = useRef(data);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (JSON.stringify(prevData.current) !== JSON.stringify(data)) {
+        localStorage.setItem(key, JSON.stringify({
+          ...data,
+          savedAt: new Date().toISOString(),
+        }));
+        prevData.current = data;
+        console.log('Draft saved at', new Date().toLocaleTimeString());
+      }
+    }, intervalMs);
+
+    return () => clearInterval(timer);
+  }, [data, key, intervalMs]);
+
+  const restoreDraft = () => {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : null;
+  };
+
+  const clearDraft = () => {
+    localStorage.removeItem(key);
+  };
+
+  return { restoreDraft, clearDraft };
+}
+```
+
+### Unsaved Changes Warning
+
+Cegah navigasi tidak sengaja saat ada perubahan yang belum disimpan:
+
+```typescript
+// hooks/useUnsavedChanges.ts
+import { useEffect } from 'react';
+
+export function useUnsavedChanges(isDirty: boolean) {
+  useEffect(() => {
+    const beforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    const handleRouteChange = (url: string) => {
+      if (isDirty && !window.confirm(
+        'Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan halaman ini?'
+      )) {
+        throw new Error('Navigation cancelled');
+      }
+    };
+
+    window.addEventListener('beforeunload', beforeUnload);
+    // Untuk Next.js App Router, gunakan router.events
+    // window.addEventListener('hashchange', handleRouteChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnload);
+    };
+  }, [isDirty]);
+}
+```
+
 ### API Client Pattern
 
 Buat API client terpusat untuk menghindari duplikasi kode fetch:
@@ -252,6 +410,42 @@ Tulis integration test untuk alur CRUD frontend:
 
 **Kriteria sukses**: Semua test passing, CRUD flow terverifikasi end-to-end.
 
+### Latihan 8: Media Upload Gallery
+
+Buat halaman upload dan manajemen media:
+
+1. Komponen drag-and-drop file upload dengan preview gambar
+2. Validasi tipe file (hanya gambar: jpg, png, webp) dan ukuran (max 5MB)
+3. Upload progress bar dengan XMLHttpRequest atau fetch
+4. Gallery grid dengan lazy loading
+5. Pilih gambar dari gallery untuk featured image artikel
+
+**Kriteria sukses**: File bisa diupload, tampil di gallery, bisa dipilih sebagai featured image.
+
+### Latihan 9: Toast Notification System
+
+Buat sistem notifikasi toast global:
+
+1. Toast context dengan queue notifikasi
+2. Variasi tipe: success, error, warning, info
+3. Auto-dismiss setelah 5 detik
+4. Animasi slide-in dari kanan atas
+5. Tombol close manual
+
+**Kriteria sukses**: Toast muncul untuk setiap aksi CRUD, auto-dismiss berfungsi.
+
+### Latihan 10: Responsive Sidebar Layout
+
+Implementasi sidebar responsif:
+
+1. Desktop: sidebar tetap (fixed) dengan navigasi penuh
+2. Tablet: sidebar collapsible, icon-only saat collapsed
+3. Mobile: bottom navigation bar
+4. Animasi transisi sidebar buka/tutup
+5. Active link highlighting berdasarkan route saat ini
+
+**Kriteria sukses**: Layout beradaptasi di semua ukuran layar, navigasi tetap usable.
+
 ## 📚 Referensi
 
 - [Next.js Documentation](https://nextjs.org/docs)
@@ -259,6 +453,8 @@ Tulis integration test untuk alur CRUD frontend:
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [React Context API](https://react.dev/reference/react/createContext)
 - [Playwright Testing](https://playwright.dev/docs/writing-tests)
+- [MDN Drag & Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API)
+- [React Toast Pattern](https://react-hot-toast.com/)
 
 ---
 **Capstone 4 — Sesi 2: Frontend CMS & Content Management.** Lanjut ke [Sesi 3: AI Integration & Deployment](03-ai-deploy.md).

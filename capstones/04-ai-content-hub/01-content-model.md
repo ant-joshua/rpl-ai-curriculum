@@ -201,6 +201,156 @@ Implementasi error handling global:
 
 **Kriteria sukses**: Semua error response konsisten, async errors tidak crash server.
 
+### Implementasi Get Article dengan Pagination dan Filter
+
+```typescript
+// services/article.service.ts
+import { db } from '../db';
+import { articles, articleTags, tags } from '../db/schema';
+import { eq, and, like, desc, count, sql } from 'drizzle-orm';
+
+interface ArticleFilter {
+  page: number;
+  limit: number;
+  tag?: string;
+  status?: 'draft' | 'published';
+  search?: string;
+}
+
+export class ArticleService {
+  async list(filters: ArticleFilter) {
+    const offset = (filters.page - 1) * filters.limit;
+    const conditions = [];
+
+    if (filters.status) {
+      conditions.push(eq(articles.status, filters.status));
+    }
+    if (filters.search) {
+      conditions.push(
+        like(articles.title, `%${filters.search}%`)
+      );
+    }
+
+    const whereClause = conditions.length > 0
+      ? and(...conditions)
+      : undefined;
+
+    const data = await db.query.articles.findMany({
+      where: whereClause,
+      limit: filters.limit,
+      offset,
+      orderBy: [desc(articles.createdAt)],
+      with: {
+        tags: {
+          with: { tag: true },
+        },
+      },
+    });
+
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(articles)
+      .where(whereClause);
+
+    return {
+      data,
+      pagination: {
+        page: filters.page,
+        limit: filters.limit,
+        total,
+        totalPages: Math.ceil(total / filters.limit),
+      },
+    };
+  }
+}
+```
+
+Service layer memisahkan logika query dari route handler. Dengan Drizzle ORM, relasi bisa di-include langsung via `with` clause. Pattern ini memudahkan testing karena service bisa di-mock tanpa perlu HTTP server.
+
+### Refresh Token Flow
+
+Untuk keamanan lebih baik, implementasi refresh token:
+
+```typescript
+// services/auth.service.ts
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
+const ACCESS_SECRET = process.env.JWT_SECRET!;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+
+export class AuthService {
+  generateTokens(userId: string, email: string) {
+    const accessToken = jwt.sign(
+      { userId, email },
+      ACCESS_SECRET,
+      { expiresIn: '15m' }
+    );
+    const refreshToken = jwt.sign(
+      { userId, type: 'refresh' },
+      REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    return { accessToken, refreshToken };
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    try {
+      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as {
+        userId: string; type: string;
+      };
+      if (decoded.type !== 'refresh') {
+        throw new Error('Invalid token type');
+      }
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, decoded.userId),
+      });
+      if (!user) throw new Error('User not found');
+      return this.generateTokens(user.id, user.email);
+    } catch {
+      throw new AppError(401, 'TOKEN_INVALID', 'Refresh token tidak valid');
+    }
+  }
+}
+```
+
+## 🛠️ Latihan (Tambahan)
+
+### Latihan 8: Service Layer & Refactoring
+
+Refaktor route handler agar menggunakan service pattern:
+
+1. Pindahkan logika dari `routes/articles.ts` ke `services/article.service.ts`
+2. Service harus return data terstruktur `{ data, pagination }`
+3. Route handler hanya memanggil service method dan mengirim response
+4. Test dengan mengubah route handler jadi 3-4 baris saja
+
+**Kriteria sukses**: Routes hanya berisi req/res handling, logika bisnis di service layer.
+
+### Latihan 9: Refresh Token & Logout
+
+Tambahkan refresh token ke auth system:
+
+1. Generate refresh token (7 hari) saat login
+2. Endpoint `POST /api/auth/refresh` — terima refresh token, return access token baru
+3. Endpoint `POST /api/auth/logout` — blacklist refresh token
+4. Simpan refresh token di tabel `refresh_tokens` (token, userId, expiresAt)
+5. Pastikan refresh token hanya bisa dipakai sekali
+
+**Kriteria sukses**: Refresh token flow berfungsi, token bekas tidak bisa dipakai ulang.
+
+### Latihan 10: Filtering & Sorting Lanjutan
+
+Perkaya query parameter di endpoint artikel:
+
+1. Sorting: `?sort=createdAt:desc` atau `?sort=title:asc`
+2. Multi-tag filter: `?tags=javascript,typescript` (AND logic)
+3. Date range: `?startDate=2025-01-01&endDate=2025-12-31`
+4. Search di title dan content: `?q=keyword`
+5. Response headers: `X-Total-Count`, `X-Total-Pages`
+
+**Kriteria sukses**: Semua parameter filter dan sorting berfungsi, response header lengkap.
+
 ## 📚 Referensi
 
 - [Express.js Guide](https://expressjs.com/en/guide/routing.html)
@@ -208,6 +358,8 @@ Implementasi error handling global:
 - [JWT Introduction](https://jwt.io/introduction)
 - [Zod Documentation](https://zod.dev)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Refresh Token Pattern](https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/)
+- [PostgreSQL Indexing](https://www.postgresql.org/docs/current/indexes.html)
 
 ---
 **Capstone 4 — Sesi 1: Content Model & API Foundation.** Lanjut ke [Sesi 2: Frontend CMS](02-frontend-cms.md).

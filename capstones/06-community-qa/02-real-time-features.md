@@ -246,6 +246,117 @@ export function sendNotification(userId, notification) {
 }
 ```
 
+### Frontend EventSource Listener
+
+Di sisi frontend, gunakan EventSource untuk menerima notifikasi:
+
+```typescript
+// hooks/useNotificationStream.ts
+export function useNotificationStream(token: string) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `${API_BASE}/notifications/stream?token=${token}`
+    );
+
+    eventSource.onmessage = (event) => {
+      const notification = JSON.parse(event.data);
+      setNotifications(prev => [notification, ...prev]);
+      // Tampilkan toast
+      showToast(notification.message, 'info');
+    };
+
+    eventSource.onerror = (err) => {
+      console.error('SSE error:', err);
+      eventSource.close();
+      // Reconnect setelah 5 detik
+      setTimeout(() => {
+        // reconnect logic
+      }, 5000);
+    };
+
+    return () => eventSource.close();
+  }, [token]);
+
+  return notifications;
+}
+```
+
+### Moderasi Content Pipeline Lengkap
+
+Berikut alur moderasi dari awal sampai akhir:
+
+```typescript
+// middleware/moderation.pipeline.ts
+export async function moderationPipeline(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const startTime = Date.now();
+  const textToModerate = req.body.title
+    ? `${req.body.title} ${req.body.body}`
+    : req.body.body;
+
+  try {
+    const result = await safeAICall(
+      () => qaAgent.execute({
+        task: 'moderate content',
+        tools: [moderateContentTool],
+        data: { text: textToModerate },
+      }),
+      { isToxic: false, reasons: [], confidence: 0 }
+    );
+
+    // Log hasil moderasi
+    await moderationLogService.log({
+      userId: req.user.id,
+      contentType: req.body.title ? 'question' : 'answer',
+      contentPreview: textToModerate.substring(0, 100),
+      isToxic: result.isToxic,
+      confidence: result.confidence,
+      reasons: result.reasons,
+      durationMs: Date.now() - startTime,
+    });
+
+    if (result.isToxic && result.confidence > 0.7) {
+      req.isModerated = true;
+      req.moderationReasons = result.reasons;
+
+      // Kirim notifikasi ke user
+      await notificationService.create({
+        userId: req.user.id,
+        type: 'moderated',
+        message: `Konten Anda ditandai: ${result.reasons.join(', ')}`,
+        link: req.originalUrl,
+      });
+
+      // Notifikasi admin
+      const admins = await userService.getAdmins();
+      for (const admin of admins) {
+        await notificationService.create({
+          userId: admin.id,
+          type: 'moderated',
+          message: `Konten perlu review: ${result.reasons.join(', ')}`,
+          link: `/admin/moderation`,
+        });
+        sendNotification(admin.id, {
+          type: 'moderation_alert',
+          message: `Konten perlu review: ${result.reasons.join(', ')}`,
+        });
+      }
+    }
+
+    next();
+  } catch (error) {
+    // Fail open — jangan blokir user karena AI error
+    console.error('Moderation pipeline failed:', error);
+    next();
+  }
+}
+```
+
 ### Trigger Notifikasi
 
 Notifikasi dikirim pada event berikut:
@@ -371,6 +482,42 @@ Tulis test untuk AI tools:
 
 **Kriteria sukses**: Semua test passing, AI tools teruji dengan mock.
 
+### Latihan 8: Moderation Log & Dashboard
+
+Bangun sistem logging moderasi:
+
+1. Buat tabel `moderation_logs` (userId, contentType, contentPreview, isToxic, confidence, reasons, durationMs, createdAt)
+2. Simpan log setiap kali middleware moderasi dipanggil
+3. Buat endpoint `GET /api/admin/moderation-logs` — list log moderasi
+4. Filter: by date range, by isToxic, by confidence threshold
+5. Statistik: total moderated, toxic %, average confidence
+
+**Kriteria sukses**: Semua aktivitas moderasi tercatat, dashboard monitoring menampilkan statistik.
+
+### Latihan 9: SSE Reconnection & Fallback
+
+Perbaiki reliability SSE:
+
+1. Implementasi reconnect dengan exponential backoff (1s, 2s, 4s, 8s, max 30s)
+2. Kirim last event ID, server lanjutkan dari event terakhir
+3. Fallback ke polling setiap 30 detik jika SSE gagal total
+4. Notifikasi badge di navbar update real-time via SSE
+5. Mark all as read dari navbar dropdown
+
+**Kriteria sukses**: SSE reconnect otomatis, tidak ada notifikasi terlewat, fallback polling berfungsi.
+
+### Latihan 10: AI Prompt Optimization
+
+Optimasi prompt AI untuk hasil lebih baik:
+
+1. A/B test prompt variants untuk suggestAnswer (formal vs casual)
+2. Tambahkan few-shot examples di prompt autoTag
+3. Implementasi chain-of-thought prompt untuk moderateContent
+4. Evaluasi kualitas output: 3 reviewer beri rating 1-5
+5. Track prompt version di ai_logs untuk audit
+
+**Kriteria sukses**: Prompt engineering terdokumentasi, quality score meningkat dari baseline.
+
 ## 📚 Referensi
 
 - [Mastra AI Documentation](https://mastra.ai/docs)
@@ -378,6 +525,7 @@ Tulis test untuk AI tools:
 - [OpenAI Content Moderation](https://platform.openai.com/docs/guides/moderation)
 - [EventEmitter Node.js](https://nodejs.org/api/events.html)
 - [Prompt Engineering Best Practices](https://platform.openai.com/docs/guides/prompt-engineering)
+- [EventSource API](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)
 
 ---
 **Capstone 6 — Sesi 2: Real-time Features & AI Integration.** Lanjut ke [Sesi 3: Deployment & Monetization](03-deploy-monetize.md).

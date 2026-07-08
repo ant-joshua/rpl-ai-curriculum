@@ -332,6 +332,42 @@ users 1──N media
 - **AI Prompting**: Gunakan Bahasa Indonesia untuk prompt tools. Kasih contoh output format biar konsisten.
 - **Error Handling AI**: LLM bisa timeout atau return invalid JSON. Selalu wrap tool call di try/catch.
 - **Rate Limiting**: Tambahkan express-rate-limit untuk AI endpoints (biaya API).
+- **Environment Variables**: Simpan API key LLM, JWT secret, dan database URL di `.env` file. Jangan commit ke git.
+- **Git Workflow**: Bekerja dengan branching — `main` untuk production, `develop` untuk development, feature branch per sprint.
+
+### Troubleshooting
+
+| Masalah | Penyebab | Solusi |
+|---------|----------|--------|
+| Container tidak bisa connect ke DB | Database belum siap | Tambah `depends_on` + healthcheck |
+| AI call timeout | API key invalid atau rate limit | Cek env var, kurangi prompt length |
+| JWT expired terus | Access token cuma 15 menit | Implementasi refresh token |
+| Prisma migration error | Schema conflict | `npx prisma db push` untuk sync |
+| CORS error | Origin mismatch | Set `Access-Control-Allow-Origin` sesuai frontend URL |
+
+### Command Cheatsheet
+
+```bash
+# Development
+npm run dev              # Start dev server (tsx watch)
+npm run build            # Compile TypeScript
+npm run test             # Jalankan test
+npm run test:coverage    # Test dengan coverage
+
+# Database
+npx drizzle-kit generate # Generate migration
+npx drizzle-kit migrate  # Jalankan migrasi
+npm run seed             # Seed data dummy
+
+# Docker
+docker compose up -d     # Start semua service
+docker compose logs -f   # Stream logs
+docker compose down      # Stop semua service
+
+# Git
+git checkout -b feat/ai-integration  # Branch baru
+git add . && git commit -m "feat: ..."  # Commit
+```
 
 ---
 

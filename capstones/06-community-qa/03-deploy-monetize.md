@@ -458,6 +458,42 @@ Dokumentasi API dengan Swagger:
 
 **Kriteria sukses**: Swagger UI accessible di /api-docs, semua endpoint terdocumentasi.
 
+### Latihan 8: User Reputation Leaderboard
+
+Buat leaderboard reputasi:
+
+1. Endpoint `GET /api/leaderboard?period=all|month|week`
+2. Top 10 users by reputation
+3. Tampilkan badge untuk milestones (100, 500, 1000, 5000 reputasi)
+4. User profile page: total questions, answers, accepted count, reputation history
+5. Activity graph: reputation change over time (7 hari terakhir)
+
+**Kriteria sukses**: Leaderboard akurat, profile menampilkan statistik lengkap.
+
+### Latihan 9: Monetization — Premium Features
+
+Implementasi fitur premium:
+
+1. Subscription tier: Free (5 AI calls/hari) vs Premium (unlimited)
+2. Midtrans/Xendit payment gateway integration untuk subscription
+3. Premium-only: advanced analytics, priority support, custom theme
+4. Webhook handler untuk payment status update
+5. Usage tracking: reset AI call counter setiap hari
+
+**Kriteria sukses**: User bisa subscribe, AI call limit terbatas untuk free tier, payment webhook berfungsi.
+
+### Latihan 10: Admin Dashboard & Analytics
+
+Buat admin dashboard lengkap:
+
+1. Overview: total users, questions, answers, votes hari ini
+2. Moderation queue: daftar konten perlu review dengan approve/reject button
+3. AI usage charts: calls per day, success rate, average cost
+4. User management: search, ban/unban, role assignment (admin/moderator/user)
+5. Export data: CSV report untuk questions, users, votes
+
+**Kriteria sukses**: Admin bisa manage semua aspek platform, data akurat, export CSV berfungsi.
+
 ## 📚 Referensi
 
 - [OpenAPI Specification](https://swagger.io/specification/)
@@ -465,6 +501,8 @@ Dokumentasi API dengan Swagger:
 - [Playwright Test Runner](https://playwright.dev/docs/test-intro)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Supertest API Testing](https://github.com/ladjs/supertest)
+- [Midtrans Payment Gateway](https://midtrans.com/id)
+- [Express Helmet Security](https://helmetjs.github.io/)
 
 ---
 **Capstone 6 — Sesi 3: Reputation System, Testing & Deployment.** Kembali ke [Index Capstone 6](README.md).

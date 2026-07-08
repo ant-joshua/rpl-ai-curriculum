@@ -608,6 +608,461 @@ const [err, user] = await safeAsync<{ id: number }>(
 // err: Error | null, user: { id: number } | null — fully typed!
 ```
 
+### 26. Declaration Files — Ambient Type Declarations
+Buat file deklarasi (.d.ts) untuk library JavaScript yang gak punya type sendiri.
+
+```ts
+// Starter code: types/weather-api.d.ts
+declare module "weather-api" {
+  export interface WeatherResponse {
+    location: {
+      city: string;
+      country: string;
+      lat: number;
+      lon: number;
+    };
+    current: {
+      temperature: number;
+      condition: string;
+      humidity: number;
+      windSpeed: number;
+      icon: string;
+    };
+    forecast?: Array<{
+      date: string;
+      tempHigh: number;
+      tempLow: number;
+      condition: string;
+    }>;
+  }
+
+  export function getWeather(city: string): Promise<WeatherResponse>;
+  export function getForecast(city: string, days: number): Promise<WeatherResponse>;
+}
+
+// usage.ts — setelah declare module, TypeScript auto kenali typing
+import { getWeather } from "weather-api";
+
+async function showWeather() {
+  const data = await getWeather("Jakarta");
+  console.log(`${data.location.city}: ${data.current.temperature}°C`);
+}
+```
+
+### 27. Declaration Files — Augment Existing Module
+Tambahkan type ke library yang sudah ada (module augmentation).
+
+```ts
+// Starter code: types/express-augment.d.ts
+import "express";
+
+// Tambah properti user ke Express Request
+declare module "express" {
+  interface Request {
+    user?: {
+      id: string;
+      email: string;
+      role: "admin" | "user";
+    };
+    requestId?: string;
+  }
+}
+
+// Sekarang req.user bisa diakses di route handler tanpa type cast
+import { Request, Response } from "express";
+
+app.get("/api/profile", (req: Request, res: Response) => {
+  // req.user — sudah typed, no need to cast!
+  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+  res.json({ id: req.user.id, email: req.user.email });
+});
+```
+
+### 28. Module Resolution — Path Aliases
+Konfigurasi path alias di tsconfig untuk import yang lebih rapi.
+
+```json
+// tsconfig.json — configure paths
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@routes/*": ["src/routes/*"],
+      "@services/*": ["src/services/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@db/*": ["src/db/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"]
+    }
+  }
+}
+```
+
+```ts
+// Test — import pake alias
+import { UserService } from "@services/user.service"; // bukan ../../../services
+import { authMiddleware } from "@middleware/auth";
+import { db } from "@db/index";
+
+// Jangan lupa install tsconfig-paths atau set NODE_PATH
+// npm install -D tsconfig-paths
+// node -r tsconfig-paths/register dist/index.js
+```
+
+### 29. Module Resolution — Barrel Export & Re-export
+Buat barrel file untuk export terpusat.
+
+```ts
+// src/services/index.ts — barrel export
+export { AuthService } from "./auth.service";
+export { ArticleService } from "./article.service";
+export { TagService } from "./tag.service";
+export { AIService } from "./ai.service";
+export { CacheService } from "./cache.service";
+
+// src/middleware/index.ts
+export { authenticate } from "./auth";
+export { errorHandler } from "./error";
+export { validate } from "./validation";
+export { rateLimit } from "./rateLimit";
+
+// Import jadi satu baris
+import { AuthService, ArticleService, TagService } from "@services";
+import { authenticate, errorHandler, validate } from "@middleware";
+
+// Dynamic re-export — kondisional
+export * from "./services";
+export * from "./middleware";
+// export { default } from "./utils/helpers";
+```
+
+### 30. Mapped Types — Deep Readonly & Nullable
+Buat mapped type yang bekerja di nested object.
+
+```ts
+// Starter code
+type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends object
+    ? T[K] extends Function
+      ? T[K]
+      : DeepReadonly<T[K]>
+    : T[K];
+};
+
+type DeepNullable<T> = {
+  [K in keyof T]: T[K] extends object
+    ? DeepNullable<T[K]>
+    : T[K] | null;
+};
+
+// Test
+interface Config {
+  server: {
+    host: string;
+    port: number;
+    ssl: {
+      enabled: boolean;
+      cert: string;
+      key: string;
+    };
+  };
+  database: {
+    url: string;
+    pool: {
+      min: number;
+      max: number;
+      timeout: number;
+    };
+  };
+}
+
+type ReadonlyConfig = DeepReadonly<Config>;
+// Semua nested property jadi readonly
+
+type NullableConfig = DeepNullable<Config>;
+// Semua leaf property jadi T | null
+```
+
+### 31. Template Literal Types — Event System
+Buat event system type-safe pakai template literal.
+
+```ts
+// Starter code
+type EventName = "click" | "focus" | "blur" | "change" | "submit";
+type EventPrefix = "on";
+type HandlerName = `${EventPrefix}${Capitalize<EventName>}`;
+// "onClick" | "onFocus" | "onBlur" | "onChange" | "onSubmit"
+
+// Event map dengan payload type
+type EventPayload = {
+  click: { x: number; y: number };
+  focus: { targetId: string };
+  blur: { targetId: string };
+  change: { value: string; previousValue: string };
+  submit: { formData: Record<string, string> };
+};
+
+type TypedEventListener = {
+  [K in EventName as `on${Capitalize<K>}`]: 
+    (payload: EventPayload[K]) => void;
+};
+
+// Implementasi
+const listener: TypedEventListener = {
+  onClick: (e) => console.log(`Clicked at ${e.x}, ${e.y}`),
+  onFocus: (e) => console.log(`Focused on ${e.targetId}`),
+  onChange: (e) => console.log(`Changed from ${e.previousValue} to ${e.value}`),
+  onSubmit: (e) => console.log(`Submitted:`, e.formData),
+  onBlur: (e) => console.log(`Blurred ${e.targetId}`),
+};
+```
+
+### 32. Conditional Types — Filter & Extract Properties
+Filter properti object berdasarkan tipe value.
+
+```ts
+// Starter code
+// Ambil properti yang tipenya string
+type StringProps<T> = {
+  [K in keyof T as T[K] extends string ? K : never]: T[K];
+};
+
+// Ambil properti yang tipenya number
+type NumberProps<T> = {
+  [K in keyof T as T[K] extends number ? K : never]: T[K];
+};
+
+// Ambil properti yang tipenya function
+type FunctionProps<T> = {
+  [K in keyof T as T[K] extends Function ? K : never]: T[K];
+};
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  createdAt: Date;
+  updateStock(quantity: number): void;
+  calculateDiscount(percent: number): number;
+}
+
+type ProductStrings = StringProps<Product>;
+// { name: string; description: string; }
+
+type ProductNumbers = NumberProps<Product>;
+// { id: number; price: number; stock: number; }
+
+type ProductFunctions = FunctionProps<Product>;
+// { updateStock: (qty: number) => void; calculateDiscount: (pct: number) => number; }
+```
+
+### 33. Declaration Files — Global Types & Namespace
+Buat global type declarations untuk menambahkan tipe ke window object atau library global.
+
+```ts
+// types/global.d.ts — tipe akan tersedia global tanpa import
+
+// Extend Window interface
+interface Window {
+  __APP_CONFIG__: {
+    apiUrl: string;
+    environment: 'development' | 'staging' | 'production';
+    version: string;
+    sentryDsn?: string;
+  };
+  analytics: {
+    track(event: string, data?: Record<string, unknown>): void;
+    identify(userId: string, traits?: Record<string, unknown>): void;
+  };
+}
+
+// Extend global scope (Node.js)
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NODE_ENV: 'development' | 'production' | 'test';
+    PORT?: string;
+    DATABASE_URL: string;
+    JWT_SECRET: string;
+    OPENAI_API_KEY?: string;
+  }
+}
+
+// Global function
+declare function formatCurrency(amount: number, locale?: string): string;
+
+// Sekarang semua bisa diakses tanpa import
+const env = process.env.NODE_ENV; // typed!
+const apiUrl = window.__APP_CONFIG__.apiUrl;
+formatCurrency(50000); // "Rp50.000"
+```
+
+### 34. Module Resolution — ESM vs CJS Interop
+Pahami perbedaan module system dan cara interop.
+
+```ts
+// CommonJS module (cjs-lib.js)
+// module.exports = { greet: (name) => `Hello ${name}` };
+
+// ESM import (dengan default export)
+import greet from 'cjs-lib'; // default interop
+
+// namespace import
+import * as cjsLib from 'cjs-lib';
+
+// config untuk interop
+// tsconfig.json
+{
+  "compilerOptions": {
+    "module": "NodeNext", // atau "Node16"
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true, // default interop CJS → ESM
+    "allowSyntheticDefaultImports": true
+  }
+}
+
+// Conditional export di package.json
+// {
+//   "exports": {
+//     ".": {
+//       "import": "./dist/index.mjs",
+//       "require": "./dist/index.cjs"
+//     }
+//   }
+// }
+```
+
+### 35. Practical — Zod Schema from TypeScript Type
+Gunakan conditional types untuk generate Zod schema type.
+
+```ts
+// Starter code
+import { z } from 'zod';
+
+// Tipe data
+interface UserInput {
+  username: string;
+  email: string;
+  age: number;
+  role: 'admin' | 'user' | 'viewer';
+  tags?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+// TODO: Buat Zod schema yang validasi UserInput
+const userSchema = z.object({
+  username: z.string().min(3).max(50),
+  email: z.string().email(),
+  age: z.number().int().min(13).max(120),
+  role: z.enum(['admin', 'user', 'viewer']),
+  tags: z.array(z.string()).optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+// Infer TypeScript type dari Zod schema
+type UserInputFromSchema = z.infer<typeof userSchema>;
+// Sama dengan UserInput di atas
+
+// Validasi
+const result = userSchema.safeParse({
+  username: 'budi',
+  email: 'budi@test.com',
+  age: 17,
+  role: 'user',
+});
+
+if (!result.success) {
+  console.log(result.error.errors);
+} else {
+  console.log('Valid:', result.data);
+}
+
+// TODO: Buat fungsi generic yang terima Zod schema dan data
+// function validate<T>(schema: z.ZodType<T>, data: unknown): T
+// TODO: Implementasi partial update schema
+// TODO: Custom error messages dalam Bahasa Indonesia
+```
+
+### 36. Practical — OpenAPI Schema Generation dari TypeScript
+Generate OpenAPI spec dari TypeScript types untuk dokumentasi API.
+
+```ts
+// Starter code
+import { z } from 'zod';
+
+// Schema definisi
+const CreateUserSchema = z.object({
+  username: z.string().min(3).describe('Nama pengguna, minimal 3 karakter'),
+  email: z.string().email().describe('Alamat email valid'),
+  password: z.string().min(8).describe('Password minimal 8 karakter'),
+  role: z.enum(['admin', 'user']).default('user').describe('Role pengguna'),
+});
+
+const UserResponseSchema = z.object({
+  id: z.string().uuid(),
+  username: z.string(),
+  email: z.string().email(),
+  role: z.enum(['admin', 'user']),
+  createdAt: z.string().datetime(),
+});
+
+// Type inference
+type CreateUserDto = z.infer<typeof CreateUserSchema>;
+type UserResponse = z.infer<typeof UserResponseSchema>;
+
+// TODO: Generate OpenAPI JSON dari schema
+function schemaToOpenApiProperty(schema: z.ZodTypeAny): object {
+  // Map Zod types to OpenAPI types
+  if (schema instanceof z.ZodString) return { type: 'string' };
+  if (schema instanceof z.ZodNumber) return { type: 'number' };
+  if (schema instanceof z.ZodBoolean) return { type: 'boolean' };
+  if (schema instanceof z.ZodArray) return {
+    type: 'array',
+    items: schemaToOpenApiProperty(schema.element),
+  };
+  if (schema instanceof z.ZodEnum) return {
+    type: 'string',
+    enum: schema.options,
+  };
+  if (schema instanceof z.ZodObject) {
+    const properties: Record<string, object> = {};
+    const shape = schema.shape;
+    for (const key in shape) {
+      properties[key] = {
+        ...schemaToOpenApiProperty(shape[key]),
+        description: shape[key].description || key,
+      };
+    }
+    return {
+      type: 'object',
+      properties,
+      required: Object.keys(shape),
+    };
+  }
+  return {};
+}
+
+// Gunakan untuk auto-generate API docs
+console.log(JSON.stringify({
+  openapi: '3.0.0',
+  paths: {
+    '/api/users': {
+      post: {
+        summary: 'Buat user baru',
+        requestBody: {
+          content: { 'application/json': { schema: schemaToOpenApiProperty(CreateUserSchema) } },
+        },
+        responses: {
+          '201': { description: 'User created', content: { 'application/json': { schema: schemaToOpenApiProperty(UserResponseSchema) } } },
+        },
+      },
+    },
+  },
+}, null, 2));
+```
+
 ---
 
 ## 🧪 Cara Jalanin
@@ -625,3 +1080,82 @@ node exercises/03-ts/exercise-01.js
 ```
 
 > Semua exercise wajib pake `strict: true` di tsconfig. No `any`!
+
+### 20. Template Literal Types — Event System
+Buat type-safe event system pake template literal types.
+
+```ts
+// Starter code
+type EventName = 'click' | 'hover' | 'focus';
+type ElementType = 'button' | 'input' | 'div';
+
+// TODO: Buat tipe `EventKey` yang gabung EventName + ElementType
+// contoh: "button:click" | "button:hover" | "input:focus"
+
+type EventKey = `${ElementType}:${EventName}`;
+
+// TODO: Buat tipe `EventHandlerMap` — mapping EventKey ke function
+type EventHandlerMap = {
+  [K in EventKey]: () => void;
+};
+
+// TODO: Implement class EventBus<T extends EventName>
+// - on(event: T, cb: () => void): void
+// - emit(event: T): void
+// - off(event: T): void
+```
+
+### 21. Declaration Files — .d.ts untuk Library
+Buat declaration file untuk library JS tanpa types.
+
+```ts
+// my-math-lib.js (kamu ga kontrol file ini)
+export function add(a, b) { return a + b; }
+export function multiply(arr, factor) { return arr.map(x => x * factor); }
+
+// TODO: Buat my-math-lib.d.ts dengan type declarations
+// - add(a: number, b: number): number
+// - multiply(arr: number[], factor: number): number[]
+// - Tambah JSDoc biar muncul di IDE intellisense
+```
+
+### 22. Module Augmentation — Extend Third-Party Types
+Tambah properti baru ke tipe dari library eksternal.
+
+```ts
+import 'express';
+
+// TODO: Tambah properti `user` ke Express Request
+// interface Request { user?: { id: string; role: string } }
+
+// TODO: Buat middleware yang inject user ke request
+// TODO: Akses req.user di route handler tanpa type error
+```
+
+### 23. Conditional Types — Extract/Exclude/NonNullable
+```ts
+// Starter code
+type ApiResponse<T> = { status: 'success'; data: T } | { status: 'error'; message: string };
+
+// TODO: Ekstrak tipe data dari ApiResponse<T> pake conditional type
+type ExtractData<T> = T extends { data: infer D } ? D : never;
+
+// TODO: Buat tipe IsString<T> — returns true jika T extends string
+// TODO: Buat tipe DeepReadonly<T> — recursive readonly
+// TODO: Buat tipe PickByValue<T, V> — pick keys yg valuenya extends V
+```
+
+### 24. Mapped Types — Deep Partial
+```ts
+// Starter code
+interface Config {
+  server: { host: string; port: number; ssl: boolean };
+  database: { url: string; pool: number; timeout: number };
+  cache: { ttl: number; redis: { host: string; port: number } };
+}
+
+// TODO: Buat DeepPartial<T> — semua properti jadi optional recursive
+// TODO: Buat DeepRequired<T> — semua properti jadi required recursive
+// TODO: Gunakan DeepPartial<Config> untuk update partial config
+```
+

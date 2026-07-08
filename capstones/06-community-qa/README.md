@@ -335,6 +335,69 @@ export { agent };
 - OpenAI API: https://platform.openai.com
 - Contoh Stack Overflow clone open-source: https://github.com/link/to/example (opsional)
 
+## 11. Environment Setup
+
+### Required Variables
+
+```bash
+# .env
+DATABASE_URL=postgres://postgres:password@localhost:5432/community_qa
+JWT_SECRET=your-super-secret-key-min-32-chars
+JWT_REFRESH_SECRET=another-secret-key-min-32-chars
+OPENAI_API_KEY=sk-...
+PORT=3000
+NODE_ENV=development
+
+# Optional
+REDIS_URL=redis://localhost:6379
+CORS_ORIGIN=http://localhost:3001
+```
+
+### Quick Start
+
+```bash
+# 1. Clone & install
+git clone <repo-url> community-qa
+cd community-qa
+npm install
+
+# 2. Setup database
+cp .env.example .env
+npx drizzle-kit generate
+npx drizzle-kit migrate
+npm run seed
+
+# 3. Run
+npm run dev
+# Server at http://localhost:3000
+# Swagger UI at http://localhost:3000/api-docs
+```
+
+### Project Structure Checklist
+
+```
+├── src/
+│   ├── routes/          # Route definisi + middleware wiring
+│   ├── controllers/     # Request handlers (thin)
+│   ├── services/        # Business logic
+│   ├── middleware/       # Auth, validation, error, rate-limit
+│   ├── db/
+│   │   ├── schema.ts    # Drizzle schema definisi
+│   │   ├── index.ts     # DB connection
+│   │   └── seed.ts      # Data dummy
+│   ├── agents/          # Mastra agent + tools
+│   ├── utils/           # Helpers, types, constants
+│   └── index.ts         # Entry point
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── Dockerfile
+├── docker-compose.yml
+├── .github/workflows/ci.yml
+└── README.md
+```
+
 ---
 
 *Dokumen ini adalah bagian dari kurikulum RPL AI — Capstone 6. Revisi: Juli 2026.*
