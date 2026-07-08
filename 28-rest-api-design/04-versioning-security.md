@@ -209,6 +209,53 @@ export function verifyToken(token: string): { userId: number; role: string } {
 }
 ```
 
+### Refresh Token Pattern
+
+JWT punya masa berlaku terbatas. Biar user gak perlu login terus, pake **refresh token**:
+
+```typescript
+// src/utils/auth.ts (tambahan)
+export function generateAccessToken(userId: number, role: string): string {
+  return jwt.sign({ userId, role }, JWT_SECRET, { expiresIn: '15m' });
+}
+
+export function generateRefreshToken(userId: number): string {
+  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET + '-refresh', { expiresIn: '7d' });
+}
+
+export function verifyRefreshToken(token: string): { userId: number } {
+  return jwt.verify(token, JWT_SECRET + '-refresh') as { userId: number };
+}
+```
+
+```typescript
+// Route refresh token
+app.post('/api/v1/auth/refresh', (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(400).json({ message: 'Refresh token wajib diisi' });
+  }
+  try {
+    const payload = verifyRefreshToken(refreshToken);
+    const newAccessToken = generateAccessToken(payload.userId, 'user');
+    res.json({ accessToken: newAccessToken });
+  } catch {
+    res.status(401).json({ message: 'Refresh token tidak valid atau expired' });
+  }
+});
+```
+
+### Deprecation Policy
+
+Biar client tau API bakal dihentikan, gunakan header deprecation + sunset:
+
+| Header | Contoh | Fungsi |
+|--------|--------|--------|
+| `Deprecation` | `true` | Tandai endpoint sudah deprecated |
+| `Deprecated-Since` | `2024-01-01` | Tanggal mulai deprecated |
+| `Sunset` | `Sun, 30 Jun 2024 00:00:00 GMT` | Tanggal endpoint akan dihapus |
+| `Link` | `<https://docs.api.com/migration>; rel="migration"` | Panduan migrasi |
+
 ```typescript
 // src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
@@ -433,3 +480,9 @@ export default app;
 3. Setup helmet, cors, dan rate limiter di Express app. Cors cuma allow `http://localhost:5173`. Rate limit 50 request per 15 menit. Tulis kode setup lengkap.
 
 4. Integrasi morgan (logging request) + winston (logging error ke file). Error log disimpen di `logs/error.log`. Request log pake format `combined`. Tulis kode lengkap + middleware.
+
+5. **Refresh Token Flow** — Implementasi refresh token endpoint di Express. Route: `POST /api/v1/auth/refresh`. Validasi refresh token, generate access token baru (15 menit), return JSON. Test dengan expired access token.
+
+6. **Deprecation Middleware** — Bikin deprecation middleware yang nambahin header `Deprecation`, `Deprecated-Since`, `Sunset`, dan `Link` ke endpoint v1. Sunset date 6 bulan dari sekarang. Dokumentasi di README cara migrasi ke v2.
+
+7. **Full Auth System** — Gabungin semuanya: register (hash password), login (generate JWT + refresh token), profile endpoint (auth middleware), refresh token endpoint. Tiap endpoint pake response RFC 7807 untuk error. Tulis kode Express TypeScript lengkap.

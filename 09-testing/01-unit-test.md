@@ -311,7 +311,133 @@ describe("fetchUser", () => {
 });
 ```
 
-## beforeEach & afterEach — Setup & Teardown
+## Test Pyramid — Strategi Testing
+
+Test Pyramid = framework buat nentuin **berapa banyak** tiap jenis test.
+
+```
+        ╱╲
+       ╱ E2E ╲            ← sedikit (5-10%)
+      ╱────────╲
+     ╱Integration╲         ← menengah (20-30%)
+    ╱──────────────╲
+   ╱   Unit Test    ╲      ← banyak (60-70%)
+  ╱────────────────────╲
+```
+
+**Kenapa pyramid?**
+- Unit test: cepet (ms), gampang ditulis, gampang di-debug → **banyakin**
+- Integration test: lebih lambat, butuh setup, test kerjasama antar komponen → **cukup**
+- E2E test: paling lambat (detik-menit), paling rapuh, test user flow penting → **sedikit**
+
+### Test Trophy (Alternatif)
+
+Kent C. Dodds bilang: integration test lebih penting dari unit. Test Trophy-nya:
+
+```
+        ╱╲
+       ╱E2E╲
+      ╱──────╲
+     ╱Static ╲      ← TypeScript, ESLint (0 cost)
+    ╱────────────╲
+   ╱ Integration  ╲   ← PALING PENTING (banyakin!)
+  ╱──────────────────╲
+ ╱     Unit Test      ╲  ← penting tapi gak perlu banyak
+╱────────────────────────╲
+```
+
+Pilih sesuai konteks:
+- **Utility/library code** → Pyramid (banyak unit test)
+- **Aplikasi React/Express** → Trophy (banyak integration test)
+- **API service** → Seimbang (unit + integration)
+
+## Snapshot Testing
+
+Snapshot test = simpen output function/component, compare dengan snapshot sebelumnya. Kalo beda, test fail.
+
+### Snapshot untuk Pure Function
+
+```typescript
+// utils.ts
+export const formatUser = (user: { name: string; email: string; role: string }) => ({
+  displayName: user.name.toUpperCase(),
+  email: user.email.toLowerCase(),
+  badge: user.role === 'ADMIN' ? '⭐ Admin' : '👤 User',
+});
+```
+
+```typescript
+// utils.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatUser } from './utils';
+
+describe('formatUser', () => {
+  it('formats admin user', () => {
+    const user = { name: 'Budi', email: 'Budi@Example.com', role: 'ADMIN' };
+    expect(formatUser(user)).toMatchSnapshot();
+  });
+
+  it('formats regular user', () => {
+    const user = { name: 'Siti', email: 'Siti@Example.com', role: 'USER' };
+    expect(formatUser(user)).toMatchSnapshot();
+  });
+});
+```
+
+Pertama jalan: snapshot dibuat di `__snapshots__/`. Kedua kali: dibandingkan. Kalo sengaja diubah: jalan `vitest -u` (update).
+
+### Snapshot untuk UI (React)
+
+```typescript
+// UserCard.tsx
+interface UserCardProps {
+  name: string;
+  role: string;
+  avatar?: string;
+}
+
+export function UserCard({ name, role, avatar }: UserCardProps) {
+  return (
+    <div className="user-card">
+      <img src={avatar || '/default-avatar.png'} alt={name} />
+      <h3>{name}</h3>
+      <span className={`badge badge-${role.toLowerCase()}`}>{role}</span>
+    </div>
+  );
+}
+```
+
+```typescript
+// UserCard.test.tsx
+import { describe, it, expect } from 'vitest';
+import { render } from '@testing-library/react';
+import { UserCard } from './UserCard';
+
+describe('UserCard', () => {
+  it('renders with all props', () => {
+    const { container } = render(
+      <UserCard name="Budi" role="ADMIN" avatar="https://example.com/avatar.jpg" />
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  it('renders with default avatar', () => {
+    const { container } = render(
+      <UserCard name="Siti" role="USER" />
+    );
+    expect(container).toMatchSnapshot();
+  });
+});
+```
+
+### Snapshot Best Practices
+
+| ✅ Lakukan | ❌ Jangan |
+|-----------|----------|
+| Snapshot untuk output yang **stabil** | Snapshot untuk output yang sering berubah (tanggal, ID random) |
+| Update snapshot dengan sengaja (`-u`) | Auto-update snapshot tanpa review |
+| Review diff di snapshot sebelum commit | Snapshot raksasa (ribuan baris) — pecah jadi komponen kecil |
+| Kombinasi snapshot + assertion biasa | Snapshot sebagai satu-satunya assertion |
 
 Biar test ga saling ganggu, reset state tiap test:
 
@@ -353,4 +479,10 @@ describe("counter", () => {
 
 4. **Async user search** — Bikin function `searchUsers(keyword: string)` yang pake `fetch` ke dummy API. Test: mock fetch sukses return array, mock fetch kosong, mock fetch error. Pake `vi.spyOn` + `mockResolvedValueOnce`
 
-5. **Date formatter** — Bikin `formatDate(date: Date, format: 'short' | 'long' | 'iso'): string`. Test: valid date di berbagai format, invalid date (throw error), leap year date, epoch
+5. **Date formatter** — Bikin `formatDate(date: Date, format: 'short' | 'long' | 'iso'): string`. Test: valid date di berbagai format, invalid date (throw error), leap year date, epoch.
+
+6. **Test Pyramid Analysis** — Ambil proyek Express + React yang udah ada. Klasifikasikan 10 test terakhir: unit vs integration vs E2E. Apakah rasio udah sesuai pyramid? Tulis rekomendasi: test apa yang kurang.
+
+7. **Snapshot Testing** — Bikin function `formatArticle(article)` yang return object dengan `title`, `summary` (100 chars pertama), `tags`, `readTime`. Tulis snapshot test untuk 3 input berbeda. Update snapshot dan amati diff-nya.
+
+8. **React Component Snapshot** — Bikin komponen `Badge` dengan props `text`, `variant` ('success' | 'error' | 'warning' | 'info'). Render dengan semua variant. Snapshot test. Update kalo warna berubah.

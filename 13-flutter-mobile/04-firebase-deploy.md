@@ -243,6 +243,94 @@ class NotesScreen extends StatelessWidget {
 
 > **Stream vs Future:** Firestore pake `Stream` (real-time). Bedanya ama `Future`: Stream terus-terusan ngirim data baru. UI auto update tiap ada perubahan di Firestore. Future cuma sekali.
 
+### Firestore with Provider
+
+```dart
+// providers/note_provider.dart
+class NoteProvider extends ChangeNotifier {
+  final NoteService _noteService = NoteService();
+  List<Note> _notes = [];
+  bool _isLoading = false;
+  String? _error;
+
+  List<Note> get notes => _notes;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  // Pake StreamSubscription — listen realtime
+  StreamSubscription? _subscription;
+
+  void startListening() {
+    _isLoading = true;
+    notifyListeners();
+    _subscription = _noteService.getNotes().listen(
+      (data) {
+        _notes = data;
+        _isLoading = false;
+        notifyListeners();
+      },
+      onError: (err) {
+        _error = err.toString();
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
+  }
+
+  void stopListening() {
+    _subscription?.cancel();
+  }
+
+  Future<void> addNote(String title, String content) async {
+    await _noteService.addNote(title, content);
+    // Stream otomatis update — ga perlu notifyListeners manual
+  }
+
+  Future<void> deleteNote(String id) async {
+    await _noteService.deleteNote(id);
+  }
+
+  @override
+  void dispose() {
+    stopListening();
+    super.dispose();
+  }
+}
+```
+
+### Firebase Storage — Upload Gambar
+
+```yaml
+# pubspec.yaml
+dependencies:
+  firebase_storage: ^11.6.0
+  image_picker: ^1.0.0
+```
+
+```dart
+// services/storage_service.dart
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+
+class StorageService {
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  Future<String> uploadImage(XFile image) async {
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final ref = _storage.ref().child('images/$fileName');
+
+    await ref.putFile(image as dynamic);
+    final downloadUrl = await ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  Future<void> deleteImage(String url) async {
+    final ref = _storage.refFromURL(url);
+    await ref.delete();
+  }
+}
+```
+
 ---
 
 ## Firebase Auth
@@ -606,6 +694,159 @@ flutter run --flavor dev
 
 ---
 
+## Firebase Analytics & Crashlytics
+
+Pantau pengguna dan crash aplikasi.
+
+```yaml
+# pubspec.yaml
+dependencies:
+  firebase_analytics: ^10.8.0
+  firebase_crashlytics: ^3.4.0
+```
+
+```dart
+// main.dart — inisialisasi
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Redirect error ke Crashlytics
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  runApp(const MyApp());
+}
+
+// Custom event analytics
+FirebaseAnalytics.instance.logEvent(
+  name: 'purchase_completed',
+  parameters: {
+    'product_id': 'prod_123',
+    'amount': 50000,
+    'currency': 'IDR',
+  },
+);
+```
+
+---
+
+## Unit Test & Widget Test
+
+Testing penting di Flutter. Widget Test = test UI komponen. Unit Test = test logic.
+
+### Setup Testing
+
+```yaml
+# pubspec.yaml — dev_dependencies (default dari flutter create)
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.0
+  build_runner: ^2.4.0
+```
+
+### Unit Test — Provider
+
+```dart
+// test/providers/todo_provider_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:myapp/providers/todo_provider.dart';
+
+void main() {
+  late TodoProvider provider;
+
+  setUp(() {
+    provider = TodoProvider();
+  });
+
+  test('add item adds to list', () {
+    provider.add('Belajar Flutter');
+    expect(provider.items.length, 1);
+    expect(provider.items[0].title, 'Belajar Flutter');
+  });
+
+  test('toggle item changes isDone', () {
+    provider.add('Task 1');
+    provider.toggle(0);
+    expect(provider.items[0].isDone, true);
+  });
+
+  test('doneCount returns correct count', () {
+    provider.add('Task 1');
+    provider.add('Task 2');
+    provider.toggle(0);
+    expect(provider.doneCount, 1);
+    expect(provider.pendingCount, 1);
+  });
+}
+```
+
+### Widget Test — Counter
+
+```dart
+// test/widgets/counter_test.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:myapp/screens/counter_screen.dart';
+
+void main() {
+  testWidgets('Counter increments when button pressed', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: CounterScreen()));
+
+    // Awal: count 0
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
+
+    // Tekan FAB
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pump();
+
+    // Sekarang: count 1
+    expect(find.text('1'), findsOneWidget);
+  });
+}
+```
+
+### Widget Test dengan Provider
+
+```dart
+// test/widgets/todo_list_test.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/providers/todo_provider.dart';
+import 'package:myapp/screens/todo_list_screen.dart';
+
+Widget createTodoScreen() {
+  return ChangeNotifierProvider(
+    create: (_) => TodoProvider(),
+    child: const MaterialApp(home: TodoListScreen()),
+  );
+}
+
+void main() {
+  testWidgets('Add todo via dialog', (tester) async {
+    await tester.pumpWidget(createTodoScreen());
+
+    // Tekan FAB
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    // Ketik di dialog
+    await tester.enterText(find.byType(TextField), 'Belajar Flutter');
+    await tester.tap(find.text('Tambah'));
+    await tester.pumpAndSettle();
+
+    // Todo muncul di list
+    expect(find.text('Belajar Flutter'), findsOneWidget);
+  });
+}
+```
+
+---
+
 ## Play Store Checklist
 
 | Item | Status |
@@ -632,3 +873,11 @@ flutter run --flavor dev
 3. **Buat Protected Notes** — Notes cuma bisa dibaca/ditulis sama user yang bikin. Tambah field `user_id` di setiap dokumen. Set Firestore security rules: `request.auth.uid == resource.data.user_id`.
 
 4. **Build APK & Simulasikan Deploy** — Generate keystore, setup signing config, build appbundle release. Print daftar file hasil build. Bikin dummy Google Play Store listing (nama app, deskripsi, screenshot list).
+
+5. **Upload Image + Note** — Integrasi `image_picker` + `firebase_storage`. User bisa upload foto pas bikin note. Simpan URL gambar di Firestore dokumen note. Tampilkan gambar di ListView.
+
+6. **Unit Test Provider** — Tulis unit test untuk `NoteProvider` atau `AuthProvider`. Test: `startListening()` pake mock stream, `addNote()` nambah data, error handling kalo stream error. Pake `mockito` buat mock `NoteService`.
+
+7. **Widget Test** — Tulis widget test untuk `LoginScreen`. Test: form kosong tampilkan error, validasi email, loading indicator saat login, snackbar kalo login gagal. Gunakan `pumpWidget` + `pumpAndSettle`.
+
+8. **Analytics Event** — Integrasi Firebase Analytics. Log event: `note_created`, `note_deleted`, `login`, `register`. Bikin class `AnalyticsService` yang wrap panggilan analytics biar gampang di-test dan diganti.

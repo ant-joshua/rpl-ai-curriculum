@@ -111,7 +111,7 @@ const kali = buatKalkulator("*");
 console.log(tambah(10, 5)); // 15
 console.log(kali(3, 4));    // 12
 
-// 3. Closure — function inget variable dari scope luar
+### Closure — function inget variable dari scope luar
 function counter() {
   let count = 0; // Private variable!
   return {
@@ -126,6 +126,117 @@ console.log(myCounter.increment()); // 1
 console.log(myCounter.increment()); // 2
 console.log(myCounter.decrement()); // 1
 console.log(myCounter.getValue());  // 1
+
+// 4. IIFE — Immediately Invoked Function Expression
+// Function yang langsung jalan begitu didefinisikan
+(function() {
+  const privateVar = "ini rahasia";
+  console.log("IIFE jalan!");
+})();
+// privateVar ga bisa diakses dari luar
+
+// IIFE dengan parameter
+(function(nama) {
+  console.log(`Halo, ${nama}`);
+})("Budi");
+
+// IIFE modern — pake block scope aja
+{
+  const privateVar = "sama aja pake block scope";
+  console.log(privateVar);
+}
+```
+
+## Memoization — Caching Hasil Function
+
+Teknik nyimpen hasil function biar kalo dipanggil lagi dengan argumen sama, ga perlu ngitung ulang:
+
+```javascript
+// Fibonacci tanpa memo — super lambat!
+function fibSlow(n) {
+  if (n <= 1) return n;
+  return fibSlow(n - 1) + fibSlow(n - 2);
+}
+// fibSlow(50) — bisa sampe 60 detik!
+
+// Fibonacci dengan memoization
+function fibMemo() {
+  const cache = {};
+  return function fib(n) {
+    if (n <= 1) return n;
+    if (cache[n] !== undefined) return cache[n];
+    cache[n] = fib(n - 1) + fib(n - 2);
+    return cache[n];
+  };
+}
+const fib = fibMemo();
+console.log(fib(50)); // 12586269025 — instant!
+
+// Generic memoize function
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log(`Cache hit: ${key}`);
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+// Pake
+const expensiveCalc = memoize(n => {
+  console.log(`Ngitung... ${n}`);
+  return n * n;
+});
+console.log(expensiveCalc(5)); // Ngitung... 5 → 25
+console.log(expensiveCalc(5)); // Cache hit: [5] → 25 (langsung!)
+```
+
+## Partial Application & Currying — Fungsi Parsial
+
+Currying = teknik ngubah function yang nerima banyak argumen jadi rantai function yang masing-masing nerima satu argumen.
+
+```javascript
+// Currying manual
+function multiply(a) {
+  return function(b) {
+    return function(c) {
+      return a * b * c;
+    };
+  };
+}
+console.log(multiply(2)(3)(4)); // 24
+
+// Currying pake arrow function
+const multiply2 = a => b => c => a * b * c;
+console.log(multiply2(2)(3)(4)); // 24
+
+// Partial Application — fix argumen tertentu
+function sapa(greeting, name) {
+  return `${greeting}, ${name}!`;
+}
+
+const sapaIndonesia = sapa.bind(null, "Halo");
+console.log(sapaIndonesia("Budi")); // "Halo, Budi!"
+console.log(sapaIndonesia("Ani")); // "Halo, Ani!"
+
+const sapaEnglish = sapa.bind(null, "Hello");
+console.log(sapaEnglish("John")); // "Hello, John!"
+
+// Utility buat partial
+function partial(fn, ...fixedArgs) {
+  return function(...remainingArgs) {
+    return fn(...fixedArgs, ...remainingArgs);
+  };
+}
+
+const tambahSepuluh = partial((a, b) => a + b, 10);
+console.log(tambahSepuluh(5)); // 15
+console.log(tambahSepuluh(20)); // 30
 ```
 
 ## Pure Function vs Side Effects

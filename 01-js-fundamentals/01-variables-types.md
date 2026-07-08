@@ -173,6 +173,124 @@ const teks = String(42);     // "42"
 const logika = Boolean(1);   // true
 ```
 
+## Number Safety — NaN, Infinity, dan Presisi
+
+```javascript
+// NaN — Not a Number, tapi typeof NaN adalah "number"!
+console.log(typeof NaN); // "number"
+
+// Cek NaN — JANGAN pake equality!
+console.log(NaN === NaN); // false! — NaN itu satu-satunya value yang ga equal ke diri sendiri
+
+// Cara bener cek NaN:
+console.log(isNaN("hello"));  // true — tapi ini coerce dulu! "hello" → NaN
+console.log(Number.isNaN("hello")); // false — lebih strict, ga coerce
+
+// Infinity
+console.log(1 / 0);         // Infinity
+console.log(-1 / 0);        // -Infinity
+console.log(Number.isFinite(1 / 0)); // false
+console.log(Number.isFinite(42));    // true
+
+// Integer check
+console.log(Number.isInteger(5));    // true
+console.log(Number.isInteger(5.5));  // false
+console.log(Number.isSafeInteger(9007199254740991)); // true
+console.log(Number.isSafeInteger(9007199254740992)); // false — melebihi batas safe
+
+// parseInt & parseFloat — convert string ke number dengan toleransi
+console.log(parseInt("42px"));   // 42 — ignore "px"
+console.log(parseInt("1010", 2)); // 10 — binary ke decimal
+console.log(parseFloat("3.14em")); // 3.14
+console.log(parseInt("  99  ")); // 99 — trim otomatis
+```
+
+## Common Interview Questions — Variable & Tipe Data
+
+**Q1: Apa beda `var`, `let`, dan `const`?**
+```javascript
+// var — function scope, bisa di-hoist, bisa redeclare
+console.log(x); // undefined (hoisted, tapi belum di-assign)
+var x = 5;
+
+// let — block scope, ga bisa redeclare, Temporal Dead Zone
+// console.log(y); // ReferenceError: Cannot access before initialization
+let y = 10;
+
+// const — block scope, WAJIB di-assign pas deklarasi, immutable binding
+const z = 15;
+// z = 20; // TypeError: Assignment to constant variable
+```
+
+**Q2: Apa itu Temporal Dead Zone (TDZ)?**
+```javascript
+{
+  // TDZ dimulai di sini — variable `a` ada di scope tapi belum bisa diakses
+  // console.log(a); // ReferenceError
+  let a = 5; // TDZ berakhir di sini
+  console.log(a); // 5
+}
+```
+
+**Q3: Kenapa `0.1 + 0.2 !== 0.3`?**
+```javascript
+console.log(0.1 + 0.2); // 0.30000000000000004
+// JavaScript pake IEEE 754 floating point — binary ga bisa
+// represent 0.1 secara exact. Sama kaya 1/3 di decimal (0.333...).
+
+// Fix: pake tolerance
+const EPSILON = 0.0001;
+console.log(Math.abs((0.1 + 0.2) - 0.3) < EPSILON); // true
+```
+
+**Q4: Apa output dari `typeof null`? Kenapa?**
+```javascript
+console.log(typeof null); // "object" — bug historic dari JS!
+// Di JS pertama, nilai object ditandain dengan 000 di awalan binary.
+// null diimplementasi sebagai pointer 0, yang ketuker jadi object type.
+```
+
+## Performance Tips — Number & String Operations
+
+```javascript
+// 1. Hindari coercion dalam loop
+// ❌ Lambat — String + Number coercion tiap iterasi
+let result = "";
+for (let i = 0; i < 10000; i++) {
+  result += i; // number → string coercion tiap kali
+}
+
+// ✅ Cepat — Explicit conversion sekali
+let result2 = "";
+for (let i = 0; i < 10000; i++) {
+  result2 += String(i); // explicit
+}
+
+// 2. Cache array length — hindari lookup tiap iterasi
+// ❌ Lambat
+for (let i = 0; i < arr.length; i++) { ... }
+// ✅ Lebih cepat
+for (let i = 0, len = arr.length; i < len; i++) { ... }
+
+// 3. Pake Number() bukan parseInt() kalo format udah pasti integer
+const a = Number("42");  // Cepat — langsung convert
+const b = parseInt("42", 10); // Lebih lambat — ada parsing logic
+
+// 4. String concatenation — pake array join atau template literal
+// ❌ Lambat untuk banyak string
+let s = "";
+s = s + "a" + "b" + "c";
+
+// ✅ Cepat
+const parts = ["a", "b", "c"];
+const s2 = parts.join("");
+
+// 5. Bitwise trick — kadang lebih cepat
+console.log(~~(3.14));     // 3 — fast floor (tapi cuma buat 32-bit)
+console.log(3.14 | 0);     // 3 — fast truncate
+console.log(3.14 << 0);    // 3
+```
+
 ## Latihan
 
 1. **Biodata Variable**

@@ -309,6 +309,27 @@ Isi jurnal refleksi:
 4. Satu hal yang kamu usahakan sendiri untuk sukses di Sprint 1:
 ```
 
+### Latihan 5: Velocity Tracking (Kelompok — 10 menit)
+
+Buat tabel tracking velocity untuk proyek kalian di README:
+
+| Sprint | Total Story Point | Selesai | Velocity | Catatan |
+|--------|------------------|---------|----------|---------|
+| Sprint 1 | 20 | ? | ? | |
+| Sprint 2 | | | | |
+| Sprint 3 | | | | |
+
+Update tiap akhir sprint. Setelah 3 sprint, hitung velocity rata-rata dan prediksi sisa sprint.
+
+### Latihan 6: Daily Standup Roles Practice (Kelompok — 5 menit per orang)
+
+Praktek daily standup dengan timer 15 menit:
+1. Tiap orang jawab 3 pertanyaan dalam 1 menit
+2. Satu orang catat blocker di board
+3. Giliran bergilir setiap hari
+4. Evaluasi: apakah standup efektif? (Ya/Tidak, kenapa?)
+5. Coba 1 hari pakai format async (chat) → bandingkan mana yang lebih efektif
+
 ---
 
 > **Ringkasan:** GitHub Projects = sprint board digital. 4 kolom: To Do, In Progress, Review, Done. Milestones = sprint. Burndown chart = tracker progress harian. Setup Sprint 1: planning → eksekusi (standup tiap hari) → review → retro. Checklist proyek final siap dipakai!

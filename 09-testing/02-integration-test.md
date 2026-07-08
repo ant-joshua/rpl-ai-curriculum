@@ -357,6 +357,234 @@ describe("buildTodoList", () => {
 });
 ```
 
+## API Mock Strategies (MSW)
+
+**MSW (Mock Service Worker)** = standar industri buat mock API di test. Bedanya sama manual mock:
+- Intercept di level **network**, bukan function
+- Kode mock = kode beneran — ganti URL doang
+- Bisa pake di test, storybook, bahkan dev server
+
+### Setup MSW
+
+```bash
+npm install -D msw
+```
+
+### Define Handlers
+
+```typescript
+// src/mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
+
+interface Todo {
+  id: number;
+  title: string;
+  done: boolean;
+}
+
+let todos: Todo[] = [
+  { id: 1, title: 'Belajar MSW', done: false },
+  { id: 2, title: 'Setup testing', done: true },
+];
+
+export const handlers = [
+  // GET /api/todos
+  http.get('http://localhost:3001/api/todos', () => {
+    return HttpResponse.json(todos);
+  }),
+
+  // GET /api/todos/:id
+  http.get('http://localhost:3001/api/todos/:id', ({ params }) => {
+    const todo = todos.find(t => t.id === Number(params.id));
+    if (!todo) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    return HttpResponse.json(todo);
+  }),
+
+  // POST /api/todos
+  http.post('http://localhost:3001/api/todos', async ({ request }) => {
+    const body = await request.json() as { title: string };
+    if (!body.title) {
+      return HttpResponse.json(
+        { error: 'Title is required' },
+        { status: 400 },
+      );
+    }
+    const newTodo: Todo = {
+      id: todos.length + 1,
+      title: body.title,
+      done: false,
+    };
+    todos.push(newTodo);
+    return HttpResponse.json(newTodo, { status: 201 });
+  }),
+
+  // DELETE /api/todos/:id
+  http.delete('http://localhost:3001/api/todos/:id', ({ params }) => {
+    todos = todos.filter(t => t.id !== Number(params.id));
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Simulasi error network
+  http.get('http://localhost:3001/api/error-test', () => {
+    return HttpResponse.error();
+  }),
+];
+```
+
+### Setup Server
+
+```typescript
+// src/mocks/server.ts
+import { setupServer } from 'msw/node';
+import { handlers } from './handlers';
+
+export const server = setupServer(...handlers);
+```
+
+### Setup di Test — Global
+
+```typescript
+// vitest.setup.ts
+import { beforeAll, afterAll, afterEach } from 'vitest';
+import { server } from './src/mocks/server';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers()); // reset ke default handlers
+afterAll(() => server.close());
+```
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    setupFiles: ['./vitest.setup.ts'],
+  },
+});
+```
+
+### Test dengan MSW
+
+```typescript
+// TodoList.test.tsx
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
+import { server } from './src/mocks/server';
+import TodoList from './TodoList';
+
+describe('TodoList with MSW', () => {
+  it('loads and displays todos', async () => {
+    render(<TodoList />);
+
+    // Tunggu loading selesai
+    await waitFor(() => {
+      expect(screen.getByText('Belajar MSW')).toBeDefined();
+    });
+
+    expect(screen.getByText('Setup testing')).toBeDefined();
+  });
+
+  it('shows error state on network failure', async () => {
+    // Override handler for this test only
+    server.use(
+      http.get('http://localhost:3001/api/todos', () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    render(<TodoList />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/gagal|error|gagal load/i)).toBeDefined();
+    });
+  });
+
+  it('creates new todo', async () => {
+    render(<TodoList />);
+
+    await userEvent.type(screen.getByPlaceholderText(/tambah|add/i), 'Todo baru');
+    await userEvent.click(screen.getByRole('button', { name: /tambah|add/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Todo baru')).toBeDefined();
+    });
+  });
+});
+```
+
+### MSW for Data Fetching Library
+
+```typescript
+// Pake react-query + MSW
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false }, // matikan retry biar test cepet
+    },
+  });
+
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+  };
+}
+
+describe('UserList with react-query', () => {
+  it('loads users from API', async () => {
+    render(<UserList />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Budi')).toBeDefined();
+    });
+  });
+});
+```
+
+### MSW di Browser — Development & Storybook
+
+```typescript
+// src/mocks/browser.ts
+import { setupWorker } from 'msw/browser';
+import { handlers } from './handlers';
+
+export const worker = setupWorker(...handlers);
+```
+
+```typescript
+// main.tsx (development mode)
+async function enableMocking() {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('./mocks/browser');
+    return worker.start();
+  }
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+});
+```
+
+### MSW Tips
+
+| Masalah | Solusi |
+|---------|--------|
+| Test lambat karena network mock | MSW intercept di level Node.js — gak ada network I/O sama sekali |
+| Handler duplicate antar test | Define handlers di file terpisah, override spesifik pake `server.use()` |
+| Ingin test error response | `server.use(http.get(...))` dengan handler yang return 500 |
+| Gak sengaja panggil URL gak di-mock | `server.listen({ onUnhandledRequest: 'error' })` — bakal throw error |
+| Reset antar test | `afterEach(() => server.resetHandlers())` |
+
 ## Pitfalls Integration Test
 
 1. **Shared DB state** — Test pake DB yang sama bikin data bentrok. Solusi: fresh DB tiap test (in-memory / transaction rollback)
@@ -376,3 +604,11 @@ describe("buildTodoList", () => {
 4. **Product repository dengan SQLite** — Bikin `ProductRepository` (create, findAll, findByCategory, updateStock). Pake SQLite in-memory + fixtures. Test: insert product, find by category, update stock jadi 0, hapus product
 
 5. **Pagination integration test** — Bikin endpoint `GET /api/items?page=1&limit=10`. Test: page valid, page melebihi data, limit default, limit maksimum. Pastikan response format: `{ data: [], meta: { page, limit, total, totalPages } }`
+
+6. **MSW Setup** — Setup MSW di project Express + React. Define handlers untuk endpoint `GET /api/users`, `POST /api/users`, `GET /api/users/:id`. Tulis test untuk komponen UserList yang fetch dari MSW, termasuk test loading state, success state, dan error state.
+
+7. **MSW Error Simulation** — Pake server.use() untuk override handler. Test 3 skenario: (1) network error, (2) server error 500, (3) timeout. Pastikan component menampilkan error message yang sesuai. Tulis test untuk tiap skenario.
+
+8. **MSW di Development Mode** — Setup MSW browser worker di aplikasi React. Semua data development di-mock pake MSW. Tulis browser.ts + integrasi di main.tsx. Pastikan production mode gak aktif.
+
+9. **Test dengan react-query + MSW** — Setup QueryClient dengan retry: false. Tulis komponen UserList yang pake useQuery dari react-query. Test loading, success, dan error state. Tulis wrapper + test cases.

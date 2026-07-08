@@ -214,6 +214,127 @@ subscription {
 }
 ```
 
+### Subscription dengan Filter
+
+Kadang client cuma mau dapet event tertentu — pake `subscribe` dengan filter:
+
+```typescript
+Subscription: {
+  userOnline: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator(['USER_ONLINE']),
+      (payload, variables) => {
+        // Cuma kirim kalo userId sesuai
+        return payload.userOnline.userId === variables.userId;
+      },
+    ),
+  },
+  postCreated: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([POST_CREATED]),
+      (payload, variables) => {
+        // Filter by author
+        if (variables.authorId) {
+          return payload.postCreated.authorId === variables.authorId;
+        }
+        return true;
+      },
+    ),
+  },
+}
+```
+
+`withFilter` import dari `graphql-subscriptions`.
+
+### Subscription Client — Apollo Client
+
+```typescript
+import { ApolloClient, InMemoryCache, split } from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { HttpLink } from '@apollo/client';
+
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
+
+const wsLink = new GraphQLWsLink(
+  createClient({ url: 'ws://localhost:4000/graphql' }),
+);
+
+// Split: kirim via WS kalo subscription, HTTP kalo query/mutation
+const splitLink = split(
+  ({ query }) => {
+    const def = getMainDefinition(query);
+    return def.kind === 'OperationDefinition' && def.operation === 'subscription';
+  },
+  wsLink,
+  httpLink,
+);
+
+const client = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache(),
+});
+```
+
+React component:
+
+```typescript
+import { gql, useSubscription } from '@apollo/client';
+
+const POST_CREATED_SUB = gql`
+  subscription OnPostCreated {
+    postCreated {
+      id
+      title
+      author { name }
+    }
+  }
+`;
+
+function NewPostAlert() {
+  const { data, loading } = useSubscription(POST_CREATED_SUB);
+
+  useEffect(() => {
+    if (data?.postCreated) {
+      toast.info(`Post baru: ${data.postCreated.title}`);
+    }
+  }, [data]);
+
+  return null;
+}
+```
+
+### PubSub Implementations
+
+| PubSub Engine | Kelebihan | Cocok |
+|--------------|-----------|-------|
+| `PubSub` (graphql-subscriptions) | Simpel, zero dep | Development, single process |
+| `RedisPubSub` | Scale ke multiple process | Production, multi-server |
+| `MqttPubSub` | MQTT protocol | IoT / real-time fleet |
+| `KafkaPubSub` | Event streaming | Event-driven architecture |
+
+```bash
+npm install graphql-redis-subscriptions ioredis
+```
+
+```typescript
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import Redis from 'ioredis';
+
+const options = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: 6379,
+};
+
+export const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
+});
+```
+
+Dengan RedisPubSub, subscription tetap jalan meski server diganti — publish ke Redis, semua subscriber di semua instance server dapet event.
+
 ## Auth di GraphQL
 
 ### Context-based auth
@@ -417,3 +538,11 @@ query {
 3. Implementasi auth directive `@auth` yang bisa dipake di field mana aja. Tambah role-based check: `@auth(requires: ADMIN)`. Kalo user gak punya role, throw error. Tulis directive transformer + contoh schema + resolver.
 
 4. Bikin union type `Media = Image | Video` dengan field `id`, `url`, dan field spesifik: Image punya `width` & `height`, Video punya `duration` & `thumbnailUrl`. Tulis query `media: [Media!]!` dan resolvers termasuk `__resolveType`.
+
+5. **Subscription dengan Filter:** Bikin subscription `notificationReceived(userId: ID!)` yang hanya kirim notifikasi ke user tertentu. Pake `withFilter`. Tulis schema, resolvers, filter logic, dan contoh subscription query.
+
+6. **Redis PubSub:** Ganti PubSub in-memory dengan RedisPubSub. Setup Redis connection. Tunjukkan perbedaan kode sebelum dan sesudah pake Redis. Tulis konfigurasi RedisPubSub + example resolver subscription.
+
+7. **Subscription Client React:** Bikin komponen `LiveFeed` yang subscribe ke event `postCreated` via WebSocket. Tampilkan post baru sebagai toast notification. Tulis full component code dengan `useSubscription` hook + split link setup.
+
+8. **Argumen Subscription:** Buat subscription `postByAuthor(authorId: ID!)` yang subscribe ke post baru dari author tertentu. Pake `withFilter` di resolver dan pake variable di client. Tulis resolver + client component.

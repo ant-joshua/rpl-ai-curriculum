@@ -211,6 +211,91 @@ for (let i = 1; i <= 10; i++) {
 }
 ```
 
+## Short-Circuit Evaluation — &&, ||, ??
+
+JavaScript evaluasi dari kiri ke kanan dan berhenti kalo hasil udah pasti:
+
+```javascript
+// && — balik value kedua kalo yang pertama truthy
+console.log(true && "Halo");   // "Halo"
+console.log(false && "Halo");  // false — stop di false
+console.log("A" && "B" && "C"); // "C" — semua truthy
+
+// || — balik value pertama yang truthy
+console.log("" || "Default");  // "Default"
+console.log("Budi" || "Default"); // "Budi" — stop karena truthy
+console.log(null || undefined || 0 || "Aktif"); // "Aktif"
+
+// Contoh real — conditional rendering
+const user = { name: "Budi" };
+const greeting = user.name && `Halo, ${user.name}!`; // "Halo, Budi!"
+
+// Default value pake ||
+function sapa(nama) {
+  const name = nama || "Teman"; // kalo falsy (null/undefined/""), pake default
+  return `Halo, ${name}!`;
+}
+console.log(sapa());       // "Halo, Teman!"
+console.log(sapa(""));     // "Halo, Teman!" — HATI-HATI! empty string falsy
+
+// Nullish Coalescing (??) — lebih aman dari ||
+// ?? cuma fallback kalo null/undefined, bukan falsy values lainnya
+const input = "";
+const val1 = input || "Default";  // "Default" — karena "" falsy!
+const val2 = input ?? "Default";  // "" — karena cuma null/undefined yang kena
+
+console.log(val1); // "Default" — mungkin bukan yg diharapkan
+console.log(val2); // "" — lebih bener untuk string kosong
+
+// Kapan pake ?? vs ||:
+// ?? — kalo mau fallback cuma untuk null/undefined
+// || — kalo mau fallback untuk SEMUA falsy (0, "", false)
+```
+
+## Optional Chaining (?.) — Aman Akses Nested Property
+
+Sering banget dapet error `Cannot read property of undefined` waktu akses nested object. Optional chaining solusinya:
+
+```javascript
+const user = {
+  name: "Budi",
+  address: null,
+  // address: { city: "Jakarta" } — kalo ada
+};
+
+// ❌ ERROR kalo address null
+// console.log(user.address.city); // TypeError: Cannot read properties of null
+
+// ✅ Aman pake ?.
+console.log(user.address?.city); // undefined — ga error
+console.log(user.address?.city?.name ?? "Tidak ada"); // "Tidak ada"
+
+// Optional chaining buat function call
+const config = {
+  getData: null,
+  // getData: () => "data"
+};
+console.log(config.getData?.()); // undefined — ga dipanggil kalo null
+
+// Di array
+const arr = null;
+console.log(arr?.[0]); // undefined
+
+// Chaining semua
+const user2 = {
+  profile: {
+    settings: {
+      theme: "dark"
+    }
+  }
+};
+const theme = user2?.profile?.settings?.theme ?? "light";
+console.log(theme); // "dark"
+
+const noTheme = ({})?.profile?.settings?.theme ?? "light";
+console.log(noTheme); // "light" — aman, ga error
+```
+
 ## Pola Bintang — Latihan Klasik
 
 ```javascript
@@ -299,4 +384,30 @@ for (let i = 1; i <= 10; i++) {
      *****
       ***
        *
+   ```
+
+8. **Short-Circuit Debug**
+   ```javascript
+   // Tebak output tanpa jalanin:
+   console.log("A" && "B" && null && "C");
+   console.log(false || 0 || "Halo" || undefined);
+   console.log(null ?? "Default");
+   console.log(0 ?? "Default");
+   console.log("" || "Fallback");
+   console.log("" ?? "Fallback");
+   ```
+
+9. **Optional Chaining Refactor**
+   ```javascript
+   const data = {
+     user: null
+     // user: { profile: { name: "Budi", address: { city: "Jakarta" } } }
+   };
+
+   // Refactor kode berikut pake optional chaining + nullish coalescing:
+   let city = "Tidak diketahui";
+   if (data && data.user && data.user.profile && data.user.profile.address) {
+     city = data.user.profile.address.city;
+   }
+   console.log(city);
    ```

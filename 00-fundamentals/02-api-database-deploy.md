@@ -224,6 +224,159 @@ git push
 
 ---
 
+## 📦 Environment Variables & .env
+
+Environment variables (env vars) = **konfigurasi yang beda tiap environment** (lokal, staging, production).
+
+### Kenapa Butuh?
+
+```javascript
+// ❌ HARDCODED — ganti manual kalo pindah environment
+const API_URL = 'http://localhost:3000';
+const DB_PASSWORD = 'password123';
+
+// ✅ Environment variable — aman, fleksibel
+const API_URL = process.env.API_URL || 'http://localhost:3000';
+const DB_PASSWORD = process.env.DB_PASSWORD;
+```
+
+### .env File
+
+```bash
+# .env — JANGAN di-commit ke Git!
+PORT=3000
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+JWT_SECRET=supersecretkey123
+API_KEY=sk-abc123def456
+
+# .env.example — di-commit, template tanpa nilai rahasia
+PORT=3000
+DATABASE_URL=postgresql://user:pass@localhost:5432/mydb
+JWT_SECRET=your-secret-here
+```
+
+### Aturan .env
+
+- `.env` — **jangan di-commit** (isi: password, key, token)
+- `.env.example` — **commit**, template aja
+- `.gitignore` — pastiin `.env` ada di dalamnya
+
+```bash
+# Cara pake di terminal
+PORT=4000 node app.js
+# Atau pake dotenv library
+```
+
+---
+
+## 🗄️ Database Indexing — Biar Query Cepat
+
+Index = kayak **daftar isi di buku** — nyari data tanpa baca halaman satu-satu.
+
+### Tanpa Index (Full Table Scan)
+
+```sql
+-- Tanpa index, PostgreSQL harus scan SEMUA baris
+SELECT * FROM users WHERE email = 'budi@email.com';
+-- Mungkin baca 1 juta baris cuma buat cari 1 email
+```
+
+### Dengan Index
+
+```sql
+-- Bikin index
+CREATE INDEX idx_users_email ON users(email);
+
+-- Query sama — sekarang pake index, langsung lompat ke baris yang cocok
+SELECT * FROM users WHERE email = 'budi@email.com';
+-- Baca 1 baris aja (via index) — 1000x lebih cepat
+```
+
+### Kapan Bikin Index?
+
+```sql
+-- ✅ Column yang sering di-WHERE
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+
+-- ✅ Column yang sering di-JOIN
+CREATE INDEX idx_posts_author_id ON posts(author_id);
+
+-- ✅ Column yang sering di-ORDER BY
+CREATE INDEX idx_users_created_at ON users(created_at);
+
+-- ❌ Column yang jarang dipake query — index makan disk space
+-- ❌ Table kecil (< 1000 baris) — gak perlu index
+-- ❌ Column yang sering di-update — index harus di-rebuild tiap update
+```
+
+### Trade-off Index
+
+| Kelebihan | Kekurangan |
+|-----------|------------|
+| SELECT & JOIN lebih cepat | INSERT/UPDATE/DELETE jadi lambat (harus update index juga) |
+| ORDER BY lebih efisien | Makan disk space tambahan |
+| Unique constraint otomatis bikin index | Terlalu banyak index bikin bingung optimizer |
+
+> **Tips:** Jangan bikin index dulu. Profil query lambat pake `EXPLAIN`, baru bikin index yang diperlukan.
+
+---
+
+## 🚀 Deployment & CI/CD
+
+**CI/CD** = Continuous Integration / Continuous Deployment — otomatis test + deploy tiap kali lo push kode.
+
+### CI/CD Pipeline Flow
+
+```
+Push ke GitHub → Test jalan otomatis → Build → Deploy ke production
+
+Git push         GitHub Actions        Vercel / Railway
+    │                   │                    │
+    ▼                   ▼                    ▼
+[Lo coding] → [Auto test + lint] → [Auto deploy ke server]
+```
+
+### GitHub Actions — CI/CD Gratis
+
+```yaml
+# .github/workflows/deploy.yml
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Lint code
+        run: npm run lint
+
+  deploy:
+    needs: test  # deploy cuma kalo test lolos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Railway
+        run: curl -X POST https://api.railway.app/deploy
+```
+
+### Deployment Checklist
+
+- [ ] Environment variables di-set di server (bukan di .env file)
+- [ ] Database migration udah jalan
+- [ ] Build success (gak ada error)
+- [ ] Health check endpoint balik 200
+- [ ] SSL certificate aktif (https)
+- [ ] Logging & monitoring aktif
+- [ ] Rollback plan — kalo error, bisa balik ke versi sebelumnya
+
+---
+
 ## 💻 Terminal: Ngobrol Langsung Sama Komputer
 
 **Terminal** = cara ngomong sama komputer pake teks, bukan klik-klik GUI. Wajib banget buat developer.
@@ -414,6 +567,26 @@ Lo punya project-project ini. Pilih platform deploy yang cocok:
 | Aplikasi production skala besar | ? |
 
 > **Kunci:** Vercel/Netlify, Railway, Vercel+Supabase, VPS/AWS
+
+### ✏️ Latihan 6: .env & Index Simulation
+
+1. Bikin file `.env.example` untuk project Todo API. Isi: PORT, DATABASE_URL, JWT_SECRET, CORS_ORIGIN.
+2. Bikin file `.gitignore` — pastiin `.env` di dalamnya.
+3. Tulis SQL query yang **lambat** tanpa index, lalu tambah index yang tepat:
+   ```sql
+   -- Query: cari semua order user dengan email tertentu
+   SELECT * FROM orders WHERE user_id = 123 ORDER BY created_at DESC;
+   ```
+   Index apa yang perlu ditambah?
+
+### ✏️ Latihan 7: CI/CD Pipeline Design
+
+Desain pipeline CI/CD untuk project React + Express + PostgreSQL:
+
+1. Tulis langkah-langkah yang harus terjadi saat push ke branch `main`
+2. Tools apa yang dipake buat tiap langkah?
+3. Kapan deploy ke staging? Kapan ke production?
+4. Gambar flowchart (bisa pake mermaid atau kertas)
 
 ---
 

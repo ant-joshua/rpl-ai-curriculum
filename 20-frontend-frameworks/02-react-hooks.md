@@ -335,6 +335,281 @@ function ResponsiveLayout() {
 
 ---
 
+## State Management: Zustand (React) & Pinia (Vue)
+
+Saat aplikasi makin besar, Context API mulai terbatas — tiap perubahan context **re-render semua consumer**. Solusinya: state management library eksternal.
+
+### Zustand — State Management Minimalis untuk React
+
+Zustand adalah library state management paling populer untuk React modern. Ringan (~1KB), tanpa boilerplate.
+
+```bash
+npm install zustand
+```
+
+```javascript
+import { create } from 'zustand';
+
+// Store — mirip useState tapi global
+const useCounterStore = create((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+  reset: () => set({ count: 0 }),
+}));
+
+// Pake di komponen mana pun
+function Counter() {
+  const count = useCounterStore((state) => state.count);
+  const increment = useCounterStore((state) => state.increment);
+  const decrement = useCounterStore((state) => state.decrement);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </div>
+  );
+}
+```
+
+**Keunggulan Zustand vs Context:**
+- **Selective subscription** — komponen cuma re-render kalau bagian store yang dipake berubah.
+- **No provider** — gak perlu bungkus app pake Provider.
+- **Middleware** — dukung persist, immer, devtools.
+
+```javascript
+// Zustand dengan persist (localStorage)
+import { persist } from 'zustand/middleware';
+
+const useThemeStore = create(
+  persist(
+    (set) => ({
+      theme: 'light',
+      toggleTheme: () => set((state) => ({
+        theme: state.theme === 'light' ? 'dark' : 'light',
+      })),
+    }),
+    { name: 'theme-storage' }
+  )
+);
+```
+
+### Pola Zustand yang Sering Dipakai
+
+```javascript
+// Store dengan async actions — fetch API
+import { create } from 'zustand';
+
+const useUserStore = create((set) => ({
+  users: [],
+  loading: false,
+  error: null,
+  fetchUsers: async () => {
+    set({ loading: true });
+    try {
+      const res = await fetch('https://api.example.com/users');
+      const users = await res.json();
+      set({ users, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  },
+}));
+
+// Store dengan multiple state
+const useCartStore = create((set, get) => ({
+  items: [],
+  addItem: (product) => set((state) => ({
+    items: [...state.items, { ...product, qty: 1 }],
+  })),
+  removeItem: (id) => set((state) => ({
+    items: state.items.filter((item) => item.id !== id),
+  })),
+  getTotal: () => get().items.reduce((sum, item) => sum + item.price * item.qty, 0),
+}));
+```
+
+### Pinia — State Management untuk Vue (Perbandingan)
+
+Buat yang nanti belajar Vue, Pinia adalah state management resmi (pengganti Vuex):
+
+```javascript
+// stores/counter.js — Pinia
+import { defineStore } from 'pinia';
+
+export const useCounterStore = defineStore('counter', {
+  state: () => ({ count: 0 }),
+  getters: {
+    doubleCount: (state) => state.count * 2,
+  },
+  actions: {
+    increment() {
+      this.count++;
+    },
+    async fetchAndSet() {
+      const data = await fetch('/api/count').then(r => r.json());
+      this.count = data.count;
+    },
+  },
+});
+
+// Di komponen Vue
+// <script setup>
+// import { useCounterStore } from '@/stores/counter'
+// const counter = useCounterStore()
+// counter.count         // state
+// counter.doubleCount   // getter
+// counter.increment()   // action
+// </script>
+```
+
+**Perbandingan: Zustand vs Pinia vs Context:**
+
+| Aspek | Zustand | Pinia | Context API |
+|-------|---------|-------|-------------|
+| Bundle size | ~1KB | ~9KB | 0 (built-in) |
+| Boilerplate | Sangat minim | Sedang | Minimal |
+| Selective re-render | ✅ Otomatis | ✅ Otomatis | ❌ Semua consumer |
+| Async actions | Manual (async/await) | Built-in | Manual |
+| Middleware | persist, immer, devtools | persist, devtools | None |
+| React/Vue | React only | Vue only | React only |
+
+---
+
+## React Hook Form — Form Handling Modern
+
+Form di React bisa pakai `useState` biasa, tapi makin kompleks form makin sulit. **React Hook Form** (RHF) solusi form performa tinggi, minim re-render.
+
+```bash
+npm install react-hook-form
+```
+
+```javascript
+import { useForm } from 'react-hook-form';
+
+function RegisterForm() {
+  const {
+    register,         // hook input ke form
+    handleSubmit,     // wrapper submit
+    formState: { errors },  // error tiap field
+    watch,            // liat nilai real-time
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log('Data form:', data);
+    // Kirim ke API
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label>Nama</label>
+        <input {...register('name', { required: 'Nama wajib diisi' })} />
+        {errors.name && <span>{errors.name.message}</span>}
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input
+          {...register('email', {
+            required: 'Email wajib diisi',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Format email tidak valid',
+            },
+          })}
+        />
+        {errors.email && <span>{errors.email.message}</span>}
+      </div>
+
+      <div>
+        <label>Password</label>
+        <input
+          type="password"
+          {...register('password', {
+            required: true,
+            minLength: { value: 6, message: 'Minimal 6 karakter' },
+          })}
+        />
+        {errors.password && <span>{errors.password.message}</span>}
+      </div>
+
+      <button type="submit">Daftar</button>
+    </form>
+  );
+}
+```
+
+### Integrasi dengan UI Library (shadcn/ui, MUI)
+
+```javascript
+import { useForm, Controller } from 'react-hook-form';
+import Select from 'react-select'; // library select
+
+function ProductForm() {
+  const { control, handleSubmit } = useForm();
+
+  return (
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
+      <Controller
+        name="category"
+        control={control}
+        rules={{ required: true }}
+        render={({ field }) => (
+          <Select
+            {...field}
+            options={[
+              { value: 'elektronik', label: 'Elektronik' },
+              { value: 'pakaian', label: 'Pakaian' },
+            ]}
+          />
+        )}
+      />
+      <button type="submit">Simpan</button>
+    </form>
+  );
+}
+```
+
+### Kenapa React Hook Form?
+
+- **Minim re-render** — tiap field di-register independently, gak trigger render ulang form.
+- **Validation built-in** — dukung required, pattern, minLength, custom validate.
+- **Integrasi mudah** — bisa pake Yup/Zod untuk schema validation.
+- **performace** — cocok buat form besar (>50 field).
+
+```javascript
+// Validasi dengan Zod schema
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Email tidak valid'),
+  password: z.string().min(6, 'Minimal 6 karakter'),
+});
+
+function LoginForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  return (
+    <form onSubmit={handleSubmit((d) => console.log(d))}>
+      <input {...register('email')} />
+      {errors.email && <p>{errors.email.message}</p>}
+      <input type="password" {...register('password')} />
+      {errors.password && <p>{errors.password.message}</p>}
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+---
+
 ## Aturan Hooks (Rules of Hooks)
 
 Ada dua aturan mutlak:
@@ -381,14 +656,173 @@ React pake **urutan panggilan hooks** buat ngelacak state. Kalau hooks dipanggil
 
 ---
 
+## useMemo & useCallback — Performance Hooks
+
+`useMemo` dan `useCallback` mencegah perhitungan ulang yang gak perlu.
+
+### useMemo — Cache Hasil Komputasi
+
+Memoisasi nilai hasil komputasi berat:
+
+```javascript
+import { useMemo } from 'react';
+
+function Dashboard({ transactions, filter }) {
+  // Hanya hitung ulang kalo transactions atau filter berubah
+  const filteredTotal = useMemo(() => {
+    console.log('Hitung ulang...');
+    return transactions
+      .filter(t => t.category === filter)
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions, filter]);
+
+  return <p>Total: Rp{filteredTotal.toLocaleString()}</p>;
+}
+```
+
+**Kapan pake:** komputasi berat (filter array gede, mapping data, format data). **Jangan** pake `useMemo` untuk operasi sederhana — overhead lebih gede dari komputasinya.
+
+### useCallback — Cache Fungsi
+
+`useCallback` return fungsi yang sama (referensi stabil) antar render — penting saat fungsi di-pass sebagai prop ke child yang pake `React.memo()`:
+
+```javascript
+import { useCallback, useState } from 'react';
+
+function ProductList() {
+  const [query, setQuery] = useState('');
+
+  // Tanpa useCallback: fungsi baru tiap render
+  // Pake useCallback: referensi fungsi stabil kalo query gak berubah
+  const handleSearch = useCallback((term) => {
+    setQuery(term);
+    // fetch hasil search...
+  }, []); // [] → fungsi gak pernah berubah
+
+  return (
+    <div>
+      <SearchInput onSearch={handleSearch} />
+      <Results query={query} />
+    </div>
+  );
+}
+```
+
+**useMemo vs useCallback:**
+
+| Hook | Return | Kapan pake |
+|------|--------|-----------|
+| `useMemo` | Nilai hasil komputasi | Komputasi berat, format data |
+| `useCallback` | Fungsi itu sendiri | Callback yang di-pass ke child |
+
+**Aturan:** Jangan optimasi duluan. Tulis kode yang jelas dulu, ukur performa, baru `useMemo`/`useCallback` kalo terbukti ada masalah.
+
+---
+
+## Testing React dengan RTL (React Testing Library)
+
+**RTL** adalah library testing untuk React — fokus ke **behavior**, bukan implementasi. Prinsip: test komponen kayak user pake aplikasi.
+
+### Setup
+
+```bash
+npm install -D @testing-library/react @testing-library/jest-dom @testing-library/user-event vitest
+```
+
+```javascript
+// vitest.config.js
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: { environment: 'jsdom', globals: true },
+});
+```
+
+### Test Dasar
+
+```javascript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import Counter from './Counter';
+
+describe('Counter Component', () => {
+  it('render initial value 0', () => {
+    render(<Counter />);
+    expect(screen.getByText('0')).toBeTruthy();
+  });
+
+  it('increment saat tombol + diklik', () => {
+    render(<Counter />);
+    fireEvent.click(screen.getByText('+'));
+    expect(screen.getByText('1')).toBeTruthy();
+  });
+});
+```
+
+### Testing Form Submit
+
+```javascript
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import LoginForm from './LoginForm';
+
+describe('LoginForm', () => {
+  it('submit dengan data valid', async () => {
+    const handleSubmit = vi.fn();
+    render(<LoginForm onSubmit={handleSubmit} />);
+
+    await userEvent.type(screen.getByPlaceholderText('Email'), 'user@test.com');
+    await userEvent.type(screen.getByPlaceholderText('Password'), 'secret123');
+    await userEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'user@test.com',
+        password: 'secret123',
+      })
+    );
+  });
+
+  it('tampilkan error validasi', async () => {
+    render(<LoginForm onSubmit={vi.fn()} />);
+    await userEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    expect(screen.getByText(/wajib diisi/i)).toBeTruthy();
+  });
+});
+```
+
+**Best practice RTL:**
+1. Test behavior, bukan implementasi — jangan test state internal
+2. Pake `getByRole`, `getByLabelText`, `getByPlaceholderText` — bukan `getByTestId`
+3. Pake `userEvent` daripada `fireEvent` — lebih mirip user beneran
+4. Test accessibility secara otomatis
+
+---
+
 ## Latihan
 
 1. **Timer dengan Cleanup:** Buat komponen Timer pake `useEffect` + `useRef` buat interval. Tambah tombol Start/Stop. Pastikan interval berhenti pas komponen di-unmount.
+
 2. **Fetch Data:** Buat komponen yang fetch daftar posts dari `https://jsonplaceholder.typicode.com/posts`. Tampilin loading state, data, dan error state.
+
 3. **Theme Toggle:** Implementasi dark/light theme pake `useContext`. Buat `ThemeProvider` dan `useTheme` custom hook.
+
 4. **Todo Reducer:** Buat todo app pake `useReducer`. Actions: ADD_TODO, TOGGLE_TODO, DELETE_TODO. State: array of `{ id, text, completed }`.
+
 5. **Custom Hook:** Buat custom hook `useDocumentTitle` yang update `document.title` otomatis saat nilai berubah.
+
 6. **Form State:** Buat form dengan 4+ field. Pake `useReducer` daripada 4 `useState` terpisah.
+
+7. **Zustand Store:** Buat counter store pake Zustand. Implementasi increment, decrement, reset. Bandingkan jumlah baris kode dengan `useReducer` — mana yang lebih sedikit?
+
+8. **Zustand Async:** Buat store produk pake Zustand yang fetch dari API. State: `products`, `loading`, `error`. Tampilkan di komponen.
+
+9. **React Hook Form:** Buat form registrasi dengan React Hook Form + Zod validation. Field: nama, email, password, confirm password. Validasi: required, email format, password min 6, confirm password harus sama.
+
+10. **Form + Zustand:** Integrasi React Hook Form dengan Zustand store. Simpan data form ke Zustand, tampilkan di halaman lain (simulasi multi-step form).
 
 ---
 

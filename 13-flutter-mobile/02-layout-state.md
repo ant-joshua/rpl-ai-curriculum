@@ -188,6 +188,92 @@ class ProfileScreen extends StatelessWidget {
 }
 ```
 
+### Stack & Positioned — Overlay Widget
+
+```dart
+Stack(
+  children: [
+    // Gambar background
+    Image.network('https://picsum.photos/400/300'),
+    // Teks overlay di pojok kiri bawah
+    Positioned(
+      bottom: 10,
+      left: 10,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        color: Colors.black54,
+        child: const Text('Liburan di Bali',
+            style: TextStyle(color: Colors.white, fontSize: 16)),
+      ),
+    ),
+    // Icon di pojok kanan atas
+    const Positioned(
+      top: 10,
+      right: 10,
+      child: CircleAvatar(
+        backgroundColor: Colors.red,
+        child: Icon(Icons.favorite, color: Colors.white),
+      ),
+    ),
+  ],
+)
+```
+
+### SafeArea — Jaga Padding Device
+
+```dart
+// SafeArea otomatis ngasih padding biar konten ga ketutup notch / status bar
+SafeArea(
+  child: Column(
+    children: [
+      Text('Ini aman dari notch'),
+    ],
+  ),
+);
+
+// Kalo mau custom
+SafeArea(
+  top: false, // ga perlu padding atas
+  minimum: const EdgeInsets.all(8), // minimal padding
+  child: Text('Safe content'),
+);
+```
+
+### SingleChildScrollView — Scroll Konten
+
+```dart
+SingleChildScrollView(
+  padding: const EdgeInsets.all(16),
+  child: Column(
+    children: [
+      for (int i = 0; i < 20; i++)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text('Item ke-$i', style: const TextStyle(fontSize: 18)),
+        ),
+    ],
+  ),
+);
+```
+
+### Wrap — Layout yang Auto-Bungkus
+
+```dart
+Wrap(
+  spacing: 8, // horizontal antar item
+  runSpacing: 4, // vertical antar baris
+  children: [
+    Chip(label: Text('Flutter')),
+    Chip(label: Text('Dart')),
+    Chip(label: Text('Mobile')),
+    Chip(label: Text('Firebase')),
+    Chip(label: Text('RPL')),
+    Chip(label: Text('SMK')),
+    Chip(label: Text('Widget')),
+  ],
+);
+```
+
 ---
 
 ## State Management
@@ -497,6 +583,67 @@ Text('Done: ${provider.doneCount}'); // auto update
 context.read<TodoProvider>().add('Belajar Flutter');
 ```
 
+### MultiProvider — Gabung Banyak Provider
+
+```dart
+// main.dart — pake MultiProvider
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+### ProxyProvider — Provider yang Bergantung Provider Lain
+
+```dart
+// CartProvider butuh AuthProvider buat tau user ID
+ChangeNotifierProxyProvider<AuthProvider, CartProvider>(
+  create: (_) => CartProvider(),
+  update: (_, auth, cart) => cart!..updateUserId(auth.userId),
+)
+```
+
+### Level 3: Riverpod (Alternative Modern)
+
+Selain Provider, ada **Riverpod** — state management yang lebih safe, ga pake BuildContext, compile-time safe.
+
+```dart
+// pubspec.yaml
+// dependencies:
+//   flutter_riverpod: ^2.4.0
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Provider definition — ga pake context
+final counterProvider = StateProvider<int>((ref) => 0);
+
+// Widget harus extend ConsumerWidget
+class CounterScreen extends ConsumerWidget {
+  const CounterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(counterProvider);
+    return Scaffold(
+      body: Center(
+        child: Text('$count'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => ref.read(counterProvider.notifier).state++,
+      ),
+    );
+  }
+}
+```
+
 ---
 
 ## Latihan
@@ -508,3 +655,9 @@ context.read<TodoProvider>().add('Belajar Flutter');
 3. **Buat Counter dengan Provider** — Pindahin logic Counter dari setState ke Provider (`CounterProvider` extends `ChangeNotifier`). Widget listen pake `context.watch<CounterProvider>()`. Method: increment, decrement, reset.
 
 4. **Buat Shopping Cart** — `CartProvider` extends `ChangeNotifier`. `CartItem` class: name, price, quantity. Method: `addItem(name, price)`, `removeItem(index)`, `totalPrice`. UI: ListView item keranjang + total harga di bawah. Pake `FloatingActionButton` buat nambah item (dialog input nama & harga).
+
+5. **MultiProvider App** — Gabung 3 provider: `AuthProvider`, `CartProvider`, `ThemeProvider`. `ThemeProvider` toggle dark/light. Pake `Consumer` di widget yang beda-beda. Lihat bagaimana perubahan di satu provider ga ngaruh ke widget yang pake provider lain.
+
+6. **Wrap + Chip Filter** — Bikin daftar kategori produk (makanan, minuman, elektronik, fashion, dll) pake `Wrap` + `Chip`. Pilih chip → filter item di grid. State: `selectedCategories` sebagai `Set<String>`. Gunakan Provider buat state.
+
+7. **Profile Screen Layout** — Bikin screen layout kompleks: `Stack` buat background image + avatar overlay, `SafeArea`, `SingleChildScrollView` buat konten panjang, `Wrap` buat skill tags. Data dari model class.

@@ -78,6 +78,75 @@ npx webpack-bundle-analyzer dist/stats.json
 | Dua versi React | Duplikat module | `resolve.alias` / `dedupe` |
 | CSS library penuh | Tailwind purged? | `purge: true` |
 
+### Webpack Bundle Analyzer — Advanced Usage
+
+```bash
+# Multiple report formats
+npx webpack-bundle-analyzer dist/stats.json --mode static -r report.html
+# JSON output untuk CI
+npx webpack-bundle-analyzer dist/stats.json --mode json -r report.json
+# Server mode — hot reload analysis
+npx webpack-bundle-analyzer dist/stats.json --mode server --port 8888
+```
+
+```typescript
+// webpack.config.js — analyzer plugin detail
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+module.exports = {
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: 'bundle-report.html',
+      defaultSizes: 'gzip',    // Ukuran gzip (paling relevan)
+      // Bisa juga: 'stat' (raw) atau 'parsed' (after transform)
+      openAnalyzer: false,
+      generateStatsFile: true,
+      statsFilename: 'stats.json',
+      logLevel: 'info',
+      // Exclude source maps dari analisis
+      excludeAssets: [/\.map$/],
+    }),
+  ],
+};
+```
+
+```bash
+# CI Script — threshold check
+# Gagalin build kalo bundle size > threshold
+MAX_BUNDLE_SIZE=300000 # 300 KB gzip
+
+# Ekstrak size dari report JSON
+BUNDLE_SIZE=$(cat dist/stats.json | jq '.assets[] | select(.name | endswith(".js")) | .size' | awk '{sum+=$1} END {print sum}')
+
+if [ "$BUNDLE_SIZE" -gt "$MAX_BUNDLE_SIZE" ]; then
+  echo "❌ Bundle size ${BUNDLE_SIZE} bytes exceeds threshold ${MAX_BUNDLE_SIZE} bytes"
+  exit 1
+else
+  echo "✅ Bundle size ${BUNDLE_SIZE} bytes — within budget"
+fi
+```
+
+### Analisis Bundle dengan Chrome DevTools
+
+```typescript
+// Coverage tab — liat JS/CSS yang ga dipake
+// DevTools → Ctrl+Shift+P → "Show Coverage"
+// Atau pake programmatic coverage
+async function measureCoverage() {
+  const coverage = await (window as any).__coverage__;
+  if (coverage) {
+    for (const [url, data] of Object.entries(coverage)) {
+      const totalBytes = data.text.length;
+      const usedBytes = data.s.reduce((sum: number, range: any) =>
+        sum + (range.end - range.start), 0);
+      const percentUsed = ((usedBytes / totalBytes) * 100).toFixed(1);
+      console.log(`${url}: ${percentUsed}% used`);
+    }
+  }
+}
+```
+
 ---
 
 ## 2. Tree Shaking

@@ -102,6 +102,114 @@ sequenceDiagram
 
 ---
 
+## CDN — Content Delivery Network
+
+CDN = jaringan server yang tersebar di banyak lokasi geografis. Tujuan: ngirim konten dari server yang paling deket sama user.
+
+### Cara Kerja CDN
+
+```mermaid
+graph TD
+    U[User di Jakarta] --> DNS[DNS: CNAME ke CDN]
+    DNS --> E[Edge Server Singapore]
+    DNS --> F[Edge Server Jakarta]
+    DNS --> G[Edge Server Tokyo]
+    U -->|Terdekat| F
+    F -->|Cache Miss| O[Origin Server USA]
+    O -->|Cache & Serve| F
+    F -->|Serve| U
+    style F fill:#c8e6c9
+    style O fill:#ffccbc
+```
+
+### CDN Providers
+
+| Provider | Fitur Utama | Harga |
+|----------|-------------|-------|
+| **Cloudflare** | CDN + DDoS protection + WAF | Free tier available |
+| **Fastly** | Edge computing (Compute@Edge) | Pay-as-you-go |
+| **Akamai** | Enterprise-grade | Mahal |
+| **AWS CloudFront** | Integrasi AWS | Pay-as-you-go |
+| **Vercel Edge** | Edge functions + CDN | Free tier |
+
+### Cache Strategy di CDN
+
+```
+Static assets (images, CSS, JS):
+  CDN: cache 1 tahun, immutable
+  Browser: cache 1 tahun
+  
+HTML pages:
+  CDN: cache 5 menit
+  Browser: no-cache (revalidate)
+  
+API responses:
+  CDN: cache 1 menit (kalo public)
+  Browser: no-cache
+```
+
+### Purge Cache CDN
+
+```bash
+# Cloudflare
+curl -X POST "https://api.cloudflare.com/client/v4/zones/ZONE_ID/purge_cache" \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"files":["https://site.com/style.css"]}'
+
+# Fastly
+curl -X POST "https://api.fastly.com/service/SERVICE_ID/purge/site.com/style.css" \
+  -H "Fastly-Key: API_KEY"
+```
+
+---
+
+## Edge Computing
+
+Edge computing = jalanin kode di server CDN, bukan di origin server. Lebih deket ke user → latency lebih rendah.
+
+### Edge Functions (Vercel / Cloudflare Workers / Fastly)
+
+```javascript
+// Cloudflare Worker — jalan di edge
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    
+    // Handle API di edge
+    if (url.pathname.startsWith('/api/')) {
+      const data = await fetch('https://api.example.com' + url.pathname);
+      const json = await data.json();
+      
+      // Tambah header caching
+      return new Response(JSON.stringify(json), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=60',
+          'CF-Cache-Status': 'HIT',
+        },
+      });
+    }
+
+    // Serve static dari CDN
+    return fetch(request);
+  }
+}
+```
+
+### Edge vs Origin
+
+| Aspek | Origin Server | Edge Server |
+|-------|---------------|-------------|
+| Lokasi | 1-3 region | 50-300+ locations |
+| Latency | 100-500ms | 10-50ms |
+| Compute | Unlimited | Limited (CPU, memory) |
+| Storage | Database + disk | Cache + KV store |
+| Cold start | No | Yes (first request) |
+| Use case | Business logic, DB | Auth, rewrite, A/B testing |
+
+---
+
 ## Browser DevTools — Network Tab
 
 Cara buka: `F12` atau `Ctrl+Shift+I` → tab **Network**
@@ -118,6 +226,48 @@ Yang bisa kamu lihat:
 | Waterfall | Timeline request visual |
 
 > **Latihan**: Buka website manapun → Network tab → reload → liat semua request yang muncul
+
+---
+
+## Caching Strategy — 3 Level Cache
+
+```
+Level 1: CDN Cache
+  - Static assets: cache lama (1 tahun)
+  - HTML: cache pendek (5 menit)
+  - API: cache sesuai kebutuhan
+
+Level 2: Browser Cache
+  - Cache-Control: max-age
+  - ETag / If-None-Match
+  - Service Worker Cache
+
+Level 3: Server Cache
+  - In-memory cache (Redis)
+  - Database query cache
+  - Full-page cache (Varnish)
+```
+
+### Cache Headers Praktis
+
+```typescript
+// Express middleware buat caching
+function cacheMiddleware(duration: number) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    res.set('Cache-Control', `public, max-age=${duration}`);
+    next();
+  };
+}
+
+// Static assets — cache lama
+app.use('/static', cacheMiddleware(31536000)); // 1 year
+app.use('/static', express.static('public'));
+
+// API — cache pendek
+app.get('/api/products', cacheMiddleware(60), (req, res) => {
+  res.json(products);
+});
+```
 
 ---
 
@@ -167,6 +317,9 @@ graph LR
 | IP & DNS | IP itu alamat, DNS buku telepon |
 | Client-Server | Client minta, server kasih |
 | URL | Protocol://domain:port/path?query |
+| CDN | Server dekat user buat ngirim konten cepet |
+| Edge Computing | Jalanin kode di CDN, latency rendah |
+| Caching | 3 level: CDN → Browser → Server |
 | DevTools Network | Liat semua request website |
 | Hosting | Shared → VPS → Cloud → Serverless |
 
@@ -186,9 +339,10 @@ Buka 3 website favorit. Catat:
 - Request paling lambat
 - Tipe file paling banyak (gambar? JS? CSS?)
 - Status code 200 vs 404 vs 301
+- Header Cache-Control dan CDN mana yang dipake
 
 ### 3. Gambar Arsitektur
-Bikin diagram Mermaid arsitektur web yang mencakup: Client, DNS, CDN, Web Server, Database. Jelaskan alur request dari user buka browser sampai dapet halaman.
+Bikin diagram Mermaid arsitektur web yang mencakup: Client, DNS, CDN, Web Server, Database, Edge Server. Jelaskan alur request dari user buka browser sampai dapet halaman.
 
 ### 4. Bedain Hosting Types
 Buat tabel perbandingan Shared, VPS, Cloud, Serverless dari segi:
@@ -197,3 +351,12 @@ Buat tabel perbandingan Shared, VPS, Cloud, Serverless dari segi:
 - Skalabilitas
 - Contoh kasus penggunaan
 - Kelebihan & kekurangan
+
+### 5. CDN Practice
+Buat static site sederhana (HTML + CSS + JS), deploy ke Vercel, terus analisis header `x-vercel-cache`. Catat: request mana yang HIT vs MISS dari CDN.
+
+### 6. Edge Function
+Tulis Cloudflare Worker sederhana yang rewrite path `/?name=Budi` jadi `<h1>Halo, Budi!</h1>`. Deploy ke edge dan test.
+
+### 7. Cache Strategy
+Buat Express middleware dengan 3 level caching: static assets (1 year), API responses (60s), HTML pages (5 min). Set Cache-Control headers yang tepat.

@@ -51,6 +51,43 @@ app/
 
 **App Router recommended** buat proyek baru. Pake React Server Components by default — bundle JS lebih kecil.
 
+### Data Fetching di App Router
+
+App Router punya **tiga cara caching** — kontrol penuh lewat opsi `fetch()`:
+
+```javascript
+// 1. Static (SSG) — cache selamanya, di-build sekali
+fetch(url, { cache: 'force-cache' });
+
+// 2. Dynamic (SSR) — fetch tiap request, gak di-cache
+fetch(url, { cache: 'no-store' });
+
+// 3. ISR — revalidate otomatis tiap N detik
+fetch(url, { next: { revalidate: 60 } });
+
+// 4. On-demand revalidation — trigger dari server action / webhook
+// panggil revalidateTag('posts') atau revalidatePath('/blog')
+fetch(url, { next: { tags: ['posts'] } });
+```
+
+**Parallel data fetching** — fetch beberapa data sekaligus, gak sequential:
+
+```javascript
+// ❌ Sequential — lambat
+export default async function Page() {
+  const user = await getUser();        // 200ms
+  const posts = await getPosts();      // 300ms → total 500ms
+}
+
+// ✅ Parallel — cepat
+export default async function Page() {
+  const [user, posts] = await Promise.all([
+    getUser(),     // 200ms
+    getPosts(),    // 300ms → total 300ms
+  ]);
+}
+```
+
 ---
 
 ## File-Based Routing
@@ -80,6 +117,110 @@ export default function ProdukDetail({ params }) {
 | `not-found.js` | Halaman 404 |
 | `[param]/page.js` | Dynamic route |
 | `[...catchAll]/page.js` | Catch-all route |
+
+---
+
+## Advanced Routing: App Router Depth
+
+### Nested Layouts
+
+Layout di App Router bisa **bersarang** — layout induk tetap ada sementara layout anak nambah.
+
+```javascript
+// app/layout.js — layout root untuk semua halaman
+export default function RootLayout({ children }) {
+  return (
+    <html lang="id">
+      <body>
+        <header>Navbar Global</header>
+        {children}
+        <footer>Footer Global</footer>
+      </body>
+    </html>
+  );
+}
+```
+
+```javascript
+// app/dashboard/layout.js — layout khusus dashboard
+export default function DashboardLayout({ children }) {
+  return (
+    <section>
+      <nav>Sidebar Dashboard</nav>
+      <main>{children}</main>
+    </section>
+  );
+}
+```
+
+```javascript
+// app/dashboard/settings/page.js — URL: /dashboard/settings
+// Layout yang dipake: RootLayout → DashboardLayout → page
+export default function Settings() {
+  return <h1>Pengaturan Akun</h1>;
+}
+```
+
+### Group Routes — Tanpa Ngaruh ke URL
+
+Bisa kelompokkan route tanpa nambah segmen URL — pake `(groupName)`:
+
+```
+app/
+  (marketing)/
+    page.js          → /
+    about/page.js    → /about
+  (dashboard)/
+    dashboard/
+      page.js        → /dashboard
+    settings/
+      page.js        → /settings
+```
+
+Berguna buat misahin layout marketing (publik) vs dashboard (private) tanpa URL berubah.
+
+### Parallel Routes — Multiple Pages dalam Satu Route
+
+Tampilkan beberapa halaman secara **independen** dalam satu layout — pake slot (`@slotName`):
+
+```
+app/
+  dashboard/
+    layout.js
+    @analytics/
+      page.js
+    @settings/
+      page.js
+    page.js
+```
+
+```javascript
+// app/dashboard/layout.js
+export default function DashboardLayout({ children, analytics, settings }) {
+  return (
+    <div>
+      <section>{children}</section>    {/* main content */}
+      <aside>{analytics}</aside>       {/* analytics slot */}
+      <aside>{settings}</aside>        {/* settings slot */}
+    </div>
+  );
+}
+```
+
+Tiap slot punya error & loading sendiri — salah satu gagal gak ngaruh ke slot lain.
+
+### Intercepting Routes — Modal dari Link
+
+Bisa nge-intercept route untuk tampilin modal tanpa navigasi penuh:
+
+```javascript
+// app/feed/page.js — feed utama
+// app/feed/(..)photo/[id]/page.js — intercept route /photo/[id]
+// app/photo/[id]/page.js — halaman photo penuh
+
+// Kalo user klik foto dari feed: tampil modal (intercept)
+// Kalo user buka URL langsung /photo/123: tampil halaman penuh
+```
 
 ---
 
@@ -145,73 +286,283 @@ export default async function Produk({ params }) {
 
 **Intinya:** Ga ada satu metode yang paling benar. Tergantung seberapa sering konten berubah, seberapa penting SEO, dan seberapa kompleks interaksi user.
 
----
+### Streaming & Suspense
 
-## API Routes
-
-Next.js bisa bikin **API endpoint** di proyek yang sama — gausah backend terpisah.
+App Router dukung **Streaming** — server ngirim HTML secara bertahap, gak nunggu semua data siap. Pake `Suspense` buat bungkus komponen yang butuh data.
 
 ```javascript
-// app/api/users/route.js — App Router
-export async function GET() {
-  const users = await db.users.findAll();
-  return Response.json(users);
+import { Suspense } from 'react';
+
+async function SlowPosts() {
+  const posts = await fetch('https://api.example.com/posts', { cache: 'no-store' });
+  const data = await posts.json();
+  return <ul>{data.map(p => <li key={p.id}>{p.title}</li>)}</ul>;
 }
 
-export async function POST(request) {
-  const body = await request.json();
-  const user = await db.users.create(body);
-  return Response.json(user, { status: 201 });
+async function FastProfile() {
+  const user = await fetch('https://api.example.com/user');
+  const data = await user.json();
+  return <h1>Halo, {data.name}</h1>;
 }
-```
 
-```javascript
-// app/api/users/[id]/route.js — Dynamic API
-export async function GET(_, { params }) {
-  const user = await db.users.find(params.id);
-  return Response.json(user);
-}
-```
-
-Cocok buat: BFF (Backend For Frontend), proxy API eksternal, handle form submission.
-
----
-
-## React Server Components (RSC)
-
-**Server Components** adalah komponen React yang **cuma jalan di server**. Kode mereka gak dikirim ke browser — bundle JS jadi lebih kecil.
-
-```javascript
-// app/page.js — by default ini Server Component
-import { getPosts } from '@/lib/db';
-
-export default async function Home() {
-  const posts = await getPosts();
-
+export default function Dashboard() {
   return (
-    <ul>
-      {posts.map(post => (
-        <li key={post.id}>{post.title}</li>
-      ))}
-    </ul>
+    <div>
+      <FastProfile />        {/* render dulu */}
+      <Suspense fallback={<p>Loading posts...</p>}>
+        <SlowPosts />        {/* render belakangan */}
+      </Suspense>
+    </div>
   );
 }
 ```
 
-Kalau butuh interaktivitas (onClick, useState, useEffect), kasih `'use client'` di atas file:
+**TTFB** (Time To First Byte) lebih kecil karena server ngirim shell halaman dulu. Konten berat jalan di background. Cocok buat halaman dengan campuran data cepat + lambat.
+
+---
+
+## Server Actions — Mutasi Data Tanpa API Routes
+
+Server Actions adalah **fungsi yang jalan di server** tapi bisa dipanggil langsung dari client component. Gausah bikin API endpoint.
+
+### Setup (next.config.js)
+
+```javascript
+// next.config.js
+module.exports = {
+  experimental: {
+    serverActions: true,
+  },
+};
+```
+
+Di Next.js 14+, server actions udah **stable** (gak perlu experimental flag).
+
+### Contoh: Form dengan Server Action
+
+```javascript
+// app/actions.js — 'use server' directive
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { db } from '@/lib/db';
+
+export async function createPost(formData) {
+  const title = formData.get('title');
+  const content = formData.get('content');
+
+  // Validasi server-side
+  if (!title || title.length < 3) {
+    return { error: 'Judul minimal 3 karakter' };
+  }
+
+  // Simpan ke database
+  await db.posts.create({
+    data: { title, content },
+  });
+
+  // Revalidate halaman — refresh data
+  revalidatePath('/blog');
+
+  return { success: true };
+}
+```
+
+```javascript
+// app/blog/new/page.js — client component
+'use client';
+
+import { createPost } from '../actions';
+
+export default function NewPost() {
+  return (
+    <form action={createPost}>
+      <input name="title" placeholder="Judul" required />
+      <textarea name="content" placeholder="Konten" required />
+      <button type="submit">Simpan</button>
+    </form>
+  );
+}
+```
+
+### Server Action dengan useActionState
+
+Buat handle loading, error, dan validasi di client:
 
 ```javascript
 'use client';
 
-import { useState } from 'react';
+import { useActionState } from 'react';
+import { createPost } from '../actions';
 
-export default function Counter() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+// Initial state
+const initialState = { error: null, success: false };
+
+export default function NewPost() {
+  const [state, formAction, isPending] = useActionState(createPost, initialState);
+
+  return (
+    <form action={formAction}>
+      <input name="title" placeholder="Judul" />
+      {state?.error && <p className="error">{state.error}</p>}
+      <button type="submit" disabled={isPending}>
+        {isPending ? 'Menyimpan...' : 'Simpan'}
+      </button>
+    </form>
+  );
 }
 ```
 
-**Best practice:** server component sebanyak mungkin, client component seminimal mungkin.
+### Server Action Best Practices
+
+```javascript
+// 1. Pisahkan action ke file terpisah (bukan inline di komponen)
+// app/actions/posts.js
+
+// 2. Validasi input selalu di server (client validation bisa dilewati)
+// 3. Gunakan Zod untuk validasi
+'use server';
+import { z } from 'zod';
+
+const PostSchema = z.object({
+  title: z.string().min(3).max(100),
+  content: z.string().min(10),
+});
+
+export async function createPost(formData) {
+  const parsed = PostSchema.safeParse({
+    title: formData.get('title'),
+    content: formData.get('content'),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors };
+  }
+  // ...simpan ke DB
+}
+
+// 4. RevalidatePath / revalidateTag setelah mutasi data
+// 5. Jangan expose data sensitif di return value
+```
+
+---
+
+## RTL Testing (React Testing Library)
+
+Testing komponen React penting buat produksi. Library standar: **React Testing Library (RTL)**.
+
+### Setup
+
+```bash
+npm install -D @testing-library/react @testing-library/jest-dom vitest
+```
+
+```javascript
+// vitest.config.js
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: './test-setup.js',
+  },
+});
+```
+
+### Contoh Test Dasar
+
+```javascript
+// Counter.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import Counter from './Counter';
+
+describe('Counter Component', () => {
+  test('render count awal 0', () => {
+    render(<Counter />);
+    expect(screen.getByText(/0/)).toBeInTheDocument();
+  });
+
+  test('tombol tambah naikin count', () => {
+    render(<Counter />);
+    fireEvent.click(screen.getByText('Tambah'));
+    expect(screen.getByText(/1/)).toBeInTheDocument();
+  });
+});
+```
+
+### Test Async (fetch data)
+
+```javascript
+// UserList.test.jsx
+import { render, screen, waitFor } from '@testing-library/react';
+import UserList from './UserList';
+
+// Mock fetch global
+global.fetch = vi.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([
+      { id: 1, name: 'Budi' },
+      { id: 2, name: 'Siti' },
+    ]),
+  })
+);
+
+describe('UserList', () => {
+  test('munculin loading state awal', () => {
+    render(<UserList />);
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  test('render users setelah fetch', async () => {
+    render(<UserList />);
+    await waitFor(() => {
+      expect(screen.getByText('Budi')).toBeInTheDocument();
+      expect(screen.getByText('Siti')).toBeInTheDocument();
+    });
+  });
+});
+```
+
+### Tes User Interaction
+
+```javascript
+// Form.test.jsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import RegisterForm from './RegisterForm';
+
+describe('RegisterForm', () => {
+  test('validasi required muncul kalo input kosong', async () => {
+    render(<RegisterForm />);
+
+    // Klik submit tanpa isi form
+    fireEvent.click(screen.getByText('Daftar'));
+
+    // Tunggu validasi muncul
+    expect(await screen.findByText(/wajib diisi/i)).toBeInTheDocument();
+  });
+
+  test('submit panggil handler dengan data bener', async () => {
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+
+    await user.type(screen.getByLabelText(/nama/i), 'Budi');
+    await user.type(screen.getByLabelText(/email/i), 'budi@test.com');
+    await user.click(screen.getByText('Daftar'));
+  });
+});
+```
+
+### Prinsip RTL
+
+> **"Test software cara user menggunakannya, bukan implementasi detail."**
+
+- Jangan test state internal — test output di DOM
+- Jangan test className — test teks/role yang keliatan user
+- Prioritaskan `getByRole`, `getByLabelText`, `getByText` — mirip cara user interaksi
+- Hindari `getByTestId` — itu pilihan terakhir
 
 ---
 
@@ -291,12 +642,30 @@ Semua framework pinjam ide satu sama lain. React pake hooks dari Svelte? Vue pak
 ## Latihan
 
 1. **Setup Next.js:** `npx create-next-app@latest my-app --app`. Jalankan di `localhost:3000`.
+
 2. **Routing:** Buat halaman `/`, `/about`, `/produk/[id]`. Pake App Router.
+
 3. **SSG:** Buat halaman blog yang fetch data dari JSONPlaceholder di build time (`cache: 'force-cache'`).
+
 4. **ISR:** Buat halaman produk dengan revalidate 30 detik. Coba ubah data — liat perubahan.
+
 5. **API Route:** Buat endpoint `/api/hello` yang return JSON `{ message: 'Halo dunia' }`. Panggil dari frontend.
-6. **Perbandingan:** Install SvelteKit (`npx sv create my-svelte-app`), bikin halaman yang sama. Bandingkan ukuran bundle hasil build.
-7. **Deploy:** Push Next.js ke GitHub, deploy ke Vercel (gratis). Dapetin URL publik.
+
+6. **Server Action:** Buat form komentar pake Server Action. Simpan komentar ke array in-memory. Tampilkan daftar komentar setelah submit. Gunakan `revalidatePath` buat refresh.
+
+7. **Server Action + Zod:** Buat Server Action untuk registrasi user. Validasi dengan Zod schema. Tampilkan error per-field di client component menggunakan `useActionState`.
+
+8. **Nested Layouts:** Buat dashboard dengan nested layout: sidebar navigasi + konten utama. Layout dashboard harus punya navigasi sendiri terpisah dari layout root.
+
+9. **Group Routes:** Buat route group `(marketing)` untuk homepage + about, dan `(app)` untuk dashboard + settings. Tiap group punya layout sendiri.
+
+10. **RTL Test:** Install RTL + Vitest di Next.js app. Tulis test untuk:
+    - Komponen Counter (render, click, state change)
+    - Form login dengan validasi (submit kosong → error muncul)
+
+11. **Perbandingan:** Install SvelteKit (`npx sv create my-svelte-app`), bikin halaman yang sama. Bandingkan ukuran bundle hasil build.
+
+12. **Deploy:** Push Next.js ke GitHub, deploy ke Vercel (gratis). Dapetin URL publik.
 
 ---
 

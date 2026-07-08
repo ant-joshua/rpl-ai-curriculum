@@ -412,6 +412,156 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 });
 ```
 
+### SW Lifecycle & Update Strategy
+
+Service Worker punya lifecycle: Install → Waiting → Activate. Penting banget buat handle update:
+
+```typescript
+// sw.ts — full lifecycle management
+const CACHE_VERSION = 2; // Increment setiap deploy
+
+self.addEventListener('install', (event) => {
+  console.log(`SW v${CACHE_VERSION} installing...`);
+  // Force waiting SW jadi active langsung
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  console.log(`SW v${CACHE_VERSION} activated`);
+  // Hapus cache lama
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== `v${CACHE_VERSION}-static`)
+          .filter((name) => name !== `v${CACHE_VERSION}-api`)
+          .map((name) => caches.delete(name))
+      );
+    })
+  );
+  // Kontrol semua tab yang terbuka
+  clients.claim();
+});
+
+// main.ts — detect SW update
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.ts').then((registration) => {
+    // Check for updates setiap 60 detik
+    setInterval(() => registration.update(), 60_000);
+
+    registration.addEventListener('updatefound', () => {
+      const newWorker = registration.installing;
+      if (newWorker) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Ada update tersedia — notifikasi user
+            showUpdateNotification(() => {
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+              window.location.reload();
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+// sw.ts — listen for SKIP_WAITING message
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+```
+
+### Image Optimization Strategies
+
+Selain format modern (WebP/AVIF), ada strategi tambahan:
+
+```typescript
+// 1. Responsive images dengan art direction
+// <picture> element — pilih gambar sesuai viewport
+const pictureHTML = `
+<picture>
+  <source media="(max-width: 600px)" srcset="hero-mobile.webp" />
+  <source media="(max-width: 1200px)" srcset="hero-tablet.webp" />
+  <source type="image/avif" srcset="hero.avif" />
+  <img src="hero.webp" width="1920" height="1080" loading="lazy" alt="Hero" />
+</picture>
+`;
+
+// 2. Low Quality Image Placeholder (LQIP)
+// Generate base64 thumbnail kecil (blurred) yang di-inline di HTML
+async function generateLQIP(imagePath: string): Promise<string> {
+  const response = await fetch(imagePath);
+  const blob = await response.blob();
+  // Convert ke base64 dengan kualitas rendah
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
+// Implementasi: tampilkan LQIP dulu, swap ke gambar asli pas load
+
+// 3. Progressive image loading
+document.addEventListener('DOMContentLoaded', () => {
+  const images = document.querySelectorAll<HTMLImageElement>('img[data-src]');
+  const imageObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          // Load thumbnail dulu
+          if (img.dataset.thumb) {
+            img.src = img.dataset.thumb;
+          }
+          // Load full image setelah thumbnail masuk
+          setTimeout(() => {
+            img.src = img.dataset.src!;
+            img.classList.add('loaded');
+          }, 100);
+          imageObserver.unobserve(img);
+        }
+      });
+    },
+    { rootMargin: '200px' }
+  );
+  images.forEach((img) => imageObserver.observe(img));
+});
+```
+
+### Brotli Compression — Seting di Server
+
+Brotli lebih baik dari gzip (20-30% lebih kecil). Aktifkan di server:
+
+```nginx
+# Nginx — brotli compression
+brotli on;
+brotli_comp_level 6;
+brotli_types text/plain text/css application/json application/javascript
+           application/xml image/svg+xml;
+
+# Fallback gzip kalo client ga support brotli
+gzip on;
+gzip_comp_level 6;
+gzip_types text/plain text/css application/json application/javascript
+           application/xml image/svg+xml;
+```
+
+```typescript
+// Express — express-static-gzip
+import expressStaticGzip from 'express-static-gzip';
+
+app.use('/', expressStaticGzip('dist', {
+  enableBrotli: true,
+  orderPreference: ['br', 'gz'],
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  },
+}));
+```
+
 ### Perbandingan Strategi
 
 | Strategy | Kecepatan | Freshness | Cocok Buat |

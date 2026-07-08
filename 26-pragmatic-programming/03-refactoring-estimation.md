@@ -365,3 +365,42 @@ Jangan tambah fitur baru ke kode kotor — bersihin dulu, *lalu* tambah fitur.
      return { id: d.id, name: x, age: y, email: z };
    }
    ```
+
+5. **Planning Poker Simulation** — Tim Anda (4 orang) mau estimasi fitur "Checkout dengan promo". Vote: A=3, B=8, C=5, D=13. Jelaskan:
+   - Kenapa ada perbedaan besar?
+   - Apa yang harus didiskusikan?
+   - Bagaimana cara mencapai konsensus?
+
+6. **Multi-Pattern Refactor** — Kode berikut punya 3 masalah: (1) Long method, (2) Magic numbers, (3) Nested conditionals. Refactor dengan extract function + constant:
+   ```typescript
+   function calculateSalary(employee: any): number {
+     let base = employee.hourRate * employee.hoursWorked;
+     let bonus = 0;
+     if (employee.hoursWorked > 40) {
+       bonus = (employee.hoursWorked - 40) * employee.hourRate * 0.5;
+     }
+     if (employee.yearsOfService > 5) {
+       bonus += base * 0.1;
+     }
+     if (employee.yearsOfService > 10) {
+       bonus += base * 0.15;
+     }
+     let tax = 0;
+     if (base + bonus > 10000000) {
+       tax = (base + bonus) * 0.15;
+     } else if (base + bonus > 5000000) {
+       tax = (base + bonus) * 0.1;
+     }
+     let deduction = 0;
+     if (employee.hasBPJS) deduction += 200000;
+     if (employee.hasPension) deduction += 300000;
+     return base + bonus - tax - deduction;
+   }
+   ```
+
+7. **Estimation Scenario** — Sebagai tech lead, kamu diminta estimasi fitur baru: "Integrasi payment gateway Midtrans & Xendit." Kamu punya data reference task:
+   - "Integrasi Rajaongkir": 3 hari
+   - "Integrasi Google Login": 2 hari
+   - Butuh handling callback webhook, retry mechanism, dan idempotency.
+   - Tim: 2 developer junior.
+   Hitung PERT estimate. Jelaskan asumsi yang kamu buat.

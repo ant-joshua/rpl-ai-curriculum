@@ -43,6 +43,12 @@ github.com/
 
 > **Monorepo ≠ monolith.** Kamu tetap punya banyak aplikasi kecil, tapi semua tinggal serumah. Digunakan oleh Google, Meta, Uber, dan tim produksi modern.
 
+### Sejarah Monorepo
+
+Monorepo mulai populer setelah Google dan Facebook mempublikasikan pengalaman mereka. Google punya satu repository raksasa dengan 2+ miliar baris kode. Facebook pake monorepo untuk React, React Native, Jest, Flow, dan semua tool internal.
+
+Tooling monorepo modern (Turborepo, Nx, pnpm) lahir karena kebutuhan industri — tim ingin shared code tanpa ribet publish ke npm tiap kali perubahan kecil.
+
 ---
 
 ## 2. Kenapa Monorepo?
@@ -83,9 +89,18 @@ Configure sekali — semua project kena. Build, lint, test otomatis. Tidak perlu
 
 Ganti nama field `email` jadi `emailAddress`? Cari & ganti sekali di root. Git blame satu repo. Perubahan bisa atomic commit.
 
+```bash
+# Polyrepo: 3 PR, 3 review, 3 deploy
+# Monorepo: 1 PR, 1 review, 1 deploy
+```
+
 ### ✅ Dependency management terpusat
 
 Versi TypeScript, ESLint, Prettier — cukup di root `package.json`. Semua project pakai sama. Zero konflik.
+
+### ✅ Atomic Deployment
+
+Kalo backend dan frontend perlu perubahan barengan (misal rename API field), polyrepo butuh deploy backend dulu baru frontend. Di monorepo, deploy barengan — gak ada window of inconsistency.
 
 ---
 
@@ -115,6 +130,10 @@ Dari Microsoft. Fokus pada monorepo skala besar dengan dependency management ket
 
 Built-in pnpm. Struktur `node_modules` strict (tidak hoisting sembarangan). Hemat disk space.
 
+### Lerna (Legacy)
+
+Lerna dulu pioneer monorepo tool. Sejak 2023, Lerna di-maintain oleh Nx team dan integrasi dengan Nx. Kalo project baru, langsung pake Turborepo atau Nx.
+
 | Tool | Kelebihan | Cocok untuk |
 |------|-----------|-------------|
 | Turborepo | Setup cepat, cache hebat | Tim kecil-menengah |
@@ -141,11 +160,17 @@ monorepo-app/
 │   ├── shared/           # Types, utils, interfaces
 │   │   ├── package.json
 │   │   └── src/
-│   └── eslint-config/    # Konfigurasi ESLint bersama
+│   ├── eslint-config/    # Konfigurasi ESLint bersama
+│   │   ├── package.json
+│   │   └── index.js
+│   └── tsconfig/         # Base tsconfig bersama
 │       ├── package.json
-│       └── index.js
+│       └── base.json
 ├── package.json          # Root workspace
 ├── turbo.json            # Turborepo config
+├── .github/
+│   └── workflows/
+│       └── ci.yml        # GitHub Actions
 └── .gitignore
 ```
 
@@ -155,6 +180,43 @@ monorepo-app/
 - `turbo.json` — pipeline & caching
 
 Beberapa project juga punya `libs/` untuk kode utilitas internal atau `tools/` untuk script CI dan code generation.
+
+### Contoh Struktur Shared Config Package
+
+```json
+// packages/tsconfig/package.json
+{
+  "name": "@myapp/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["base.json", "nextjs.json", "node.json"]
+}
+```
+
+```json
+// packages/tsconfig/base.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+```json
+// packages/tsconfig/nextjs.json
+{
+  "extends": "@myapp/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }]
+  }
+}
+```
 
 ---
 
@@ -207,14 +269,134 @@ packages:
 
 NPM akan "menaikkan" (hoist) dependensi bersama ke `node_modules` root. Dependensi yang sama (React, TypeScript) cukup sekali download. Ini hemat disk space dan bikin install lebih cepat.
 
+### Phantom Dependencies Problem
+
+```typescript
+// ❌ Masalah hoisting — bisa akses package yang bukan dependency
+// apps/web bisa import express langsung, padahal cuma di apps/api
+import express from 'express'; // Bisa jalan — tapi salah!
+
+// ✅ Di pnpm, ini error — strict node_modules
+// Hanya dependency yang terdaftar di package.json yang bisa diakses
+```
+
+pnpm solves phantom dependencies dengan struktur `node_modules` strict.
+
+---
+
+## 6. Shared Config Packages — Pattern Penting
+
+### ESLint Config Package
+
+```js
+// packages/eslint-config/index.js
+module.exports = {
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+  },
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+};
+```
+
+```json
+// packages/eslint-config/package.json
+{
+  "name": "@myapp/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "peerDependencies": {
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  }
+}
+```
+
+```json
+// apps/web/.eslintrc.json
+{
+  "extends": ["@myapp/eslint-config"]
+}
+```
+
+### TypeScript Config Inheritance
+
+```json
+// packages/tsconfig/base.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true
+  }
+}
+
+// apps/web/tsconfig.json
+{
+  "extends": "@myapp/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}
+```
+
+---
+
+## 7. Pro & Kontra Monorepo — Decision Matrix
+
+### Kapan Pake Monorepo
+
+| Situasi | Putusan |
+|---------|---------|
+| Tim kecil (1-10 dev) dengan 2-5 project | ✅ Monorepo |
+| Banyak shared code antara project | ✅ Monorepo |
+| Sering refactor lintas project | ✅ Monorepo |
+| CI setup terbatas | ✅ Monorepo (1 config) |
+| Tim besar terpisah (20+ dev) | ⚠️ Bisa monorepo, butuh tool matang |
+| Project benar-benar independent | ❌ Lebih baik polyrepo |
+| Client punya repo terpisah | ❌ Keep polyrepo |
+
+### Tantangan Monorepo
+
+1. **Ukuran repo** — clone pertama lama. Solusi: sparse checkout, shallow clone.
+2. **CI bottleneck** — semua project di satu pipeline. Solusi: affected commands, path filter.
+3. **Security isolation** — satu package compromised = semua kena. Solusi: npm audit, Dependabot.
+4. **Tooling** — butuh Nx/Turborepo untuk scale. Jangan pake workspaces doang buat project besar.
+
 ---
 
 ## ✍️ Latihan
 
 1. Buat struktur folder monorepo dengan `apps/web`, `apps/api`, `packages/shared`, dan `packages/eslint-config`
+
 2. Setup root `package.json` dengan `workspaces` dan `private: true`
+
 3. Bedakan: kapan pakai Turborepo vs pnpm workspaces saja? Tulis 2 skenario
+
 4. Pindahkan kode duplikat `interface User` dari 2 file terpisah ke `packages/shared`
+
+5. Buat shared config package `@myapp/tsconfig` dengan base config yang diextends oleh apps/web dan apps/api
+
+6. Buat shared ESLint config package dengan rules standard. Setup di apps/web dan apps/api
+
+7. Analisis phantom dependencies: bikin apps/web yang import 'lodash' tanpa declare di package.json. Catat behavior di npm vs pnpm
 
 ---
 
@@ -224,3 +406,4 @@ NPM akan "menaikkan" (hoist) dependensi bersama ke `node_modules` root. Dependen
 - [Nx Documentation](https://nx.dev/getting-started/intro)
 - [pnpm Workspaces](https://pnpm.io/workspaces)
 - [Yarn Workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/)
+- [Monorepo Patterns at Google](https://cacm.acm.org/magazines/2016/7/204032-why-google-stores-billions-of-lines-of-code-in-a-single-repository/fulltext)

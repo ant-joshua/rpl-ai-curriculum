@@ -279,7 +279,151 @@ function observeWebVitals() {
 observeWebVitals();
 ```
 
----
+## Core Web Vitals — Deep Dive Optimization
+
+### LCP Optimization Pipeline
+
+```typescript
+// 1. Ukur TTFB dulu — TTFB > 800ms biasanya bikin LCP gagal
+// Gunakan PerformanceObserver atau Navigation Timing API
+new PerformanceObserver((list) => {
+  const [entry] = list.getEntries();
+  const ttfb = entry.responseStart - entry.requestStart;
+  console.log(`TTFB: ${ttfb}ms`);
+}).observe({ type: 'navigation', buffered: true });
+
+// 2. Preload hero image secara spesifik
+// Di HTML head:
+// <link rel="preload" href="/images/hero.webp" as="image" fetchpriority="high">
+
+// 3. Gunakan responsive images dengan srcset
+// Biar device kecil ga download gambar gede
+function generateSrcSet(baseUrl: string, widths: number[]): string {
+  return widths.map(w => `${baseUrl}?w=${w} ${w}w`).join(', ');
+}
+// Contoh: "photo.jpg?w=400 400w, photo.jpg?w=800 800w"
+
+// 4. Optimasi server response — cache API yang dibutuhin LCP
+const lcpCache = new Map<string, { data: unknown; timestamp: number }>();
+const CACHE_TTL = 60_000; // 1 menit
+
+async function getLCPData(key: string, fetcher: () => Promise<unknown>) {
+  const cached = lcpCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  const data = await fetcher();
+  lcpCache.set(key, { data, timestamp: Date.now() });
+  return data;
+}
+```
+
+### CLS Prevention Checklist (Detail)
+
+| Skenario | Risk CLS | Fix |
+|----------|----------|-----|
+| Gambar tanpa dimensi | Tinggi | Set `width` + `height` explicit + `aspect-ratio` CSS |
+| Custom font | Medium | `font-display: optional` + `size-adjust` |
+| Iklan / embed | Tinggi | Reserve space: `min-height` sesuai ukuran iklan |
+| Infinite scroll | Sedang | Beri skeleton dengan dimensi pasti |
+| Web font swap | Rendah | Gunakan `font-display: optional` + preload critical font |
+| Third-party widget | Tinggi | Load di iframe atau defer setelah layout stabil |
+
+```css
+/* Aspect ratio container — cegah CLS dari gambar */
+.img-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Modern — CSS native */
+  background: #f0f0f0; /* Placeholder color */
+  overflow: hidden;
+}
+
+/* Fallback untuk browser lama */
+@supports not (aspect-ratio: 16/9) {
+  .img-container::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%; /* 9/16 * 100 */
+  }
+}
+
+/* Skeleton screen — alternatif dari blank space */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+```
+
+### Long Task Optimization — Detail Strategy
+
+```typescript
+// 1. Identify long tasks via PerformanceObserver
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.duration > 50) {
+      console.warn(`Long task detected: ${entry.duration}ms`, entry);
+      // Kirim ke analytics buat tracking
+      navigator.sendBeacon('/api/long-task', JSON.stringify({
+        duration: entry.duration,
+        startTime: entry.startTime,
+        url: location.href,
+      }));
+    }
+  }
+}).observe({ type: 'longtask', buffered: true });
+
+// 2. Yield to main thread — biar browser bisa render
+async function yieldToMainThread(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+async function processInChunks<T>(
+  items: T[],
+  processor: (item: T) => void,
+  chunkSize = 50
+) {
+  for (let i = 0; i < items.length; i += chunkSize) {
+    const chunk = items.slice(i, i + chunkSize);
+    chunk.forEach(processor);
+    // Yield setelah tiap chunk — biar UI tetep responsif
+    if (i + chunkSize < items.length) {
+      await yieldToMainThread();
+    }
+  }
+}
+
+// 3. Gunakan scheduler.postTask() kalo available (Chrome 118+)
+if ('scheduler' in window && 'postTask' in (window as any).scheduler) {
+  // Prioritaskan task penting
+  (window as any).scheduler.postTask(
+    () => processUrgentData(),
+    { priority: 'user-blocking' }
+  );
+  // Task background
+  (window as any).scheduler.postTask(
+    () => processAnalytics(),
+    { priority: 'background' }
+  );
+}
+
+// 4. isInputPending — cek apakah user lagi interaksi
+function processDataWithResponsiveness(data: number[]) {
+  for (const item of data) {
+    // Process item...
+    if ((navigator as any).scheduling?.isInputPending()) {
+      // Ada input pending — yield dulu!
+      break;
+    }
+  }
+}
+```
 
 ## Tabel Ringkasan Metrik
 

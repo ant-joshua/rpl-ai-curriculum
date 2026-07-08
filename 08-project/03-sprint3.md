@@ -299,4 +299,10 @@ export class ErrorBoundary extends Component<Props, State> {
 2. **Stream Response** — Implement streaming agent response di frontend, tampilkan token by token seperti ChatGPT
 3. **Tool Integration** — Bikin minimal 2 Mastra tools (misal: cari tempat + cek cuaca), pastikan agent pake tools itu
 4. **Error Boundary** — Bungkus komponen AI dengan ErrorBoundary, test dengan matikan backend
-5. **Prompt Templates** — Bikin 2 template prompt dengan parameter dinamis, test hasil generate-nya
+|5. **Prompt Templates** — Bikin 2 template prompt dengan parameter dinamis, test hasil generate-nya
+
+6. **API Contract Documentation** — Update API.md dengan endpoint baru dari Sprint 3. Include: method, path, request body (JSON schema), response (200/201/400/401/404/500), contoh curl. Tulis minimal 3 endpoint dengan dokumentasi lengkap.
+
+7. **Architecture Decision Record** — Tulis ADR untuk 2 keputusan arsitektur yang diambil selama Sprint 3. Format: context, decision, consequences, alternatives. Contoh: "Why streaming instead of batch response?", "Why server-sent events instead of WebSocket?"
+
+8. **Sprint Review Document** — Tulis sprint review untuk Sprint 3. Include: sprint goal, completed tasks vs planned, burndown, what went well, what to improve, action items untuk sprint berikutnya.

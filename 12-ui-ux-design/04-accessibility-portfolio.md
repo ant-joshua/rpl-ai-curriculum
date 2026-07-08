@@ -259,6 +259,225 @@ Wawancara 3 orang. Empathy map → Problem statement: "Ibu butuh catat pengeluar
 
 ---
 
+## WCAG Checklist Praktis — Panduan Audit
+
+### Checklist Tingkat A (Wajib)
+
+```
+□ Gambar punya alt text yang deskriptif (kecuali dekoratif)
+□ Form input punya label (explicit atau implicit)
+□ Heading level urut (h1 → h2 → h3, gak lompat)
+□ Link punya teks deskriptif (bukan "klik di sini")
+□ Video punya caption (prerecorded)
+□ Konten bisa dimengerti tanpa warna
+□ Gak ada flash >3x per detik (bahaya epilepsi)
+□ Keyboard navigable — semua fitur bisa pake Tab
+□ Skip navigation link tersedia
+□ Language atribut di <html>
+```
+
+### Checklist Tingkat AA (Target SMK)
+
+```
+□ Contrast ratio ≥ 4.5:1 (teks normal)
+□ Contrast ratio ≥ 3:1 (teks besar ≥18px bold / ≥24px)
+□ Teks bisa di-resize sampai 200% tanpa kehilangan konten
+□ Gambar teks diminimalkan (pake teks beneran kalo bisa)
+□ Error suggestion — kasih tau cara benerin error
+□ Error prevention untuk form penting (konfirmasi sebelum kirim)
+□ Focus indicator visible (jangan hapus outline)
+□ ARIA labels untuk komponen kustom
+□ Heading dan landmark regions proper
+□ Consistent navigation — navigasi sama di semua halaman
+```
+
+### Checklist Tingkat AAA (Advanced)
+
+```
+□ Contrast ratio ≥ 7:1 (teks normal)
+□ Sign language untuk video prerecorded
+□ Extended audio description
+□ Teks konten gak perlu baca level > SMA
+□ Gak ada link yang cuma URL mentah
+□ Section headings untuk semua page sections
+□ Focus order preserve makna
+□ Tujuan link bisa ditentuin dari link text aja
+□ Semua fungsi pake keyboard aja
+□ Timing adjustable — gak ada batas waktu kaku
+```
+
+### Testing Tools
+
+| Tool | Fungsi | Gratis? |
+|------|--------|---------|
+| WAVE (browser extension) | Visual overlay masalah aksesibilitas | ✅ |
+| axe DevTools | Audit otomatis, integrasi CI/CD | ✅ |
+| Lighthouse | Audit built-in di Chrome DevTools | ✅ |
+| WebAIM Contrast Checker | Cek rasio kontras | ✅ |
+| NVDA Screen Reader | Screen reader gratis (Windows) | ✅ |
+| VoiceOver | Screen reader built-in (Mac) | ✅ |
+| Colour Contrast Analyser | Picker warna + contrast | ✅ |
+
+### Accessibility Statement
+
+Template pernyataan aksesibilitas untuk website:
+
+```
+# Pernyataan Aksesibilitas
+
+Kami berkomitmen memastikan website ini accessible untuk semua pengguna,
+termasuk penyandang disabilitas.
+
+## Status Kepatuhan
+Website ini [sebagian/sepenuhnya/tidak] sesuai dengan WCAG 2.2 Level AA.
+
+## Fitur Aksesibilitas
+- Navigasi keyboard penuh
+- Skip to content link
+- Alt text pada semua gambar informatif
+- Contrast ratio ≥ 4.5:1
+- Heading terstruktur
+
+## Keterbatasan
+- [Sebutkan area yang belum accessible]
+- [Estimasi perbaikan]
+
+## Kontak
+Ada masalah aksesibilitas? Hubungi: [email]
+```
+
+---
+
+## Accessibility Testing — Panduan Manual
+
+### Langkah-langkah Testing
+
+1. **Automated check** — pake axe/WAVE/Lighthouse
+   ```
+   npm install -g @axe-core/cli
+   axe https://situslo.com --save report.json
+   ```
+
+2. **Keyboard test** — matiin mouse, navigasi pake Tab doang
+3. **Screen reader test** — NVDA (Windows) atau VoiceOver (Mac)
+4. **Zoom test** — zoom browser sampai 200%
+5. **Contrast test** — cek semua kombinasi warna
+6. **Mobile test** — cek di HP orientation portrait & landscape
+
+### Script: Automated Accessibility Check
+
+```typescript
+// Pake axe-core + Puppeteer untuk CI/CD
+import { AxePuppeteer } from '@axe-core/puppeteer';
+import puppeteer from 'puppeteer';
+
+async function checkAccessibility(url: string) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setBypassCSP(true);
+  await page.goto(url);
+
+  const results = await new AxePuppeteer(page).analyze();
+
+  console.log(`Violations: ${results.violations.length}`);
+  results.violations.forEach(v => {
+    console.log(`❌ ${v.id}: ${v.description}`);
+    v.nodes.forEach(n => console.log(`  - ${n.target}`));
+  });
+
+  await browser.close();
+}
+
+checkAccessibility('https://situslo.com');
+```
+
+### Contoh: Fixing Common Issues
+
+| Masalah | Fix | Sebelum | Sesudah |
+|---------|-----|---------|---------|
+| Missing alt text | Tambah `alt="..."` | `<img src="logo.png">` | `<img src="logo.png" alt="Logo Perusahaan">` |
+| Low contrast | Ganti warna teks | `color: #999;` | `color: #595959;` |
+| No label on input | Tambah `<label>` atau `aria-label` | `<input type="text">` | `<label for="nama">Nama</label><input id="nama">` |
+| Non-semantic button | Ganti ke `<button>` | `<div onclick="...">Kirim</div>` | `<button type="submit">Kirim</button>` |
+| Focus outline removed | Ganti/custom outline | `outline: none;` | `outline: 2px solid blue;` |
+
+---
+
+## Accessibility di React — Praktik
+
+### Komponen Accessible
+
+```tsx
+// Button accessible
+interface A11yButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+  ariaLabel?: string;
+  children: React.ReactNode;
+}
+
+function A11yButton({ onClick, disabled, ariaLabel, children }: A11yButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      aria-disabled={disabled}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Form input dengan error
+function FormField({
+  label,
+  error,
+  id,
+  ...props
+}: {
+  label: string;
+  error?: string;
+  id: string;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        {...props}
+      />
+      {error && (
+        <span id={`${id}-error`} role="alert">
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+```
+
+### Live Region untuk Dynamic Content
+
+```tsx
+// Notifikasi yang muncul dinamis
+function Notification({ message, type }: { message: string; type: 'success' | 'error' }) {
+  return (
+    <div
+      role="alert"
+      aria-live="polite"
+      className={`notification ${type}`}
+    >
+      {message}
+    </div>
+  );
+}
+```
+
+---
+
 ## Latihan
 
 1. **Audit aksesibilitas.** Ambil 1 halaman website (bisa punya sendiri atau contoh). Cek: apakah ada alt text? Apakah contrast ratio ≥ 4.5:1? Bisakah navigasi pake Tab doang? Tulis 3 temuan dan perbaikannya.
@@ -281,3 +500,9 @@ Wawancara 3 orang. Empathy map → Problem statement: "Ibu butuh catat pengeluar
 3. **Bikin outline portfolio.** Tulis struktur portfolio lo sendiri: nama, role, 2 proyek (judul + masalah + tools yang dipake), skill, kontak. Format markdown.
 
 4. **Cek kontras warna.** Ambil 3 pasang warna dari proyek lo sebelumnya. Cek di WebAIM Contrast Checker. Tulis: pasangan warna, ratio, lulus/tidak AA. Kalo gak lulus, kasih usulan warna baru.
+
+5. **WCAG audit penuh.** Pilih 1 halaman web. Audit pake checklist WCAG AA (minimal 10 item). Tulis: temuan, level severity, rekomendasi perbaikan, screenshot evidence. Format tabel.
+
+6. **Fix aksesibilitas.** Ambil komponen React yang lo buat sebelumnya. Identifikasi 3 masalah aksesibilitas. Tulis sebelum/sesudah kode. Screenshoot perbaikan.
+
+7. **Bikin accessibility statement.** Buat pernyataan aksesibilitas untuk portfolio website lo sendiri. Isi: komitmen, status kepatuhan, fitur aksesibilitas yang udah diimplementasi, keterbatasan, kontak.

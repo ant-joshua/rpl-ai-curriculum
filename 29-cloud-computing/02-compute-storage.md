@@ -245,6 +245,278 @@ async function processUpload(buffer: Buffer): Promise<Buffer> {
 // key: uploads/thumb/xxx.jpg (200px)
 ```
 
+---
+
+## Container Orchestration — EKS / GKE / DOKS
+
+Container orchestration = ngatur banyak container secara otomatis. Scaling, load balancing, rolling update, self-healing.
+
+### Kubernetes — Standar Industri
+
+Kubernetes (K8s) = orkestrator container paling populer. Cloud provider punya managed version:
+
+| Provider | Managed K8s | Harga Control Plane |
+|----------|------------|---------------------|
+| AWS | EKS | $0.10/jam (~$73/bln) |
+| GCP | GKE | Gratis (kecuali node) |
+| Azure | AKS | Gratis |
+| DigitalOcean | DOKS | Gratis |
+
+### Kenapa Pake Kubernetes?
+
+- **Self-healing** — container mati, ganti otomatis
+- **Auto-scaling** — nambah container kalo traffic naik
+- **Rolling update** — deploy tanpa downtime
+- **Service discovery** — container bisa nemu satu sama lain
+- **Secret management** — nyimpen API key, password
+
+### Konsep Dasar Kubernetes
+
+```
+┌─────────────────────────────────────┐
+│           Kubernetes Cluster         │
+│  ┌──────────┐  ┌──────────┐         │
+│  │  Node 1   │  │  Node 2   │         │
+│  │ ┌──────┐ │  │ ┌──────┐ │         │
+│  │ │ Pod  │ │  │ │ Pod  │ │         │
+│  │ │(App) │ │  │ │(App) │ │         │
+│  │ └──────┘ │  │ └──────┘ │         │
+│  └──────────┘  └──────────┘         │
+└─────────────────────────────────────┘
+```
+
+### Deploy ke DOKS (DigitalOcean Kubernetes)
+
+```bash
+# 1. Buat cluster
+doctl kubernetes cluster create my-cluster \
+  --region sgp1 \
+  --node-pool "name=web-pool;size=s-2vcpu-2gb;count=3;auto-scale=true;min-nodes=3;max-nodes=10"
+
+# 2. Download kubeconfig
+doctl kubernetes cluster kubeconfig save my-cluster
+
+# 3. Cek cluster
+kubectl get nodes
+kubectl get pods --all-namespaces
+```
+
+### Deploy App ke Kubernetes
+
+```yaml
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: myusername/my-api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: url
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  selector:
+    app: api
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer
+```
+
+```bash
+# Deploy
+kubectl apply -f deployment.yaml
+
+# Cek status
+kubectl get pods
+kubectl get services
+
+# Scale manual
+kubectl scale deployment api-server --replicas=5
+
+# Rolling update (ganti image)
+kubectl set image deployment/api-server api=myusername/my-api:v2
+
+# Rollback
+kubectl rollout undo deployment/api-server
+
+# Logs
+kubectl logs -l app=api --tail=100 -f
+```
+
+### Horizontal Pod Autoscaler
+
+```yaml
+# hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-server-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+```bash
+kubectl apply -f hpa.yaml
+kubectl get hpa -w  # watch auto scaling
+```
+
+### Deploy ke GKE (Google Kubernetes Engine)
+
+```bash
+# 1. Setup gcloud
+gcloud auth login
+gcloud config set project my-project
+
+# 2. Buat cluster
+gcloud container clusters create my-cluster \
+  --zone asia-southeast1-a \
+  --num-nodes 3 \
+  --machine-type e2-standard-2
+
+# 3. Dapet kubeconfig
+gcloud container clusters get-credentials my-cluster
+
+# 4. Deploy (sama kayak DOKS — pake kubectl)
+kubectl apply -f deployment.yaml
+```
+
+### Deploy ke EKS (AWS Elastic Kubernetes Service)
+
+```bash
+# 1. Buat cluster (via eksctl — tool khusus EKS)
+eksctl create cluster \
+  --name my-cluster \
+  --region ap-southeast-1 \
+  --nodegroup-name standard-workers \
+  --node-type t3.medium \
+  --nodes 3 \
+  --nodes-min 2 \
+  --nodes-max 10
+
+# 2. Deploy (sama, pake kubectl)
+kubectl apply -f deployment.yaml
+
+# 3. AWS Load Balancer Controller (opsional)
+# Biar Service type LoadBalancer bikin ALB
+eksctl utils associate-iam-oidc-provider --cluster my-cluster --approve
+```
+
+---
+
+## Infrastructure as Code — Terraform & Pulumi
+
+Bahas lebih detail tentang IaC tools.
+
+### Terraform — HCL
+
+Terraform pake HCL (HashiCorp Configuration Language). Deklaratif — lo bilang "apa yang diinginkan", Terraform urus "gimana caranya".
+
+**State file:** Terraform nyimpen status infra di `terraform.tfstate`. Jangan hapus file ini!
+
+```bash
+# Workflow Terraform
+terraform init          # Download provider plugins
+terraform plan          # Liat rencana perubahan
+terraform apply         # Terapkan perubahan
+terraform destroy       # Hapus semua infra
+```
+
+### Pulumi — TypeScript/Python/Go
+
+Pulumi beda — lo pake bahasa pemrograman beneran. Lebih fleksibel.
+
+```typescript
+import * as aws from '@pulumi/aws';
+
+// Bikin VPC
+const vpc = new aws.ec2.Vpc('main', {
+  cidrBlock: '10.0.0.0/16',
+  tags: { Name: 'main-vpc' },
+});
+
+// Bikin subnet
+const subnet = new aws.ec2.Subnet('public', {
+  vpcId: vpc.id,
+  cidrBlock: '10.0.1.0/24',
+  mapPublicIpOnLaunch: true,
+});
+
+// Bikin security group
+const sg = new aws.ec2.SecurityGroup('web-sg', {
+  vpcId: vpc.id,
+  ingress: [
+    { protocol: 'tcp', fromPort: 80, toPort: 80, cidrBlocks: ['0.0.0.0/0'] },
+    { protocol: 'tcp', fromPort: 443, toPort: 443, cidrBlocks: ['0.0.0.0/0'] },
+  ],
+});
+
+export const vpcId = vpc.id;
+```
+
+### Perbandingan IaC Tools
+
+| Aspek | Terraform | Pulumi | AWS CDK | CloudFormation |
+|-------|-----------|--------|---------|----------------|
+| Language | HCL | TS/Python/Go | TS/Python | YAML/JSON |
+| State management | State file | Service managed | Service managed | AWS managed |
+| Multi-cloud | ✅ | ✅ | ❌ (AWS only) | ❌ (AWS only) |
+| Learning curve | Sedang | Rendah (kalo udah bisa TS) | Rendah | Tinggi |
+| Community | Besar | Sedang | Sedang | Besar |
+| Modularity | Modules | Packages | Constructs | Nested stacks |
+
 ## Latihan
 
 1. **Deploy Web Server**: Launch Droplet/EC2 (free tier). Install Nginx + Node.js. Deploy simple Express API yang return JSON `{ status: "ok", timestamp }`. Screenshot hasil curl.
@@ -268,3 +540,9 @@ curl -w "%{time_total}\n" -o /dev/null -s https://cdn.example.com/image.jpg
    - Scale out ke 2 instance
    - Cek load balancer akses
    - Catat hasil di README
+
+5. **Kubernetes deploy.** Bikin file YAML deployment untuk API sederhana (image: nginx atau node app). Tentukan: 3 replicas, resource limits, health check, LoadBalancer service. Apply ke cluster (atau dokumentasi command). Screenshoot kubectl get pods.
+
+6. **Pulumi IaC.** Bikin script Pulumi (TypeScript) untuk deploy 1 VM + security group di provider pilihan (AWS/DigitalOcean). Run `pulumi up`, screenshoot hasil. Catat state file lokasi.
+
+7. **IaC comparison report.** Pilih 2 IaC tools (misal Terraform vs Pulumi). Deploy infra yang sama (1 VM + firewall) pake kedua tool. Bandingkan: syntax, workflow, state management, error handling. Tulis kesimpulan mana yang lebih cocok untuk proyek SMK.

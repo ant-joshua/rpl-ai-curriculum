@@ -29,7 +29,141 @@ String kota = 'Jakarta'; // non-null → error kalo diisi null
 // kota = null; // COMPILE ERROR!
 ```
 
-> **Null safety:** Dart beda sama JS/TS. `String` artinya **never null**. Kalo lo butuh null, pake `String?`. Ini ngilangin null pointer error dari awal.
+|> **Null safety:** Dart beda sama JS/TS. `String` artinya **never null**. Kalo lo butuh null, pake `String?`. Ini ngilangin null pointer error dari awal.
+
+### Collections — List, Set, Map
+
+```dart
+// List — array berurutan
+final listAngka = [1, 2, 3, 4, 5];
+final listNama = <String>['Budi', 'Sari', 'Adi'];
+print(listAngka[0]); // 1
+print(listNama.length); // 3
+
+// List methods
+listNama.add('Rina'); // tambah
+listNama.remove('Adi'); // hapus value
+listNama.removeAt(0); // hapus index
+listNama.contains('Budi'); // cek ada ga?
+
+// Spread operator
+final allNumbers = [...listAngka, 6, 7, 8];
+
+// Collection for
+final doubled = [for (var n in listAngka) n * 2];
+
+// Set — unik, ga ada duplikasi
+final uniqueNames = <String>{'Budi', 'Sari', 'Budi'};
+print(uniqueNames); // {Budi, Sari} — duplikat otomatis ilang
+
+// Map — key-value
+final user = <String, dynamic>{
+  'name': 'Budi',
+  'age': 17,
+  'kelas': 'XII RPL',
+};
+print(user['name']); // Budi
+user['alamat'] = 'Jakarta'; // nambah key baru
+```
+
+### Generics — Type Safety
+
+```dart
+// Generic class — type ditentukan pas pake
+class Box<T> {
+  final T value;
+  Box(this.value);
+}
+
+final intBox = Box<int>(42);
+final stringBox = Box<String>('Halo');
+
+// Generic function
+T first<T>(List<T> list) => list[0];
+print(first<int>([1, 2, 3])); // 1
+
+// Type constraint
+class Repository<T extends Model> {
+  final List<T> _items = [];
+
+  void save(T item) => _items.add(item);
+  T findById(int id) => _items.firstWhere((i) => i.id == id);
+}
+
+abstract class Model {
+  int get id;
+}
+```
+
+### Records & Pattern Matching (Dart 3+)
+
+```dart
+// Record — multi-return value tanpa class
+(String, int) getUserInfo() {
+  return ('Budi', 17);
+}
+
+final (name, age) = getUserInfo();
+print('$name berumur $age tahun');
+
+// Named record
+({String name, int age}) getUser() {
+  return (name: 'Sari', age: 16);
+}
+
+final user2 = getUser();
+print(user2.name);
+
+// Switch expression
+String getGrade(int score) => switch (score) {
+  >= 90 => 'A',
+  >= 75 => 'B',
+  >= 60 => 'C',
+  _ => 'D',
+};
+
+// Sealed class — exhaustive switch
+sealed class ApiState {}
+class Loading extends ApiState {}
+class Success<T> extends ApiState { final T data; Success(this.data); }
+class Error extends ApiState { final String message; Error(this.message); }
+
+String handleState(ApiState state) => switch (state) {
+  Loading() => 'Memuat...',
+  Success(data: var d) => 'Data: $d',
+  Error(message: var m) => 'Error: $m',
+};
+```
+
+### Mixin — Reusable Behavior
+
+```dart
+// Mixin = kumpulan method yang bisa dipake banyak class
+mixin Loggable {
+  void log(String message) {
+    print('[LOG]: $message');
+  }
+}
+
+mixin Timestampable {
+  final DateTime createdAt = DateTime.now();
+}
+
+// Pake with keyword
+class User with Loggable, Timestampable {
+  final String name;
+  User(this.name);
+
+  void save() {
+    log('Menyimpan user $name');
+    // log() dari mixin Loggable
+  }
+}
+
+final user3 = User('Budi');
+user3.save();
+print(user3.createdAt); // dari Timestampable
+```
 
 ## Function
 
@@ -328,3 +462,9 @@ SizedBox(height: 20); // vertical spacer
 3. **Buat App Sederhana** — `MaterialApp` + `Scaffold` + `AppBar` + body `Center` + `Column`. Isinya: Text nama lo, SizedBox, Text kelas lo, SizedBox, ElevatedButton yang print "Halo!" ke console.
 
 4. **Bongkar Null Safety** — Bikin class `Product` dengan field `name` (String non-null), `price` (double non-null), `description` (String? nullable). Bikin constructor + method `printInfo()` yang nge-print "Produk: [name] — Rp[price]" dan kalo description ada, print juga description.
+
+5. **Generic Repository** — Bikin generic class `Repository<T>` dengan method `save(T item)`, `findAll() -> List<T>`, `delete(int index)`. Implementasiin `UserRepository extends Repository<User>`. User punya field: id, name, email.
+
+6. **Record + Switch Expression** — Bikin function yang nerima `(String name, String role)` record. Pake switch expression buat nentuin akses: 'admin' -> 'Full Akses', 'editor' -> 'Edit Konten', 'viewer' -> 'Liat Doang'. Gunakan sealed class `UserRole`.
+
+7. **Mixin Logging** — Bikin mixin `Logger` dengan method `info(String)` dan `error(String)`. Mixin `DatabaseMixin` dengan method `connect()` dan `disconnect()`. Class `UserService` pake kedua mixin. Simulasiin save user dengan logging.

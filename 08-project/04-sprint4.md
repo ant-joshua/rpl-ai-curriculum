@@ -243,3 +243,13 @@ Struktur presentasi 5 menit:
 3. **Deploy Frontend** — Deploy frontend ke Vercel, pastikan bisa komunikasi dengan backend production
 4. **CI/CD** — Setup GitHub Actions workflow untuk auto-deploy setiap push ke main
 5. **Presentasi** — Bikin slide sederhana (5 slide), latihan presentasi 5 menit, record screen + suara
+
+6. **Monitoring Setup** — Tambah log error ke file eksternal (pake Winston atau Pino). Pastikan production errors tercatat. Tulis: setup logger, error logging middleware, log rotation.
+
+7. **Performance Test** — Test endpoint `/api/trips` dengan k6 atau autocannon. Ukur: RPS (requests per second), latency p50/p95/p99, error rate. Tulis hasil + screenshot.
+
+8. **Final Documentation** — Bikin file ARCHITECTURE.md yang berisi: folder structure, ERD, data flow diagram (text/ASCII), tech stack decisions, deployment architecture. Format rapi dengan markdown.
+
+9. **Code Review + Refactor** — Minta teman review kode final. Catat 3 feedback yang diterima. Lakukan refactor minimal 1 bagian kode berdasarkan feedback. Tulis: feedback, perubahan, hasil akhir.
+
+10. **Post-Mortem Doc** — Tulis dokumen post-mortem: apa yang berhasil, apa yang gagal, apa yang dipelajari, apa yang akan dilakukan berbeda untuk proyek selanjutnya.

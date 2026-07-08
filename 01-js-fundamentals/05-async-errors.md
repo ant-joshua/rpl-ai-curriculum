@@ -212,6 +212,142 @@ async function demo() {
 
 ## Error Handling Lengkap
 
+### Custom Error Classes
+
+Bikin error sendiri biar lebih gampang dibedain:
+
+```javascript
+// Custom error class
+class ValidationError extends Error {
+  constructor(message, field) {
+    super(message);
+    this.name = "ValidationError";
+    this.field = field;
+    this.statusCode = 400;
+  }
+}
+
+class NetworkError extends Error {
+  constructor(message, url) {
+    super(message);
+    this.name = "NetworkError";
+    this.url = url;
+    this.statusCode = 503;
+  }
+}
+
+class AuthError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AuthError";
+    this.statusCode = 401;
+  }
+}
+
+// Pake
+function validateUser(data) {
+  if (!data.email) {
+    throw new ValidationError("Email wajib diisi", "email");
+  }
+  if (!data.password || data.password.length < 8) {
+    throw new ValidationError("Password minimal 8 karakter", "password");
+  }
+  return true;
+}
+
+// Handler pake instanceof
+function handleError(error) {
+  if (error instanceof ValidationError) {
+    console.error(`[VALIDATION] ${error.field}: ${error.message}`);
+    return { status: 400, error: error.message, field: error.field };
+  }
+  if (error instanceof NetworkError) {
+    console.error(`[NETWORK] ${error.url}: ${error.message}`);
+    return { status: 503, error: "Service unavailable" };
+  }
+  if (error instanceof AuthError) {
+    console.error(`[AUTH] ${error.message}`);
+    return { status: 401, error: "Unauthorized" };
+  }
+  // Default
+  console.error(`[UNKNOWN] ${error.message}`);
+  return { status: 500, error: "Internal server error" };
+}
+
+// Error handling middleware pattern
+async function apiHandler(req, res) {
+  try {
+    const data = await processRequest(req);
+    res.json({ success: true, data });
+  } catch (error) {
+    const { status, error: message, field } = handleError(error);
+    res.status(status).json({ error: message, field });
+  }
+}
+```
+
+### AbortController — Cancel Request
+
+```javascript
+// AbortController = cara standar buat cancel fetch/async operation
+async function fetchWithTimeout(url, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(`Request timeout after ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+// Cancel MULTIPLE request sekaligus
+const controller = new AbortController();
+const signal = controller.signal;
+
+async function loadPage() {
+  try {
+    const [users, posts, comments] = await Promise.all([
+      fetch("/api/users", { signal }),
+      fetch("/api/posts", { signal }),
+      fetch("/api/comments", { signal }),
+    ]);
+    // Process data...
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.log("Request dibatalkan");
+    }
+  }
+}
+
+// Cancel kalo user navigasi ke halaman lain
+const cancelBtn = document.getElementById("cancel");
+cancelBtn.addEventListener("click", () => controller.abort());
+
+// AbortController di Node.js Readable Stream
+import { Readable } from "node:stream";
+async function readStream(stream, signal) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", chunk => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+    signal?.addEventListener("abort", () => {
+      stream.destroy();
+      reject(new DOMException("Aborted", "AbortError"));
+    });
+  });
+}
+```
+
+### Try-Catch dengan Guard Pattern
+
 ```javascript
 async function fetchData(url) {
   // 1. Validasi input
@@ -375,6 +511,47 @@ async function dataPipeline() {
        // Kosong — error ilang!
      }
    }
+   ```
+
+7. **Custom Error Implementation**
+   ```javascript
+   // Bikin class errors untuk aplikasi toko online:
+   // - ProductNotFoundError (404)
+   // - InsufficientStockError (400)
+   // - PaymentFailedError (402)
+   //
+   // Masing-masing punya statusCode, name, dan detail property.
+   // Buat handler function yang return response object sesuai error.
+   ```
+
+8. **AbortController Race**
+   ```javascript
+   // Bikin function `fetchWithFallback(primaryUrl, fallbackUrl, timeoutMs)`
+   // Yang fetch dari primaryUrl dulu, kalo timeout/error dalam X ms,
+   // cancel primary request pake AbortController, lalu fetch dari fallbackUrl.
+   // Hint: pake Promise.race + AbortController
+   ```
+
+9. **Async Queue — Rate Limiter**
+   ```javascript
+   // Bikin class AsyncQueue yang menjalankan promise satu per satu
+   // (ga paralel). Berguna buat rate-limit API calls:
+   class AsyncQueue {
+     queue = [];
+     running = false;
+     
+     add(task) {
+       // task adalah function yang return Promise
+       // Return Promise yang resolve/reject sesuai task
+     }
+     
+     async runNext() {
+       // Jalankan task berikutnya dari queue
+     }
+   }
+   
+   // Test: tambah 5 task yang masing-masing delay random 1-3 detik
+   // Pastiin mereka jalan SEQUENTIAL, bukan paralel
    ```
 
 6. **Mini Project: CLI Loading Animation**

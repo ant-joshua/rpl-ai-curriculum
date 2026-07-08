@@ -173,6 +173,95 @@ class _MainScreenState extends State<MainScreen> {
 }
 ```
 
+### Drawer Navigation
+
+```dart
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Aplikasi Saya')),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(radius: 30, child: Icon(Icons.person, size: 40)),
+                  SizedBox(height: 8),
+                  Text('Budi Santoso', style: TextStyle(color: Colors.white, fontSize: 18)),
+                  Text('budi@email.com', style: TextStyle(color: Colors.white70)),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Beranda'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Pengaturan'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Keluar', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                // Logout logic
+              },
+            ),
+          ],
+        ),
+      ),
+      body: const Center(child: Text('Home Content')),
+    );
+  }
+}
+```
+
+### TabBar — Tab Navigation
+
+```dart
+class TabScreen extends StatelessWidget {
+  const TabScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Kategori'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.phone), text: 'Elektronik'),
+              Tab(icon: Icon(Icons.checkroom), text: 'Fashion'),
+              Tab(icon: Icon(Icons.restaurant), text: 'Makanan'),
+            ],
+          ),
+        ),
+        body: const TabBarView(
+          children: [
+            ElektronikTab(),
+            FashionTab(),
+            MakananTab(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
 ---
 
 ## API Integration
@@ -397,6 +486,80 @@ class ProductProvider extends ChangeNotifier {
 }
 ```
 
+### Dio — HTTP Client yang Lebih Canggih
+
+Selain `http` package, ada **Dio** — HTTP client production-ready dengan fitur: interceptor, retry, timeout, cancel token.
+
+```yaml
+# pubspec.yaml
+dependencies:
+  dio: ^5.4.0
+```
+
+```dart
+// services/api_client.dart
+import 'package:dio/dio.dart';
+
+class ApiClient {
+  late final Dio _dio;
+
+  ApiClient({required String baseUrl}) {
+    _dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+
+    // Interceptor — log request & response
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        debugPrint('[HTTP] ${options.method} ${options.path}');
+        handler.next(options);
+      },
+      onResponse: (response, handler) {
+        debugPrint('[HTTP] ${response.statusCode} ${response.requestOptions.path}');
+        handler.next(response);
+      },
+      onError: (error, handler) {
+        debugPrint('[HTTP ERROR] ${error.message}');
+        handler.next(error);
+      },
+    ));
+  }
+
+  Future<Response> get(String path, {Map<String, dynamic>? params}) {
+    return _dio.get(path, queryParameters: params);
+  }
+
+  Future<Response> post(String path, {dynamic data}) {
+    return _dio.post(path, data: data);
+  }
+
+  Future<Response> put(String path, {dynamic data}) {
+    return _dio.put(path, data: data);
+  }
+
+  Future<Response> delete(String path) {
+    return _dio.delete(path);
+  }
+}
+
+// Service pake ApiClient
+class PostService {
+  final ApiClient _client = ApiClient(baseUrl: 'https://jsonplaceholder.typicode.com');
+
+  Future<List<Post>> fetchPosts() async {
+    final response = await _client.get('/posts');
+    final List<dynamic> data = response.data as List<dynamic>;
+    return data.map((json) => Post.fromJson(json)).toList();
+  }
+}
+```
+
 ```dart
 // UI dengan Provider
 class ProductScreen extends StatelessWidget {
@@ -467,3 +630,9 @@ RefreshIndicator(
 3. **Buat Search Screen** — Pake `https://jsonplaceholder.typicode.com/users`. `FutureBuilder`. Tampilin ListTile: nama, email, company name. Tambahin `TextField` buat filter/search by name pake `where()` di list. Refresh pake `RefreshIndicator`.
 
 4. **Gabung Provider + API** — Bikin `UserProvider extends ChangeNotifier`. Method: `loadUsers()`. UI: pake `context.watch<UserProvider>()`. Tampilin loading/error/data. Bonus: tombol retry kalo error.
+
+5. **Dio Client + Interceptor** — Pindahin semua HTTP call dari `http` package ke Dio. Bikin `ApiClient` dengan interceptor logging. Pake di service product. Test fetch produk, tangani error timeout.
+
+6. **Drawer + Tab Navigation Combo** — Bikin app dengan `Drawer` di kiri (menu: Home, Produk, Profile) dan `TabBar` di halaman Produk (tab: Semua, Elektronik, Fashion). Pake navigasi pushNamed dari drawer items.
+
+7. **Search + Debounce** — Bikin search screen yang panggil API pencarian (`/posts?q=searchterm`). Implementasi debounce pake `Timer` — jangan panggil API tiap ketikan, tunggu 500ms setelah user berhenti ngetik. Tampilkan loading indicator.

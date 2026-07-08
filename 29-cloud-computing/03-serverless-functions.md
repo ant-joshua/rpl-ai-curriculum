@@ -326,3 +326,110 @@ project/.env.example     ← template (boleh di-commit)
    - Set 3 secrets di Cloudflare Workers pake wrangler
    - Verifikasi secret ga muncul di source code
    - Catat langkah-langkah di README
+
+6. **Cold start comparison.** Deploy 1 fungsi yang sama ke Cloudflare Workers dan Vercel Edge Functions. Test 10 request, catat response time request pertama (cold start) vs request ke-5 (warm). Buat tabel perbandingan. Tulis analisis.
+
+7. **Durable Objects (CF Workers).** Bikin worker dengan Durable Object untuk counter real-time. Setiap user visit increment counter. Tampilkan `{ visits: number }`. Deploy dan test. Screenshot hasil.
+
+8. **Serverless architecture diagram.** Gambar arsitektur serverless untuk aplikasi e-commerce sederhana. Komponen: Auth Worker, Product API, Cart (Durable Objects), Checkout Worker, Payment webhook. Tulis alur data dari user sampai konfirmasi order. Format markdown + ASCII diagram.
+
+9. **Multi-provider deploy.** Deploy fungsi yang sama (hello world API) ke 3 provider: Cloudflare Workers, Vercel Edge Functions, dan Railway. Catat perbedaan: cold start time, deploy time, URL format, dan fitur yang tersedia. Buat tabel perbandingan.
+
+---
+
+## Serverless Patterns — Event-Driven Architecture
+
+Serverless paling powerful kalo dipake event-driven — bukan cuma HTTP handler.
+
+### Event-Driven Pattern
+
+```
+User Action → Event → Trigger → Function → Service
+  Register → UserCreated → Email Lambda → SendGrid
+  Order    → OrderPlaced → Invoice Lambda → PDF Generator
+  Upload   → ImageAdded → Resize Lambda → S3 Thumbnail
+```
+
+### AWS EventBridge — Event Bus
+
+```typescript
+import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
+
+const eventbridge = new EventBridgeClient({});
+
+// Event producer — kirim event
+async function emitOrderPlaced(order: Order) {
+  await eventbridge.send(new PutEventsCommand({
+    Entries: [{
+      Source: 'myapp.orders',
+      DetailType: 'order.placed',
+      Detail: JSON.stringify(order),
+      EventBusName: 'default',
+    }],
+  }));
+}
+
+// Event consumer — Lambda triggered by EventBridge
+// exports.handler = async (event) => {
+//   const order = JSON.parse(event.detail);
+//   await sendInvoiceEmail(order);
+// };
+```
+
+### Cloudflare Queues — Async Processing
+
+```typescript
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const body = await request.json();
+
+    // Kirim pesan ke queue — proses di background
+    await env.MY_QUEUE.send(body);
+
+    return new Response('Accepted', { status: 202 });
+  },
+
+  // Consumer — jalan otomatis dari queue
+  async queue(batch: MessageBatch, env: Env): Promise<void> {
+    for (const message of batch.messages) {
+      const data = message.body;
+      await processInBackground(data);
+      message.ack(); // confirm processed
+    }
+  },
+};
+```
+
+### Serverless Pattern — SQS Queue (AWS)
+
+```typescript
+// Producer: kirim ke SQS
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+
+const sqs = new SQSClient({});
+
+async function sendToQueue(payload: any) {
+  await sqs.send(new SendMessageCommand({
+    QueueUrl: process.env.TASK_QUEUE_URL,
+    MessageBody: JSON.stringify(payload),
+  }));
+}
+
+// Consumer: Lambda triggered by SQS
+// exports.handler = async (event) => {
+//   for (const record of event.Records) {
+//     const data = JSON.parse(record.body);
+//     await processTask(data);
+//   }
+// };
+```
+
+### Kapan Pake Queue vs Direct Invocation
+
+| Skenario | Queue | Direct |
+|----------|-------|--------|
+| Real-time response | ❌ | ✅ |
+| Background job | ✅ | ❌ |
+| Retry on failure | ✅ (DLQ) | ❌ (manual) |
+| Rate limiting | ✅ | ❌ |
+| Batch processing | ✅ | ❌ |

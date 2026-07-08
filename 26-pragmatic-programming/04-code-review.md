@@ -350,3 +350,55 @@ npm install -D husky lint-staged
 
    // After — refactored into 5 focused functions
    ```
+
+5. **Code Review — Anti-Pattern Detection:** Review kode berikut, temukan 5+ masalah. Jelasin kenapa itu masalah dan gimana perbaikinya:
+   ```typescript
+   async function getProducts(cat: any) {
+     const d = await db.query("SELECT * FROM products");
+     let r = [];
+     for (let i = 0; i < d.length; i++) {
+       if (cat == null || d[i].category == cat) {
+         d[i].discount = d[i].price > 100000 ? 0.1 : 0;
+         d[i].finalPrice = d[i].price * (1 - d[i].discount);
+         r.push(d[i]);
+       }
+     }
+     return r;
+   }
+   ```
+
+6. **Code Review — Security Focus:** Temukan 3 security issue dan 1 performance issue dalam kode berikut. Tulis review comment untuk tiap issue:
+   ```typescript
+   app.post('/api/order', async (req, res) => {
+     const { userId, items } = req.body;
+     let total = 0;
+     for (const item of items) {
+       const product = await db.query(`SELECT * FROM products WHERE id = ${item.productId}`);
+       total += product[0].price * item.qty;
+     }
+     await db.query(`INSERT INTO orders(user_id, total) VALUES(${userId}, ${total})`);
+     const order = await db.query(`SELECT * FROM orders WHERE user_id = ${userId} ORDER BY id DESC LIMIT 1`);
+     const html = `<h1>Order #${order[0].id}</h1><p>Total: Rp${total}</p>`;
+     sendEmail('admin@shop.com', html);
+     res.json({ success: true, orderId: order[0].id });
+   });
+   ```
+
+7. **Pair Review Simulation:** Bayangin kamu dan pair kamu punya kode berbeda. Pair kamu nulis kode ini. Tulis 4 review comments (2 positif, 2 improvement):
+   ```typescript
+   // Pair kamu punya solusi berbeda untuk problem yang sama
+   function sendNotification(event: string, userIds: number[], message: string) {
+     for (const id of userIds) {
+       const user = db.users.findOne({ id });
+       if (user.notifPrefs.email) {
+         email.send(user.email, message);
+       }
+       if (user.notifPrefs.sms) {
+         sms.send(user.phone, message);
+       }
+       if (user.notifPrefs.push) {
+         push.send(user.deviceToken, message);
+       }
+     }
+   }
+   ```

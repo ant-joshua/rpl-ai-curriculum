@@ -205,6 +205,120 @@ const angka = [1, 5, 2, 9, 3];
 console.log(Math.max(...angka)); // 9
 ```
 
+### Deep Clone — Copy Dalam
+
+Ada 3 cara clone object, masing-masing beda depth:
+
+```javascript
+const original = {
+  name: "Budi",
+  address: { city: "Jakarta", zip: "12345" },
+  hobbies: ["Ngoding", "Game"],
+  date: new Date()
+};
+
+// 1. Spread Operator — SHALLOW CLONE
+// ❌ Cuma copy level 1, nested object masih referensi sama
+const shallow = { ...original };
+shallow.address.city = "Bandung";
+console.log(original.address.city); // "Bandung" — berubah! Karena referensi sama
+
+// 2. JSON parse/stringify — DEEP CLONE (tapi ada batasan)
+// ❌ Function, Date, undefined, Symbol ilang
+const jsonClone = JSON.parse(JSON.stringify(original));
+console.log(jsonClone.date); // string, bukan Date object!
+console.log(jsonClone.name); // "Budi" ✅
+
+// 3. structuredClone() — DEEP CLONE MODERN (Browser & Node 17+)
+// ✅ Handle Date, Map, Set, ArrayBuffer, Blob
+const deepClone = structuredClone(original);
+deepClone.address.city = "Surabaya";
+console.log(original.address.city); // "Jakarta" — aman, ga berubah
+console.log(deepClone.address.city); // "Surabaya"
+console.log(deepClone.date instanceof Date); // true — Date tetap Date!
+
+// structuredClone juga handle circular reference
+const circular = { name: "Eko" };
+circular.self = circular; // circular reference!
+const cloned = structuredClone(circular); // ✅ OK!
+```
+
+### Object.freeze & Object.seal
+
+```javascript
+const config = {
+  API_URL: "https://api.example.com",
+  TIMEOUT: 5000,
+  retryCount: 3
+};
+
+// Object.freeze — ga bisa diubah SAMA SEKALI
+const frozen = Object.freeze(config);
+frozen.API_URL = "https://evil.com"; // Silent fail di strict mode
+// TypeError: Cannot assign to read-only property
+console.log(frozen.API_URL); // "https://api.example.com" — aman!
+
+// Object.seal — bisa ubah value existing, ga bisa nambah/hapus property
+const sealed = Object.seal({ name: "Budi", age: 17 });
+sealed.age = 18; // ✅ OK — bisa ubah
+sealed.email = "budi@mail.com"; // ❌ Gagal — ga bisa nambah
+delete sealed.name; // ❌ Gagal — ga bisa hapus
+console.log(Object.isSealed(sealed)); // true
+console.log(Object.isFrozen(frozen)); // true
+```
+
+## Set & Map — Struktur Data Tambahan
+
+Selain Array dan Object, JavaScript punya Set dan Map:
+
+```javascript
+// SET — kumpulan nilai UNIK (ga boleh duplikat)
+const fruits = new Set(["Apel", "Mangga", "Apel", "Jeruk"]);
+console.log(fruits); // Set(3) { "Apel", "Mangga", "Jeruk" } — Apel cuma sekali
+
+fruits.add("Pisang");
+fruits.add("Mangga"); // Duplikat — diabaikan
+console.log(fruits.has("Apel")); // true
+console.log(fruits.size); // 4
+fruits.delete("Jeruk");
+console.log(fruits); // Set(3) { "Apel", "Mangga", "Pisang" }
+
+// Loop Set
+for (const fruit of fruits) {
+  console.log(fruit);
+}
+
+// Convert Set ↔ Array
+const arr = [...fruits]; // ["Apel", "Mangga", "Pisang"]
+const set2 = new Set([1, 2, 2, 3, 3, 4]); // Set { 1, 2, 3, 4 }
+
+// MAP — object dengan KEY BEBAS (bukan cuma string)
+const userMap = new Map();
+userMap.set("budi", { name: "Budi", age: 17 });
+userMap.set(42, "Angka sebagai key");
+userMap.set(true, "Boolean sebagai key");
+
+console.log(userMap.get("budi")); // { name: "Budi", age: 17 }
+console.log(userMap.get(42)); // "Angka sebagai key"
+console.log(userMap.has(true)); // true
+console.log(userMap.size); // 3
+
+// Map lebih cepat daripada Object untuk frequent add/delete
+// Loop Map
+for (const [key, value] of userMap) {
+  console.log(`${key}:`, value);
+}
+
+// Convert Object → Map
+const obj = { a: 1, b: 2, c: 3 };
+const mapFromObj = new Map(Object.entries(obj));
+console.log(mapFromObj.get("a")); // 1
+
+// Convert Map → Object
+const objFromMap = Object.fromEntries(mapFromObj);
+console.log(objFromMap); // { a: 1, b: 2, c: 3 }
+```
+
 ### Object Methods Berguna
 
 ```javascript
@@ -328,3 +442,33 @@ console.log(ranking[0].nama); // "Dewi" — nilai tertinggi
    deep.b.c = 999;    // Berubah?
    ```
    Jelaskan kenapa beda.
+
+7. **Set vs Array Performance**
+   ```javascript
+   const items = Array.from({ length: 10000 }, (_, i) => i % 100);
+   // Ukur waktu filter unik pake Array vs Set:
+   // Method 1: array filter + indexOf
+   // Method 2: [...new Set(items)]
+   // Method 3: reduce pake accumulator object
+   // Catet waktunya pake console.time() — mana paling cepet?
+   ```
+
+8. **Map as Cache**
+   ```javascript
+   function memoize(fn) {
+     const cache = new Map();
+     return function(arg) {
+       if (cache.has(arg)) {
+         console.log("Cache hit!");
+         return cache.get(arg);
+       }
+       const result = fn(arg);
+       cache.set(arg, result);
+       return result;
+     };
+   }
+   const factorial = memoize(n => n <= 1 ? 1 : n * factorial(n - 1));
+   console.log(factorial(5)); // Hitung
+   console.log(factorial(5)); // Cache hit — langsung
+   console.log(factorial(6)); // Sebagian dari cache
+   ```

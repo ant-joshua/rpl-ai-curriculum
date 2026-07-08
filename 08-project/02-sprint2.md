@@ -280,3 +280,11 @@ export const api = axios.create({
 3. **Integrasi API** — Hubungkan frontend ke backend pakai axios, tampilkan data dari API
 4. **Auth Flow** — Implement register → login → token disimpan di localStorage → dipake di setiap request
 5. **Proteksi Route** — Tambah middleware auth ke endpoint, pastikan user yang belum login dapat 401
+
+6. **User Stories Implementation** — Ambil 2 user stories dari dokumen requirements yang udah dibuat di Sprint 1. Implementasi sesuai acceptance criteria. Tulis: story ID, acceptance criteria checklist, dan link ke PR.
+
+7. **Input Validation** — Tambah Zod atau Joi validation di semua endpoint POST/PUT. Validasi: email format, password min length, required fields. Pastikan error message jelas. Tulis validation schema + error response contoh.
+
+8. **Halaman Dashboard** — Bikin halaman dashboard yang menampilkan ringkasan data: total items, recent items, quick actions. Pake skeleton loading. Pastikan responsive di mobile.
+
+9. **Filter & Search** — Tambah fitur search di daftar items. Implement server-side search dengan query parameter. Tambah filter berdasarkan status/kategori. Tulis: endpoint search, frontend search bar, debounce input.

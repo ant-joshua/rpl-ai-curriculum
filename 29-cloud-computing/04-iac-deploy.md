@@ -362,6 +362,183 @@ Di sesi ini kamu harus punya:
 - ✅ Health check endpoint
 - ✅ Monitoring sederhana
 
+## Well-Architected Framework — Panduan Arsitektur Cloud
+
+AWS Well-Architected Framework = 6 pilar buat ngevaluasi arsitektur cloud:
+
+### 6 Pillars
+
+| Pilar | Fokus | Contoh Implementasi |
+|-------|-------|---------------------|
+| **Operational Excellence** | Operasi dan monitoring | IaC (Terraform), observability, CI/CD |
+| **Security** | Proteksi data & sistem | IAM, enkripsi S3, network ACL |
+| **Reliability** | Recovery dari failure | Multi-AZ, backup, health check |
+| **Performance Efficiency** | Efisien pake resource | Auto scaling, right-sizing instance |
+| **Cost Optimization** | Bayar sesuai pemakaian | Reserved instances, spot instances |
+| **Sustainability** | Ramah lingkungan | Efisiensi energi, minimal idle resources |
+
+### Operational Excellence — Runbook
+
+Buat runbook untuk operasional harian:
+
+```bash
+# Runbook: Deploy aplikasi
+1. git pull origin main
+2. npm ci
+3. npm run build
+4. pm2 restart api
+5. curl http://localhost:3000/health
+6. Confirm status: healthy
+
+# Runbook: Rollback
+1. git revert HEAD
+2. git push origin main
+3. Ulang deploy steps
+
+# Runbook: Scaling
+1. Cek CPU usage: htop
+2. Cek memory: free -m
+3. Cek disk: df -h
+4. Kalo perlu: doctl compute droplet create ...
+```
+
+### Security Pillar — Checklist
+
+| Item | Status |
+|------|--------|
+| ✅ SSH key only (no password) | |
+| ✅ Firewall restrict port 22 ke IP tertentu | |
+| ✅ HTTPS with Let's Encrypt | |
+| ✅ Database tidak public-facing | |
+| ✅ Secrets via environment variables | |
+| ✅ Regular backup database | |
+| ✅ IAM least privilege | |
+| ✅ S3 bucket not public (kecuali perlu) | |
+
+### Reliability Pillar — Health Check Lancar
+
+```typescript
+// Health check endpoint — komprehensif
+app.get('/health', async (req, res) => {
+  const checks = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage().heapUsed,
+    database: null as boolean | null,
+    redis: null as boolean | null,
+    disk: null as boolean | null,
+  };
+
+  try {
+    await db.raw('SELECT 1');
+    checks.database = true;
+  } catch {
+    checks.database = false;
+    checks.status = 'degraded';
+  }
+
+  try {
+    await redis.ping();
+    checks.redis = true;
+  } catch {
+    checks.redis = false;
+    checks.status = 'degraded';
+  }
+
+  const statusCode = checks.status === 'ok' ? 200 : 503;
+  res.status(statusCode).json(checks);
+});
+```
+
+### Performance Efficiency — Load Testing
+
+```bash
+# Install k6
+brew install k6  # or: docker run -i grafana/k6
+
+# Test endpoint
+k6 run --vus 10 --duration 30s - <<EOF
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export default function () {
+  const res = http.get('http://localhost:3000/api/products');
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 200ms': (r) => r.timings.duration < 200,
+  });
+  sleep(1);
+}
+EOF
+```
+
+### Cost Optimization — Pricing Calculator
+
+```bash
+# Estimasi biaya bulanan (1 VM + database + storage)
+AWS:     EC2 t3.micro ($8.5) + RDS db.t3.micro ($15) + S3 ($1) = ~$24.5
+DO:      Droplet s-1vcpu-1gb ($6) + Managed DB ($15) + Spaces ($5) = ~$26
+Cloudflare: Workers ($0) + R2 10GB ($0) + Pages ($0) = $0 (free tier)
+
+# Optimasi: reserved instance 1 year → diskon ~30%
+# Optimasi: spot instance buat batch job → diskon ~70%
+```
+
+## Observability — Logging, Metrics, Tracing
+
+### Structured Logging
+
+```typescript
+// Format JSON log — biar gampang di-parse
+{"level":"info","time":"2024-07-08T10:00:00Z","msg":"request completed","method":"GET","path":"/api/users","status":200,"duration":45}
+{"level":"error","time":"2024-07-08T10:00:01Z","msg":"database connection failed","error":"ECONNREFUSED","retry":3}
+```
+
+### Log Aggregasi
+
+| Tool | Free Tier | Fitur |
+|------|-----------|-------|
+| **Axiom** | 500GB/bulan | Log search, dashboard, alert |
+| **BetterStack** | 15GB/bulan | Log + uptime monitoring |
+| **Grafana Loki** | Self-hosted | Open-source, pake Grafana |
+| **Datadog** | 1-day retention | Enterprise, mahal |
+
+### Metrics — Key Indicators (KPI)
+
+| Metric | Target | Warning | Critical |
+|--------|--------|---------|----------|
+| Response time (p95) | <200ms | >500ms | >2s |
+| Error rate | <0.1% | >1% | >5% |
+| CPU usage | <60% | >80% | >95% |
+| Memory usage | <70% | >85% | >95% |
+| Disk usage | <70% | >85% | >95% |
+| Uptime | 99.9% | <99.5% | <99% |
+
+### Alerting — Notifikasi
+
+```bash
+# Webhook notification — Telegram
+curl -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+  -d "chat_id=$CHAT_ID" \
+  -d "text=🚨 ALERT: App down! Response: 503 at $(date)"
+
+# Atau Discord webhook
+curl -H "Content-Type: application/json" \
+  -X POST "$DISCORD_WEBHOOK_URL" \
+  -d '{"content": "🚨 App is down!"}'
+```
+
+### Dashboard — Grafana / BetterStack
+
+Bikin dashboard yang nampilin:
+1. **Response time** — p50, p95, p99
+2. **Error rate** — 4xx vs 5xx
+3. **Traffic** — request per second
+4. **Resource usage** — CPU, memory, disk
+5. **Up time** — 24h, 7d, 30d
+6. **Cost** — billing per service
+
 ## Latihan
 
 1. **Terraform Deploy**: Pakai Terraform untuk deploy 1 Droplet + firewall + SSH key. App nginx auto terinstall via user_data atau cloud-config. Output IP droplet. Screenshot `terraform apply` sukses.
@@ -376,3 +553,9 @@ Di sesi ini kamu harus punya:
    Screenshot workflow sukses di GitHub Actions tab.
 
 4. **Full Monitoring**: Bikin health check endpoint (`/health`). Setelah deploy, setup BetterStack atau UptimeRobot monitor. Cek status page. Simulasikan down (stop app), pastikan alert terkirim. Catat response time selama 1 jam.
+
+5. **Terraform state management.** Bikin Terraform backend remote pake DigitalOcean Spaces atau AWS S3 untuk nyimpen state file. Konfigurasi `backend "s3" {}` atau backend DigitalOcean. Catat perbedaan local vs remote state. Screenshot state file di cloud storage.
+
+6. **CI/CD pipeline comparison.** Setup 2 pipeline berbeda untuk deploy app yang sama: (1) GitHub Actions → SSH ke Droplet, (2) GitHub Actions → Cloudflare Workers. Bandingkan: kecepatan deploy, complexity, biaya. Tulis tabel perbandingan.
+
+7. **Full IaC stack.** Pake Terraform untuk deploy stack lengkap: VPC + 2 subnet (public/private) + security group + 1 instance + load balancer. Output IP load balancer. Pastikan `terraform destroy` bisa hapus semua tanpa sisa. Screenshoot `terraform apply` dan `terraform destroy`.

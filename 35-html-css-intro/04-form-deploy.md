@@ -348,3 +348,281 @@ project-ku/
 3. **Styled Form + Validation** — Ambil form registrasi dari latihan 1, kasih CSS lengkap. Form di tengah halaman pake flexbox. Ada efek hover & focus. Input invalid border merah, valid border hijau.
 
 4. **Deploy** — Bikin folder project berisi halaman form (dari latihan 3) + halaman index (homepage sederhana). Deploy ke Vercel atau Netlify. Kirim link hasil deploy.
+
+5. **FormData + Fetch.** Bikin form kontak dengan 4 field. Kirim data pake JavaScript FormData + Fetch API. Tampilkan response di halaman (gak reload). Sertakan loading spinner.
+
+6. **File upload with preview.** Bikin form upload foto dengan preview sebelum upload. Validasi: file extension (jpg/png/webp), max size (2MB). Tampilkan error message kalo file gak sesuai.
+
+7. **Custom validation.** Bikin form registrasi dengan validasi JavaScript kustom: username (3-20 karakter, alfanumerik), email (format valid), password (min 8, 1 uppercase, 1 number, 1 special char), konfirmasi password (sama). Style error merah di border + error message. Gak pake HTML5 validation attributes.
+
+8. **Dialog + form.** Bikin halaman dengan tombol "Tambah Data". Pas diklik, muncul modal `<dialog>` dengan form input. Submit form tutup modal dan tampilkan data di tabel. Pake JavaScript.
+
+---
+
+## HTML Form Advanced — FormData & File Upload
+
+Form bisa kirim data tanpa reload pake JavaScript FormData.
+
+### FormData API
+
+```html
+<form id="myForm">
+  <input type="text" name="nama" placeholder="Nama">
+  <input type="email" name="email" placeholder="Email">
+  <textarea name="pesan" placeholder="Pesan"></textarea>
+  <button type="submit">Kirim</button>
+</form>
+<div id="result"></div>
+```
+
+```javascript
+document.getElementById('myForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+
+  // Kirim ke API
+  const response = await fetch('/api/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  document.getElementById('result').textContent = result.message;
+});
+```
+
+### File Upload
+
+```html
+<form id="uploadForm" enctype="multipart/form-data">
+  <label for="avatar">Pilih foto profil:</label>
+  <input type="file" id="avatar" name="avatar" accept="image/*" required>
+
+  <label for="doc">Upload dokumen (PDF max 5MB):</label>
+  <input type="file" id="doc" name="doc" accept=".pdf" multiple>
+
+  <button type="submit">Upload</button>
+</form>
+<div id="preview"></div>
+```
+
+```javascript
+// Preview gambar sebelum upload
+document.getElementById('avatar').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.maxWidth = '200px';
+      document.getElementById('preview').innerHTML = '';
+      document.getElementById('preview').appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Upload pake FormData
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,  // Content-Type otomatis multipart/form-data
+  });
+
+  alert('Upload berhasil!');
+});
+```
+
+### Validasi Custom JavaScript
+
+```html
+<style>
+  .error { border-color: #e74c3c !important; }
+  .error-text { color: #e74c3c; font-size: 14px; display: none; }
+  .visible { display: block; }
+</style>
+
+<form id="registerForm">
+  <div class="form-group">
+    <label for="username">Username (min 3 karakter, huruf/angka doang)</label>
+    <input type="text" id="username" name="username">
+    <span class="error-text" id="usernameError">Username minimal 3 karakter, huruf dan angka saja</span>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email">
+    <span class="error-text" id="emailError">Email tidak valid</span>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password (min 8 karakter, 1 huruf besar, 1 angka)</label>
+    <input type="password" id="password" name="password">
+    <span class="error-text" id="passwordError">Password harus 8+ karakter, 1 huruf besar, 1 angka</span>
+  </div>
+
+  <button type="submit">Daftar</button>
+</form>
+```
+
+```javascript
+function validateUsername(username) {
+  return /^[a-zA-Z0-9]{3,}$/.test(username);
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validatePassword(password) {
+  return password.length >= 8 &&
+         /[A-Z]/.test(password) &&
+         /[0-9]/.test(password);
+}
+
+document.getElementById('registerForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  let valid = true;
+
+  // Username
+  const username = document.getElementById('username');
+  if (!validateUsername(username.value)) {
+    username.classList.add('error');
+    document.getElementById('usernameError').classList.add('visible');
+    valid = false;
+  } else {
+    username.classList.remove('error');
+    document.getElementById('usernameError').classList.remove('visible');
+  }
+
+  // Email
+  const email = document.getElementById('email');
+  if (!validateEmail(email.value)) {
+    email.classList.add('error');
+    document.getElementById('emailError').classList.add('visible');
+    valid = false;
+  } else {
+    email.classList.remove('error');
+    document.getElementById('emailError').classList.remove('visible');
+  }
+
+  // Password
+  const password = document.getElementById('password');
+  if (!validatePassword(password.value)) {
+    password.classList.add('error');
+    document.getElementById('passwordError').classList.add('visible');
+    valid = false;
+  } else {
+    password.classList.remove('error');
+    document.getElementById('passwordError').classList.remove('visible');
+  }
+
+  if (valid) {
+    alert('Form valid! Data siap dikirim.');
+    // e.target.submit();  // kirim beneran
+  }
+});
+```
+
+---
+
+## HTML Advanced APIs
+
+### Dialog Element
+
+```html
+<!-- Modal native — gak perlu JavaScript (tapi butuh dikit buat open/close) -->
+<dialog id="myModal">
+  <h2>Konfirmasi</h2>
+  <p>Apakah kamu yakin ingin menghapus data ini?</p>
+  <form method="dialog">
+    <button value="cancel">Batal</button>
+    <button value="confirm">Hapus</button>
+  </form>
+</dialog>
+
+<button id="openModal">Buka Modal</button>
+<button id="closeModal">Tutup Modal</button>
+
+<script>
+  const modal = document.getElementById('myModal');
+  document.getElementById('openModal').onclick = () => modal.showModal();
+  document.getElementById('closeModal').onclick = () => modal.close();
+</script>
+```
+
+### Details / Summary
+
+```html
+<details>
+  <summary>Klik untuk lihat detail</summary>
+  <p>Ini konten yang tersembunyi. Klik summary di atas untuk buka/tutup.</p>
+  <ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+  </ul>
+</details>
+
+<details open>
+  <summary>Sudah terbuka dari awal</summary>
+  <p>Kalo pake atribut `open`, defaultnya udah kebuka.</p>
+</details>
+```
+
+### Output Element
+
+```html
+<form oninput="result.value = parseInt(a.value) + parseInt(b.value)">
+  <input type="range" id="a" value="50" min="0" max="100">
+  <input type="range" id="b" value="50" min="0" max="100">
+  <output name="result" for="a b">100</output>
+</form>
+```
+
+---
+
+## Form Security Basics
+
+### Cross-Site Scripting (XSS)
+
+```javascript
+// ❌ Jangan — bisa kena XSS
+document.getElementById('output').innerHTML = userInput;
+
+// ✅ Aman — pake textContent
+document.getElementById('output').textContent = userInput;
+```
+
+### CSRF Protection
+
+```html
+<!-- Server kirim token CSRF di form -->
+<form method="POST" action="/transfer">
+  <input type="hidden" name="csrf_token" value="abc123xyz">
+  <input type="number" name="amount" placeholder="Jumlah">
+  <input type="text" name="to_account" placeholder="Rekening tujuan">
+  <button type="submit">Transfer</button>
+</form>
+```
+
+### Sanitasi Input
+
+```javascript
+function sanitizeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+const userInput = '<script>alert("xss")</script>';
+console.log(sanitizeHTML(userInput));
+// Output: &lt;script&gt;alert("xss")&lt;/script&gt;
+```

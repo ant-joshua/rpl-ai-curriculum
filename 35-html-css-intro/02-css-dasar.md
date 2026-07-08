@@ -335,3 +335,472 @@ Tanpa `border-box`, ukuran jadi 300 + 20 + 20 = 340px.
 3. **Navigation Bar** — Bikin navigasi horizontal: `display: inline-block` atau `flex` untuk menu Home, About, Services, Contact. Style hover pake `:hover`.
 
 4. **Article Layout** — Bikin layout article pake semantic HTML + CSS: judul besar, meta info (penulis, tanggal), konten paragraf, sidebar. Pake class & id selector, font styling, box model.
+
+---
+
+## CSS Custom Properties (Variables)
+
+CSS Variables nyimpen nilai yang bisa dipake ulang. Mirip variable di JavaScript — ganti di satu tempat, efek ke semua.
+
+```css
+:root {
+  /* Warna */
+  --color-primary: #3498db;
+  --color-secondary: #2ecc71;
+  --color-danger: #e74c3c;
+  --color-text: #333;
+  --color-bg: #f5f5f5;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Font */
+  --font-main: 'Inter', Arial, sans-serif;
+  --font-size-base: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 32px;
+
+  /* Layout */
+  --max-width: 1200px;
+  --border-radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+```
+
+### Cara Pake
+
+```css
+.card {
+  background: white;
+  padding: var(--spacing-lg);        /* 24px */
+  border-radius: var(--border-radius); /* 8px */
+  box-shadow: var(--shadow);
+  color: var(--color-text);
+  max-width: var(--max-width);
+}
+
+.card h2 {
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+```
+
+### Theme Switching pake CSS Variables
+
+```css
+/* Light theme (default) */
+:root {
+  --bg: white;
+  --text: #333;
+  --card-bg: #f9f9f9;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --text: #eee;
+  --card-bg: #16213e;
+}
+
+/* Pake di elemen */
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+.card {
+  background: var(--card-bg);
+}
+```
+
+```html
+<button onclick="document.documentElement.setAttribute('data-theme', 'dark')">Dark Mode</button>
+<button onclick="document.documentElement.setAttribute('data-theme', 'light')">Light Mode</button>
+```
+
+### Fallback Value
+
+Kalo variable belum didefinisikan, kasih nilai cadangan:
+
+```css
+color: var(--color-undefined, blue);  /* pake blue kalo variable gak ada */
+```
+
+---
+
+## CSS @layer — Atur Urutan Spesifisitas
+
+`@layer` nge-group stylesheet dan ngontrol urutan prioritas — bye-bye `!important` spam!
+
+```css
+/* Definisikan layer, urut dari prioritas terendah */
+@layer reset, base, components, utilities;
+
+/* Isi layer */
+@layer reset {
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+}
+
+@layer base {
+  body { font-family: Arial, sans-serif; color: #333; }
+  a { color: blue; }
+}
+
+@layer components {
+  .card { padding: 20px; border-radius: 8px; }
+  .btn { padding: 10px 20px; border: none; border-radius: 6px; }
+}
+
+@layer utilities {
+  .text-center { text-align: center; }
+  .mt-4 { margin-top: 16px; }
+}
+```
+
+**Aturan urutan:** layer terakhir = prioritas tertinggi. `utilities` menang atas `components`.
+
+### Import External CSS ke Layer
+
+```css
+@import url('bootstrap.css') layer(bootstrap);
+@import url('custom.css') layer(components);
+```
+
+### Keuntungan @layer
+
+| Tanpa @layer | Pake @layer |
+|-------------|-------------|
+| Spesifisitas complex, pusing | Urutan jelas pertama-terakhir |
+| Sering pake `!important` | Gak perlu `!important` |
+| Susah debug style conflict | Conflict tinggal cek urutan layer |
+| Import CSS susah diatur | Import bisa masuk layer tertentu |
+
+---
+
+## Modern CSS Selectors
+
+### :has() — Parent Selector (CSS Parent)
+
+`:has()` milih parent yang mengandung child tertentu. **Game changer!**
+
+```css
+/* Card yang punya gambar di dalamnya */
+.card:has(img) {
+  padding: 0;  /* card tanpa padding kalo ada gambar */
+}
+
+/* Form group yang error */
+.form-group:has(input:invalid) label {
+  color: red;
+}
+
+/* List item yang aktif */
+li:has(a.active) {
+  background: #f0f0f0;
+}
+
+/* Parent container yang punya >3 anak */
+.container:has(> :nth-child(4)) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+```
+
+### CSS Nesting — Kayak Sass/Less (Native!)
+
+Sekarang CSS bisa nesting tanpa preprocessor:
+
+```css
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+
+  /* Child langsung */
+  & h2 {
+    color: #333;
+    font-size: 24px;
+  }
+
+  /* Child dalam */
+  & .card-body {
+    padding: 10px 0;
+
+    & p {
+      color: #666;
+      line-height: 1.6;
+    }
+  }
+
+  /* Pseudo-class */
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Media query di dalam */
+  @media (max-width: 600px) {
+    padding: 10px;
+  }
+}
+```
+
+Tanpa nesting:
+
+```css
+.card { background: white; padding: 20px; }
+.card h2 { color: #333; }
+.card .card-body p { color: #666; }
+.card:hover { box-shadow: ...; }
+```
+
+Dengan nesting lebih rapi & mirip struktur HTML.
+
+### accent-color
+
+Ganti warna input checkbox, radio, range, progress — cuma 1 baris CSS.
+
+```css
+/* Ganti semua accent */
+:root {
+  accent-color: #3498db;
+}
+
+/* Atau per elemen */
+input[type="checkbox"] {
+  accent-color: #2ecc71;
+}
+
+input[type="range"] {
+  accent-color: #e74c3c;
+}
+
+progress {
+  accent-color: #f39c12;
+}
+```
+
+Sebelumnya harus CSS custom checkbox yang ribet. Sekarang tinggal 1 property.
+
+### CSS Scroll Behavior
+
+```css
+html {
+  scroll-behavior: smooth;  /* Smooth scroll anchor links */
+}
+```
+
+### text-wrap: balance
+
+```css
+h1, h2, h3 {
+  text-wrap: balance;  /* rata kiri-kanan optimal, gak ada janda/duda */
+}
+```
+
+---
+
+## Pseudo-class Modern
+
+| Selector | Fungsi | Contoh |
+|----------|--------|--------|
+| `:is()` | Group selector dengan forgiving | `:is(section, article) h2 {}` |
+| `:where()` | Sama kayak `:is()` tapi specificity 0 | `:where(.card, .box) p {}` |
+| `:not()` | Negasi | `input:not([type="submit"]) {}` |
+| `:focus-visible` | Focus cuma pake keyboard | `button:focus-visible { outline: 2px solid blue; }` |
+| `:focus-within` | Element atau child-nya di-focus | `form:focus-within { border-color: blue; }` |
+| `:empty` | Element tanpa child | `div:empty { display: none; }` |
+| `:has()` | Parent yang mengandung selector | `.card:has(img) { padding: 0; }` |
+
+```css
+/* :is — specificity dihitung dari selector terkuat */
+:is(section, article, aside) h2 {
+  color: navy;
+}
+
+/* :where — specificity 0, gampang di-override */
+:where(.card, .box) {
+  background: #f5f5f5;
+}
+/* Kalo mau override, tulis aja: */
+.card { background: white; } /* menang */
+
+/* :focus-visible — cuma pas keyboard tab */
+button:focus-visible {
+  outline: 3px solid #4a90d9;
+  outline-offset: 2px;
+}
+/* Klik pake mouse gak nampilin outline */
+```
+
+---
+
+## Animation Performance — Biar Gak Lemot
+
+Animasi CSS bisa bikin website lemot kalo salah properti.
+
+### Properti yang Aman (pakai GPU)
+
+```css
+/* ✅ Aman — GPU accelerated */
+transform: translateX(100px);
+transform: scale(1.2);
+transform: rotate(45deg);
+opacity: 0.5;
+
+/* ❌ Gak aman — trigger layout/reflow */
+left: 100px;
+width: 50%;
+height: 200px;
+margin: 20px;
+padding: 10px;
+```
+
+### Best Practice Animasi
+
+```css
+/* ✅ Pake transform + opacity */
+.card {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px) scale(1.02);
+  opacity: 0.9;
+}
+
+/* ❌ Jangan pake left/top/width/height */
+/* ❌ Pake animate margin/padding */
+
+/* ✅ will-change — kasih tau browser properti mana yang bakal berubah */
+.card {
+  will-change: transform, opacity;
+}
+/* TAPI: jangan pake will-change di banyak elemen — boros memory */
+```
+
+### Keyframe Optimization
+
+```css
+/* ✅ Optimal */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ❌ Gak optimal — trigger layout tiap frame */
+@keyframes badAnim {
+  from { left: 0; width: 100px; }
+  to   { left: 100px; width: 200px; }
+}
+```
+
+### CSS vs JavaScript Animation
+
+| Aspek | CSS Animation | JS Animation (requestAnimationFrame) |
+|-------|--------------|--------------------------------------|
+| Performance | ✅ GPU accelerated | ❌ Main thread |
+| Complex path | ❌ Susah | ✅ Bebas |
+| Easing | ✅ Built-in | ❌ Butuh library |
+| Control | ❌ Susah di-pause | ✅ Full control |
+| Cocok | Hover, fade, slide-in | Game, scroll-based, physics |
+
+### Debug Animasi Chrome DevTools
+
+```
+1. Buka DevTools → Performance tab
+2. Klik record
+3. Lakuin animasi
+4. Stop record
+5. Cek "Rendering" — kalo ada jalur hijau (Layout), ada masalah
+6. Cek "GPU" — kalo idle, animasi gak pake GPU
+```
+
+---
+
+## Container Queries — Responsive Berdasarkan Parent
+
+Beda sama media query (responsive berdasarkan viewport). Container query responsive berdasarkan ukuran parent container.
+
+```css
+/* Definisi container */
+.card-grid {
+  container-type: inline-size;
+  container-name: card-container;
+}
+
+/* Container query */
+@container card-container (min-width: 400px) {
+  .card {
+    display: flex;
+    flex-direction: row;
+  }
+  .card img {
+    width: 150px;
+  }
+}
+
+@container card-container (max-width: 399px) {
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+  .card img {
+    width: 100%;
+  }
+}
+```
+
+### Container Query vs Media Query
+
+```html
+<style>
+  /* Media query — berdasarkan viewport */
+  @media (max-width: 600px) {
+    .card { flex-direction: column; }
+  }
+
+  /* Container query — berdasarkan parent width */
+  .sidebar {
+    container-type: inline-size;
+  }
+  @container (max-width: 300px) {
+    .card { flex-direction: column; }
+  }
+</style>
+
+<div class="sidebar" style="width: 250px;">
+  <!-- Card di sidebar sempit → column -->
+  <div class="card">...</div>
+</div>
+<div class="main" style="width: 800px;">
+  <!-- Card di main lebar → row -->
+  <div class="card">...</div>
+</div>
+```
+
+### Kegunaan Container Queries
+
+- **Component library** — komponen yang sama bisa dipake di sidebar (sempit) dan main (lebar)
+- **Dashboard** — widget yang dipindah-pindah layout
+- **CMS** — konten yang dimasukin ke berbagai template
+
+## Latihan Tambahan
+
+5. **CSS variables theme.** Bikin halaman dengan CSS variables untuk light/dark theme. Minimal 5 variable: bg, text, primary, card-bg, border. Tambah 2 tombol toggle theme. Screenshoot kedua tema.
+
+6. **CSS @layer demo.** Bikin 3 file CSS: reset.css, base.css, components.css. Import semua pake @layer. Buktikan bahwa layer utilities menang atas components meskipun specificity sama.
+
+7. **:has() practical.** Bikin form dengan 3 field. Style label jadi merah kalo inputnya invalid. Pake `:has()`. Gak boleh pake JavaScript.
+
+8. **Nesting conversion.** Ambil file CSS dari latihan sebelumnya. Convert ke CSS nesting. Tulis sebelum & sesudah. Hitung berapa baris yang bisa dihemat.
+
+9. **Animation performance test.** Bikin 2 animasi identik: satu pake `left` (buruk), satu pake `transform` (baik). Ukur fps pake Chrome DevTools Performance tab. Catat perbedaan fps.

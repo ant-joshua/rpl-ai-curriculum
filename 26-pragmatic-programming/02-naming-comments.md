@@ -267,6 +267,359 @@ function shippingCost(weight: number): number {
 
 ---
 
+## Design Patterns — Strategy, Observer, Factory
+
+Design pattern adalah **solusi umum untuk masalah yang sering muncul** dalam software design. Gak harus dihafal, tapi paham kapan pakenya.
+
+### Strategy Pattern
+
+**Masalah:** Banyak `if/else` atau `switch` untuk algoritma yang berbeda.
+
+**Solusi:** Bungkus setiap algoritma dalam class terpisah, biar bisa ditukar kapan aja.
+
+```typescript
+// Contoh: Payment method — beda cara hitung fee
+interface PaymentStrategy {
+  calculateFee(amount: number): number;
+  process(amount: number): Promise<string>;
+}
+
+class CreditCardPayment implements PaymentStrategy {
+  calculateFee(amount: number): number {
+    return amount * 0.025; // 2.5% fee
+  }
+  async process(amount: number): Promise<string> {
+    const fee = this.calculateFee(amount);
+    // Integrasi dengan payment gateway
+    return `Credit card: Rp${amount + fee} processed`;
+  }
+}
+
+class BankTransferPayment implements PaymentStrategy {
+  calculateFee(amount: number): number {
+    return amount * 0.002; // 0.2% fee
+  }
+  async process(amount: number): Promise<string> {
+    const fee = this.calculateFee(amount);
+    return `Bank transfer: Rp${amount + fee} processed`;
+  }
+}
+
+class DigitalWalletPayment implements PaymentStrategy {
+  calculateFee(amount: number): number {
+    return 0; // Free
+  }
+  async process(amount: number): Promise<string> {
+    return `Digital wallet: Rp${amount} processed`;
+  }
+}
+
+// Context — pake strategy
+class CheckoutService {
+  constructor(private strategy: PaymentStrategy) {}
+
+  async checkout(amount: number): Promise<string> {
+    return this.strategy.process(amount);
+  }
+}
+
+// Pemakaian:
+const checkout = new CheckoutService(new CreditCardPayment());
+console.log(await checkout.checkout(100000));
+// Ganti ke bank transfer tinggal ganti parameter:
+const checkout2 = new CheckoutService(new BankTransferPayment());
+```
+
+### Observer Pattern
+
+**Masalah:** Satu objek berubah, banyak objek lain harus tau.
+
+**Solusi:** Subscriber/publisher pattern — objek yang berubah (subjek) ngasih tau semua yang ngikutin (observer).
+
+```typescript
+// Event Bus sederhana
+type EventHandler = (data: any) => void;
+
+class EventBus {
+  private handlers: Map<string, EventHandler[]> = new Map();
+
+  subscribe(event: string, handler: EventHandler): void {
+    if (!this.handlers.has(event)) {
+      this.handlers.set(event, []);
+    }
+    this.handlers.get(event)!.push(handler);
+  }
+
+  unsubscribe(event: string, handler: EventHandler): void {
+    const handlers = this.handlers.get(event);
+    if (handlers) {
+      this.handlers.set(event, handlers.filter(h => h !== handler));
+    }
+  }
+
+  emit(event: string, data: any): void {
+    const handlers = this.handlers.get(event);
+    if (handlers) {
+      handlers.forEach(handler => handler(data));
+    }
+  }
+}
+
+// Pemakaian:
+const bus = new EventBus();
+
+// Subscriber
+const logHandler = (data: any) => console.log('Event:', data);
+const emailHandler = (data: any) => console.log('Email sent:', data);
+
+bus.subscribe('user.registered', logHandler);
+bus.subscribe('user.registered', emailHandler);
+
+// Publisher — tinggal emit
+bus.emit('user.registered', { userId: 1, email: 'user@test.com' });
+// Output:
+// Event: { userId: 1, email: 'user@test.com' }
+// Email sent: { userId: 1, email: 'user@test.com' }
+
+// Contoh di React:
+function useEventBus() {
+  const busRef = useRef(new EventBus());
+  useEffect(() => {
+    const bus = busRef.current;
+    const handler = (data: any) => {
+      // update state atau apapun
+    };
+    bus.subscribe('cart.updated', handler);
+    return () => bus.unsubscribe('cart.updated', handler);
+  }, []);
+}
+```
+
+**Kapan pake Observer:**
+- Event handling system
+- Notification system (email, SMS, push)
+- Real-time data sync
+- Plugin/extension architecture
+
+### Factory Pattern
+
+**Masalah:** Pembuatan objek rumit atau tergantung kondisi.
+
+**Solusi:** Factory function/class yang handle pembuatan objek.
+
+```typescript
+// Simple Factory — function yang bikin object berdasarkan kondisi
+interface User {
+  id: string;
+  role: string;
+  permissions: string[];
+}
+
+class AdminUser implements User {
+  constructor(public id: string) {}
+  role = 'admin';
+  permissions = ['read', 'write', 'delete', 'manage_users'];
+}
+
+class RegularUser implements User {
+  constructor(public id: string) {}
+  role = 'user';
+  permissions = ['read', 'write'];
+}
+
+class GuestUser implements User {
+  constructor(public id: string) {}
+  role = 'guest';
+  permissions = ['read'];
+}
+
+// Factory function
+function createUser(id: string, role: string): User {
+  switch (role) {
+    case 'admin':
+      return new AdminUser(id);
+    case 'user':
+      return new RegularUser(id);
+    case 'guest':
+      return new GuestUser(id);
+    default:
+      throw new Error(`Unknown role: ${role}`);
+  }
+}
+
+// Pemakaian:
+const user = createUser('123', 'admin');
+console.log(user.permissions); // ['read', 'write', 'delete', 'manage_users']
+
+// Factory untuk komponen React:
+function createButton(variant: 'primary' | 'secondary' | 'danger') {
+  const baseClasses = 'px-4 py-2 rounded font-medium';
+  const variants = {
+    primary: `${baseClasses} bg-blue-500 text-white`,
+    secondary: `${baseClasses} bg-gray-200 text-gray-800`,
+    danger: `${baseClasses} bg-red-500 text-white`,
+  };
+  return ({ children, onClick }: { children: React.ReactNode; onClick: () => void }) => (
+    <button className={variants[variant]} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+const PrimaryButton = createButton('primary');
+// <PrimaryButton onClick={handleClick}>Simpan</PrimaryButton>
+```
+
+### Kapan Pake Design Pattern?
+
+| Pattern | Masalah | Solusi |
+|---------|---------|--------|
+| **Strategy** | Banyak if/else untuk algoritma serupa | Bungkus algoritma di class terpisah |
+| **Observer** | Satu perubahan perlu kasih tau banyak pihak | Event bus / pub-sub |
+| **Factory** | Pembuatan objek rumit atau tergantung kondisi | Function/class khusus pembuat objek |
+| Singleton | Cuma perlu 1 instance global | `const db = new Database()` (module-level) |
+| Adapter | Integrasi library eksternal dengan interface beda | Bikin wrapper |
+
+> **Peringatan:** Jangan pake pattern kalo gak perlu. Pattern adalah alat, bukan tujuan.
+
+---
+
+## Code Smells — Tanda Kode Perlu Refactor
+
+Code smell bukan error — tapi **tanda suboptimal** yang bikin kode susah di-maintain.
+
+### 1. Long Method — Function Terlalu Panjang
+
+```
+Tanda: function > 40 baris, scroll 3 layar
+Solusi: Extract function, jaga < 20 baris
+```
+
+### 2. Large Class — Class Kebanyakan Tanggung Jawab
+
+```
+Tanda: Class > 300 baris, > 10 method, > 5 field
+Solusi: Extract class — pisah per tanggung jawab (SRP)
+```
+
+### 3. Duplicated Code — Kode Nyaris Identik
+
+```
+Tanda: Copy-paste dengan sedikit perubahan
+Solusi: Extract function/class (DRY)
+```
+
+### 4. Long Parameter List — Parameter Kebanyakan
+
+```typescript
+// ❌ Smell: 6 parameter
+function createOrder(
+  customerName: string,
+  customerEmail: string,
+  customerPhone: string,
+  items: Item[],
+  shippingAddress: string,
+  paymentMethod: string
+) {}
+
+// ✅ Perbaikan: Group parameter related
+interface CustomerInfo {
+  name: string;
+  email: string;
+  phone: string;
+}
+interface OrderRequest {
+  customer: CustomerInfo;
+  items: Item[];
+  shippingAddress: string;
+  paymentMethod: string;
+}
+function createOrder(request: OrderRequest) {}
+```
+
+### 5. Feature Envy — Method Lebih Interested ke Class Lain
+
+```typescript
+// ❌ Smell: Order class lebih banyak akses data Customer
+class Order {
+  getCustomerFullName(customer: Customer): string {
+    return `${customer.firstName} ${customer.lastName}`;
+  }
+  getCustomerAddress(customer: Customer): string {
+    return `${customer.street}, ${customer.city}`;
+  }
+}
+// ✅ Perbaikan: Pindahin ke Customer class
+class Customer {
+  get fullName(): string { return `${this.firstName} ${this.lastName}`; }
+  get address(): string { return `${this.street}, ${this.city}`; }
+}
+```
+
+### 6. Primitive Obsession — Pake String/Number buat Konsep Domain
+
+```typescript
+// ❌ Smell: Pake string untuk konsep yang punya aturan
+function processOrder(status: string) {
+  if (status === "paid") { /* ... */ }
+}
+// ✅ Perbaikan: Bikin type/enum
+type OrderStatus = "pending" | "confirmed" | "paid" | "shipped" | "delivered";
+function processOrder(status: OrderStatus) {}
+```
+
+### 7. Switch Statements — Switch/Case Berserakan
+
+```typescript
+// ❌ Smell: Switch sama di banyak tempat
+function getDiscount(type: string): number {
+  switch(type) {
+    case "regular": return 0.05;
+    case "premium": return 0.1;
+  }
+}
+function getBadge(type: string): string {
+  switch(type) {
+    case "regular": return "Bronze";
+    case "premium": return "Gold";
+  }
+}
+// ✅ Perbaikan: Polymorphism (lihat Strategy Pattern)
+```
+
+### 8. Dead Code — Kode Gak Kepake
+
+```
+Tanda: Parameter ga dipake, variable ga dibaca, function gak dipanggil
+Solusi: Hapus. Git nyimpen history kalo butuh lagi.
+```
+
+### 9. Comments as Crutch — Komentar Gantiin Kode Jelas
+
+```typescript
+// ❌ Smell: Komentar jelasin "apa" — kode seharusnya udah jelas
+// cek apakah user aktif
+if (u.s === 1) { /* ... */ }
+
+// ✅ Perbaikan: Kode yang jelas tanpa komentar
+if (user.status === UserStatus.Active) { /* ... */ }
+```
+
+### Tabel Ringkasan Code Smells
+
+| Code Smell | Tanda | Solusi |
+|-----------|-------|--------|
+| Long Method | > 40 baris | Extract function |
+| Large Class | > 300 baris | Extract class (SRP) |
+| Duplicated Code | Copy-paste | Extract function (DRY) |
+| Long Parameter List | > 3 parameter | Parameter object |
+| Feature Envy | Method lebih pake data class lain | Move method |
+| Primitive Obsession | String/number buat domain concept | Bikin type/enum |
+| Switch Statements | Switch/case di banyak tempat | Polymorphism |
+| Dead Code | Gak pernah dipanggil | Hapus |
+
+---
+
 ## Latihan
 
 1. **Rename variable** — Perbaiki semua nama variable dan function dalam kode ini:
@@ -314,5 +667,25 @@ function shippingCost(weight: number): number {
      // generate token (5 baris)
      // kirim email verifikasi (10 baris)
      // return response (3 baris)
+   }
+   ```
+
+5. **Design Pattern — Strategy:** Implementasi payment system dengan 3 metode (CreditCard, BankTransfer, GoPay). Masing-masing punya cara hitung fee sendiri. Gunakan Strategy Pattern. Tampilkan total yang harus dibayar setelah fee.
+
+6. **Design Pattern — Observer:** Bikin EventBus sederhana untuk sistem notifikasi. Event: `order.created`, `payment.received`, `order.shipped`. Subscriber: EmailNotifier, SMSNotifier, PushNotifier. Tiap subscriber nge-handle event dengan caranya sendiri.
+
+7. **Design Pattern — Factory:** Bikin factory function `createNotificationChannel(type: string)` yang return object dengan method `send(message: string)`. Channel: email, sms, push. Tiap channel implementasi `send()` beda.
+
+8. **Code Smell Detection:** Cari code smell dalam kode berikut — minimal 4 smell berbeda. Sebutkan smell-nya dan tulis ulang kodenya:
+   ```typescript
+   function p(d: any, t: string, s: string, c: string, a: number, e: string) {
+     let r = "";
+     if (d === null) return "error";
+     // proses data panjang
+     if (t === "A") { r = d * 0.1 + " - A"; }
+     else if (t === "B") { r = d * 0.2 + " - B"; }
+     else if (t === "C") { r = d * 0.3 + " - C"; }
+     // ... 40 baris lagi
+     return r;
    }
    ```

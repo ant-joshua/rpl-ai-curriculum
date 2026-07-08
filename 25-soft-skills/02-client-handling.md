@@ -48,6 +48,56 @@ Hadir: Budi (dev), Andi (PM), Client A
 - [ ] Andi: reschedule meeting next week ke Rabu
 ```
 
+## Remote Work — Client Communication
+
+Banyak client sekarang kerja remote. Butuh adaptasi cara komunikasi.
+
+### Prinsip Async Client Communication
+
+```
+1. Over-communicate — kirim update rutin, jangan nunggu ditanya
+2. Dokumen keputusan — tulis semua keputusan di shared doc
+3. Screen recording — kirim Loom video untuk demo statt meeting
+4. Shared dashboard — Notion / Trello / Linear biar client bisa lihat progress
+5. Timezone aware — hormati beda waktu, kasih deadline realistis
+```
+
+### Template: Weekly Async Update
+
+```
+Subject: [Project] Weekly Update — Minggu 3
+
+Hi [client],
+
+Ringkasan minggu ini:
+
+✅ Selesai
+- Halaman dashboard — bisa lihat grafik penjualan
+- Filter tanggal — on progress, 70%
+
+⏳ Sedang dikerjakan
+- Export CSV — estimasi selesai Jumat
+
+❌ Blocker
+- Integrasi payment — nunggu API key dari finance
+
+📊 Progress: 65% (on track)
+
+📹 Demo video: [link loom]
+
+Best,
+Budi
+```
+
+### Handling Timezone Differences
+
+| Situasi | Solusi |
+|---------|--------|
+| Client di zona waktu beda 8+ jam | Tentukan "overlap window" 2-3 jam sehari |
+| Butuh jawaban urgent | Tulis channel prioritas (WhatsApp untuk urgent, email untuk normal) |
+| Meeting sulit dijadwalin | Rotate waktu meeting — bergantian enak/gak enak |
+| Async feedback | Kirim pertanyaan 24 jam sebelum deadline biar client ada waktu |
+
 ## Scope Creep
 
 Scope creep = client minta fitur tambahan tanpa nambah budget/deadline.
@@ -58,6 +108,7 @@ Scope creep = client minta fitur tambahan tanpa nambah budget/deadline.
 - "Sambil ngerjain, ini sekalian diubah ya?"
 - "Kalo bisa sekalian fitur X juga"
 - "Sederhana aja, tinggal tambah tombol"
+- "Ini mah cuma ubah dikit di config"
 
 ### Template: Menolak Request dengan Sopan
 
@@ -80,6 +131,32 @@ Mana yang lebih cocok?
 2. **Kaitkan ke scope** — "Ini di luar kontrak awal"
 3. **Kasih opsi** — bukan cuma "nggak bisa", tapi "bisa, tapi..."
 4. **Hitung biaya** — waktu = uang. Tunjukkin trade-off
+5. **Dokumentasi** — tulis perubahan scope di change request formal
+
+### Template: Change Request Form
+
+```
+## Change Request
+No: CR-001
+Tanggal: [tanggal]
+Diminta oleh: [client]
+
+### Deskripsi Perubahan
+[fitur tambahan yang diminta]
+
+### Alasan
+[kenapa fitur ini diperlukan]
+
+### Impact Analysis
+- Tambahan waktu: [X hari]
+- Tambahan biaya: [Rp Y]
+- Fitur terdampak: [fitur lain yang perlu disesuaikan]
+- Risiko: [keterlambatan, bug, dll]
+
+### Approval
+[ ] Disetujui — client
+[ ] Disetujui — tim
+```
 
 ## Expectation Management
 
@@ -91,6 +168,17 @@ Jangan over-promise. Better under-promise & over-deliver.
 | "Nggak ada masalah." (padahal ada blocker) | "Ada kendala kecil, lagi dicari solusinya." |
 | "Fitur X ready minggu depan." (belum mulai) | "Minggu depan mulai fitur X, target rilis 2 minggu." |
 | Nggak update sampe deadline | Update progress tiap 2-3 hari |
+| "Selesai 100%" (padahal belum di-test) | "Selesai coding, lagi testing" |
+
+### Progress Communication Matrix
+
+| Situasi | Pesan | Channel | Frekuensi |
+|---------|-------|---------|-----------|
+| On track | "Progress sesuai rencana" | Email | Mingguan |
+| Ahead | "Lebih cepat dari target" | Chat | Boleh share |
+| Behind | "Ada delay X hari karena Y" | Email/Voice | Segera |
+| Blocker | "Butuh bantuan client untuk Z" | Chat urgent | Segera |
+| Selesai | "Fitur X ready di staging" | Email + link | Segera |
 
 ## Email Etiquette
 
@@ -143,6 +231,16 @@ Best,
 Budi
 ```
 
+### Email Do's and Don'ts
+
+| ❌ Jangan | ✅ Lakukan |
+|-----------|------------|
+| Reply all untuk hal internal | BCC untuk mailing list besar |
+| Subject kosong atau "Update" | Subject jelas: "[Project] Update — 13 Apr" |
+| Kirim attachment besar 20MB | Link Google Drive / cloud |
+| Balas "Ok" — gak ada konteks | Balas pake informasi yang dibutuhkan |
+| Forward thread panjang tanpa komentar | Tulis ringkasan + apa yang perlu dibaca |
+
 ## Proposal Freelance
 
 ### Template: Proposal Singkat ke Client
@@ -178,9 +276,25 @@ Rp 5.000.000 (termasuk hosting 1 tahun)
 Tertarik? Balas email ini buat diskusi lebih lanjut.
 ```
 
+### Struktur Proposal Profesional
+
+```
+1. **Ringkasan Eksekutif** (2-3 kalimat)
+2. **Latar Belakang** — masalah client
+3. **Solusi** — fitur & teknologi
+4. **Timeline** — tahapan + estimasi
+5. **Biaya** — breakdown harga
+6. **Mengapa Kami** — portofolio relevan
+7. **Testimonial / Referensi** (kalo ada)
+8. **Syarat & Ketentuan** — scope, revisi, pembayaran
+```
+
 ## Latihan
 
 1. Client tiba-tiba minta fitur chat real-time di proyek toko online yang udah 80% jalan. Tulis respon sopan yang nolak request ini — kasih opsi
 2. Tulis progress email: kamu telat 2 hari karena bug tak terduga, tapi mingdep selesai. Kasih update jujur ke client
 3. Client bilang "kenapa kok lama? kan cuma tambah tombol?" — tulis balasan yang jelasin effort sebenarnya (backend + testing + QA)
 4. Bikin proposal mini untuk project: landing page UMKM dengan portfolio online 3 halaman — deadline 1 minggu, budget Rp 2jt
+5. **Remote Async** — Client di US (beda 12 jam) minta update tiap hari. Tulis template async update yang bisa dikirim tiap sore tanpa meeting
+6. **Scope Creep** — Client minta fitur "tambahin export PDF" setelah deal cuma export CSV. Tulis change request resmi dengan estimasi 2 hari tambahan
+7. **Meeting Facilitation** — Bikin agenda meeting kickoff untuk proyek baru dengan client. Include: tujuan, durasi, list pertanyaan yang harus dijawab

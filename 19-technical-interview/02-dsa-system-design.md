@@ -346,6 +346,168 @@ async def handle_message(data):
 
 ---
 
+## Behavioral Question Bank & Salary Discussion
+
+Selain teknis, interview selalu ada sesi **behavioral & tanya jawab gaji**. Persiapkan kedua hal ini.
+
+### Behavioral Question Bank — 20+ Pertanyaan
+
+| Kategori | Pertanyaan | Yang Dinilai |
+|----------|-----------|-------------|
+| **Pengalaman** | "Ceritakan proyek paling menantang." | Technical depth, problem-solving |
+| **Pengalaman** | "Apa pencapaian terbesar di sekolah?" | Inisiatif, dampak |
+| **Teamwork** | "Pernah beda pendapat dengan teman tim?" | Conflict resolution |
+| **Teamwork** | "Lebih suka kerja sendiri atau tim? Kenapa?" | Kolaborasi |
+| **Kegagalan** | "Ceritakan kegagalan terbesar." | Self-awareness, growth |
+| **Kegagalan** | "Pernah telak ngasih estimasi? Kenapa?" | Accountability |
+| **Motivasi** | "Kenapa milih jadi developer?" | Passion, alasan |
+| **Motivasi** | "Apa teknologi favorit? Kenapa?" | Rasa ingin tahu |
+| **Ambisi** | "Mau jadi apa dalam 5 tahun?" | Perencanaan karir |
+| **Ambisi** | "Skill apa yang ingin kamu kuasai tahun ini?" | Growth mindset |
+| **Kritik** | "Pernah dikritik soal kode? Gimana reaksimu?" | Menerima feedback |
+| **Kritik** | "Apa kelemahan terbesarmu?" | Self-assessment |
+| **Teknis** | "Gimana cara kamu debug kode yang error?" | Proses berpikir |
+| **Teknis** | "Framework/library favorit? Kenapa?" | Pengetahuan teknis |
+| **Situasional** | "Deadline mepet, fitur gak selesai. Apa yang kamu lakukan?" | Prioritisasi |
+| **Situasional** | "Senior ngasih solusi yang menurutmu kurang optimal. Gimana?" | Assertiveness |
+| **Situasional** | "Tim pake kode yang kamu rasa rentan bug. Apa yang kamu lakuin?" | Quality ownership |
+| **Situasional** | "Client minta fitur yang gak masuk akal. Gimana?" | Negosiasi |
+| **Situasional** | "Kamu dikasih tugas di luar job desc. Apa yang kamu lakuin?" | Fleksibilitas |
+| **Penutup** | "Ada pertanyaan untuk kami?" | Persiapan, minat |
+
+### Cara Jawab Behavioral: STAR Plus
+
+STAR standar sudah dibahas di file 01. Tapi untuk fresh grad, ada **STAR Plus** — tambahkan **P** (Pembelajaran):
+
+| Huruf | Fokus | Contoh Kalimat |
+|-------|-------|---------------|
+| **S** | Konteks singkat | "Waktu proyek RPL semester 4..." |
+| **T** | Peran spesifik | "Saya bertugas bikin REST API..." |
+| **A** | Tindakan detail | "Pertama saya... lalu... akhirnya..." |
+| **R** | Hasil terukur | "Selesai 2 hari lebih cepat, nilai 90" |
+| **P** | Pembelajaran | "Saya belajar pentingnya... sekarang saya..." |
+
+Dengan STAR Plus, interviewer lihat kamu bukan cuma ngerjain tugas, tapi juga **belajar dari pengalaman**.
+
+### Salary Discussion — Gaji Fresh Grad
+
+#### Riset Gaji — Cara Dapetin Data
+
+| Sumber | Cara Pakai |
+|--------|-----------|
+| **Glassdoor** | Cari "[posisi] [kota]" — liat salary range |
+| **LinkedIn Salary** | Fitur LinkedIn Premium (trial gratis) |
+| **Jobstreet / Glints** | Cek range gaji di lowongan serupa |
+| **Tanya network** | Tanya senior/kenalan di industri |
+| **Survey komunitas** | Grup Telegram / Discord developer Indonesia |
+
+Contoh data gaji fresh grad RPL di Indonesia (2025-2026 estimasi):
+
+| Role | Jakarta | Kota Besar Lain | Startup Kecil |
+|------|---------|-----------------|---------------|
+| Frontend React | 4-7 jt | 3-5 jt | 2-4 jt |
+| Backend Node.js | 5-8 jt | 4-6 jt | 3-5 jt |
+| Full-stack | 5-9 jt | 4-7 jt | 3-5 jt |
+| Mobile (React Native) | 5-8 jt | 4-6 jt | 3-5 jt |
+
+#### Kapan Ditanya Gaji?
+
+Biasanya di **akhir proses** — pas HR udah yakin mau hire. Atau di screening awal.
+
+Strategi jawab:
+
+| Situasi | Jawaban |
+|---------|---------|
+| "Ekspektasi gaji berapa?" | "Saya masih fleksibel. Boleh tau range yang perusahaan siapkan?" |
+| Dipaksa nyebut angka | Sebut range lebar: "5-8 juta, tergantung benefit dan tanggung jawab." |
+| "Gaji kita 4 juta, gimana?" | Minta waktu: "Boleh saya pikir dulu 1-2 hari?" |
+
+#### Script Negosiasi Lengkap
+
+```
+"Terima kasih atas tawarannya, Bu/Pak. Saya sangat antusias
+untuk bergabung. Sebelum tanda tangan, saya mau tanya —
+apakah ada fleksibilitas untuk range gaji?
+
+Berdasarkan riset saya, rata-rata gaji junior developer
+di [kota] adalah [nominal]. Dengan skill saya di
+[skill A] dan [skill B], saya yakin bisa berkontribusi
+sesuai ekspektasi tim.
+
+Mungkin [nominal yang diinginkan] bisa dipertimbangkan?
+Atau mungkin ada kompensasi lain seperti training budget?"
+```
+
+#### Kalau Gaji Gak Bisa Naik
+
+| Alternatif | Contoh Kalimat |
+|-----------|---------------|
+| Signing bonus | "Apakah ada signing bonus sekali bayar?" |
+| Review lebih awal | "Bisa review gaji di bulan ke-6 instead of 12?" |
+| Training budget | "Ada budget untuk kursus atau sertifikasi?" |
+| Perangkat | "Apakah perusahaan menyediakan monitor eksternal?" |
+| WFH allowance | "Ada budget untuk internet atau listrik?" |
+| Equity (startup) | "Apakah ada opsi saham untuk karyawan?" |
+
+---
+
+## Negotiation & Follow-Up Strategy
+
+### Follow-Up Timeline
+
+| Waktu | Tindakan |
+|-------|----------|
+| **1 jam** | Kirim thank you email ke interviewer |
+| **1 hari** | Catat pertanyaan yang diajukan — evaluasi jawaban |
+| **3 hari** | Jika belum ada kabar, follow-up sopan |
+| **1 minggu** | Jika tidak diterima, minta feedback |
+| **2 minggu** | Lanjut apply perusahaan lain |
+
+### Template Thank You Email
+
+```
+Subject: Terima kasih — [Posisi] — [Nama Lengkap]
+
+Halo [Nama Interviewer],
+
+Terima kasih atas waktu interview hari ini. Saya makin
+yakin kalau [Nama Perusahaan] adalah tempat yang tepat
+buat saya berkembang.
+
+Saya sangat tertarik dengan [sebut sesuatu dari interview
+— misal: tech stack / budaya perusahaan].
+
+Satu hal yang saya pikirkan setelah interview — [opsional:
+tambahan jawaban / koreksi].
+
+Semoga bisa bergabung!
+
+Salam,
+[Nama]
+[LinkedIn]
+[No. HP]
+```
+
+### Jika Diterima
+
+1. Baca kontrak dengan teliti.
+2. Tanyakan: gaji, tunjangan, jam kerja, probation period, aturan WFH.
+3. Konfirmasi tanggal mulai.
+4. Minta offer letter resmi (PDF).
+5. Beri kabar ke perusahaan lain yang masih proses.
+
+### Jika Tidak Diterima
+
+1. Minta feedback spesifik: "Skill apa yang kurang?"
+2. Jangan defensif — catat, evaluasi, perbaiki.
+3. Tanya: "Apakah ada rekomendasi course/buku?"
+4. Apply ke perusahaan lain dengan perbaikan.
+5. Coba lagi 6 bulan kemudian setelah improvement.
+
+> **Penting:** Setiap penolakan adalah data. Gunakan untuk iterasi.
+
+---
+
 ## Whiteboard Approach
 
 Saat interview (online/offline), ikuti langkah ini:
@@ -387,3 +549,16 @@ Saat interview (online/offline), ikuti langkah ini:
    - Analisis kompleksitas
 
 4. **Trade-off Analysis:** Dari 2 contoh system design di atas (URL shortener & chat app), tulis 3 trade-off untuk setiap keputusan desain. Format: "Pilih [X] karena [alasan], tapi konsekuensinya [Y]."
+
+5. **Behavioral STAR Practice:** Ambil 5 pertanyaan dari Behavioral Question Bank di atas. Tulis jawaban STAR Plus lengkap. Pastikan ada angka di Result. Baca keras-keras sampai natural.
+
+6. **Riset Gaji:** Cari 3 lowongan fresh grad di LinkedIn/Jobstreet/Glints. Catat posisi, perusahaan, range gaji, lokasi. Hitung rata-rata. Tulis analisis: apakah gaji sesuai skill yang diminta?
+
+7. **Negosiasi Roleplay:** Cari teman. Satu jadi interviewer nawarin gaji 4 juta, satu jadi kandidat. Lakukan negosiasi 5 menit. Rekam. Evaluasi: apa yang kurang percaya diri? Tulis script perbaikan.
+
+8. **Follow-Up Email Draft:** Buat 3 template email untuk perusahaan fiktif "TechIndo Startup":
+   - Thank you email setelah interview
+   - Follow-up email (3 hari setelah interview, belum ada kabar)
+   - Feedback request email (setelah ditolak)
+
+9. **Off-Platform Interview Prep:** Cari 1 perusahaan tech yang kamu incar. Riset: produk mereka, tech stack, budaya perusahaan, review karyawan di Glassdoor. Tulis 3 poin yang bakal kamu sebut kalo ditanya "Kenapa kamu mau kerja di sini?".

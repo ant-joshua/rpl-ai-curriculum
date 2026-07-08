@@ -198,6 +198,54 @@ adalah [angka]. Saya yakin skill saya [sebut 2 skill relevan]
 bisa berkontribusi sesuai ekspektasi."
 ```
 
+### Riset Gaji — Cara Dapetin Data
+
+| Sumber | Cara Pakai |
+|--------|-----------|
+| **Glassdoor** | Cari "[posisi] [kota]" → liat salary range |
+| **LinkedIn Salary** | Fitur LinkedIn Premium (trial gratis) |
+| **Jobstreet / Glints** | Cek range gaji di lowongan serupa |
+| **Tanya network** | Tanya senior/kenalan di industri — "Range gaji fresh grad backend?" |
+| **Survey komunitas** | Grup Telegram / Discord developer Indonesia |
+
+Contoh data gaji fresh grad RPL di Jakarta (2025 estimasi):
+
+| Role | Junior (0-1 thn) | Mid (1-3 thn) |
+|------|-----------------|---------------|
+| Frontend React | 4-7 jt | 7-12 jt |
+| Backend Node.js | 5-8 jt | 8-15 jt |
+| Full-stack | 5-9 jt | 9-18 jt |
+| Mobile (React Native) | 5-8 jt | 8-14 jt |
+
+### Script Negosiasi Gaji Lengkap
+
+**Situasi:** Ditawari 4.5 juta. Riset menunjukkan rata-rata 5.5 juta.
+
+```
+"Terima kasih banyak atas tawarannya, Pak/Bu. Saya sangat
+antusias untuk bergabung dengan [Perusahaan].
+
+Sebelum saya tanda tangan, saya mau tanya — apakah ada
+fleksibilitas untuk range gaji? Saya sudah riset,
+rata-rata posisi junior developer di Jakarta adalah
+5-6 juta. Dengan skill saya di [skill 1] dan [skill 2],
+saya yakin bisa berkontribusi sesuai ekspektasi tim.
+
+Mungkin 5.5 juta bisa dipertimbangkan? Atau mungkin ada
+kompensasi lain seperti training budget atau transport?
+```
+
+### Kalau Gaji Gak Bisa Naik — Alternatif
+
+| Alternatif | Contoh Kalimat |
+|-----------|---------------|
+| **Signing bonus** | "Apakah ada signing bonus sekali bayar?" |
+| **Review lebih awal** | "Bisa review gaji di bulan ke-6 instead of 12?" |
+| **Training budget** | "Ada budget untuk kursus atau sertifikasi?" |
+| **Perangkat** | "Apakah perusahaan menyediakan monitor eksternal?" |
+| **WFH allowance** | "Ada budget untuk internet atau listrik?" |
+| **Equity (startup)** | "Apakah ada opsi saham untuk karyawan?" |
+
 ### Jangan Lakukan Ini
 
 | ❌ Jangan | ✅ Lakukan |
@@ -280,3 +328,11 @@ Salam,
    - Feedback request email (setelah ditolak)
    
    Personalisasi untuk perusahaan fiktif bernama "TechIndo Startup".
+
+5. **Negosiasi Roleplay:** Cari teman. Satu jadi interviewer yang nawarin gaji 4 juta, satu jadi kandidat. Lakukan negosiasi 5 menit. Rekam. Evaluasi: apa yang kurang percaya diri? Apa yang bagus? Tulis script perbaikan.
+
+6. **Riset Gaji:** Buka Glassdoor / LinkedIn / Jobstreet. Cari 3 lowongan fresh grad developer. Catat: posisi, perusahaan, range gaji, lokasi. Hitung rata-rata. Tulis analisis: apakah gaji sesuai dengan skill yang diminta?
+
+7. **Off-Platform Interview Prep:** Cari 1 perusahaan tech yang kamu incar. Riset: (a) produk mereka, (b) tech stack, (c) budaya perusahaan, (d) review karyawan di Glassdoor. Tulis 3 poin yang bakal kamu sebut kalo ditanya "Kenapa kamu mau kerja di sini?".
+
+8. **Mock Interview with AI:** Pake tools AI (ChatGPT, Claude) buat simulasi mock interview. Minta AI jadi interviewer, jawab pertanyaan behavioral + coding + system design. Minta feedback skor 1-5 di akhir. Tulis hasil evaluasi.

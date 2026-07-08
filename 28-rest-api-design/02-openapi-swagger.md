@@ -199,6 +199,101 @@ router.post('/todos', (req: Request, res: Response) => {
   res.status(201).json(newTodo);
 });
 
+/**
+ * @openapi
+ * /todos/{id}:
+ *   get:
+ *     tags: [Todos]
+ *     summary: Ambil todo by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID todo
+ *     responses:
+ *       200:
+ *         description: Todo ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Todo'
+ *       404:
+ *         description: Todo tidak ditemukan
+ */
+router.get('/todos/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return res.status(404).json({ message: 'Todo tidak ditemukan' });
+  res.json(todo);
+});
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   put:
+ *     tags: [Todos]
+ *     summary: Update todo (replace seluruh resource)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title]
+ *             properties:
+ *               title:
+ *                 type: string
+ *               completed:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Todo berhasil diupdate
+ *       404:
+ *         description: Todo tidak ditemukan
+ */
+router.put('/todos/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return res.status(404).json({ message: 'Todo tidak ditemukan' });
+  todo.title = req.body.title;
+  todo.completed = req.body.completed ?? false;
+  res.json(todo);
+});
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   delete:
+ *     tags: [Todos]
+ *     summary: Hapus todo
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Todo berhasil dihapus
+ *       404:
+ *         description: Todo tidak ditemukan
+ */
+router.delete('/todos/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const index = todos.findIndex(t => t.id === id);
+  if (index === -1) return res.status(404).json({ message: 'Todo tidak ditemukan' });
+  todos.splice(index, 1);
+  res.status(204).send();
+});
+
 export default router;
 ```
 
@@ -271,6 +366,251 @@ app.listen(PORT, () => {
 
 Buka `http://localhost:3000/api-docs` — Swagger UI siap dipake. Bisa "Try it out" langsung dari browser.
 
+## OpenAPI Lanjutan — Fitur Tambahan
+
+### Tags — Grouping Endpoint
+
+```yaml
+tags:
+  - name: Todos
+    description: Operasi CRUD untuk todos
+  - name: Users
+    description: Manajemen user
+  - name: Auth
+    description: Autentikasi dan otorisasi
+```
+
+Di JSDoc:
+
+```typescript
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Login user
+ */
+```
+
+### Security Schemes — Multiple Auth Types
+
+```yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_id
+```
+
+### Reusable Parameters
+
+```yaml
+components:
+  parameters:
+    userId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: ID user
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      description: Nomor halaman
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 10
+      description: Jumlah item per halaman
+```
+
+Pake di path:
+
+```yaml
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/userId'
+```
+
+### Response Examples
+
+```yaml
+paths:
+  /todos:
+    get:
+      responses:
+        200:
+          description: List todos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+              example:
+                - id: 1
+                  title: "Belajar REST API"
+                  completed: false
+                - id: 2
+                  title: "Setup Swagger"
+                  completed: true
+```
+
+### Request Body Examples
+
+```yaml
+/todos:
+  post:
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTodo'
+          example:
+            title: "Belajar OpenAPI depth"
+```
+
+## API Testing dengan Postman & Insomnia
+
+### Postman — Collection Setup
+
+1. **Buat Collection** — New Collection → "Todo API"
+2. **Set Variables** — Collection Variables:
+   - `base_url`: `http://localhost:3000`
+   - `api_prefix`: `/api/v1`
+   - `token`: (kosong, isi dari login response)
+3. **Auth** — Collection level Authorization → Bearer Token → `{{token}}`
+
+### Postman — Request Examples
+
+| Request | Method | URL | Body |
+|---------|--------|-----|------|
+| Get Todos | GET | `{{base_url}}{{api_prefix}}/todos` | — |
+| Create Todo | POST | `{{base_url}}{{api_prefix}}/todos` | `{"title": "Test"}` |
+| Login | POST | `{{base_url}}{{api_prefix}}/auth/login` | `{"email": "budi@mail.com", "password": "123456"}` |
+
+### Pre-request Script — Auto Token
+
+```javascript
+// Di folder Auth → Login request → Tests tab
+const response = pm.response.json();
+if (pm.response.code === 200 && response.token) {
+  pm.collectionVariables.set('token', response.token);
+}
+```
+
+Ini auto-set token dari login ke collection variable, jadi request lain tinggal pake `{{token}}`.
+
+### Postman — Test Scripts
+
+```javascript
+// Tests tab — validasi response
+pm.test("Status code is 200", () => {
+  pm.response.to.have.status(200);
+});
+
+pm.test("Response has data array", () => {
+  const jsonData = pm.response.json();
+  pm.expect(jsonData.data).to.be.an('array');
+});
+
+pm.test("Response time < 500ms", () => {
+  pm.expect(pm.response.responseTime).to.be.below(500);
+});
+
+pm.test("Content-Type is JSON", () => {
+  pm.response.to.have.header("Content-Type", "application/json; charset=utf-8");
+});
+```
+
+### Postman — Environment Switching
+
+Buat 3 environments:
+
+| Environment | `base_url` | `api_prefix` |
+|-------------|-----------|--------------|
+| Development | `http://localhost:3000` | `/api/v1` |
+| Staging | `https://staging-api.example.com` | `/api/v1` |
+| Production | `https://api.example.com` | `/api/v1` |
+
+### Postman — Collection Runner
+
+```bash
+# CLI — Newman
+npm install -g newman
+
+# Run collection
+newman run Todo-API.postman_collection.json \
+  -e Development.postman_environment.json \
+  --reporters cli,junit \
+  --reporter-junit-export results.xml
+
+# Dengan data file
+newman run Todo-API.postman_collection.json \
+  -d test-data.csv \
+  --delay-request 100
+```
+
+### Insomnia — Alternative
+
+Insomnia mirip Postman tapi open-source. Kelebihan:
+
+| Fitur | Postman | Insomnia |
+|-------|---------|----------|
+| GUI | ✅ Mature | ✅ Clean |
+| CLI Runner | ✅ Newman | ✅ insomnia CLI |
+| Git Sync | ❌ (butuh Cloud) | ✅ Built-in |
+| GraphQL | ✅ | ✅ |
+| OpenAPI Import | ✅ | ✅ |
+| Harga | Freemium | Free & Open Source |
+
+### API Testing Workflow
+
+```
+1. Manual: Test setiap endpoint di Postman/Insomnia
+2. Collection: Group endpoints by feature
+3. Variables: base_url, token → reuse
+4. Tests: Assert status, body, timing
+5. Environments: Dev → Staging → Prod
+6. Automation: Newman/CI → test pas push
+```
+
+### Newman CI Integration
+
+```yaml
+# GitHub Actions — API test with Newman
+- name: Run API Tests
+  run: |
+    npx newman run tests/api/Todo-API.postman_collection.json \
+      --env-var "base_url=http://localhost:3000" \
+      --env-var "api_prefix=/api/v1" \
+      --reporters cli,junit \
+      --reporter-junit-export results.xml
+
+- name: Upload Test Results
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: api-test-results
+    path: results.xml
+```
+
 ## Latihan
 
 1. Dari route `GET /api/products` dan `POST /api/products`, tulis JSDoc OpenAPI annotation lengkap (parameter query untuk filter, request body, responses 200/201/400).
@@ -280,3 +620,9 @@ Buka `http://localhost:3000/api-docs` — Swagger UI siap dipake. Bisa "Try it o
 3. Setup swagger-jsdoc + swagger-ui-express di Express project. Include custom CSS buat hide topbar. Mount di `/docs`. Tulis kode setup lengkap (TypeScript).
 
 4. Bikin endpoint `GET /api/users/:id` dengan JSDoc OpenAPI. Parameter path `id`, response 200 (User ditemukan), 404 (User not found). Include example values di schema.
+
+5. **Reusable Parameters** — Bikin reusable parameter `id` di component `parameters` yang bisa dipake di beberapa endpoint. Dokumentasi cara pake `$ref` untuk referensi parameter reusable di JSDoc.
+
+6. **Update & Delete JSDoc** — Dari route `PUT /api/products/:id` dan `DELETE /api/products/:id`, tulis JSDoc OpenAPI annotation lengkap. Include 200, 204, 400, 404 responses. Tambah parameter path `id`.
+
+7. **Full CRUD OpenAPI YAML** — Tulis file `openapi.yaml` lengkap untuk resource Product. Include: schemas, parameters, paths (GET list, GET/:id, POST, PUT, DELETE), security scheme bearerAuth. Validasi pake tool `swagger-cli validate`.

@@ -150,6 +150,29 @@ Selisih kecil → ambil rata-rata: 4 → pilih 5
 → Story Login Google: 5 story point
 ```
 
+### Planning Poker Detail — Kasus Selisih Jauh
+
+Kalo voting ada yang milih 1 dan yang lain milih 13, artinya ada **kesalahpahaman** soal story tersebut:
+
+```
+Story: "Buat sistem notifikasi"
+Voting ronde 1:
+  Budi: 3   Ani: 13   Caca: 8   Dedi: 5
+
+Diskusi:
+- Budi (3): "Notifikasi cuma toast di browser doang"
+- Ani (13): "Notifikasi harus email + WhatsApp + in-app"
+- Caca (8): "Aku pikir pake Firebase Cloud Messaging + email"
+
+→ Ternyata tim belum sepakat scope notifikasi.
+Fix: PO clarify scope → "Notifikasi in-app dulu, email next sprint"
+Voting ronde 2:
+  Budi: 3   Ani: 5   Caca: 3   Dedi: 3
+→ Final: 3 story point
+```
+
+**Poin penting:** Planning poker bukan cuma estimasi — tapi **alat komunikasi** biar tim sepakat apa yang harus dikerjakan.
+
 ### Estimasi Timeline per Sprint
 
 Rumus sederhana:
@@ -246,6 +269,28 @@ Bayangkan kalian sudah menyelesaikan 1 sprint untuk proyek RPL. Isi tabel Start-
 | **Continue** | |
 
 > **Aksi konkret:** Pilih 1 dari Start dan 1 dari Stop → tulis langkah konkret untuk sprint depan.
+
+### Latihan 5: Planning Poker dengan Selisih Jauh (Kelompok — 10 menit)
+
+Simulasi skenario berikut: Tim voting story "Integrasi pembayaran via QRIS".
+- Anggota A voting 3 (anggap ini gampang)
+- Anggota B voting 13 (anggap ini susah)
+- Anggota C voting 8
+
+**Diskusikan:**
+1. Kenapa selisih jauh? Apa yang dipikirkan tiap anggota?
+2. Apa yang harus PO klarifikasi?
+3. Voting ulang sampai konsensus. Catat hasil final.
+4. Refleksi: apa yang dipelajari dari proses ini?
+
+### Latihan 6: Backlog Refinement (Kelompok — 15 menit)
+
+Ambil Product Backlog dari sesi 1. Lakukan refinement:
+1. Hapus 1 story yang sudah tidak relevan
+2. Split 1 story yang terlalu besar (≥13 point) jadi 2-3 story kecil
+3. Tambah detail/invest ke 1 story yang masih kurang jelas
+4. Re-prioritaskan: pindahkan 1 story ke prioritas lebih tinggi
+5. Catat perubahan di README proyek
 
 ---
 

@@ -50,6 +50,53 @@ R: Fitur transaksi jadi telat 1 hari, tapi tetap selesai.
    Saya belajar: eksperimen itu bagus, tapi pastikan ada fallback.
 ```
 
+### 7 Jawaban STAR Wajib Disiapin
+
+Persiapkan jawaban untuk 7 topik ini — hampir semua pertanyaan behavioral turunan dari sini:
+
+| # | Topik | Situasi Contoh |
+|---|-------|---------------|
+| 1 | **Team conflict** | Anggota tim gak mau pake Git, push ke production langsung |
+| 2 | **Failure / mistake** | Salah estimate deadline, deliver telat |
+| 3 | **Leadership** | Memimpin kelompok saat anggota lain pasif |
+| 4 | **Challenge / problem** | Bug aneh yang butuh 3 hari debugging |
+| 5 | **Learning new skill** | Belajar React dalam 1 minggu buat hackathon |
+| 6 | **Achievement / proud** | Proyek yang dapet nilai tertinggi / dipake sekolah |
+| 7 | **Helping others** | Nge-mentor adik kelas yang struggle dengan JavaScript |
+
+### STAR Template — Kerangka Jawaban
+
+```
+S — Setup konteks (1-2 kalimat)
+  "Dalam [proyek/mata pelajaran/ organisasi]..."
+  "Saat magang di [perusahaan]..."
+
+T — Tanggung jawab spesifik (1 kalimat)
+  "Saya bertugas [peran spesifik]"
+  "Target saya adalah [deliverable] dalam [waktu]"
+
+A — Langkah konkret (2-3 kalimat — PALING PENTING)
+  "Pertama, saya [tindakan 1]. Lalu [tindakan 2]."
+  "Saya menggunakan [tools/teknik] untuk [tujuan]."
+  "Saya berkoordinasi dengan [siapa] untuk [apa]."
+
+R — Dampak terukur (1-2 kalimat — pake angka)
+  ✅ "Aplikasi selesai 2 hari lebih cepat."
+  ✅ "Nilai proyek A (92)."
+  ✅ "Digunakan oleh 50+ siswa."
+
+Latihan: Tulis 7 jawaban STAR. Rekam suara. Evaluasi.
+```
+
+### STAR — Kesalahan Umum
+
+| ❌ Salah | ✅ Benar |
+|----------|---------|
+| "Saya selalu kerja keras" — terlalu umum | "Saya lembur 3 hari berturut-turut untuk ngejar deadline" — spesifik |
+| "Tim kami tidak kompak" — nyalahin orang lain | "Saya inisiatif bikin daily standup biar komunikasi lancar" — solusi |
+| "Hasilnya bagus" — gak terukur | "Traffic naik 40% setelah fitur rilis" — ada angka |
+| Cerita terlalu panjang, gak nyampe result | Max 2 menit per jawaban. Latihan pake timer |
+
 ### Pertanyaan Behavioral Umum
 
 | Pertanyaan | Yang Dinilai | STAR Siapkan |
@@ -167,6 +214,155 @@ Portfolio website = bukti konkret. Tanpa portfolio, CV cuma klaim.
 
 ---
 
+## GitHub Profile Optimization
+
+GitHub = portfolio utama developer. Recruiter selalu cek GitHub sebelum interview.
+
+### Profile README — Wajib Ada
+
+Bikin repo dengan nama yang sama dengan username GitHub-mu. Isinya:
+
+```markdown
+### Hi there 👋 I'm [Nama]
+
+**Backend Developer | React & Node.js Enthusiast**
+
+- 🔭 Currently building: [proyek terbaru]
+- 🌱 Learning: TypeScript, PostgreSQL, tRPC
+- 👯 Open to: internship / junior dev opportunity
+- 📫 Reach me: [email] | [LinkedIn]
+- ⚡ Fun fact: [fakta unik]
+
+### 🛠 Tech Stack
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript)
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react)
+![Node.js](https://img.shields.io/badge/-Node.js-339933?logo=node.js)
+![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql)
+
+### 📊 GitHub Stats
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=namakamu&show_icons=true)
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=namakamu&layout=compact)
+```
+
+Bisa generate badge stat dari [shields.io](https://shields.io) dan [github-readme-stats](https://github.com/anuraghazra/github-readme-stats).
+
+### Commit Message Convention
+
+Commit message yang rapi = sinyal developer profesional.
+
+```
+Format: <type>: <description>
+
+feat: Add login API endpoint
+fix: Fix null pointer on empty user list
+docs: Update README with deployment guide
+refactor: Extract auth middleware
+chore: Update dependencies
+test: Add unit test for calculateTotal
+style: Format code with prettier
+```
+
+### Repository Checklist
+
+| Item | Wajib? | Keterangan |
+|------|--------|-----------|
+| README.md | ✅ | Judul, stack, fitur, cara run, screenshot, link demo |
+| .gitignore | ✅ | node_modules, .env, build output |
+| LICENSE | ✅ | MIT / Apache-2.0 — biar orang tahu boleh dipake |
+| package.json / requirements.txt | ✅ | Dependency jelas |
+| Screenshot / GIF | ⭐ | Di README — biar keliatan hasilnya |
+| GitHub Pages / Vercel link | ✅ | Live demo di deskripsi repo |
+| Commit message rapi | ✅ | Conventional commits |
+| Branch structure | ⭐ | main + develop (kalo kolaborasi) |
+
+### Pinned Repositories
+
+Pin 3-6 repository terbaik di profil GitHub. Pilih yang:
+
+1. **Stack berbeda** — misal: REST API (backend), React app (frontend), full-stack app
+2. **Ada live demo** — link Vercel/Netlify di README
+3. **Code bersih** — type-safe, error handling, testing (kalo ada)
+
+### Contribution Graph
+
+Recruiter lihat contribution graph buat nilai **konsistensi**:
+
+- 🔴 Kosong 3 bulan terakhir = red flag
+- 🟢 Hijau tiap minggu (meski cuma 1 commit) = aktif belajar
+- 🟢 Kontribusi ke open source = nilai plus besar
+
+Tips jaga contribution:
+- Push project pribadi tiap minggu
+- Ikut Hacktoberfest
+- Fix typo di dokumentasi open source (entry point kontribusi)
+- Bikin daily journal repo (markdown)
+
+### Open Source Contribution — Panduan Mulai
+
+```markdown
+1. Cari repo dengan label "good first issue" atau "help wanted"
+2. Baca CONTRIBUTING.md — ikuti aturan main repo
+3. Fork repo → clone → branch baru
+4. Coding → commit → push → PR
+5. Tunggu review — perbaiki kalo diminta
+6. PR merged 🎉
+```
+
+**Repo cocok buat first timer:**
+- [first-contributions](https://github.com/firstcontributions/first-contributions)
+- [freeCodeCamp](https://github.com/freeCodeCamp/freeCodeCamp)
+- [Hacktoberfest](https://github.com/topics/hacktoberfest) (bulan Oktober)
+- Dokumentasi: [Awesome for beginners](https://github.com/MunGell/awesome-for-beginners)
+
+---
+
+## Take-Home Assignment Strategy
+
+Banyak perusahaan kasih **take-home assignment** sebelum interview teknis. Ini strategi ngerjainnya.
+
+### Flow Pengerjaan
+
+``` 
+1. Baca soal 2x — pahami requirements dan criteria penilaian
+2. Tanya clarifying questions — batasan? stack wajib? deadline?
+3. Planning — 20% waktu pertama buat desain arsitektur
+4. Coding — 60% waktu, prioritaskan fitur utama
+5. Testing — 10% waktu, pastikan jalan
+6. Dokumentasi — 10% terakhir, README + comments
+```
+
+### Checklist Sebelum Submit
+
+- [ ] README.md lengkap (judul, stack, cara jalanin, fitur, asumsi)
+- [ ] Kode bisa dijalanin (satu perintah: `npm start` / `docker-compose up`)
+- [ ] Error handling (validasi input, try-catch di API)
+- [ ] .gitignore — tidak ada node_modules, .env, build
+- [ ] Commit message rapi (bukan "final final fix v2")
+- [ ] Unit test minimal untuk logic utama
+- [ ] API documentation (kalo REST/GraphQL)
+- [ ] Link demo (kalo bisa dideploy)
+
+### Common Mistakes Take-Home
+
+| ❌ Kesalahan | ✅ Perbaikan |
+|-------------|-------------|
+| Langsung coding tanpa baca soal 2x | Planning dulu 15 menit |
+| Over-engineering (microservices buat todo app) | Simpel, fokus ke requirements |
+| Gak pake error handling | Try-catch di tiap endpoint |
+| Lupa README | README = first impression |
+| Submit di detik terakhir tanpa test | Selesai H-1, test dulu |
+| Gak pake Git | Commit history = proses berpikir |
+
+### Estimasi Waktu
+
+```
+2-3 jam assignment? Realistis: 6-8 jam pengerjaan + 2 jam dokumentasi
+1 minggu deadline? Selesai di hari ke-4, sisanya buat polish
+```
+
+---
+
 ## Latihan
 
 1. **STAR Practice:** Ambil 3 pertanyaan behavioral dari tabel di atas. Tulis jawaban STAR lengkap (min 4 kalimat per huruf). Baca keras-keras sampai terdengar natural.
@@ -176,3 +372,13 @@ Portfolio website = bukti konkret. Tanpa portfolio, CV cuma klaim.
 3. **LinkedIn Makeover:** Ikuti semua checklist LinkedIn di atas. Screenshot sebelum-sesudah. Minta pendapat teman.
 
 4. **Portfolio Site Wireframe:** Gambar (kertas/Figma) layout portfolio kamu. Tentukan: warna, font, halaman apa saja, tech stack. Tulis alasan setiap pilihan.
+
+5. **GitHub Profile README:** Bikin profile README untuk GitHub-mu. Include: tech stack badges, pinned repos, stats card, kontak info. Push ke repo `namakamu/namakamu`. Screenshot hasilnya.
+
+6. **Commit Message Audit:** Cek 10 commit terakhir di repositori kamu. Berapa yang pakai format conventional commits? Tulis ulang 5 commit message yang jelek jadi format `<type>: <description>` yang benar.
+
+7. **Open Source Contribution:** Cari 1 repo open source dengan label "good first issue". Fork repo, baca CONTRIBUTING.md, tulis 3 hal yang kamu pahami tentang cara kontribusi di repo itu. (Tidak wajib bikin PR — cukup analisis).
+
+8. **Take-Home Simulation:** Cari assignment contoh di internet (misal: "Bikin REST API untuk todo list"). Kerjakan dalam 4 jam. Submit hasil: link GitHub + README + pastikan bisa dijalanin. Tulis refleksi: apa yang kurang, apa yang bakal diperbaiki.
+
+9. **Take-Home README:** Bikin README template untuk take-home assignment. Format: judul, stack, cara install & run, endpoints, asumsi, decisions, future improvements.

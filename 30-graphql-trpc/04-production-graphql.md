@@ -162,6 +162,254 @@ Query lewat gateway:
 }
 ```
 
+### Federation @shareable & @external
+
+```graphql
+# Subgraph A (Users) — define field
+type User @key(fields: "id") {
+  id: ID!
+  name: String!
+  email: String! @shareable   # Bisa di-override subgraph lain
+}
+
+# Subgraph B (Posts) — extend User
+type User @key(fields: "id") {
+  id: ID!
+  posts: [Post!]!
+}
+
+# Subgraph C (Reviews) — extend lagi
+type User @key(fields: "id") {
+  id: ID!
+  @external           # id berasal dari subgraph lain
+  reviewCount: Int!
+  @requires(fields: "id")
+}
+```
+
+### Federation dengan Rover CLI
+
+```bash
+# Install Rover CLI
+curl -sSL https://rover.apollo.dev/nix/latest | sh
+
+# Compose supergraph dari subgraphs
+rover supergraph compose --config ./supergraph.yaml > supergraph.graphql
+
+# Contoh supergraph.yaml
+federation_version: 2
+subgraphs:
+  users:
+    routing_url: http://localhost:4001/graphql
+    schema:
+      file: ./users-schema.graphql
+  posts:
+    routing_url: http://localhost:4002/graphql
+    schema:
+      file: ./posts-schema.graphql
+```
+
+### Federation Error Handling
+
+Gateway otomatis handle partial failure — kalo satu subgraph down, query yang gak butuh subgraph itu tetap jalan:
+
+```graphql
+# Kalo posts-subgraph down
+# Query ini tetap return users + null untuk posts
+{
+  users {
+    name        # ✅ dari users-subgraph (online)
+    posts {     # ❌ null karena posts-subgraph down
+      title
+    }
+  }
+}
+```
+
+## Load Testing GraphQL
+
+### k6 untuk GraphQL
+
+```bash
+# Install k6: https://k6.io/docs/getting-started/installation/
+```
+
+```javascript
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '1m', target: 50 },
+    { duration: '2m', target: 50 },
+    { duration: '1m', target: 0 },
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% request di bawah 500ms
+  },
+};
+
+const query = `
+  query GetUsers {
+    users {
+      id
+      name
+      email
+    }
+  }
+`;
+
+export default function () {
+  const res = http.post(
+    'http://localhost:4000/graphql',
+    JSON.stringify({ query }),
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'no errors': (r) => JSON.parse(r.body).errors === undefined,
+    'response time < 300ms': (r) => r.timings.duration < 300,
+  });
+
+  sleep(1);
+}
+```
+
+Jalanin:
+
+```bash
+k6 run graphql-load-test.js
+```
+
+### Apollo Studio — Tracing & Metrics
+
+```bash
+npm install @apollo/usage-reporting-protobuf
+```
+
+```typescript
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  plugins: [
+    ApolloServerPluginUsageReporting({
+      sendHeaders: { onlyNames: ['authorization'] },
+      sendVariableValues: { all: true },
+    }),
+  ],
+});
+```
+
+### Query Complexity Analysis
+
+```bash
+npm install graphql-query-complexity
+```
+
+```typescript
+import { createComplexityLimitRule } from 'graphql-query-complexity';
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  validationRules: [
+    createComplexityLimitRule(1000, {
+      onCost: (cost) => console.log(`Query cost: ${cost}`),
+      formatErrorMessage: (cost) =>
+        `Query terlalu kompleks (cost: ${cost}). Maksimum 1000.`,
+    }),
+  ],
+});
+```
+
+```graphql
+type Query {
+  users: [User!]! @cost(complexity: 10)
+}
+
+type User {
+  id: ID! @cost(complexity: 1)
+  name: String! @cost(complexity: 1)
+  posts: [Post!]! @cost(complexity: 5)
+}
+```
+
+## WebSocket Connection Management
+
+### Connection Lifecycle
+
+```typescript
+// Server-side WS event handling
+const serverCleanup = useServer({
+  schema,
+  onConnect: async (ctx) => {
+    // Verify token pas koneksi
+    const token = ctx.connectionParams?.authorization;
+    if (!token) {
+      // Reject koneksi kalo gak ada token
+      return false;
+    }
+    const user = await verifyToken(token as string);
+    ctx.extra = { user };
+  },
+  onDisconnect(ctx) {
+    console.log('Client disconnected');
+    // Cleanup resource
+  },
+  onClose(ctx) {
+    console.log('Connection closed');
+  },
+  keepAlive: 10_000, // Ping tiap 10 detik
+}, wsServer);
+```
+
+### Subscription Pagination (Event Buffer)
+
+Kalo client disconnect dan reconnect, kasih missed events:
+
+```typescript
+const eventBuffer = new Map<string, Post[]>();
+const MAX_BUFFER = 50;
+
+Mutation: {
+  createPost: (_: unknown, args: { title: string; content: string }, ctx) => {
+    const post = { id: String(posts.length + 1), ...args, authorId: ctx.user.id };
+    posts.push(post);
+    pubsub.publish(POST_CREATED, { postCreated: post });
+
+    // Buffer buat replay
+    const userId = ctx.user.id;
+    if (!eventBuffer.has(userId)) {
+      eventBuffer.set(userId, []);
+    }
+    const buffer = eventBuffer.get(userId)!;
+    buffer.push(post);
+    if (buffer.length > MAX_BUFFER) buffer.shift();
+
+    return post;
+  },
+},
+
+Subscription: {
+  missedPosts: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator([POST_CREATED]),
+      (payload, variables, ctx) => {
+        // Kirim missed events kalo ada buffer
+        if (variables.replay) {
+          const missed = eventBuffer.get(ctx.user.id) || [];
+          missed.forEach(p => {
+            // Kirim via custom logic
+          });
+        }
+        return true;
+      },
+    ),
+  },
+},
+```
+
 ## Persisted Queries (APQ)
 
 Automatic Persisted Queries = cache query hash, kirim hash instead of full query string. Hemat bandwidth.
@@ -478,3 +726,15 @@ const server = new ApolloServer({
 3. Implementasi rate limiting dengan express-rate-limit: 50 request/menit per IP. Tapi kalo user pake JWT dengan role 'premium', dapet 200 request/menit. Tulis middleware + keyGenerator function.
 
 4. Setup security layer: depth limit (max 4), matikan introspection di production, alias limit (max 5), CSRF guard. Tulis Apollo Server config lengkap dengan semua validation rules dan plugins.
+
+5. **Federation Multi-Service:** Bikin 3 subgraph: `orders`, `products`, `users`. Order punya relasi ke product dan user. Compose supergraph pake Rover CLI. Tulis schema + resolvers + gateway config + compose command.
+
+6. **Load Testing dengan k6:** Setup k6 untuk test endpoint `user(id: ID!)` dengan 100 concurrent users. Ukur P50, P95, P99 latency. Tulis test script + hasil. Identifikasi bottleneck kalo ada.
+
+7. **Query Complexity:** Implementasi query complexity analysis dengan `graphql-query-complexity`. Set limit 500. Test query sederhana (cost kecil) vs query nested dalam (cost besar). Tulis konfigurasi + contoh hasil.
+
+8. **WebSocket Lifecycle:** Setup onConnect handler yang verify JWT sebelum koneksi subscription diizinkan. Tambah keepAlive 15 detik. onDisconnect cleanup. Tulis server config + client yang kirim token di connectionParams.
+
+9. **Apollo Studio Tracing:** Setup Apollo usage reporting ke Apollo Studio. Kirim header authorization (tanpa value) dan variable values. Analisis performa query di dashboard. Tulis plugin config + langkah setup Apollo Studio.
+
+10. **Supergraph dengan Rover:** Buat 2 subgraph (users, posts) + gateway. Compose supergraph.yaml + generate supergraph.graphql. Deploy gateway pake supergraph file statis (bukan IntrospectAndCompose). Tulis Rover CLI commands + gateway config.

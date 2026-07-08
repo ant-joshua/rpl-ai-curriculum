@@ -452,3 +452,11 @@ body { font-size: 16px; }
 3. **Responsive 3-Column** — Bikin layout 3 kolom pake grid: sidebar kiri (200px), konten utama (1fr), sidebar kanan (200px). Di tablet jadi 2 kolom (sidebar hilang). Di mobile jadi 1 kolom (stack).
 
 4. **Hero Section** — Bikin hero section pake position: fixed background, konten di tengah pake flexbox, ada tombol CTA, ada floating badge absolute di pojok.
+
+5. **Holy Grail Layout.** Bikin layout "holy grail" pake grid: header (full width), sidebar kiri, main content, sidebar kanan, footer (full width). Responsive: tablet jadi 2 kolom, mobile jadi 1 kolom.
+
+6. **Card grid responsif.** Bikin grid 6 card produk. Pake media queries: mobile 1 kolom, tablet 2 kolom, desktop 3 kolom, wide 4 kolom. Setiap card punya gambar placeholder, judul, harga, tombol.
+
+7. **Sticky navbar.** Bikin navbar yang sticky di top pas di-scroll. Pake `position: sticky`. Konten di bawah harus bisa scroll melewati navbar tanpa nutup konten.
+
+8. **Position challenge.** Bikin halaman dengan: (1) fixed WhatsApp button pojok kanan bawah, (2) badge "SALE" absolute di card, (3) back-to-top button yang muncul pas di-scroll, (4) dropdown menu absolute di navbar. Screenshoot semua.
