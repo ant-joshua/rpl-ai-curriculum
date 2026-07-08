@@ -70,6 +70,9 @@ flowchart LR
 | # | Modul | Level | Jam | Prasyarat |
 |---|---|---|---|---|
 | 0 | **[Fundamental Pemrograman & Web](00-fundamentals/)** | 🌱 Beginner | 4 | — |
+
+> **Sebelum mulai modul 0, baca dulu [Cara Belajar Efektif](00-fundamentals/00-how-to-learn.md)** — ini fondasi mental lo sebelum coding.
+
 | 1 | **[JavaScript Fundamentals](01-js-fundamentals/)** | 🌱 Beginner | 8 | Modul 0 |
 | 2 | **[Algorithms & Data Structures](02-algorithms-data-structures/)** | 🌱 Beginner | 8 | Modul 1 |
 | 3 | **[TypeScript Basics](03-typescript/)** | 🌱 Beginner | 4 | Modul 1 |
@@ -216,6 +219,7 @@ Selain modul, repo ini juga punya:
 
 | Sumber | Deskripsi |
 |--------|-----------|
+| [🧠 Cara Belajar Efektif](00-fundamentals/00-how-to-learn.md) | Panduan mindset dan strategi belajar coding |
 | [📋 Exercises](exercises/) | Latihan per modul (JS + DSA + others) |
 | [🎯 Mini Projects](mini-projects/) | 5 project kecil selesai 1-2 sesi |
 | [🚀 Project Ideas](projects/) | 15 ide project (easy → advanced + AI) |

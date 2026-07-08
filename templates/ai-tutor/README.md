@@ -1,96 +1,135 @@
-# RPL AI Tutor — Mastra Agent
+# AI Tutor — Next.js + Mastra + Prisma
 
-Agent tutor otomatis untuk kurikulum SMK RPL AI. Dibangun dengan **Mastra AI** + **Express** + **OpenAI**.
+Template aplikasi **AI Tutor** interaktif untuk kurikulum SMK RPL AI. Dibangun dengan **Next.js 14**, **Mastra AI Agent**, dan **Prisma ORM**.
 
-## Struktur Project
+## Stack
+
+| Komponen        | Fungsi                              |
+|-----------------|-------------------------------------|
+| Next.js 14      | Framework React full-stack          |
+| Mastra          | AI Agent framework + tools          |
+| Prisma          | ORM untuk database (SQLite default) |
+| OpenAI          | LLM provider (gpt-4o-mini)         |
+| Tailwind CSS    | Styling UI                          |
+| SQLite          | Database lokal (bisa ganti)         |
+
+## Struktur Folder
 
 ```
-templates/ai-tutor/
+ai-tutor/
+├── prisma/
+│   └── schema.prisma          # Schema database
 ├── src/
-│   ├── agent.ts      # Definisi agent Mastra
-│   ├── index.ts      # Express server (API endpoint)
-│   └── rag.ts        # RAG pipeline sederhana
-├── package.json
-├── tsconfig.json
+│   ├── app/
+│   │   ├── api/chat/route.ts  # API endpoint chat
+│   │   ├── globals.css        # Global styles
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Chat UI
+│   ├── lib/
+│   │   └── prisma.ts          # Prisma client singleton
+│   └── agent.ts               # Definisi Mastra Agent + tools
 ├── .env.example
+├── next.config.js
+├── package.json
+├── tailwind.config.ts
+├── tsconfig.json
 └── README.md
 ```
 
-## Prerequisites
-
-- Node.js >= 18
-- npm atau yarn
-- API key OpenAI (atau provider lain)
-
-## Setup
+## Cara Pake
 
 ```bash
-# Clone / masuk ke direktori project
+# 1. Masuk folder template
 cd templates/ai-tutor
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Copy environment variables
+# 3. Setup environment
 cp .env.example .env
+# Isi OPENAI_API_KEY di .env
 
-# Isi .env dengan API key
-# OPENAI_API_KEY=sk-...
-# MODULE_DIR=../../modul  # path ke direktori modul kurikulum
+# 4. Setup database
+npx prisma db push
 
-# Compile TypeScript
-npx tsc
-
-# Jalankan server
-node dist/index.js
+# 5. Jalankan development
+npm run dev
+# Buka http://localhost:3000
 ```
 
-Atau dengan ts-node untuk development:
+## Fitur
 
-```bash
-npx ts-node src/index.ts
-```
+### AI Agent dengan Tools
+Agent tutor pake Mastra dengan dua tool bawaan:
+- **getCurrentTime** — Cek waktu & tanggal sekarang
+- **calculateGrade** — Hitung nilai akhir (tugas 20%, UTS 30%, UAS 50%)
 
-## Environment Variables
+### Chat Interaktif
+- UI chat real-time dengan Tailwind CSS
+- Riwayat percakapan tersimpan di database
+- Reset percakapan kapan aja
 
-| Variable       | Default            | Description                           |
-| -------------- | ------------------ | ------------------------------------- |
-| `OPENAI_API_KEY` | —                | API key OpenAI                         |
-| `MODEL_NAME`   | `gpt-4o`           | Model OpenAI yang digunakan            |
-| `MODULE_DIR`   | `../../modul`      | Path ke direktori modul (.md files)    |
-| `PORT`         | `3000`             | Port server                            |
-| `RATE_LIMIT`   | `10`               | Max request per menit per IP           |
+### Database
+Pake SQLite via Prisma — ga perlu setup database server. Dua tabel:
+- `Conversation` — Sesi chat
+- `Message` — Pesan user & agent
 
-## API
+## API Endpoint
 
-### POST /api/chat
+### `POST /api/chat`
 
-Streaming chat ke agent tutor.
-
-**Request Body:**
-
+**Request:**
 ```json
 {
-  "message": "Apa itu neural network?",
-  "history": [
-    {"role": "user", "content": "Halo"},
-    {"role": "assistant", "content": "Halo! Ada yang bisa dibantu?"}
-  ]
+  "message": "Jelaskan apa itu REST API",
+  "conversationId": "clxxx..." (opsional)
 }
 ```
 
-**Response:** SSE (Server-Sent Events) stream.
+**Response:**
+```json
+{
+  "reply": "REST API adalah...",
+  "conversationId": "clxxx..."
+}
+```
 
-## RAG Pipeline
+## Kustomisasi
 
-Agent otomatis mencari konteks relevan dari file .md di direktori modul sebelum menjawab. Pipeline:
+### Ganti Model AI
+Edit `OPENAI_MODEL` di `.env`:
+```
+OPENAI_MODEL=gpt-4o
+```
 
-1. Baca semua file `.md` dari `MODULE_DIR`
-2. Split per section (`##` header)
-3. Embed dengan OpenAI embeddings
-4. Cari section paling relevan dengan cosine similarity
-5. Kirim konteks ke agent sebagai context
+### Ganti Database ke PostgreSQL
+Update `prisma/schema.prisma`:
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
 
-## Rate Limiting
+### Tambah Tool Baru
+Edit `src/agent.ts` — tambah object tool dengan schema Zod:
+```typescript
+const myTool = {
+  name: 'toolName',
+  description: 'Deskripsi tool',
+  parameters: z.object({ ... }),
+  execute: async (params) => { ... },
+};
+```
 
-Simple in-memory rate limiter — 10 request/menit per IP. Ubah via env `RATE_LIMIT`.
+### Ubah Instruksi Agent
+Edit `instructions` di `agent.ts` — ini sistem prompt yang nentuin personality agent.
+
+## Deploy
+
+```bash
+npm run build
+npm start
+```
+
+Bisa deploy ke **Vercel** (serverless) atau **Railway** (long-running).

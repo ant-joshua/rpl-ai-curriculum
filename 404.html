@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Halaman Tidak Ditemukan</title>
+  <meta http-equiv="refresh" content="5;url=/">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e0e0e0;
+      padding: 24px;
+    }
+    .container {
+      text-align: center;
+      max-width: 520px;
+    }
+    .emoji {
+      font-size: 96px;
+      line-height: 1;
+      margin-bottom: 16px;
+      display: block;
+    }
+    h1 {
+      font-size: 72px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 18px;
+      color: #a0a0c0;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .subtitle {
+      font-size: 22px;
+      font-weight: 600;
+      color: #c0c0e0;
+      margin-bottom: 12px;
+    }
+    .suggestion {
+      font-size: 15px;
+      color: #8888aa;
+      margin-bottom: 32px;
+    }
+    a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      color: #0f0f23;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: opacity 0.2s;
+    }
+    a:hover, a:focus {
+      opacity: 0.85;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 13px;
+      color: #555577;
+    }
+  </style>
+  <script>
+    // Docsify SPA redirect — if loaded via hash routing, redirect to home
+    (function(){
+      var p = window.location.pathname;
+      if (p && p !== '/' && p !== '/index.html' && !p.match(/^\/#/)) {
+        setTimeout(function(){ window.location.href = '/'; }, 5000);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <span class="emoji">🔍</span>
+    <h1>404</h1>
+    <p class="subtitle">Halaman tidak ditemukan</p>
+    <p class="suggestion">Coba cari di sidebar atau kembali ke beranda</p>
+    <a href="/">← Kembali ke Beranda</a>
+    <p class="footer">Kamu akan dialihkan otomatis dalam 5 detik.</p>
+  </div>
+</body>
+</html>

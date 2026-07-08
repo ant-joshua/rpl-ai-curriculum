@@ -1,17 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Static Starter</title>
+  <title>Web Statis Starter — RPL AI</title>
+  <meta name="description" content="Template starter website statis dengan Tailwind CSS" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="container">
-    <h1>Static Starter</h1>
-    <p id="message">Loading...</p>
-    <button id="btn">Click me</button>
+  <header class="header">
+    <nav class="nav container">
+      <div class="logo">🚀 RPL AI</div>
+      <ul class="nav-links">
+        <li><a href="#home">Beranda</a></li>
+        <li><a href="#about">Tentang</a></li>
+        <li><a href="#contact">Kontak</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="hero container">
+      <h1>Selamat Datang di RPL AI</h1>
+      <p class="subtitle">Template starter website statis — langsung deploy ke Vercel</p>
+      <p id="clock" class="clock"></p>
+      <div class="card">
+        <h2>Interactive Demo</h2>
+        <p id="message">Klik tombol di bawah untuk memulai</p>
+        <button id="btn" class="btn">Klik Saya</button>
+        <div id="counter-display" class="counter">0 klik</div>
+      </div>
+    </section>
+
+    <section id="about" class="about container">
+      <h2>Tentang Template Ini</h2>
+      <div class="features">
+        <div class="feature-card">
+          <h3>🌐 Tailwind CSS</h3>
+          <p>CDN-based utility-first CSS framework. Gak perlu instalasi.</p>
+        </div>
+        <div class="feature-card">
+          <h3>📱 Responsive</h3>
+          <p>Mobile-first design. Grid + flexbox. Test di Chrome DevTools.</p>
+        </div>
+        <div class="feature-card">
+          <h3>⚡ Deploy 1 Detik</h3>
+          <p>Drag & drop ke Vercel / CF Pages. Atau pake vercel.json.</p>
+        </div>
+      </div>
+    </section>
   </main>
-  <script src="script.js"></script>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 RPL AI Curriculum — <a href="https://syllabus.ant-joshua.my.id">syllabus.ant-joshua.my.id</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
