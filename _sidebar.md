@@ -6,6 +6,7 @@
   - [⚙️ Backend API](paths/02-backend-api.md)
   - [🤖 AI Agent](paths/03-ai-agent.md)
 - **🌱 Beginner**
+  - [🧠 Cara Belajar Efektif](00-fundamentals/00-how-to-learn.md)
   - [00. Fundamental Pemrograman & Web](00-fundamentals/)
   - [01. JavaScript Fundamentals](01-js-fundamentals/)
   - [02. Algorithms & Data Structures](02-algorithms-data-structures/)

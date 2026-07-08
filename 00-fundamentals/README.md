@@ -13,30 +13,32 @@
 
 Setelah selesai module ini, lo bakal bisa:
 
-| No | Objective | Sesi |
-|----|-----------|------|
-| 1 | Jelaskan gimana client & server ngobrol lewat internet | 1 |
-| 2 | Bedain frontend sama backend dengan contoh nyata | 1 |
-| 3 | Baca & pahami URL structure (protocol, domain, path, query) | 1 |
-| 4 | Sebutin HTTP methods (GET/POST/PUT/DELETE) dan kapan pakenya | 1 |
-| 5 | Paham HTTP status codes (200, 404, 500, dll) | 1 |
-| 6 | Jelaskan konsep API pake analogi restoran | 2 |
-| 7 | Bedain SQL vs NoSQL database | 2 |
-| 8 | Tulis query SQL dasar (SELECT, INSERT) | 2 |
-| 9 | Paham gimana deployment kerja (Vercel, Railway, VPS) | 2 |
-| 10 | Pakai terminal dasar (ls, cd, mkdir, node, npm) | 2 |
-| 11 | Paham konsep Git & version control | 2 |
+|| No | Objective | Sesi |
+||----|-----------|------|
+|| 0 | Pahami cara belajar coding efektif — mindset, practice, tools | 0 |
+|| 1 | Jelaskan gimana client & server ngobrol lewat internet | 1 |
+|| 2 | Bedain frontend sama backend dengan contoh nyata | 1 |
+|| 3 | Baca & pahami URL structure (protocol, domain, path, query) | 1 |
+|| 4 | Sebutin HTTP methods (GET/POST/PUT/DELETE) dan kapan pakenya | 1 |
+|| 5 | Paham HTTP status codes (200, 404, 500, dll) | 1 |
+|| 6 | Jelaskan konsep API pake analogi restoran | 2 |
+|| 7 | Bedain SQL vs NoSQL database | 2 |
+|| 8 | Tulis query SQL dasar (SELECT, INSERT) | 2 |
+|| 9 | Paham gimana deployment kerja (Vercel, Railway, VPS) | 2 |
+|| 10 | Pakai terminal dasar (ls, cd, mkdir, node, npm) | 2 |
+|| 11 | Paham konsep Git & version control | 2 |
 
 ---
 
 ## 📋 Daftar Sesi
 
-| # | Sesi | Durasi | Deskripsi |
-|---|------|--------|-----------|
-| 1 | [🌐 Gimana Internet & HTTP Bekerja](01-internet-http.md) | 2 jam | Client-server, HTTP, URL, frontend/backend, DNS & hosting |
-| 2 | [🔌 API, Database & Deployment](02-api-database-deploy.md) | 2 jam | REST API, SQL/NoSQL, deployment, terminal, Git |
+|| # | Sesi | Durasi | Deskripsi |
+||---|------|--------|-----------|
+|| 0 | [🧠 Cara Belajar Efektif](00-how-to-learn.md) | 1 jam | Mindset, practice routine, tools, tips |
+|| 1 | [🌐 Gimana Internet & HTTP Bekerja](01-internet-http.md) | 2 jam | Client-server, HTTP, URL, frontend/backend, DNS & hosting |
+|| 2 | [🔌 API, Database & Deployment](02-api-database-deploy.md) | 2 jam | REST API, SQL/NoSQL, deployment, terminal, Git |
 
-> Mulai dari [Sesi 1](01-internet-http.md) dulu, lalu lanjut [Sesi 2](02-api-database-deploy.md).
+> **Mulai dari [Sesi 0: Cara Belajar Efektif](00-how-to-learn.md)** — ini penting biar lo gak salah strategi.
 
 ---
 
