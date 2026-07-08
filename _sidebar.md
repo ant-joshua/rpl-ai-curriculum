@@ -99,3 +99,5 @@
   - [Export PDF](pdf-export/)
 - **🏢 Case Studies**
   - [Studi Kasus](case-studies/)
+- **🎬 Video**
+  - [Panduan Produksi](video-guide/)
