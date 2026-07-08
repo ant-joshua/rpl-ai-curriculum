@@ -26,12 +26,12 @@ By end of module, kamu punya:
 
 ## Sessions
 
-| Session | Topic | Description |
-|---------|-------|-------------|
-| **01** | AI Coding Tools Comparison | Bandingkan Claude Code, Codex, Cursor, Copilot, Hermes Agent — kapan pake yang mana |
-| **02** | Multi-Agent Workflow | Orchestrator + worker, role-based agents, parallel vs sequential execution |
-| **03** | AI Coding Loop | Plan → Code → Test → Review → Refactor, loop efficiency |
-| **04** | Hermes Agent Mastery | Delegation, skills, kron, profiles, MCP, kanban — jadi power user |
+| Session | Topic | File | Description |
+|---------|-------|------|-------------|
+| **01** | AI Coding Tools Comparison | [view](01-ai-coding-tools-compare.md) | Bandingkan Claude Code, Codex, Cursor, Copilot, Hermes Agent — kapan pake yang mana |
+| **02** | Multi-Agent Workflow | [view](02-multi-agent-workflow.md) | Orchestrator + worker, role-based agents, parallel vs sequential execution |
+| **03** | AI Coding Loop | [view](03-coding-loop.md) | Plan → Code → Test → Review → Refactor, loop efficiency |
+| **04** | Hermes Agent Mastery | [view](04-hermes-agent-mastery.md) | Delegation, skills, kron, profiles, MCP, kanban — jadi power user |
 
 ## Tools Used
 

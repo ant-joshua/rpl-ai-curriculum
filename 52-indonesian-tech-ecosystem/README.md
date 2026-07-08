@@ -27,12 +27,12 @@ Setelah menyelesaikan modul ini, peserta mampu:
 
 ## Silabus
 
-| Sesi | Topik | Durasi |
-|------|-------|--------|
-| 1 | **Freelance Hustle** — Platform, profil, pricing, client communication, tax & legal | 90 menit |
-| 2 | **Job Search & Interview** — CV ATS, LinkedIn, job portal, interview, take-home test | 90 menit |
-| 3 | **Career Growth** — Junior→Senior→Lead, skill roadmap, salary, negotiation, soft skills | 90 menit |
-| 4 | **Tech Community** — Komunitas, meetup, hackathon, open source, tech blog | 90 menit |
+| Sesi | Topik | File | Durasi |
+|------|-------|------|--------|
+| 1 | **Freelance Hustle** — Platform, profil, pricing, client communication, tax & legal | [view](01-freelance-hustle.md) | 90 menit |
+| 2 | **Job Search & Interview** — CV ATS, LinkedIn, job portal, interview, take-home test | [view](02-job-search-interview.md) | 90 menit |
+| 3 | **Career Growth** — Junior→Senior→Lead, skill roadmap, salary, negotiation, soft skills | [view](03-career-growth.md) | 90 menit |
+| 4 | **Tech Community** — Komunitas, meetup, hackathon, open source, tech blog | [view](04-tech-community.md) | 90 menit |
 
 ## Metode Pembelajaran
 

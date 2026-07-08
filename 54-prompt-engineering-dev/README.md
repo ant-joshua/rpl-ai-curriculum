@@ -20,12 +20,12 @@ Setelah modul ini, peserta mampu:
 
 ## Sesi
 
-| Sesi | Topik | Durasi |
-|------|-------|--------|
-| 1 | System Prompt Design | 90 menit |
-| 2 | Code Generation Prompting | 90 menit |
-| 3 | Prompt Patterns | 90 menit |
-| 4 | Production Prompting | 90 menit |
+| Sesi | Topik | File | Durasi |
+|------|-------|------|--------|
+| 1 | System Prompt Design | [view](01-system-prompt-design.md) | 90 menit |
+| 2 | Code Generation Prompting | [view](02-code-generation-prompting.md) | 90 menit |
+| 3 | Prompt Patterns | [view](03-prompt-patterns.md) | 90 menit |
+| 4 | Production Prompting | [view](04-production-prompting.md) | 90 menit |
 
 ## Struktur Modul
 

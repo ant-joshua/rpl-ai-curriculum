@@ -47,4 +47,4 @@ Sepanjang modul, latihan pake AI:
 Modul ini nge-cover konsep system design yang langsung kepake di proyek capstone. Fokus ke praktik — lo gak perlu hafal teori akademik. Tiap sesi ada file sendiri dengan penjelasan detail, kode contoh, dan latihan.
 
 ---
-*Ditulis untuk siswa SMK RPL — fokus ke praktik, minimal teori akademik yang gak penting.*
+_Ditulis untuk siswa SMK RPL — fokus ke praktik, minimal teori akademik yang gak penting_

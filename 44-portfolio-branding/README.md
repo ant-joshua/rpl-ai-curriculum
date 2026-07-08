@@ -24,12 +24,12 @@ Setelah menyelesaikan modul ini, peserta mampu:
 
 ## Materi Pembelajaran
 
-| Sesi | Topik | Durasi | Output |
-|------|-------|--------|--------|
-| 1 | **GitHub Profesional** — Profile README, pinned repos, badge shields.io, dokumentasi proyek, GitHub Pages | 4 jam | GitHub profile lengkap + project docs |
-| 2 | **Portfolio Website** — Hero, about, project cards, skills, contact form, case study pages, deploy Vercel/Netlify | 4 jam | Portfolio website live |
-| 3 | **LinkedIn & Career** — Optimasi profil, headline, about, featured projects, CV ATS, personal branding statement | 4 jam | Profil LinkedIn optimal + CV siap pakai |
-| 4 | **Tech Community** — Blog teknis (Dev.to/Hashnode), artikel problem-solution, open source PR, networking | 4 jam | Artikel blog + PR open source |
+| Sesi | Topik | File | Durasi | Output |
+|------|-------|------|--------|--------|
+| 1 | **GitHub Profesional** — Profile README, pinned repos, badge shields.io, dokumentasi proyek, GitHub Pages | [view](01-github-profile.md) | 4 jam | GitHub profile lengkap + project docs |
+| 2 | **Portfolio Website** — Hero, about, project cards, skills, contact form, case study pages, deploy Vercel/Netlify | [view](02-portfolio-website.md) | 4 jam | Portfolio website live |
+| 3 | **LinkedIn & Career** — Optimasi profil, headline, about, featured projects, CV ATS, personal branding statement | [view](03-linkedin-career.md) | 4 jam | Profil LinkedIn optimal + CV siap pakai |
+| 4 | **Tech Community** — Blog teknis (Dev.to/Hashnode), artikel problem-solution, open source PR, networking | [view](04-tech-community.md) | 4 jam | Artikel blog + PR open source |
 
 ## Output Akhir
 

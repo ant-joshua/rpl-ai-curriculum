@@ -12,12 +12,12 @@ Modul ini membahas praktik mengubah aplikasi Express.js dari prototype menjadi p
 
 ## Tabel Sesi
 
-| Sesi | Topik | Durasi | Target Pembelajaran |
-|------|-------|--------|---------------------|
-| 1 | Input Validation & Error Handling | 3 JP | Zod schema, type-safe validation, AppError class, error middleware, format respons error konsisten |
-| 2 | Security Hardening | 3 JP | Helmet, CORS, rate limiting, input sanitization, dependency audit |
-| 3 | Health Checks & Graceful Shutdown | 3 JP | /healthz, /readyz, SIGTERM handler, connection draining, timeout & circuit breaker, PM2 |
-| 4 | Environment & Configuration | 3 JP | 12-factor app, env validation, config per environment, secrets management, logging level |
+| Sesi | Topik | File | Durasi | Target Pembelajaran |
+|------|-------|------|--------|---------------------|
+| 1 | Input Validation & Error Handling | [view](01-input-validation.md) | 3 JP | Zod schema, type-safe validation, AppError class, error middleware, format respons error konsisten |
+| 2 | Security Hardening | [view](02-security-hardening.md) | 3 JP | Helmet, CORS, rate limiting, input sanitization, dependency audit |
+| 3 | Health Checks & Graceful Shutdown | [view](03-health-checks.md) | 3 JP | /healthz, /readyz, SIGTERM handler, connection draining, timeout & circuit breaker, PM2 |
+| 4 | Environment & Configuration | [view](04-env-config.md) | 3 JP | 12-factor app, env validation, config per environment, secrets management, logging level |
 
 ## Referensi
 

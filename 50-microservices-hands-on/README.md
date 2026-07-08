@@ -27,12 +27,12 @@ Peserta akan membangun 3 microservices (User Service, Product Service, Order Ser
 
 ## 📚 Sesi
 
-| Sesi | Judul | Durasi |
-|------|-------|--------|
-| 01 | Monolith to Microservices | 120 menit |
-| 02 | Docker Multi-Service | 120 menit |
-| 03 | Inter-Service Communication | 120 menit |
-| 04 | API Gateway | 120 menit |
+| Sesi | Judul | File | Durasi |
+|------|-------|------|--------|
+| 01 | Monolith to Microservices | [view](01-monolith-to-micro.md) | 120 menit |
+| 02 | Docker Multi-Service | [view](02-docker-multi-service.md) | 120 menit |
+| 03 | Inter-Service Communication | [view](03-inter-service-comm.md) | 120 menit |
+| 04 | API Gateway | [view](04-api-gateway.md) | 120 menit |
 
 **Total durasi:** 480 menit (8 jam)
 

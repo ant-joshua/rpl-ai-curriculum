@@ -9,12 +9,12 @@
 
 ## 📚 Materi
 
-| Sesi | Topik |
-|------|-------|
-| 01 | Payment Basics — flow overview, gateway concepts, sandbox vs production, Midtrans Snap API |
-| 02 | Midtrans Core API & Xendit — charge, status, cancel, refund, webhook signature, error handling |
-| 03 | Stripe Webhook — Checkout Session, Payment Intent, webhook security, idempotency |
-| 04 | Production Payment — DB schema, idempotency & race condition, retry & reconciliation, PCI compliance |
+| Sesi | Topik | File |
+|------|-------|------|
+| 01 | Payment Basics — flow overview, gateway concepts, sandbox vs production, Midtrans Snap API | [view](01-payment-basics.md) |
+| 02 | Midtrans Core API & Xendit — charge, status, cancel, refund, webhook signature, error handling | [view](02-midtrans-xendit.md) |
+| 03 | Stripe Webhook — Checkout Session, Payment Intent, webhook security, idempotency | [view](03-stripe-webhook.md) |
+| 04 | Production Payment — DB schema, idempotency & race condition, retry & reconciliation, PCI compliance | [view](04-production-payment.md) |
 
 ## 🎯 Output Akhir
 

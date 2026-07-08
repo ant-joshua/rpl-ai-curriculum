@@ -22,12 +22,12 @@ Setelah menyelesaikan modul ini, peserta mampu:
 
 ## Materi
 
-| Sesi | Topik | Durasi |
-|------|-------|--------|
-| 01 | AI Coding Tools — Landscape, Setup, Code Generation, AI Refactor | 2 Jam |
-| 02 | AI Pair Programming — TDD, Debug, Error Analysis, Commit Message | 2 Jam |
-| 03 | AI Code Review — Review Workflow, Unit Tests, Dokumentasi, PR Description | 2 Jam |
-| 04 | AI Workflow — CI/CD, Commit Validation, Code Gen Pipeline, Responsible AI | 2 Jam |
+| Sesi | Topik | File | Durasi |
+|------|-------|------|--------|
+| 01 | AI Coding Tools — Landscape, Setup, Code Generation, AI Refactor | [view](01-ai-coding-tools.md) | 2 Jam |
+| 02 | AI Pair Programming — TDD, Debug, Error Analysis, Commit Message | [view](02-ai-pair-programming.md) | 2 Jam |
+| 03 | AI Code Review — Review Workflow, Unit Tests, Dokumentasi, PR Description | [view](03-ai-code-review.md) | 2 Jam |
+| 04 | AI Workflow — CI/CD, Commit Validation, Code Gen Pipeline, Responsible AI | [view](04-ai-workflow.md) | 2 Jam |
 
 ---
 

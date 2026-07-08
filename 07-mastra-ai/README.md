@@ -5,28 +5,32 @@
 > **Level:** 📐 Intermediate -> 🚀 Advanced  
 > **Jam:** 12 (5 minggu x 2 sesi)  
 > **Prasyarat:** JavaScript Fundamentals, TypeScript Basics, Node.js Basics  
-> **Output:** AI agents with tools, memory, RAG, workflows
+> **Output:** AI agents dengan tools, memory, RAG, workflows
 
-## Tujuan
+## 📚 Tujuan Pembelajaran
 
-- Paham konsep AI agents vs raw API calls
-- Bikin agent pake Mastra framework
-- Bikin tools (custom function buat agent)
-- Memory: agent ingat percakapan
-- RAG: agent jawab dari dokumen
-- Multi-step workflows
+Setelah menyelesaikan modul ini, siswa mampu:
 
-## Materi
+1. **Paham konsep AI Agents** — beda antara panggil API langsung vs pake agent framework
+2. **Setup project Mastra** — install, init project, konfigurasi environment
+3. **Bikin agent pertama** — agent dengan instructions, model, dan basic generate/stream
+4. **Bikin tools kustom** — `createTool()` dengan Zod schema untuk input validation
+5. **Implementasi memory** — agent ingat percakapan, thread persistence, multi-session
+6. **RAG (Retrieval-Augmented Generation)** — agent jawab dari dokumen internal pake vector search
+7. **Multi-step workflows** — chaining agent, conditional branching, parallel execution
+8. **Production patterns** — error handling, best practices, debugging agent
 
-| Sesi | Topik | Prasyarat |
-|------|-------|-----------|
-| 1 | Mastra intro, project setup, agent pertama | - |
-| 2 | Tools: createTool + Zod schema | Sesi 1 |
-| 3 | Memory: agent ingat context | Sesi 2 |
-| 4 | RAG: vector search + knowledge base | Sesi 3 |
-| 5 | Workflows: multi-step agent pipeline | Sesi 4 |
+## 🗺️ Sesi Pembelajaran
 
-## Contoh Agent
+| Sesi | Topik | File | Prasyarat |
+|------|-------|------|-----------|
+| 1 | Mastra Intro, Project Setup, Agent Pertama | [01-mastra-intro.md](01-mastra-intro.md) | - |
+| 2 | Tools: createTool + Zod Schema | [02-agent-tools.md](02-agent-tools.md) | Sesi 1 |
+| 3 | Memory: Conversation History & Thread | [03-agent-memory.md](03-agent-memory.md) | Sesi 2 |
+| 4 | RAG: Vector Search & Knowledge Base | [04-agent-rag.md](04-agent-rag.md) | Sesi 3 |
+| 5 | Workflows: Multi-Step Agent Pipeline | [05-agent-workflows.md](05-agent-workflows.md) | Sesi 4 |
+
+## 🚀 Contoh Agent
 
 ```typescript
 import { Agent } from '@mastra/core/agent';
@@ -53,3 +57,32 @@ const agent = new Agent({
 const response = await agent.generate('Cuaca di Jakarta?');
 console.log(response.text);
 ```
+
+## 📖 Referensi Cepat
+
+| Resource | Deskripsi |
+|----------|-----------|
+| [Cheatsheet](cheatsheet.md) | Sintaks penting & tips dalam 1 halaman |
+| [Quiz](quiz.md) | Tes pemahaman 10 soal interaktif |
+
+## 🛠️ Prasyarat Detail
+
+- **JavaScript ES6+**: arrow functions, async/await, destructuring
+- **TypeScript dasar**: tipe, interface, generic
+- **Node.js**: npm, module system, environment variables
+- **API concept**: HTTP, JSON, REST API basics (optional)
+
+## 📦 Dependencies Utama
+
+```bash
+npm install @mastra/core zod openai
+npm install -D @mastra/cli typescript tsx
+```
+
+## 📝 Catatan Penting
+
+- Semua kode menggunakan **Mastra v1.x** dengan import pattern `@mastra/core/agent`
+- Bahasa pemrograman: **TypeScript** (JavaScript dengan tipe)
+- Bahasa instruksi: **Bahasa Indonesia**
+- Wajib punya **API key** (OpenAI / Anthropic / provider lain)
+- Kode bisa dijalankan dengan `npx tsx src/index.ts`

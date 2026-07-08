@@ -24,13 +24,13 @@ Kamu akan membangun:
 
 ## 🗺️ Peta Project
 
-| # | Project | Tech Stack | Deploy | Durasi |
-|---|---------|------------|--------|--------|
-| 1 | Landing Page Portfolio | HTML, CSS, Tailwind CSS | Vercel / Netlify | 1 minggu |
-| 2 | Bookshelf CRUD API | Express, TypeScript, Prisma, PostgreSQL | Railway | 1 minggu |
-| 3 | Todo App with Auth | React, Tailwind, Express, JWT, OAuth | Railway + Vercel | 1–2 minggu |
-| 4 | AI Chat Assistant | Mastra AI, OpenAI, Next.js | Vercel | 1 minggu |
-| 5 | Production Setup | Docker, VPS, Cloudflare, PM2, Sentry | VPS | 1 minggu |
+| # | Project | Tech Stack | Deploy | Durasi | File |
+|---|---------|------------|--------|--------|------|
+| 1 | Landing Page Portfolio | HTML, CSS, Tailwind CSS | Vercel / Netlify | 1 minggu | [view](01-landing-page.md) |
+| 2 | Bookshelf CRUD API | Express, TypeScript, Prisma, PostgreSQL | Railway | 1 minggu | [view](02-crud-api.md) |
+| 3 | Todo App with Auth | React, Tailwind, Express, JWT, OAuth | Railway + Vercel | 1–2 minggu | [view](03-fullstack-app.md) |
+| 4 | AI Chat Assistant | Mastra AI, OpenAI, Next.js | Vercel | 1 minggu | [view](04-ai-agent-app.md) |
+| 5 | Production Setup | Docker, VPS, Cloudflare, PM2, Sentry | VPS | 1 minggu | [view](05-production-deploy.md) |
 
 ---
 

@@ -11,11 +11,11 @@
 
 ## 📋 Daftar Sesi
 
-| Sesi | Judul | Durasi | Materi |
-|------|-------|--------|--------|
-| 01 | LKS Mapping & Gap Analysis | 120 menit | Standar LKS, mapping kompetensi, identifikasi gap |
-| 02 | Competition Strategy | 120 menit | Time management, scoring criteria, mock test simulation |
-| 03 | Mock Projects | 240 menit | 3 soal mock LKS lengkap dengan answer key |
+| Sesi | Judul | File | Durasi | Materi |
+|------|-------|------|--------|--------|
+| 01 | LKS Mapping & Gap Analysis | [view](01-lks-mapping.md) | 120 menit | Standar LKS, mapping kompetensi, identifikasi gap |
+| 02 | Competition Strategy | [view](02-lks-strategy.md) | 120 menit | Time management, scoring criteria, mock test simulation |
+| 03 | Mock Projects | [view](03-lks-mock-projects.md) | 240 menit | 3 soal mock LKS lengkap dengan answer key |
 
 ---
 

@@ -32,12 +32,12 @@ Setelah menyelesaikan modul ini, peserta mampu:
 
 ## Sesi
 
-| # | Judul | Durasi |
-|---|-------|--------|
-| 1 | AI Code Review Pipeline | 3 jam |
-| 2 | AI Testing Strategy | 3 jam |
-| 3 | AI Security & Quality Gates | 3 jam |
-| 4 | AI Refactoring & Migration | 3 jam |
+| # | Judul | File | Durasi |
+|---|-------|------|--------|
+| 1 | AI Code Review Pipeline | [view](01-ai-code-review-pipeline.md) | 3 jam |
+| 2 | AI Testing Strategy | [view](02-ai-testing-strategy.md) | 3 jam |
+| 3 | AI Security & Quality Gates | [view](03-ai-security-quality.md) | 3 jam |
+| 4 | AI Refactoring & Migration | [view](04-ai-refactoring.md) | 3 jam |
 
 ## Struktur Repo
 

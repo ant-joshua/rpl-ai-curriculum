@@ -1,106 +1,61 @@
-# 2.2 Arrays & Hash Tables
+# 2.2 Array & Hash Table
 
-Dua struktur data paling sering dipake. 90% problem LeetCode pake ini.
+Array & Hash Table = struktur data **paling sering dipake**. 90% kode lo pake salah satu atau dua-duanya.
 
-## Array
+## Array — Jantung Data
+
+### Array Statis vs Dinamis
+
+| Array Statis | Array Dinamis (JS) |
+|---|---|
+| Ukuran tetap | Ukuran otomatis nambah |
+| Lebih cepet | Agak lebih lambat (karena resize) |
+| Kaya `int arr[10]` di Java/C | Kaya `[]` di JavaScript |
+| Ga umum di JS | Default di JS |
+
+Di JavaScript, **semua array = dinamis**. Gak perlu mikirin ukuran.
 
 ```typescript
-const arr: number[] = [1, 2, 3, 4, 5];
+// Operasi Array — Big O
+const arr = [10, 20, 30, 40, 50];
+
+// Akses index — O(1) INSTANT
+console.log(arr[2]); // 30 — langsung, ga peduli panjang array
+
+// Push/Pop — O(1) 🙏
+arr.push(60);  // Tambah di akhir — cepat
+arr.pop();     // Hapus di akhir — cepat
+
+// Shift/Unshift — O(n) 😱
+arr.shift();   // Hapus di awal — SLOW! Semua elemen geser
+arr.unshift(5); // Tambah di awal — SLOW!
 ```
 
-| Operasi | Big O | Catatan |
-|---------|-------|--------|
-| Access (arr[i]) | O(1) | Langsung ke index |
-| Search (cari nilai) | O(n) | Kalo ga tau indexnya |
-| Push (tambah di akhir) | O(1) | Umumnya |
-| Insert/Delete di awal | O(n) | Geser semua index! |
-| Insert/Delete di akhir | O(1) | Kalo array dynamic |
-
-## Hash Table (Map / Object / Set)
+### Array Patterns Penting
 
 ```typescript
-// Object
-const user: Record<string, any> = { nama: "Budi", umur: 17 };
-
-// Map (lebih proper)
-const scores = new Map<string, number>([
-  ["Budi", 85],
-  ["Andi", 90],
-]);
-
-// Set (unique values)
-const unique = new Set([1, 2, 2, 3, 3, 3]);  // {1, 2, 3}
-```
-
-| Operasi | Big O | Catatan |
-|---------|-------|--------|
-| Access by key | O(1) | Langsung ke key |
-| Insert | O(1) | |
-| Delete | O(1) | |
-| Search key | O(1) | Cepet banget |
-
-## Array vs Hash Table — Kapan Pake yang Mana?
-
-| Array | Hash Table |
-|-------|------------|
-| Butuh urutan | Ga peduli urutan |
-| Butuh akses index | Butuh akses KEY (nama/ID) |
-| Iterasi semua item | Cek keberadaan item |
-| Memory efficient | Lebih boros memory |
-
-## Pattern Penting
-
-### Two Pointers (Array)
-
-```typescript
-function isPalindrome(str: string): boolean {
+// 1. Two Pointer — nyari pasangan
+function pairSum(sortedArr: number[], target: number): [number, number] | null {
   let left = 0;
-  let right = str.length - 1;
+  let right = sortedArr.length - 1;
   
   while (left < right) {
-    if (str[left] !== str[right]) return false;
-    left++;
-    right--;
+    const sum = sortedArr[left] + sortedArr[right];
+    if (sum === target) return [sortedArr[left], sortedArr[right]];
+    if (sum < target) left++;
+    else right--;
   }
-  return true;
+  return null;
 }
-// Big O: O(n), Space: O(1)
-```
+console.log(pairSum([1, 2, 3, 4, 5, 6], 7)); // [1, 6] atau [2, 5] atau [3, 4]
 
-### Frequency Counter (Hash Table)
-
-```typescript
-function areAnagrams(s1: string, s2: string): boolean {
-  if (s1.length !== s2.length) return false;
-  
-  const freq = new Map<string, number>();
-  
-  for (const char of s1) {
-    freq.set(char, (freq.get(char) || 0) + 1);
-  }
-  
-  for (const char of s2) {
-    const count = freq.get(char);
-    if (!count) return false;
-    freq.set(char, count - 1);
-  }
-  
-  return true;
-}
-// Big O: O(n), Space: O(n)
-```
-
-### Sliding Window (Array)
-
-```typescript
+// 2. Sliding Window — subarray berurutan
 function maxSubarraySum(arr: number[], k: number): number {
-  let maxSum = 0;
   let windowSum = 0;
+  let maxSum = 0;
   
-  // Inisialisasi window pertama
-  for (let i = 0; i < k; i++) {
-    windowSum += arr[i];
-  }
+  // Hitung window pertama
+  for (let i = 0; i < k; i++) windowSum += arr[i];
   maxSum = windowSum;
   
   // Geser window
@@ -108,25 +63,146 @@ function maxSubarraySum(arr: number[], k: number): number {
     windowSum = windowSum - arr[i - k] + arr[i];
     maxSum = Math.max(maxSum, windowSum);
   }
-  
   return maxSum;
 }
-// Big O: O(n), Space: O(1)
+console.log(maxSubarraySum([2, 4, 1, 6, 3, 8, 5], 3)); // 17 (6+3+8)
+
+// 3. Prefix Sum — range sum cepet
+function prefixSum(arr: number[]): number[] {
+  const prefix = new Array(arr.length);
+  prefix[0] = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    prefix[i] = prefix[i - 1] + arr[i];
+  }
+  return prefix;
+}
+// prefixSum[i] = jumlah arr[0] + ... + arr[i]
+// Sum dari index a ke b = prefix[b] - prefix[a-1]
 ```
 
-## LeetCode Problems
+## Hash Table (Object/Map) — Cari Cepet
 
-| Problem | Pattern | Difficulty |
-|---------|---------|------------|
-| [Two Sum](https://leetcode.com/problems/two-sum) | Hash Map | Easy |
-| [Contains Duplicate](https://leetcode.com/problems/contains-duplicate) | Set | Easy |
-| [Valid Anagram](https://leetcode.com/problems/valid-anagram) | Frequency Counter | Easy |
-| [Group Anagrams](https://leetcode.com/problems/group-anagrams) | Hash Map | Medium |
-| [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self) | Prefix/Suffix | Medium |
+Hash Table = nyimpen data pake **key → value**. Cari data dalam **O(1)** — langsung dapet!
+
+### Object vs Map di TypeScript
+
+```typescript
+// Object — simpel
+const obj: Record<string, number> = { a: 1, b: 2 };
+console.log(obj["a"]); // 1
+
+// Map — lebih proper
+const map = new Map<string, number>();
+map.set("a", 1);
+map.set("b", 2);
+console.log(map.get("a"));  // 1
+console.log(map.has("c"));  // false
+console.log(map.size);      // 2
+
+// Set — kumpulan unique values
+const set = new Set([1, 2, 3, 1, 2, 3]);
+console.log(set); // Set { 1, 2, 3 } — duplikat otomatis ilang!
+```
+
+### Kapan Pake What
+
+```typescript
+// pake objek kalo unique string keys & simple
+// pake Map kalo butuh any type keys, frequent add/delete, size property
+// pake Set kalo butuh nyimpen unique values
+
+// Contoh: frequency counter (paling sering dipake)
+function countFrequency(arr: string[]): Record<string, number> {
+  const freq: Record<string, number> = {};
+  for (const item of arr) {
+    freq[item] = (freq[item] || 0) + 1;
+  }
+  return freq;
+}
+
+const votes = ["Budi", "Ani", "Budi", "Caca", "Ani", "Budi"];
+console.log(countFrequency(votes));
+// { Budi: 3, Ani: 2, Caca: 1 }
+```
+
+### Common Hash Table Patterns
+
+```typescript
+// 1. Two Sum — soal LeetCode NO.1!
+function twoSum(nums: number[], target: number): number[] {
+  const seen = new Map<number, number>();
+  
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (seen.has(complement)) {
+      return [seen.get(complement)!, i];
+    }
+    seen.set(nums[i], i);
+  }
+  return [];
+}
+console.log(twoSum([2, 7, 11, 15], 9)); // [0, 1] — 2 + 7 = 9
+
+// 2. Contains Duplicate
+function hasDuplicate(nums: number[]): boolean {
+  const seen = new Set<number>();
+  for (const num of nums) {
+    if (seen.has(num)) return true;
+    seen.add(num);
+  }
+  return false;
+}
+
+// 3. Group Anagrams
+function groupAnagrams(strs: string[]): string[][] {
+  const groups = new Map<string, string[]>();
+  
+  for (const str of strs) {
+    const sorted = str.split("").sort().join("");
+    if (!groups.has(sorted)) groups.set(sorted, []);
+    groups.get(sorted)!.push(str);
+  }
+  
+  return Array.from(groups.values());
+}
+console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"]));
+// [["eat","tea","ate"], ["tan","nat"], ["bat"]]
+
+// 4. First Non-Repeating Character
+function firstUniqueChar(s: string): number {
+  const freq = new Map<string, number>();
+  
+  for (const char of s) {
+    freq.set(char, (freq.get(char) || 0) + 1);
+  }
+  
+  for (let i = 0; i < s.length; i++) {
+    if (freq.get(s[i]) === 1) return i;
+  }
+  return -1;
+}
+```
+
+## Array vs Hash Table — Tradeoff
+
+| Operasi | Array | Hash Table |
+|---------|-------|------------|
+| Cari by value | O(n) | O(1) 🏆 |
+| Cari by index | O(1) 🏆 | - |
+| Insert (akhir) | O(1) | O(1) |
+| Insert (awal) | O(n) ❌ | O(1) 🏆 |
+| Delete (value) | O(n) ❌ | O(1) 🏆 |
+| Memory | ✅ Hemat | ❌ Lebih boros |
+| Order | ✅ Terurut | ❌ Gak berurut |
+
+> **Rule of thumb:** Butuh cari cepet? Pake Hash Table. Butuh data berurutan? Pake Array. Butuh dua-duanya? Pake dua-duanya!
 
 ## Latihan
 
-1. Implement `containsDuplicate` pake Set (larangan nested loop)
-2. Implement `twoSum` pake Map (O(n), bukan O(n²))
-3. Implement `maxSubarraySum` sliding window
-4. Cek anagram pake frequency counter
+1. **Remove Duplicates** — hapus duplikat dari array pake Set
+2. **Intersection** — cari elemen yang ada di dua array
+3. **Majority Element** — cari elemen yang muncul > n/2 kali
+4. **Valid Anagram** — cek apakah dua string anagram
+5. **Contains Duplicate II** — jarak maksimal k antara duplikat
+6. **Top K Frequent** — cari K elemen paling sering muncul
+7. **Product of Array Except Self** — kali semua elemen kecuali dirinya sendiri (tanpa pake division!)

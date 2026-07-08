@@ -23,12 +23,12 @@ Setelah menyelesaikan modul ini, peserta mampu:
 
 ## 📋 Materi
 
-| Sesi | Topik | Durasi |
-|------|-------|--------|
-| 1 | **Upload Basics with Multer** — disk vs memory storage, validasi file, single & multiple upload, error handling, serving static files | 3 Jam |
-| 2 | **Cloud Storage** — S3/R2 concept, MinIO lokal, AWS SDK, presigned URL, bucket policy, CORS config | 3 Jam |
-| 3 | **Image Optimization** — Sharp, resize, WebP/AVIF, kompresi, thumbnail, srcset, CDN | 3 Jam |
-| 4 | **Production Upload** — Multer + S3 stream, drag-drop UI, presigned URL client-side, progress bar, metadata database | 3 Jam |
+| Sesi | Topik | File | Durasi |
+|------|-------|------|--------|
+| 1 | **Upload Basics with Multer** — disk vs memory storage, validasi file, single & multiple upload, error handling, serving static files | [view](01-upload-basics.md) | 3 Jam |
+| 2 | **Cloud Storage** — S3/R2 concept, MinIO lokal, AWS SDK, presigned URL, bucket policy, CORS config | [view](02-cloud-storage.md) | 3 Jam |
+| 3 | **Image Optimization** — Sharp, resize, WebP/AVIF, kompresi, thumbnail, srcset, CDN | [view](03-image-optimization.md) | 3 Jam |
+| 4 | **Production Upload** — Multer + S3 stream, drag-drop UI, presigned URL client-side, progress bar, metadata database | [view](04-production-upload.md) | 3 Jam |
 
 ## 🛠️ Tools & Teknologi
 

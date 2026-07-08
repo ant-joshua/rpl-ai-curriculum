@@ -9,12 +9,12 @@
 
 ## 📚 Materi
 
-| Sesi | Topik | Durasi |
-|------|-------|--------|
-| 01 | i18n Concepts — locale, translation file, ICU message, pluralization | 5 jam |
-| 02 | React i18n — react-i18next, useTranslation, Trans, namespace, SSR | 5 jam |
-| 03 | RTL & Backend — bidirectional layout, Accept-Language, DB multilingual | 5 jam |
-| 04 | Production i18n — SaaS TMS, i18n linting, code splitting, SEO hreflang | 5 jam |
+| Sesi | Topik | File | Durasi |
+|------|-------|------|--------|
+| 01 | i18n Concepts — locale, translation file, ICU message, pluralization | [view](01-i18n-concepts.md) | 5 jam |
+| 02 | React i18n — react-i18next, useTranslation, Trans, namespace, SSR | [view](02-react-i18n.md) | 5 jam |
+| 03 | RTL & Backend — bidirectional layout, Accept-Language, DB multilingual | [view](03-rtl-backend.md) | 5 jam |
+| 04 | Production i18n — SaaS TMS, i18n linting, code splitting, SEO hreflang | [view](04-production-i18n.md) | 5 jam |
 
 ## 🎯 Output Akhir
 

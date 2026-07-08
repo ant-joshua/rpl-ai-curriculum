@@ -22,12 +22,12 @@ Setelah modul ini, peserta bisa:
 
 ## Sessions
 
-| # | Session | Description |
-|---|---------|-------------|
-| 01 | [Tech Spec with AI](./01-tech-spec-with-ai.md) | Generate & maintain technical specifications using AI, ADRs, sequence diagrams |
-| 02 | [Documentation Generation](./02-doc-generation.md) | README, API docs, changelog, auto-update documentation from code changes |
-| 03 | [Context Files](./03-context-files.md) | AGENTS.md, CLAUDE.md, SOUL.md — context files for AI coding agents |
-| 04 | [Rules Files](./04-rules-files.md) | .cursorrules, copilot-instructions, IDE config for AI-assisted coding |
+| # | Session | File | Description |
+|---|---------|------|-------------|
+| 01 | [Tech Spec with AI](./01-tech-spec-with-ai.md) | [view](01-tech-spec-with-ai.md) | Generate & maintain technical specifications using AI, ADRs, sequence diagrams |
+| 02 | [Documentation Generation](./02-doc-generation.md) | [view](02-doc-generation.md) | README, API docs, changelog, auto-update documentation from code changes |
+| 03 | [Context Files](./03-context-files.md) | [view](03-context-files.md) | AGENTS.md, CLAUDE.md, SOUL.md — context files for AI coding agents |
+| 04 | [Rules Files](./04-rules-files.md) | [view](04-rules-files.md) | .cursorrules, copilot-instructions, IDE config for AI-assisted coding |
 
 ## Key Concepts
 
