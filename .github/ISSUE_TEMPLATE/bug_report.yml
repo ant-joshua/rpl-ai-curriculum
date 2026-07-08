@@ -1,0 +1,85 @@
+name: 🐛 Laporan Bug
+description: Laporkan kesalahan pada materi, kode, atau konten kurikulum
+title: "[BUG] "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih telah melaporkan bug! Mohon isi detail di bawah ini dengan jelas.
+
+  - type: input
+    id: module
+    attributes:
+      label: Modul / Topik
+      description: Modul atau topik mana yang bermasalah?
+      placeholder: "Contoh: Modul 3 - Machine Learning Dasar"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Deskripsi Bug
+      description: Jelaskan apa yang salah. Sertakan potongan kode, tautan, atau referensi jika ada.
+      placeholder: "Kode yang diberikan tidak bisa dijalankan karena..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Perilaku yang Diharapkan
+      description: Apa yang seharusnya terjadi?
+      placeholder: "Kode seharusnya berhasil dijalankan dan menghasilkan output..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Perilaku Aktual
+      description: Apa yang benar-benar terjadi? Sertakan pesan error atau tangkapan layar.
+      placeholder: "Error: ModuleNotFoundError: No module named 'xyz'"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Lingkungan
+      description: Di mana kamu mengalami bug ini?
+      options:
+        - Google Colab
+        - Lokal (PC/Laptop sendiri)
+        - Platform pembelajaran daring
+        - Lainnya
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Versi Python (jika relevan)
+      placeholder: "3.10.12"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Langkah Reproduksi
+      description: Langkah-langkah untuk mereproduksi bug.
+      placeholder: |
+        1. Buka notebook Modul 3
+        2. Jalankan cell 5
+        3. Lihat error...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Konfirmasi
+      options:
+        - label: Saya sudah memeriksa issue yang sudah ada (open/closed) dan tidak menemukan laporan serupa
+          required: true
+        - label: Saya sudah mencoba solusi yang disarankan di dokumentasi

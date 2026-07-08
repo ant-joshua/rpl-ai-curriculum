@@ -1,0 +1,50 @@
+name: ❓ Pertanyaan / Diskusi
+description: Tanya jawab tentang materi kurikulum, tugas, atau topik terkait AI
+title: "[TANYA] "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Punya pertanyaan seputar kurikulum atau topik AI? Tanyakan saja! ✨
+        Pastikan kamu sudah membaca materi dan mengecek issue yang sudah ada sebelumnya.
+
+  - type: input
+    id: module
+    attributes:
+      label: Modul / Topik Terkait
+      description: Modul atau topik mana yang kamu tanyakan?
+      placeholder: "Modul 2 - Pengantar Machine Learning"
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Pertanyaan
+      description: Tulis pertanyaanmu dengan jelas. Sertakan potongan kode atau referensi jika perlu.
+      placeholder: "Saya bingung tentang perbedaan supervised dan unsupervised learning. Bisakah dijelaskan dengan contoh?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_ive_tried
+    attributes:
+      label: Hal yang Sudah Saya Coba
+      description: Ceritakan apa yang sudah kamu coba atau baca sebelum bertanya.
+      placeholder: "Saya sudah membaca modul dan mencari di Google, tapi masih kurang paham..."
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Tingkat Urgensi
+      options:
+        - Biasa (tidak mendesak)
+        - Sedang (butuh jawaban minggu ini)
+        - Mendesak (menghambat pembelajaran)
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Konfirmasi
+      options:
+        - label: Saya sudah membaca materi yang relevan dan mencari issue serupa sebelumnya
+          required: true

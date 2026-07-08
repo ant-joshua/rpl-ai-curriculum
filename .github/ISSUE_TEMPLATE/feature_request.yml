@@ -1,0 +1,76 @@
+name: ✨ Permintaan Fitur / Materi Baru
+description: Ajukan ide untuk materi, topik, atau fitur kurikulum baru
+title: "[FEAT] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Punya ide untuk kurikulum? Ceritakan! Makin detail, makin mudah kami pertimbangkan.
+
+  - type: input
+    id: title_idea
+    attributes:
+      label: Judul Usulan
+      description: Nama singkat untuk fitur / materi yang kamu usulkan.
+      placeholder: "Contoh: Modul Pengenalan Computer Vision"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah yang Ingin Diselesaikan
+      description: Masalah atau celah apa yang kamu lihat di kurikulum saat ini?
+      placeholder: "Saat ini belum ada materi tentang deployment model AI ke production..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solusi yang Diusulkan
+      description: Jelaskan materi / fitur yang kamu usulkan secara detail.
+      placeholder: "Usulkan modul baru yang mencakup: Flask API, Docker, dan deployment ke cloud..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatif yang Dipertimbangkan
+      description: Apakah ada pendekatan lain yang sudah kamu pikirkan?
+      placeholder: "Alternatifnya bisa menggunakan FastAPI daripada Flask..."
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipe Usulan
+      options:
+        - Materi / modul baru
+        - Perbaikan / tambahan materi yang sudah ada
+        - Studi kasus / proyek baru
+        - Tugas / latihan baru
+        - Referensi / tautan tambahan
+        - Fitur platform (jika ada)
+        - Lainnya
+    validations:
+      required: true
+
+  - type: dropdown
+    id: level
+    attributes:
+      label: Level Kesulitan
+      options:
+        - Pemula
+        - Menengah
+        - Mahir
+        - Tidak yakin
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Konfirmasi
+      options:
+        - label: Saya sudah memeriksa issue yang sudah ada dan tidak menemukan usulan serupa
+          required: true
