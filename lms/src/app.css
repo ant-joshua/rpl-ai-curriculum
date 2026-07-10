@@ -1,0 +1,71 @@
+/* ===== RPL AI LMS — Global Styles ===== */
+
+/* Dark theme CSS custom properties */
+:root {
+	--bg: #0f1117;
+	--bg-secondary: #161822;
+	--surface: #1c1e2e;
+	--surface-hover: #242638;
+	--border: #2a2d3e;
+	--text: #e8eaf0;
+	--text-secondary: #8b8fa3;
+	--accent: #6c5ce7;
+	--accent-secondary: #a29bfe;
+	--accent-dim: rgba(108, 92, 231, 0.12);
+	--hover: rgba(255, 255, 255, 0.05);
+	--danger: #ef4444;
+	--success: #22c55e;
+	--warning: #f59e0b;
+
+	font-size: 15px;
+	scroll-behavior: smooth;
+}
+
+/* Light theme overrides */
+@media (prefers-color-scheme: light) {
+	:root {
+		--bg: #f5f6fa;
+		--bg-secondary: #eef0f6;
+		--surface: #ffffff;
+		--surface-hover: #f0f1f6;
+		--border: #e2e4ed;
+		--text: #1a1d2e;
+		--text-secondary: #6b7089;
+		--accent: #6c5ce7;
+		--accent-secondary: #a29bfe;
+		--accent-dim: rgba(108, 92, 231, 0.08);
+		--hover: rgba(0, 0, 0, 0.04);
+	}
+}
+
+/* Ensure body handles overflow */
+html {
+	overflow-y: scroll;
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection */
+::selection {
+	background: var(--accent-dim);
+	color: var(--accent);
+}
+
+/* Focus styles */
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* Button resets */
+button {
+	font-family: inherit;
+}
+
+/* Input resets */
+input, textarea, select {
+	font-family: inherit;
+}

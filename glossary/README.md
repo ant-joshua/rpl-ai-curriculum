@@ -3,6 +3,24 @@
 > Istilah-istilah yang sering dipake dalam kurikulum ini, dijelasin bahasa Indonesia.
 > 200+ istilah dari A sampai W.
 
+## 📚 Daftar Isi Berdasarkan Topik
+
+Istilah-istilah sudah dikelompokkan ke file-file berikut biar lebih gampang dipelajari:
+
+| # | File Topik | Cakupan |
+|---|-----------|---------|
+| 🌐 | [01-web-terminology.md](01-web-terminology.md) | HTTP, API, REST, DNS, CDN, SSL, URL, hosting, domain, browser, client/server |
+| 📜 | [02-javascript-terms.md](02-javascript-terms.md) | Variable, function, closure, promise, async/await, event loop, hoisting, scope, this, prototype |
+| 🔷 | [03-typescript-terms.md](03-typescript-terms.md) | Type, interface, generic, enum, union, intersection, decorator, module |
+| 🗄️ | [04-database-terms.md](04-database-terms.md) | SQL, NoSQL, index, join, transaction, migration, ORM, shard, replica |
+| 🐳 | [05-devops-terms.md](05-devops-terms.md) | Docker, CI/CD, deploy, VPS, cloud, scaling, monitoring, logging |
+| 🤖 | [06-ai-terms.md](06-ai-terms.md) | LLM, prompt, token, RAG, fine-tuning, embedding, agent, tool calling |
+| ⚛️ | [07-framework-terms.md](07-framework-terms.md) | SPA, SSR, SSG, hydration, component, reactive, webpack, Vite |
+
+Setiap file topik punya kode contoh (TypeScript/JavaScript) dan output biar lebih gampang dipahami. Kalau mau liat semua istilah dalam satu halaman (A-Z), lanjut scroll aja di bawah 👇
+
+---
+
 ## A
 
 ### API (Application Programming Interface)

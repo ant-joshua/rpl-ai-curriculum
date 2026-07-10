@@ -4,6 +4,22 @@ Projek kecil-kecil yang bisa diselesaikan dalam 1-3 sesi belajar. Setiap projek 
 
 ---
 
+## 📄 Spec Baru (Mini Project Intensif)
+
+Berikut 5 spec mini project baru yang sudah lengkap dengan starter code, rubrik penilaian, dan latihan tambahan. Setiap spec berbentuk file `.md` terpisah — klik link untuk detail lengkap.
+
+| # | Projek | File Spec | Level | Fokus Utama |
+|---|--------|-----------|-------|-------------|
+| 1 | 🧮 Kalkulator | [`01-kalkulator.md`](./01-kalkulator.md) | 🌱 Beginner | DOM, event handling, logika aritmatika |
+| 2 | ✅ Todo App | [`02-todo-app.md`](./02-todo-app.md) | 🌱 Beginner | CRUD, localStorage, filter/sort/search, React |
+| 3 | 🌤 Weather Dashboard | [`03-weather-dashboard.md`](./03-weather-dashboard.md) | 🌱 Beginner | Fetch API, async/await, responsive cards |
+| 4 | 📝 Blog CMS | [`04-blog-cms.md`](./04-blog-cms.md) | 📐 Intermediate | Express.js, EJS, Markdown, JSON storage |
+| 5 | 🤖 AI Chat UI | [`05-ai-chat-ui.md`](./05-ai-chat-ui.md) | 🌱 Beginner | Chat UI, streaming, Markdown render, API optional |
+
+> **Catatan:** Projek di atas adalah versi *intensif* dengan starter code siap pakai dan panduan langkah demi langkah. Bisa dikerjakan paralel dengan atau sebagai pengganti projek-projek di bawah.
+
+---
+
 ## 📋 Daftar Projek
 
 | # | Projek | Modul Terkait | Level | Estimasi |
