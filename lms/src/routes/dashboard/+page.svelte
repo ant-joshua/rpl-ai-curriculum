@@ -11,9 +11,7 @@
 	onMount(() => {
 		progress.updateStreak();
 		lastReadSlug = progress.getLastRead();
-		if (!user.isLoggedIn) {
-			goto('/login');
-		}
+		// No login redirect — dashboard works buat lihat modul
 	});
 
 	let lastReadModule = $derived(
@@ -26,7 +24,7 @@
 <div class="dashboard">
 	<header class="dashboard-header">
 		<div>
-			<h1>Selamat datang, {user.username}! 👋</h1>
+			<h1>Selamat datang, {user.isLoggedIn ? user.username : 'Teman'}! 👋</h1>
 			<p class="subtitle">Lanjutkan perjalanan belajar RPL AI-mu</p>
 		</div>
 		<div class="streak-badge">
@@ -75,9 +73,14 @@
 		</section>
 	{/if}
 
-	<!-- Module grid -->
+	<!-- Login prompt + Module grid -->
 	<section class="module-section">
-		<h2>Semua Modul ({modules.length})</h2>
+		<div class="module-header">
+			<h2>Semua Modul ({modules.length})</h2>
+			{#if !user.isLoggedIn}
+				<a href="/login" class="login-prompt">Login untuk sync progress →</a>
+			{/if}
+		</div>
 		<div class="module-grid">
 			{#each modules as mod}
 				<ModuleCard
@@ -227,10 +230,28 @@
 		color: var(--accent);
 	}
 
-	.module-section h2 {
+	.module-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
+	}
+
+	.module-header h2 {
 		font-size: 18px;
 		font-weight: 600;
-		margin-bottom: 16px;
+		margin: 0;
+	}
+
+	.login-prompt {
+		font-size: 13px;
+		color: var(--accent);
+		font-weight: 500;
+		text-decoration: none !important;
+	}
+
+	.login-prompt:hover {
+		text-decoration: underline !important;
 	}
 
 	.module-grid {
