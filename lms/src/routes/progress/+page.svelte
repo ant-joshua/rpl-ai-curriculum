@@ -33,6 +33,26 @@
 	let completedMinutes = $derived(completedSessions * ESTIMATE_PER_SESSION_MIN);
 	let remainingMinutes = $derived((totalSessions - completedSessions) * ESTIMATE_PER_SESSION_MIN);
 
+	// Level filter & search
+	let activeLevel = $state<string | null>(null);
+	let searchQuery = $state('');
+
+	type FilterTab = { label: string; value: string | null; icon: string };
+	const filterTabs: FilterTab[] = [
+		{ label: 'Semua', value: null, icon: '' },
+		{ label: 'Beginner', value: 'Beginner', icon: '🌱' },
+		{ label: 'Intermediate', value: 'Intermediate', icon: '📐' },
+		{ label: 'Advanced', value: 'Advanced', icon: '🚀' },
+	];
+
+	let filteredModules = $derived(
+		modules.filter((mod) => {
+			if (activeLevel !== null && mod.level !== activeLevel) return false;
+			if (searchQuery && !mod.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+			return true;
+		})
+	);
+
 	function formatMinutes(mins: number): string {
 		if (mins < 60) return `${mins} menit`;
 		const h = Math.floor(mins / 60);
@@ -109,7 +129,33 @@
 	<!-- All modules detail -->
 	<section class="module-list">
 		<h2>Detail Modul</h2>
-		{#each modules as mod}
+		<div class="module-controls">
+			<!-- Level filter tabs -->
+			<div class="filter-tabs">
+				{#each filterTabs as tab}
+					<button
+						class="filter-tab"
+						class:active={activeLevel === tab.value}
+						onclick={() => activeLevel = tab.value}
+					>
+						{tab.icon}{tab.label}
+					</button>
+				{/each}
+			</div>
+			<!-- Search input -->
+			<div class="search-wrapper">
+				<input
+					type="text"
+					class="search-input"
+					placeholder="Cari modul..."
+					bind:value={searchQuery}
+				/>
+				{#if searchQuery}
+					<button class="search-clear" onclick={() => searchQuery = ''}>×</button>
+				{/if}
+			</div>
+		</div>
+		{#each filteredModules as mod}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="module-row" onclick={() => goto('/module/' + mod.slug)} role="button" tabindex="0">
@@ -223,6 +269,91 @@
 		font-size: 18px;
 		font-weight: 600;
 		margin-bottom: 12px;
+	}
+
+	.module-controls {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.filter-tabs {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.filter-tab {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		padding: 6px 16px;
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		white-space: nowrap;
+	}
+
+	.filter-tab:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+
+	.filter-tab.active {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--accent-text, #fff);
+	}
+
+	.search-wrapper {
+		position: relative;
+		flex: 1;
+		min-width: 180px;
+	}
+
+	.search-input {
+		width: 100%;
+		padding: 8px 32px 8px 12px;
+		font-size: 13px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		color: var(--text);
+		outline: none;
+		transition: border-color 0.15s ease;
+		box-sizing: border-box;
+	}
+
+	.search-input:focus {
+		border-color: var(--accent);
+	}
+
+	.search-input::placeholder {
+		color: var(--text-secondary);
+	}
+
+	.search-clear {
+		position: absolute;
+		right: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		font-size: 18px;
+		line-height: 1;
+		color: var(--text-secondary);
+		cursor: pointer;
+		padding: 2px 6px;
+		border-radius: 4px;
+		transition: color 0.15s ease;
+	}
+
+	.search-clear:hover {
+		color: var(--text);
 	}
 
 	.module-row {

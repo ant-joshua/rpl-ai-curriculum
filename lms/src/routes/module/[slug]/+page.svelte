@@ -14,6 +14,29 @@
 	let loading = $state(true);
 	let errorMsg = $state('');
 
+	// Feature: Font size toggle
+	let fontSize = $state(16);
+	onMount(() => {
+		const saved = localStorage.getItem('lms-font-size');
+		if (saved) {
+			const n = parseInt(saved, 10);
+			if (n === 14 || n === 16 || n === 18) fontSize = n;
+		}
+	});
+	function setFontSize(size: number) {
+		fontSize = size;
+		localStorage.setItem('lms-font-size', String(size));
+	}
+
+	// Feature: Session word counts from API
+	let sessionWordCounts = $state<Record<string, number>>({});
+	let totalWords = $state(0);
+
+	// Feature: Next / Prev module navigation
+	let moduleIndex = $derived(modules.findIndex(m => m.slug === mod?.slug));
+	let prevModule = $derived(moduleIndex > 0 ? modules[moduleIndex - 1] : undefined);
+	let nextModule = $derived(moduleIndex >= 0 && moduleIndex < modules.length - 1 ? modules[moduleIndex + 1] : undefined);
+
 	onMount(async () => {
 		const slug = data.slug;
 		mod = modules.find(m => m.slug === slug) ?? null;
@@ -32,6 +55,13 @@
 			const json = await res.json();
 			const cleaned = stripFrontmatter(json.content);
 			readmeHtml = parseMarkdown(cleaned);
+			// Load session word counts from API
+			if (json.sessionWordCounts) {
+				sessionWordCounts = json.sessionWordCounts;
+			}
+			if (typeof json.totalWords === 'number') {
+				totalWords = json.totalWords;
+			}
 		} catch (e) {
 			errorMsg = 'Gagal memuat konten modul';
 		}
@@ -54,8 +84,8 @@
 		}
 	}
 
-	function toggleComplete(sessionId: string) {
-		if (!mod) return;
+	function toggleComplete(sessionId: string | null) {
+		if (!mod || !sessionId) return;
 		progress.toggleSession(mod.slug, sessionId);
 	}
 
@@ -79,8 +109,33 @@
 				<span>{mod.sessions.length} sesi</span>
 				<span class="meta-dot">&middot;</span>
 				<span>{completedSessions.length} selesai</span>
+				{#if totalWords > 0}
+					<span class="meta-dot">&middot;</span>
+					<span>📝 ~{totalWords} kata</span>
+				{/if}
 			</div>
 			<ProgressBar value={moduleProgress} />
+			<!-- Font size toggle -->
+			<div class="font-size-controls">
+				<button
+					class="font-btn"
+					class:active={fontSize === 14}
+					onclick={() => setFontSize(14)}
+					title="Ukuran kecil"
+				>A-</button>
+				<button
+					class="font-btn"
+					class:active={fontSize === 16}
+					onclick={() => setFontSize(16)}
+					title="Ukuran normal"
+				>A</button>
+				<button
+					class="font-btn"
+					class:active={fontSize === 18}
+					onclick={() => setFontSize(18)}
+					title="Ukuran besar"
+				>A+</button>
+			</div>
 		</header>
 
 		<div class="module-layout">
@@ -94,24 +149,27 @@
 								class:active={activeSession === session.id}
 								onclick={() => loadSession(session.id)}
 							>
-								<span class="session-check" class:done={progress.isSessionCompleted(mod!.slug, session.id)}>
-									{#if progress.isSessionCompleted(mod!.slug, session.id)}✓{:else}○{/if}
+								<span class="session-check" class:done={progress.isSessionCompleted(mod.slug, session.id)}>
+									{#if progress.isSessionCompleted(mod.slug, session.id)}✓{:else}○{/if}
 								</span>
 								<span class="session-name">{session.title}</span>
+								{#if sessionWordCounts[session.id] != null}
+									<span class="word-count">({sessionWordCounts[session.id]} kata)</span>
+								{/if}
 							</button>
 						</li>
 					{/each}
 				</ul>
 			</aside>
 
-			<div class="content-area">
+			<div class="content-area" style="font-size: {fontSize}px">
 				{#if activeSession}
 					<div class="session-toolbar">
 						<h2>{mod.sessions.find(s => s.id === activeSession)?.title}</h2>
 						<button
 							class="complete-btn"
 							class:done={progress.isSessionCompleted(mod.slug, activeSession)}
-							onclick={() => toggleComplete(activeSession!)}
+							onclick={() => toggleComplete(activeSession)}
 						>
 							{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
 						</button>
@@ -128,6 +186,24 @@
 					</div>
 				{/if}
 			</div>
+		</div>
+
+		<!-- Prev/Next module navigation -->
+		<div class="module-nav">
+			{#if prevModule}
+				<a href="/module/{prevModule.slug}" class="nav-btn prev">
+					&larr; Modul Sebelumnya
+				</a>
+			{:else}
+				<span class="nav-btn disabled"></span>
+			{/if}
+			{#if nextModule}
+				<a href="/module/{nextModule.slug}" class="nav-btn next">
+					Modul Selanjutnya &rarr;
+				</a>
+			{:else}
+				<span class="nav-btn disabled"></span>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -180,6 +256,39 @@
 		color: var(--border);
 	}
 
+	.font-size-controls {
+		display: flex;
+		gap: 4px;
+		margin-top: 10px;
+	}
+
+	.font-btn {
+		width: 32px;
+		height: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: var(--surface);
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.font-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	.font-btn.active {
+		background: var(--accent-dim);
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
 	.module-layout {
 		display: flex;
 		gap: 24px;
@@ -226,6 +335,7 @@
 		text-align: left;
 		cursor: pointer;
 		transition: all 0.15s ease;
+		flex-wrap: wrap;
 	}
 
 	.session-item:hover {
@@ -253,9 +363,18 @@
 		line-height: 1.3;
 	}
 
+	.word-count {
+		font-size: 10px;
+		color: var(--text-secondary);
+		margin-left: 26px;
+		width: 100%;
+		opacity: 0.7;
+	}
+
 	.content-area {
 		flex: 1;
 		min-width: 0;
+		transition: font-size 0.1s ease;
 	}
 
 	.session-toolbar {
@@ -404,6 +523,47 @@
 		margin-bottom: 16px;
 	}
 
+	/* Prev/Next module navigation */
+	.module-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: 32px;
+		padding-top: 20px;
+		border-top: 1px solid var(--border);
+	}
+
+	.nav-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 10px 20px;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 14px;
+		font-weight: 500;
+		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.nav-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: var(--hover);
+	}
+
+	.nav-btn.disabled {
+		visibility: hidden;
+		pointer-events: none;
+	}
+
+	.nav-btn.next {
+		margin-left: auto;
+	}
+
 	@media (max-width: 768px) {
 		.module-layout {
 			flex-direction: column;
@@ -419,6 +579,20 @@
 			flex-direction: column;
 			align-items: flex-start;
 			gap: 8px;
+		}
+
+		.module-nav {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.nav-btn {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.nav-btn.next {
+			margin-left: 0;
 		}
 	}
 </style>

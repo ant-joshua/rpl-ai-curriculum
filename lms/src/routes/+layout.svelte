@@ -59,6 +59,24 @@
 			<span class="nav-icon">📈</span>
 			<span>Progres</span>
 		</a>
+		<div class="sidebar-separator"></div>
+		<div class="sidebar-group-label">📚 Referensi</div>
+		<a href="/challenges" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<span class="nav-icon">🏋️</span>
+			<span>Challenges</span>
+		</a>
+		<a href="/glossary" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<span class="nav-icon">📖</span>
+			<span>Glossary</span>
+		</a>
+		<a href="/cheatsheets" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<span class="nav-icon">📝</span>
+			<span>Cheatsheets</span>
+		</a>
+		<a href="/mini-projects" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<span class="nav-icon">🔨</span>
+			<span>Mini Projects</span>
+		</a>
 	</nav>
 
 	<div class="sidebar-footer">
@@ -213,6 +231,24 @@
 	.sidebar-nav a.active {
 		background: var(--accent-dim);
 		color: var(--accent);
+	}
+
+	.sidebar-separator {
+		height: 1px;
+		background: var(--border);
+		margin: 8px 12px;
+	}
+
+	.sidebar-group-label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px 4px;
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--text-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	.nav-icon {

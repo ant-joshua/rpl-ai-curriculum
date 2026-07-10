@@ -4,6 +4,7 @@
 export interface Session {
 	id: string;
 	title: string;
+	wordCount?: number;
 }
 
 export interface Module {
@@ -12,6 +13,7 @@ export interface Module {
 	dirName: string;
 	title: string;
 	description: string;
+	level: 'Beginner' | 'Intermediate' | 'Advanced';
 	sessions: Session[];
 }
 
@@ -26,6 +28,7 @@ export const modules: Module[] = [
 		dirName: '00-fundamentals',
 		title: 'Fundamental Pemrograman & Web',
 		description: 'Pemahaman dasar tentang internet, HTTP, API, database, dan deployment.',
+		level: 'Beginner',
 		sessions: [
 			s('Cara Belajar Efektif', '00-how-to-learn'),
 			s('Internet & HTTP', '01-internet-http'),
@@ -38,6 +41,7 @@ export const modules: Module[] = [
 		dirName: '01-js-fundamentals',
 		title: 'JavaScript Fundamentals',
 		description: 'Variabel, tipe data, control flow, array, object, fungsi, async & error handling.',
+		level: 'Beginner',
 		sessions: [
 			s('Variabel & Tipe Data', '01-variables-types'),
 			s('Control Flow', '02-control-flow'),
@@ -52,6 +56,7 @@ export const modules: Module[] = [
 		dirName: '02-algorithms-data-structures',
 		title: 'Algoritma & Struktur Data',
 		description: 'Big O, array, hashtable, stack, queue, linked list, rekursi, sorting, tree, graph.',
+		level: 'Intermediate',
 		sessions: [
 			s('Big O Notation', '01-big-o'),
 			s('Array & Hash Table', '02-arrays-hashtables'),
@@ -67,6 +72,7 @@ export const modules: Module[] = [
 		dirName: '03-typescript',
 		title: 'TypeScript',
 		description: 'Dasar TypeScript, tipe & interface, fungsi generics, konfigurasi proyek.',
+		level: 'Beginner',
 		sessions: [
 			s('Dasar TypeScript', '01-basics'),
 			s('Tipe & Interface', '02-types-interfaces'),
@@ -80,6 +86,7 @@ export const modules: Module[] = [
 		dirName: '04-web-basics',
 		title: 'Web Basics (HTML, CSS, Tailwind, DOM)',
 		description: 'HTML & CSS dasar, Tailwind CSS, manipulasi DOM & fetch API.',
+		level: 'Beginner',
 		sessions: [
 			s('HTML & CSS', '01-html-css'),
 			s('Tailwind CSS', '02-tailwind'),
@@ -92,6 +99,7 @@ export const modules: Module[] = [
 		dirName: '05-git-deploy',
 		title: 'Git & Deployment',
 		description: 'Git dasar, kolaborasi GitHub, strategi deployment.',
+		level: 'Beginner',
 		sessions: [
 			s('Git Basics', '01-git-basics'),
 			s('GitHub & Kolaborasi', '02-github-collab'),
@@ -104,6 +112,7 @@ export const modules: Module[] = [
 		dirName: '06-node-express',
 		title: 'Node.js & Express',
 		description: 'Setup Node.js, Express API, database, REST CRUD.',
+		level: 'Beginner',
 		sessions: [
 			s('Node.js Setup', '01-node-setup'),
 			s('Express API', '02-express-api'),
@@ -117,6 +126,7 @@ export const modules: Module[] = [
 		dirName: '07-mastra-ai',
 		title: 'Mastra AI Framework',
 		description: 'Mastra intro, agen & tools, memori, RAG, workflow.',
+		level: 'Beginner',
 		sessions: [
 			s('Mastra Intro', '01-mastra-intro'),
 			s('Agent & Tools', '02-agent-tools'),
@@ -131,6 +141,7 @@ export const modules: Module[] = [
 		dirName: '08-project',
 		title: 'Project — Aplikasi AI Chatbot',
 		description: 'Sprint 1-4: bangun aplikasi AI chatbot end-to-end.',
+		level: 'Beginner',
 		sessions: [
 			s('Sprint 1', '01-sprint1'),
 			s('Sprint 2', '02-sprint2'),
@@ -144,6 +155,7 @@ export const modules: Module[] = [
 		dirName: '09-testing',
 		title: 'Software Testing',
 		description: 'Unit test, integration test, CI/CD pipeline.',
+		level: 'Beginner',
 		sessions: [
 			s('Unit Test', '01-unit-test'),
 			s('Integration Test', '02-integration-test'),
@@ -156,6 +168,7 @@ export const modules: Module[] = [
 		dirName: '10-design-patterns',
 		title: 'Design Patterns',
 		description: 'SOLID, creational, structural & behavioral, functional & real-world.',
+		level: 'Intermediate',
 		sessions: [
 			s('SOLID Principles', '01-solid'),
 			s('Creational Patterns', '02-creational'),
@@ -169,6 +182,7 @@ export const modules: Module[] = [
 		dirName: '11-system-design',
 		title: 'System Design',
 		description: 'Arsitektur, desain database, caching & CAP, queue & hosting.',
+		level: 'Intermediate',
 		sessions: [
 			s('Arsitektur', '01-architecture'),
 			s('Desain Database', '02-database-design'),
@@ -182,6 +196,7 @@ export const modules: Module[] = [
 		dirName: '12-ui-ux-design',
 		title: 'UI/UX Design',
 		description: 'Design thinking, wireframe, prototyping, aksesibilitas, portfolio.',
+		level: 'Intermediate',
 		sessions: [
 			s('Design Thinking', '01-design-thinking'),
 			s('UI & Wireframe', '02-ui-wireframe'),
@@ -195,6 +210,7 @@ export const modules: Module[] = [
 		dirName: '13-flutter-mobile',
 		title: 'Flutter Mobile',
 		description: 'Dart & widget, layout & state, navigasi & API, Firebase & deploy.',
+		level: 'Intermediate',
 		sessions: [
 			s('Dart & Widget', '01-dart-widget'),
 			s('Layout & State', '02-layout-state'),
@@ -208,6 +224,7 @@ export const modules: Module[] = [
 		dirName: '14-cybersecurity',
 		title: 'Cybersecurity',
 		description: 'OWASP, injection, XSS, CSRF, auth, CORS, HTTPS, DevSecOps.',
+		level: 'Intermediate',
 		sessions: [
 			s('OWASP & Injection', '01-owasp-injection'),
 			s('XSS & CSRF', '02-xss-csrf'),
@@ -221,6 +238,7 @@ export const modules: Module[] = [
 		dirName: '15-agile-scrum',
 		title: 'Agile & Scrum',
 		description: 'Agile & Scrum dasar, ceremonies & backlog, tools & proyek nyata.',
+		level: 'Intermediate',
 		sessions: [
 			s('Agile & Scrum Basics', '01-agile-scrum-basics'),
 			s('Ceremonies & Backlog', '02-ceremonies-backlog'),
@@ -233,6 +251,7 @@ export const modules: Module[] = [
 		dirName: '16-realtime-apps',
 		title: 'Real-Time Applications',
 		description: 'WebSocket dasar, Socket.IO, scaling & production.',
+		level: 'Intermediate',
 		sessions: [
 			s('WebSocket Basics', '01-websocket-basics'),
 			s('Socket.IO', '02-socketio'),
@@ -245,6 +264,7 @@ export const modules: Module[] = [
 		dirName: '17-advanced-database',
 		title: 'Advanced Database',
 		description: 'Indexing & optimasi, transaksi & isolasi, scaling & backup.',
+		level: 'Intermediate',
 		sessions: [
 			s('Indexing & Optimasi', '01-indexing-optimization'),
 			s('Transaksi & Isolasi', '02-transactions-isolation'),
@@ -257,6 +277,7 @@ export const modules: Module[] = [
 		dirName: '18-ai-prompt-engineering',
 		title: 'AI Prompt Engineering',
 		description: 'Teknik prompt, prompt untuk kode & production.',
+		level: 'Intermediate',
 		sessions: [
 			s('Teknik Prompt', '01-prompt-techniques'),
 			s('Prompt Kode & Production', '02-prompt-code-production'),
@@ -268,6 +289,7 @@ export const modules: Module[] = [
 		dirName: '19-technical-interview',
 		title: 'Technical Interview Prep',
 		description: 'Behavioral & CV, DSA & system design, mock & portfolio.',
+		level: 'Intermediate',
 		sessions: [
 			s('Behavioral & CV', '01-behavioral-cv'),
 			s('DSA & System Design', '02-dsa-system-design'),
@@ -280,6 +302,7 @@ export const modules: Module[] = [
 		dirName: '20-frontend-frameworks',
 		title: 'Frontend Frameworks (React, Next.js)',
 		description: 'React dasar, React hooks, Next.js & framework modern.',
+		level: 'Intermediate',
 		sessions: [
 			s('React Basics', '01-react-basics'),
 			s('React Hooks', '02-react-hooks'),
@@ -292,6 +315,7 @@ export const modules: Module[] = [
 		dirName: '21-docker',
 		title: 'Docker',
 		description: 'Docker dasar, Dockerfile & images, Docker Compose, production.',
+		level: 'Intermediate',
 		sessions: [
 			s('Docker Basics', '01-docker-basics'),
 			s('Dockerfile & Images', '02-dockerfile-images'),
@@ -305,6 +329,7 @@ export const modules: Module[] = [
 		dirName: '22-monorepo',
 		title: 'Monorepo',
 		description: 'Monorepo dasar, pnpm workspaces, Nx/Turborepo, CI monorepo.',
+		level: 'Intermediate',
 		sessions: [
 			s('Monorepo Basics', '01-monorepo-basics'),
 			s('pnpm Workspaces', '02-pnpm-workspaces'),
@@ -318,6 +343,7 @@ export const modules: Module[] = [
 		dirName: '23-system-runtime',
 		title: 'System & Runtime',
 		description: 'Event loop, async patterns, multithreading, runtime & performa.',
+		level: 'Intermediate',
 		sessions: [
 			s('Event Loop', '01-event-loop'),
 			s('Async Patterns', '02-async-patterns'),
@@ -331,6 +357,7 @@ export const modules: Module[] = [
 		dirName: '24-resilience-patterns',
 		title: 'Resilience Patterns',
 		description: 'Retry & backoff, circuit breaker, timeout & bulkhead, saga & health.',
+		level: 'Intermediate',
 		sessions: [
 			s('Retry & Backoff', '01-retry-backoff'),
 			s('Circuit Breaker', '02-circuit-breaker'),
@@ -344,6 +371,7 @@ export const modules: Module[] = [
 		dirName: '25-soft-skills',
 		title: 'Soft Skills',
 		description: 'Komunikasi tim, client handling, manajemen waktu, growth mindset.',
+		level: 'Intermediate',
 		sessions: [
 			s('Komunikasi Tim', '01-team-communication'),
 			s('Client Handling', '02-client-handling'),
@@ -357,6 +385,7 @@ export const modules: Module[] = [
 		dirName: '26-pragmatic-programming',
 		title: 'Pragmatic Programming',
 		description: 'Clean code, naming & comments, refactoring, code review.',
+		level: 'Intermediate',
 		sessions: [
 			s('Clean Code Basics', '01-clean-code-basics'),
 			s('Naming & Comments', '02-naming-comments'),
@@ -370,6 +399,7 @@ export const modules: Module[] = [
 		dirName: '27-linux-terminal',
 		title: 'Linux & Terminal',
 		description: 'File system, proses & networking, text processing, shell scripting.',
+		level: 'Beginner',
 		sessions: [
 			s('File System', '01-file-system'),
 			s('Proses & Networking', '02-process-networking'),
@@ -383,6 +413,7 @@ export const modules: Module[] = [
 		dirName: '28-rest-api-design',
 		title: 'REST API Design',
 		description: 'Prinsip REST, OpenAPI/Swagger, error & pagination, versioning & security.',
+		level: 'Intermediate',
 		sessions: [
 			s('Prinsip REST', '01-rest-principles'),
 			s('OpenAPI & Swagger', '02-openapi-swagger'),
@@ -396,6 +427,7 @@ export const modules: Module[] = [
 		dirName: '29-cloud-computing',
 		title: 'Cloud Computing',
 		description: 'Cloud basics, compute & storage, serverless functions, IaC & deploy.',
+		level: 'Intermediate',
 		sessions: [
 			s('Cloud Basics', '01-cloud-basics'),
 			s('Compute & Storage', '02-compute-storage'),
@@ -409,6 +441,7 @@ export const modules: Module[] = [
 		dirName: '30-graphql-trpc',
 		title: 'GraphQL & tRPC',
 		description: 'GraphQL dasar & advanced, tRPC, production GraphQL.',
+		level: 'Intermediate',
 		sessions: [
 			s('GraphQL Basics', '01-graphql-basics'),
 			s('GraphQL Advanced', '02-graphql-advanced'),
@@ -422,6 +455,7 @@ export const modules: Module[] = [
 		dirName: '31-auth-identity',
 		title: 'Authentication & Identity',
 		description: 'Password auth, OAuth/OIDC, SSO & MFA, security best practices.',
+		level: 'Intermediate',
 		sessions: [
 			s('Password Auth', '01-password-auth'),
 			s('OAuth & OIDC', '02-oauth-oidc'),
@@ -435,6 +469,7 @@ export const modules: Module[] = [
 		dirName: '32-performance',
 		title: 'Web Performance',
 		description: 'Web vitals, lazy loading & caching, bundle optimization, Lighthouse CI.',
+		level: 'Intermediate',
 		sessions: [
 			s('Web Vitals', '01-web-vitals'),
 			s('Lazy Loading & Caching', '02-lazy-loading-caching'),
@@ -448,6 +483,7 @@ export const modules: Module[] = [
 		dirName: '33-data-visualization',
 		title: 'Data Visualization',
 		description: 'Chart basics & advanced, D3 intro, dashboard real-world.',
+		level: 'Intermediate',
 		sessions: [
 			s('Chart Basics', '01-chart-basics'),
 			s('Chart Advanced', '02-chart-advanced'),
@@ -461,6 +497,7 @@ export const modules: Module[] = [
 		dirName: '34-pwa-offline',
 		title: 'PWA & Offline',
 		description: 'Service worker, IndexedDB & offline, PWA manifest, push notifications.',
+		level: 'Intermediate',
 		sessions: [
 			s('Service Worker', '01-service-worker'),
 			s('IndexedDB & Offline', '02-indexeddb-offline'),
@@ -474,6 +511,7 @@ export const modules: Module[] = [
 		dirName: '35-html-css-intro',
 		title: 'HTML & CSS Intro',
 		description: 'HTML dasar, CSS dasar, CSS layout, form & deploy.',
+		level: 'Beginner',
 		sessions: [
 			s('HTML Dasar', '01-html-dasar'),
 			s('CSS Dasar', '02-css-dasar'),
@@ -487,6 +525,7 @@ export const modules: Module[] = [
 		dirName: '36-web-architecture',
 		title: 'Web Architecture',
 		description: 'Cara kerja web, HTTP, frontend vs backend, hosting & deploy.',
+		level: 'Beginner',
 		sessions: [
 			s('Cara Kerja Web', '01-how-web-works'),
 			s('HTTP Basics', '02-http-basics'),
@@ -500,6 +539,7 @@ export const modules: Module[] = [
 		dirName: '37-database-intro',
 		title: 'Database Intro',
 		description: 'Apa itu database, SQL basic, relationships, desain database.',
+		level: 'Beginner',
 		sessions: [
 			s('Apa Itu Database', '01-what-is-database'),
 			s('SQL Basics', '02-sql-basics'),
@@ -513,6 +553,7 @@ export const modules: Module[] = [
 		dirName: '38-ai-dev-workflow',
 		title: 'AI Developer Workflow',
 		description: 'AI coding tools, AI pair programming, AI code review, AI workflow.',
+		level: 'Beginner',
 		sessions: [
 			s('AI Coding Tools', '01-ai-coding-tools'),
 			s('AI Pair Programming', '02-ai-pair-programming'),
@@ -526,6 +567,7 @@ export const modules: Module[] = [
 		dirName: '39-payment-integration',
 		title: 'Payment Integration',
 		description: 'Payment basics, Midtrans/Xendit, Stripe webhook, production payment.',
+		level: 'Intermediate',
 		sessions: [
 			s('Payment Basics', '01-payment-basics'),
 			s('Midtrans & Xendit', '02-midtrans-xendit'),
@@ -539,6 +581,7 @@ export const modules: Module[] = [
 		dirName: '40-background-jobs',
 		title: 'Background Jobs',
 		description: 'Queue concepts, BullMQ advanced, real-world queue, production queue.',
+		level: 'Advanced',
 		sessions: [
 			s('Queue Concepts', '01-queue-concepts'),
 			s('BullMQ Advanced', '02-bullmq-advanced'),
@@ -552,6 +595,7 @@ export const modules: Module[] = [
 		dirName: '41-monitoring',
 		title: 'Monitoring & Observability',
 		description: 'Structured logging, Sentry error tracking, health check, production monitoring.',
+		level: 'Advanced',
 		sessions: [
 			s('Structured Logging', '01-structured-logging'),
 			s('Sentry & Error Tracking', '02-sentry-error-tracking'),
@@ -565,6 +609,7 @@ export const modules: Module[] = [
 		dirName: '42-file-upload',
 		title: 'File Upload',
 		description: 'Upload basics, cloud storage, image optimization, production upload.',
+		level: 'Advanced',
 		sessions: [
 			s('Upload Basics', '01-upload-basics'),
 			s('Cloud Storage', '02-cloud-storage'),
@@ -578,6 +623,7 @@ export const modules: Module[] = [
 		dirName: '43-search-implementation',
 		title: 'Search Implementation',
 		description: 'PostgreSQL FTS, Meilisearch, client-side search, search architecture.',
+		level: 'Advanced',
 		sessions: [
 			s('PostgreSQL FTS', '01-postgres-fts'),
 			s('Meilisearch', '02-meilisearch'),
@@ -591,6 +637,7 @@ export const modules: Module[] = [
 		dirName: '44-portfolio-branding',
 		title: 'Portfolio & Personal Branding',
 		description: 'GitHub profile, portfolio website, LinkedIn & career, tech community.',
+		level: 'Advanced',
 		sessions: [
 			s('GitHub Profile', '01-github-profile'),
 			s('Portfolio Website', '02-portfolio-website'),
@@ -604,6 +651,7 @@ export const modules: Module[] = [
 		dirName: '45-internationalization',
 		title: 'Internationalization (i18n)',
 		description: 'i18n concepts, React i18n, RTL & backend, production i18n.',
+		level: 'Advanced',
 		sessions: [
 			s('i18n Concepts', '01-i18n-concepts'),
 			s('React i18n', '02-react-i18n'),
@@ -617,6 +665,7 @@ export const modules: Module[] = [
 		dirName: '46-debugging-devtools',
 		title: 'Debugging & DevTools',
 		description: 'Browser DevTools, VS Code debugger, API debugging, error tracing.',
+		level: 'Beginner',
 		sessions: [
 			s('Browser DevTools', '01-browser-devtools'),
 			s('VS Code Debugger', '02-vscode-debugger'),
@@ -630,6 +679,7 @@ export const modules: Module[] = [
 		dirName: '47-team-git-workflow',
 		title: 'Team Git Workflow',
 		description: 'Branching strategy, PR workflow, conflict resolution, GitHub Actions.',
+		level: 'Advanced',
 		sessions: [
 			s('Branching Strategy', '01-branching-strategy'),
 			s('PR Workflow', '02-pr-workflow'),
@@ -643,6 +693,7 @@ export const modules: Module[] = [
 		dirName: '48-portfolio-project-series',
 		title: 'Portfolio Project Series',
 		description: 'Landing page, CRUD API, fullstack app, AI agent app, production deploy.',
+		level: 'Advanced',
 		sessions: [
 			s('Landing Page', '01-landing-page'),
 			s('CRUD API', '02-crud-api'),
@@ -657,6 +708,7 @@ export const modules: Module[] = [
 		dirName: '49-production-ready-code',
 		title: 'Production-Ready Code',
 		description: 'Input validation, security hardening, health checks, env config.',
+		level: 'Advanced',
 		sessions: [
 			s('Input Validation', '01-input-validation'),
 			s('Security Hardening', '02-security-hardening'),
@@ -670,6 +722,7 @@ export const modules: Module[] = [
 		dirName: '50-microservices-hands-on',
 		title: 'Microservices Hands-On',
 		description: 'Monolith to micro, Docker multi-service, inter-service comm, API gateway.',
+		level: 'Advanced',
 		sessions: [
 			s('Monolith to Micro', '01-monolith-to-micro'),
 			s('Docker Multi-Service', '02-docker-multi-service'),
@@ -683,6 +736,7 @@ export const modules: Module[] = [
 		dirName: '51-lks-competition-prep',
 		title: 'LKS Competition Prep',
 		description: 'LKS mapping, strategi, mock projects.',
+		level: 'Advanced',
 		sessions: [
 			s('LKS Mapping', '01-lks-mapping'),
 			s('LKS Strategi', '02-lks-strategy'),
@@ -695,6 +749,7 @@ export const modules: Module[] = [
 		dirName: '52-indonesian-tech-ecosystem',
 		title: 'Indonesian Tech Ecosystem',
 		description: 'Freelance & hustle, job search & interview, career growth, tech community.',
+		level: 'Advanced',
 		sessions: [
 			s('Freelance & Hustle', '01-freelance-hustle'),
 			s('Job Search & Interview', '02-job-search-interview'),
@@ -708,6 +763,7 @@ export const modules: Module[] = [
 		dirName: '53-ai-coding-agents',
 		title: 'AI Coding Agents',
 		description: 'AI coding tools comparison, multi-agent workflow, coding loop, Hermes mastery.',
+		level: 'Advanced',
 		sessions: [
 			s('AI Coding Tools', '01-ai-coding-tools-compare'),
 			s('Multi-Agent Workflow', '02-multi-agent-workflow'),
@@ -721,6 +777,7 @@ export const modules: Module[] = [
 		dirName: '54-prompt-engineering-dev',
 		title: 'Prompt Engineering untuk Developer',
 		description: 'System prompt design, code generation prompting, prompt patterns, production prompting.',
+		level: 'Advanced',
 		sessions: [
 			s('System Prompt Design', '01-system-prompt-design'),
 			s('Code Generation Prompting', '02-code-generation-prompting'),
@@ -734,6 +791,7 @@ export const modules: Module[] = [
 		dirName: '55-ai-docs-spec',
 		title: 'AI Docs & Spec',
 		description: 'Tech spec with AI, doc generation, context files, rules files.',
+		level: 'Advanced',
 		sessions: [
 			s('Tech Spec dengan AI', '01-tech-spec-with-ai'),
 			s('Doc Generation', '02-doc-generation'),
@@ -747,6 +805,7 @@ export const modules: Module[] = [
 		dirName: '56-advanced-ai-dev',
 		title: 'Advanced AI Development',
 		description: 'AI code review pipeline, AI testing strategy, AI security & quality, AI refactoring.',
+		level: 'Advanced',
 		sessions: [
 			s('AI Code Review Pipeline', '01-ai-code-review-pipeline'),
 			s('AI Testing Strategy', '02-ai-testing-strategy'),
