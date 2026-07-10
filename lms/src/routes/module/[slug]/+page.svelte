@@ -14,7 +14,7 @@
 	let loading = $state(true);
 	let errorMsg = $state('');
 
-	// Feature: Font size toggle
+	// Font size toggle
 	let fontSize = $state(16);
 	onMount(() => {
 		const saved = localStorage.getItem('lms-font-size');
@@ -28,16 +28,18 @@
 		localStorage.setItem('lms-font-size', String(size));
 	}
 
-	// Feature: Session word counts from API
-	let sessionWordCounts = $state<Record<string, number>>({});
-	let totalWords = $state(0);
-
-	// Feature: Next / Prev module navigation
+	// Next / Prev module navigation
 	let moduleIndex = $derived(modules.findIndex(m => m.slug === mod?.slug));
 	let prevModule = $derived(moduleIndex > 0 ? modules[moduleIndex - 1] : undefined);
 	let nextModule = $derived(moduleIndex >= 0 && moduleIndex < modules.length - 1 ? modules[moduleIndex + 1] : undefined);
 
-	onMount(async () => {
+	// Content cache from static JSON (no API needed — works on CF Pages)
+	let contentCache = $state<Record<string, string>>({});
+	let sessionWordCounts = $state<Record<string, number>>({});
+	let totalWords = $state(0);
+
+	// Load content from static JSON
+	async function loadContent() {
 		const slug = data.slug;
 		mod = modules.find(m => m.slug === slug) ?? null;
 
@@ -50,37 +52,48 @@
 		progress.setLastRead(slug);
 
 		try {
-			const res = await fetch(`/api/readme/${slug}`);
-			if (!res.ok) throw new Error('Gagal memuat README');
-			const json = await res.json();
-			const cleaned = stripFrontmatter(json.content);
+			const res = await fetch(`/content/${mod.dirName}.json`);
+			if (!res.ok) throw new Error('Gagal memuat konten');
+			const json: Record<string, string> = await res.json();
+			contentCache = json;
+
+			const readmeContent = json['README'] || '';
+			const cleaned = stripFrontmatter(readmeContent);
 			readmeHtml = parseMarkdown(cleaned);
-			// Load session word counts from API
-			if (json.sessionWordCounts) {
-				sessionWordCounts = json.sessionWordCounts;
+
+			// Compute word counts
+			const wordCounts: Record<string, number> = {};
+			let total = 0;
+			for (const session of mod.sessions) {
+				const content = json[session.id];
+				if (content) {
+					const cleanedContent = content.replace(/^---[\s\S]*?---\n*/, '').trim();
+					const wc = cleanedContent ? cleanedContent.split(/\s+/).length : 0;
+					wordCounts[session.id] = wc;
+					total += wc;
+				}
 			}
-			if (typeof json.totalWords === 'number') {
-				totalWords = json.totalWords;
-			}
+			sessionWordCounts = wordCounts;
+			totalWords = total;
 		} catch (e) {
 			errorMsg = 'Gagal memuat konten modul';
 		}
 
 		loading = false;
-	});
+	}
+
+	onMount(() => { loadContent(); });
 
 	async function loadSession(sessionId: string) {
 		if (!mod) return;
 		activeSession = sessionId;
 		sessionHtml = '';
-		try {
-			const res = await fetch(`/api/session/${mod.slug}/${sessionId}`);
-			if (!res.ok) throw new Error('Gagal memuat sesi');
-			const json = await res.json();
-			const cleaned = stripFrontmatter(json.content);
+		const content = contentCache[sessionId];
+		if (content) {
+			const cleaned = stripFrontmatter(content);
 			sessionHtml = parseMarkdown(cleaned);
-		} catch (e) {
-			sessionHtml = '<p class="error">Gagal memuat konten sesi</p>';
+		} else {
+			sessionHtml = '<p class="error">Konten sesi tidak ditemukan</p>';
 		}
 	}
 
@@ -115,26 +128,10 @@
 				{/if}
 			</div>
 			<ProgressBar value={moduleProgress} />
-			<!-- Font size toggle -->
 			<div class="font-size-controls">
-				<button
-					class="font-btn"
-					class:active={fontSize === 14}
-					onclick={() => setFontSize(14)}
-					title="Ukuran kecil"
-				>A-</button>
-				<button
-					class="font-btn"
-					class:active={fontSize === 16}
-					onclick={() => setFontSize(16)}
-					title="Ukuran normal"
-				>A</button>
-				<button
-					class="font-btn"
-					class:active={fontSize === 18}
-					onclick={() => setFontSize(18)}
-					title="Ukuran besar"
-				>A+</button>
+				<button class="font-btn" class:active={fontSize === 14} onclick={() => setFontSize(14)} title="Ukuran kecil">A-</button>
+				<button class="font-btn" class:active={fontSize === 16} onclick={() => setFontSize(16)} title="Ukuran normal">A</button>
+				<button class="font-btn" class:active={fontSize === 18} onclick={() => setFontSize(18)} title="Ukuran besar">A+</button>
 			</div>
 		</header>
 
@@ -252,9 +249,7 @@
 		margin-bottom: 12px;
 	}
 
-	.meta-dot {
-		color: var(--border);
-	}
+	.meta-dot { color: var(--border); }
 
 	.font-size-controls {
 		display: flex;
@@ -263,336 +258,144 @@
 	}
 
 	.font-btn {
-		width: 32px;
-		height: 28px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		width: 32px; height: 28px;
+		display: flex; align-items: center; justify-content: center;
 		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: var(--surface);
-		color: var(--text-secondary);
-		font-size: 12px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.15s ease;
+		border-radius: 6px; background: var(--surface);
+		color: var(--text-secondary); font-size: 12px; font-weight: 600;
+		cursor: pointer; transition: all 0.15s ease;
 	}
 
-	.font-btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
+	.font-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.font-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-	.font-btn.active {
-		background: var(--accent-dim);
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-
-	.module-layout {
-		display: flex;
-		gap: 24px;
-		align-items: flex-start;
-	}
+	.module-layout { display: flex; gap: 24px; align-items: flex-start; }
 
 	.session-sidebar {
-		width: 240px;
-		min-width: 240px;
-		position: sticky;
-		top: 24px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 16px;
+		width: 240px; min-width: 240px;
+		position: sticky; top: 24px;
+		background: var(--surface); border: 1px solid var(--border);
+		border-radius: 12px; padding: 16px;
 	}
 
 	.session-sidebar h3 {
-		font-size: 14px;
-		font-weight: 600;
-		margin-bottom: 12px;
-		padding-bottom: 8px;
+		font-size: 14px; font-weight: 600;
+		margin-bottom: 12px; padding-bottom: 8px;
 		border-bottom: 1px solid var(--border);
 	}
 
-	.session-list {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
+	.session-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 
 	.session-item {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		width: 100%;
-		padding: 8px 10px;
-		border-radius: 8px;
-		border: none;
-		background: transparent;
-		color: var(--text-secondary);
-		font-size: 13px;
-		text-align: left;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		flex-wrap: wrap;
+		display: flex; align-items: center; gap: 8px;
+		width: 100%; padding: 8px 10px; border-radius: 8px;
+		border: none; background: transparent;
+		color: var(--text-secondary); font-size: 13px;
+		text-align: left; cursor: pointer;
+		transition: all 0.15s ease; flex-wrap: wrap;
 	}
 
-	.session-item:hover {
-		background: var(--hover);
-		color: var(--text);
-	}
+	.session-item:hover { background: var(--hover); color: var(--text); }
+	.session-item.active { background: var(--accent-dim); color: var(--accent); }
 
-	.session-item.active {
-		background: var(--accent-dim);
-		color: var(--accent);
-	}
-
-	.session-check {
-		font-size: 14px;
-		width: 18px;
-		text-align: center;
-		flex-shrink: 0;
-	}
-
-	.session-check.done {
-		color: var(--success, #22c55e);
-	}
-
-	.session-name {
-		line-height: 1.3;
-	}
+	.session-check { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+	.session-check.done { color: var(--success, #22c55e); }
+	.session-name { line-height: 1.3; }
 
 	.word-count {
-		font-size: 10px;
-		color: var(--text-secondary);
-		margin-left: 26px;
-		width: 100%;
-		opacity: 0.7;
+		font-size: 10px; color: var(--text-secondary);
+		margin-left: 26px; width: 100%; opacity: 0.7;
 	}
 
-	.content-area {
-		flex: 1;
-		min-width: 0;
-		transition: font-size 0.1s ease;
-	}
+	.content-area { flex: 1; min-width: 0; transition: font-size 0.1s ease; }
 
 	.session-toolbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20px;
-		padding-bottom: 12px;
+		display: flex; justify-content: space-between; align-items: center;
+		margin-bottom: 20px; padding-bottom: 12px;
 		border-bottom: 1px solid var(--border);
 	}
 
-	.session-toolbar h2 {
-		font-size: 18px;
-		font-weight: 600;
-	}
+	.session-toolbar h2 { font-size: 18px; font-weight: 600; }
 
 	.complete-btn {
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--surface);
-		color: var(--text);
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
 		transition: all 0.15s ease;
 	}
 
-	.complete-btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-
-	.complete-btn.done {
-		background: var(--success, #22c55e);
-		color: #fff;
-		border-color: var(--success, #22c55e);
-	}
+	.complete-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.complete-btn.done { background: var(--success, #22c55e); color: #fff; border-color: var(--success, #22c55e); }
 
 	.markdown-content {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 24px;
-		line-height: 1.7;
+		background: var(--surface); border: 1px solid var(--border);
+		border-radius: 12px; padding: 24px; line-height: 1.7;
 	}
 
 	.markdown-content :global(h1),
 	.markdown-content :global(h2),
 	.markdown-content :global(h3),
 	.markdown-content :global(h4) {
-		margin-top: 24px;
-		margin-bottom: 12px;
-		font-weight: 600;
-		color: var(--text);
+		margin-top: 24px; margin-bottom: 12px; font-weight: 600; color: var(--text);
 	}
 
 	.markdown-content :global(h1) { font-size: 24px; }
 	.markdown-content :global(h2) { font-size: 20px; }
 	.markdown-content :global(h3) { font-size: 18px; }
 	.markdown-content :global(h4) { font-size: 16px; }
-
 	.markdown-content :global(h1:first-child) { margin-top: 0; }
 
-	.markdown-content :global(p) {
-		margin-bottom: 16px;
-		color: var(--text);
-	}
+	.markdown-content :global(p) { margin-bottom: 16px; color: var(--text); }
 
 	.markdown-content :global(ul),
-	.markdown-content :global(ol) {
-		margin-bottom: 16px;
-		padding-left: 24px;
-	}
+	.markdown-content :global(ol) { margin-bottom: 16px; padding-left: 24px; }
 
-	.markdown-content :global(li) {
-		margin-bottom: 6px;
-	}
+	.markdown-content :global(li) { margin-bottom: 6px; }
 
 	.markdown-content :global(code) {
-		background: var(--bg-secondary);
-		padding: 2px 6px;
-		border-radius: 4px;
-		font-size: 0.9em;
-		font-family: 'Fira Code', 'JetBrains Mono', monospace;
+		background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px;
+		font-size: 0.9em; font-family: 'Fira Code', 'JetBrains Mono', monospace;
 	}
 
 	.markdown-content :global(pre) {
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 16px;
-		margin-bottom: 16px;
-		overflow-x: auto;
+		background: var(--bg-secondary); border: 1px solid var(--border);
+		border-radius: 8px; padding: 16px; margin-bottom: 16px; overflow-x: auto;
 	}
 
-	.markdown-content :global(pre code) {
-		background: none;
-		padding: 0;
-	}
+	.markdown-content :global(pre code) { background: none; padding: 0; }
 
 	.markdown-content :global(blockquote) {
-		border-left: 3px solid var(--accent);
-		padding-left: 16px;
-		margin: 16px 0;
-		color: var(--text-secondary);
+		border-left: 3px solid var(--accent); padding-left: 16px;
+		margin: 16px 0; color: var(--text-secondary);
 	}
 
-	.markdown-content :global(img) {
-		max-width: 100%;
-		border-radius: 8px;
-		margin: 16px 0;
-	}
+	.markdown-content :global(img) { max-width: 100%; border-radius: 8px; margin: 16px 0; }
 
-	.markdown-content :global(table) {
-		width: 100%;
-		border-collapse: collapse;
-		margin: 16px 0;
-	}
+	.markdown-content :global(table) { width: 100%; border-collapse: collapse; margin: 16px 0; }
 
 	.markdown-content :global(th),
-	.markdown-content :global(td) {
-		padding: 10px 14px;
-		border: 1px solid var(--border);
-		text-align: left;
-	}
+	.markdown-content :global(td) { padding: 10px 14px; border: 1px solid var(--border); text-align: left; }
 
-	.markdown-content :global(th) {
-		background: var(--bg-secondary);
-		font-weight: 600;
-	}
+	.markdown-content :global(th) { background: var(--bg-secondary); font-weight: 600; }
 
-	.markdown-content :global(hr) {
-		border: none;
-		border-top: 1px solid var(--border);
-		margin: 24px 0;
-	}
-
-	.markdown-content :global(a) {
-		color: var(--accent);
-	}
-
-	.readme-content h2 {
-		font-size: 20px;
-		font-weight: 600;
-		margin-bottom: 16px;
-	}
-
-	/* Prev/Next module navigation */
 	.module-nav {
-		display: flex;
-		justify-content: space-between;
-		gap: 16px;
-		margin-top: 32px;
-		padding-top: 20px;
-		border-top: 1px solid var(--border);
+		display: flex; justify-content: space-between; gap: 16px;
+		margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
 	}
 
 	.nav-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 20px;
-		border: 1px solid transparent;
-		border-radius: 8px;
-		background: transparent;
-		color: var(--text-secondary);
-		font-size: 14px;
-		font-weight: 500;
-		text-decoration: none;
-		cursor: pointer;
+		padding: 12px 20px; border: 1px solid var(--border);
+		border-radius: 10px; text-decoration: none !important;
+		color: var(--text); font-size: 14px; font-weight: 500;
 		transition: all 0.15s ease;
 	}
 
-	.nav-btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-		background: var(--hover);
-	}
-
-	.nav-btn.disabled {
-		visibility: hidden;
-		pointer-events: none;
-	}
-
-	.nav-btn.next {
-		margin-left: auto;
-	}
+	.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.nav-btn.disabled { visibility: hidden; }
 
 	@media (max-width: 768px) {
-		.module-layout {
-			flex-direction: column;
-		}
-
-		.session-sidebar {
-			width: 100%;
-			min-width: 100%;
-			position: static;
-		}
-
-		.session-toolbar {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 8px;
-		}
-
-		.module-nav {
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.nav-btn {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.nav-btn.next {
-			margin-left: 0;
-		}
+		.module-layout { flex-direction: column; }
+		.session-sidebar { width: 100%; min-width: 0; position: static; }
+		h1 { font-size: 20px; }
 	}
 </style>
