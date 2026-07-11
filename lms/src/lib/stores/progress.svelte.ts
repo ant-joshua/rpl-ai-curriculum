@@ -85,7 +85,7 @@ function createProgressStore() {
 		return parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
 	}
 
-	// Compute overall stats
+	// Compute overall stats (all modules)
 	let completedCount = $derived.by(() => {
 		// read version to force recompute
 		void version;
@@ -115,6 +115,32 @@ function createProgressStore() {
 		return totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
 	}
 
+	// Filtered helpers — accept explicit module list so dashboard can pass filteredModules
+	function getFilteredCompletedCount(filteredModules: Module[]): number {
+		void version;
+		let count = 0;
+		for (const mod of filteredModules) {
+			if (getModuleProgress(mod.slug) === 100) count++;
+		}
+		return count;
+	}
+
+	function getFilteredOverallProgress(filteredModules: Module[]): number {
+		void version;
+		if (filteredModules.length === 0) return 0;
+		let totalSessions = 0;
+		let completedSessions = 0;
+		for (const mod of filteredModules) {
+			for (const sess of mod.sessions) {
+				totalSessions++;
+				if (isSessionCompleted(mod.slug, sess.id)) {
+					completedSessions++;
+				}
+			}
+		}
+		return totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
+	}
+
 	return {
 		get completedCount() {
 			void version; // react to changes
@@ -132,6 +158,8 @@ function createProgressStore() {
 		updateStreak,
 		getStreak,
 		getOverallProgress,
+		getFilteredCompletedCount,
+		getFilteredOverallProgress,
 	};
 }
 

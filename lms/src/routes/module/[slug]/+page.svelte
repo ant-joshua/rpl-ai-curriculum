@@ -37,6 +37,7 @@
 	let contentCache = $state<Record<string, string>>({});
 	let sessionWordCounts = $state<Record<string, number>>({});
 	let totalWords = $state(0);
+	let readingTime = $derived(Math.max(1, Math.round(totalWords / 200)));
 
 	// Load content from static JSON
 	async function loadContent() {
@@ -125,6 +126,8 @@
 				{#if totalWords > 0}
 					<span class="meta-dot">&middot;</span>
 					<span>📝 ~{totalWords} kata</span>
+					<span class="meta-dot">&middot;</span>
+					<span>⏱ ~{readingTime} mnt</span>
 				{/if}
 			</div>
 			<ProgressBar value={moduleProgress} />
@@ -151,7 +154,9 @@
 								</span>
 								<span class="session-name">{session.title}</span>
 								{#if sessionWordCounts[session.id] != null}
-									<span class="word-count">({sessionWordCounts[session.id]} kata)</span>
+									{@const wc = sessionWordCounts[session.id]}
+									{@const rt = Math.max(1, Math.round(wc / 200))}
+									<span class="word-count">📝{wc} kata · ⏱{rt} mnt</span>
 								{/if}
 							</button>
 						</li>

@@ -89,6 +89,9 @@
 		</nav>
 
 		<div class="sidebar-footer">
+			{#if !user.isLoggedIn}
+				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
+			{/if}
 			<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
 				<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
 				<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>

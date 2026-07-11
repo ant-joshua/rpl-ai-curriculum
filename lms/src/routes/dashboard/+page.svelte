@@ -11,14 +11,11 @@
 	onMount(() => {
 		progress.updateStreak();
 		lastReadSlug = progress.getLastRead();
-		// No login redirect — dashboard works buat lihat modul
 	});
 
 	let lastReadModule = $derived(
 		lastReadSlug ? modules.find(m => m.slug === lastReadSlug) : null
 	);
-
-	let overallProgress = $derived(progress.getOverallProgress());
 
 	// Level filter
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
@@ -34,6 +31,11 @@
 	let filteredModules = $derived(
 		activeLevel === null ? modules : modules.filter(m => m.level === activeLevel)
 	);
+
+	// Overview reactive to level filter
+	let filteredCompletedCount = $derived(progress.getFilteredCompletedCount(filteredModules));
+	let filteredTotalModules = $derived(filteredModules.length);
+	let filteredProgress = $derived(progress.getFilteredOverallProgress(filteredModules));
 </script>
 
 <div class="dashboard">
@@ -53,14 +55,14 @@
 		<div class="overview-card">
 			<span class="overview-icon">📦</span>
 			<div>
-				<span class="overview-value">{progress.completedCount}/{progress.totalModules}</span>
+				<span class="overview-value">{filteredCompletedCount}/{filteredTotalModules}</span>
 				<span class="overview-label">Modul selesai</span>
 			</div>
 		</div>
 		<div class="overview-card">
 			<span class="overview-icon">📊</span>
 			<div>
-				<span class="overview-value">{overallProgress}%</span>
+				<span class="overview-value">{filteredProgress}%</span>
 				<span class="overview-label">Progres keseluruhan</span>
 			</div>
 		</div>
@@ -106,7 +108,7 @@
 		<div class="module-header">
 			<h2>Semua Modul ({filteredModules.length})</h2>
 			{#if !user.isLoggedIn}
-				<a href="/login" class="login-prompt">Login untuk sync progress →</a>
+				<span class="progress-hint">💾 Progress disimpan di browser</span>
 			{/if}
 		</div>
 		<div class="module-grid">
@@ -303,15 +305,10 @@
 		margin: 0;
 	}
 
-	.login-prompt {
-		font-size: 13px;
-		color: var(--accent);
-		font-weight: 500;
-		text-decoration: none !important;
-	}
-
-	.login-prompt:hover {
-		text-decoration: underline !important;
+	.progress-hint {
+		font-size: 12px;
+		color: var(--text-secondary);
+		font-weight: 400;
 	}
 
 	.module-grid {
