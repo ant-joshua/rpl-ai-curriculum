@@ -357,7 +357,7 @@
 	.main-content {
 		flex: 1;
 		min-width: 0;
-		padding: 24px 32px;
+		padding: 20px 24px;
 		max-width: 100%;
 	}
 
