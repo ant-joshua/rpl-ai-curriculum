@@ -1,11 +1,15 @@
 <script lang="ts">
 	import NotesPanel from '$lib/components/NotesPanel.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { notes } from '$lib/stores/notes.svelte';
-	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
+	import { parseMarkdown, stripFrontmatter, hasExercise, getExerciseStarterCode } from '$lib/utils/markdown';
 	import { onMount } from 'svelte';
+	import QuizCard from '$lib/components/QuizCard.svelte';
+	import type { QuizQuestion } from '$lib/utils/quiz';
+	import { parseQuizHtml } from '$lib/utils/quiz';
 
 	let { data } = $props();
 
@@ -60,6 +64,7 @@
 			if (!res.ok) throw new Error('Gagal memuat konten');
 			const json: Record<string, string> = await res.json();
 			contentCache = json;
+			loadQuizFromContent(json);
 
 			const readmeContent = json['README'] || '';
 			const cleaned = stripFrontmatter(readmeContent);
@@ -86,16 +91,32 @@
 		loading = false;
 	}
 
-	onMount(() => { loadContent(); });
-
 	async function loadSession(sessionId: string) {
 		if (!mod) return;
 		activeSession = sessionId;
 		sessionHtml = '';
+		showExercise = false;
+		showQuiz = false;
 		const content = contentCache[sessionId];
 		if (content) {
 			const cleaned = stripFrontmatter(content);
 			sessionHtml = parseMarkdown(cleaned);
+
+			// Detect if session has exercises
+			if (hasExercise(cleaned)) {
+				const starterCode = getExerciseStarterCode(cleaned);
+				if (starterCode) {
+					exerciseCode = starterCode;
+					// Detect language from the code block
+					const codeMatch = cleaned.match(/```(\w+)\n/);
+					if (codeMatch) {
+						let lang = codeMatch[1].toLowerCase();
+						if (lang === 'js') lang = 'javascript';
+						if (lang === 'ts') lang = 'typescript';
+						exerciseLang = lang;
+					}
+				}
+			}
 		} else {
 			sessionHtml = '<p class="error">Konten sesi tidak ditemukan</p>';
 		}
@@ -109,6 +130,90 @@
 	let moduleProgress = $derived(mod ? progress.getModuleProgress(mod.slug) : 0);
 	let completedSessions = $derived(mod ? progress.getCompletedSessions(mod.slug) : []);
 	let showNotes = $state(false);
+	let showQuiz = $state(false);
+	let showExercise = $state(false);
+	let exerciseCode = $state('');
+	let exerciseLang = $state('javascript');
+	let quizQuestions = $state<QuizQuestion[]>([]);
+
+	// Parse quiz content from loaded JSON
+	function loadQuizFromContent(json: Record<string, string>) {
+		const quizContent = json['quiz'];
+		if (quizContent) {
+			const parsed = parseQuizHtml(quizContent);
+			if (parsed.length > 0) {
+				quizQuestions = parsed;
+			}
+		}
+	}
+
+	// --- Session position indicator ---
+	let currentSessionIndex = $derived(
+		mod && activeSession ? mod.sessions.findIndex(s => s.id === activeSession) : -1
+	);
+	let totalSessions = $derived(mod ? mod.sessions.length : 0);
+	let sessionPosition = $derived(
+		currentSessionIndex >= 0 ? `Sesi ${currentSessionIndex + 1}/${totalSessions}` : ''
+	);
+
+	// --- Scroll persistence ---
+	function getScrollKey(sessionId: string | null): string {
+		if (!sessionId) return '';
+		return `lms-scroll-${slug}-${sessionId}`;
+	}
+
+	// Scroll on session change: restore saved position, or scroll to content top
+	$effect(() => {
+		if (!activeSession) return;
+		const key = getScrollKey(activeSession);
+		if (!key) return;
+		const saved = localStorage.getItem(key);
+		requestAnimationFrame(() => {
+			if (saved) {
+				window.scrollTo({ top: parseInt(saved, 10), behavior: 'smooth' });
+			} else {
+				document.querySelector('.content-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		});
+	});
+
+	// Debounced scroll position save
+	let scrollTimer: ReturnType<typeof setTimeout> | undefined;
+	function handleScroll() {
+		if (!activeSession) return;
+		clearTimeout(scrollTimer);
+		scrollTimer = setTimeout(() => {
+			localStorage.setItem(getScrollKey(activeSession), String(window.scrollY));
+		}, 300);
+	}
+
+	// Keyboard shortcuts: left/right arrows for prev/next session
+	function handleKeydown(e: KeyboardEvent) {
+		if (!mod || !activeSession) return;
+		if (e.key === 'ArrowLeft') {
+			const prevIdx = currentSessionIndex - 1;
+			if (prevIdx >= 0) {
+				e.preventDefault();
+				loadSession(mod.sessions[prevIdx].id);
+			}
+		} else if (e.key === 'ArrowRight') {
+			const nextIdx = currentSessionIndex + 1;
+			if (nextIdx < mod.sessions.length) {
+				e.preventDefault();
+				loadSession(mod.sessions[nextIdx].id);
+			}
+		}
+	}
+
+	onMount(() => {
+		loadContent();
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('keydown', handleKeydown);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('keydown', handleKeydown);
+		};
+	});
 </script>
 
 <div class="module-page">
@@ -171,7 +276,12 @@
 			<div class="content-area" style="font-size: {fontSize}px">
 				{#if activeSession}
 					<div class="session-toolbar">
-						<h2>{mod.sessions.find(s => s.id === activeSession)?.title}</h2>
+						<h2>
+							{mod.sessions.find(s => s.id === activeSession)?.title}
+							{#if sessionPosition}
+								<span class="session-position">{sessionPosition}</span>
+							{/if}
+						</h2>
 						<div class="toolbar-actions">
 							<button
 								class="notes-toggle-btn"
@@ -180,6 +290,24 @@
 							>
 								📝 Catatan
 							</button>
+							{#if quizQuestions.length > 0}
+								<button
+									class="quiz-toggle-btn"
+									class:active={showQuiz}
+									onclick={() => showQuiz = !showQuiz}
+								>
+									🧪 Quiz
+								</button>
+							{/if}
+							{#if exerciseCode}
+								<button
+									class="exercise-toggle-btn"
+									class:active={showExercise}
+									onclick={() => showExercise = !showExercise}
+								>
+									▶️ Coba Kode
+								</button>
+							{/if}
 							<button
 								class="complete-btn"
 								class:done={progress.isSessionCompleted(mod.slug, activeSession)}
@@ -194,6 +322,20 @@
 					</div>
 					{#if showNotes}
 						<NotesPanel {slug} sessionId={activeSession} />
+					{/if}
+					{#if showQuiz && quizQuestions.length > 0 && activeSession}
+						<div class="quiz-section">
+							<QuizCard questions={quizQuestions} moduleSlug={slug} sessionId={activeSession} />
+						</div>
+					{/if}
+					{#if showExercise && exerciseCode}
+						<div class="exercise-section">
+							<ExerciseRunner
+								code={exerciseCode}
+								language={exerciseLang}
+								exerciseType={exerciseLang === 'html' ? 'html' : 'js'}
+							/>
+						</div>
 					{/if}
 				{:else}
 					<div class="readme-content">
@@ -336,7 +478,23 @@
 		border-bottom: 1px solid var(--border);
 	}
 
-	.session-toolbar h2 { font-size: 18px; font-weight: 600; }
+	.session-toolbar h2 {
+		font-size: 18px;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.session-position {
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--text-secondary);
+		background: var(--bg-secondary);
+		padding: 2px 10px;
+		border-radius: 10px;
+		white-space: nowrap;
+	}
 
 	.toolbar-actions {
 		display: flex;
@@ -353,6 +511,34 @@
 
 	.notes-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
 	.notes-toggle-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+	.quiz-toggle-btn {
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.quiz-toggle-btn:hover { border-color: #f59e0b; color: #f59e0b; }
+	.quiz-toggle-btn.active { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; color: #f59e0b; }
+
+	.exercise-toggle-btn {
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.exercise-toggle-btn:hover { border-color: #22c55e; color: #22c55e; }
+	.exercise-toggle-btn.active { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; }
+
+	.quiz-section {
+		margin-top: 24px;
+	}
+
+	.exercise-section {
+		margin-top: 24px;
+	}
 
 	.complete-btn {
 		padding: 8px 16px; border-radius: 8px;
