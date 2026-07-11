@@ -1,25 +1,24 @@
 <script lang="ts">
-	import '../app.css';
-	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte';
 	import favicon from '$lib/assets/favicon.svg';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 
 	let { children } = $props();
+
 	let sidebarOpen = $state(false);
 
-	let currentPath = $derived($page.url.pathname);
-
-	function isActive(path: string): boolean {
-		return currentPath === path || currentPath.startsWith(path + '/');
+	function closeSidebar() {
+		sidebarOpen = false;
 	}
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
 	}
 
-	function closeSidebar() {
-		sidebarOpen = false;
+	function isActive(path: string) {
+		return $page.url.pathname === path;
 	}
 </script>
 
@@ -43,75 +42,77 @@
 	<div class="sidebar-overlay" onclick={closeSidebar} role="button" tabindex="-1"></div>
 {/if}
 
-<aside class="sidebar" class:sidebar--open={sidebarOpen}>
-	<div class="sidebar-header">
-		<a href="/" class="sidebar-logo" onclick={closeSidebar}>
-			<span class="logo-icon">📘</span>
-			<span class="logo-text">RPL AI</span>
-		</a>
-	</div>
-
-	<nav class="sidebar-nav">
-		<a href="/" onclick={closeSidebar} class:active={isActive('/')}>
-			<span class="nav-icon">🏠</span>
-			<span>Beranda</span>
-		</a>
-		<a href="/dashboard" onclick={closeSidebar} class:active={isActive('/dashboard')}>
-			<span class="nav-icon">📊</span>
-			<span>Dashboard</span>
-		</a>
-		<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
-			<span class="nav-icon">📈</span>
-			<span>Progres</span>
-		</a>
-		<a href="/search" onclick={closeSidebar} class:active={isActive('/search')}>
-			<span class="nav-icon">🔍</span>
-			<span>Cari</span>
-		</a>
-		<div class="sidebar-separator"></div>
-		<div class="sidebar-group-label">📚 Referensi</div>
-		<a href="/challenges" onclick={closeSidebar} target="_blank" rel="noreferrer">
-			<span class="nav-icon">🏋️</span>
-			<span>Challenges</span>
-		</a>
-		<a href="/glossary" onclick={closeSidebar} target="_blank" rel="noreferrer">
-			<span class="nav-icon">📖</span>
-			<span>Glossary</span>
-		</a>
-		<a href="/cheatsheets" onclick={closeSidebar} target="_blank" rel="noreferrer">
-			<span class="nav-icon">📝</span>
-			<span>Cheatsheets</span>
-		</a>
-		<a href="/mini-projects" onclick={closeSidebar} target="_blank" rel="noreferrer">
-			<span class="nav-icon">🔨</span>
-			<span>Mini Projects</span>
-		</a>
-	</nav>
-
-	<div class="sidebar-footer">
-		<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
-			<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
-			<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
-		</button>
-		{#if user.isLoggedIn}
-			<div class="user-info">
-				<span class="user-avatar">{user.username.charAt(0).toUpperCase()}</span>
-				<span class="user-name">{user.username}</span>
-			</div>
-			<button onclick={() => { user.logout(); closeSidebar(); }} class="logout-btn">
-				Keluar
-			</button>
-		{:else}
-			<a href="/login" onclick={closeSidebar} class="login-btn">
-				Masuk
+<div class="layout-body">
+	<aside class="sidebar" class:sidebar--open={sidebarOpen}>
+		<div class="sidebar-header">
+			<a href="/" class="sidebar-logo" onclick={closeSidebar}>
+				<span class="logo-icon">📘</span>
+				<span class="logo-text">RPL AI</span>
 			</a>
-		{/if}
-	</div>
-</aside>
+		</div>
 
-<main class="main-content">
-	{@render children()}
-</main>
+		<nav class="sidebar-nav">
+			<a href="/" onclick={closeSidebar} class:active={isActive('/')}>
+				<span class="nav-icon">🏠</span>
+				<span>Beranda</span>
+			</a>
+			<a href="/dashboard" onclick={closeSidebar} class:active={isActive('/dashboard')}>
+				<span class="nav-icon">📊</span>
+				<span>Dashboard</span>
+			</a>
+			<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
+				<span class="nav-icon">📈</span>
+				<span>Progres</span>
+			</a>
+			<a href="/search" onclick={closeSidebar} class:active={isActive('/search')}>
+				<span class="nav-icon">🔍</span>
+				<span>Cari</span>
+			</a>
+			<div class="sidebar-separator"></div>
+			<div class="sidebar-group-label">📚 Referensi</div>
+			<a href="/challenges" onclick={closeSidebar} target="_blank" rel="noreferrer">
+				<span class="nav-icon">🏋️</span>
+				<span>Challenges</span>
+			</a>
+			<a href="/glossary" onclick={closeSidebar} target="_blank" rel="noreferrer">
+				<span class="nav-icon">📖</span>
+				<span>Glossary</span>
+			</a>
+			<a href="/cheatsheets" onclick={closeSidebar} target="_blank" rel="noreferrer">
+				<span class="nav-icon">📝</span>
+				<span>Cheatsheets</span>
+			</a>
+			<a href="/mini-projects" onclick={closeSidebar} target="_blank" rel="noreferrer">
+				<span class="nav-icon">🔨</span>
+				<span>Mini Projects</span>
+			</a>
+		</nav>
+
+		<div class="sidebar-footer">
+			<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
+				<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
+				<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
+			</button>
+			{#if user.isLoggedIn}
+				<div class="user-info">
+					<span class="user-avatar">{user.username.charAt(0).toUpperCase()}</span>
+					<span class="user-name">{user.username}</span>
+				</div>
+				<button onclick={() => { user.logout(); closeSidebar(); }} class="logout-btn">
+					Keluar
+				</button>
+			{:else}
+				<a href="/login" onclick={closeSidebar} class="login-btn">
+					Masuk
+				</a>
+			{/if}
+		</div>
+	</aside>
+
+	<main class="main-content">
+		{@render children()}
+	</main>
+</div>
 
 <style>
 	:global(*) {
@@ -174,6 +175,11 @@
 
 	.sidebar-overlay {
 		display: none;
+	}
+
+	.layout-body {
+		display: flex;
+		min-height: 100vh;
 	}
 
 	.sidebar {
