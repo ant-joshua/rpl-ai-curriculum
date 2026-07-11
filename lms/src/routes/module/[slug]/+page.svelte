@@ -1,11 +1,15 @@
 <script lang="ts">
+	import NotesPanel from '$lib/components/NotesPanel.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
+	import { notes } from '$lib/stores/notes.svelte';
 	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
+
+	let slug = $derived(data.slug);
 
 	let mod = $state<Module | null>(null);
 	let activeSession = $state<string | null>(null);
@@ -41,7 +45,6 @@
 
 	// Load content from static JSON
 	async function loadContent() {
-		const slug = data.slug;
 		mod = modules.find(m => m.slug === slug) ?? null;
 
 		if (!mod) {
@@ -105,6 +108,7 @@
 
 	let moduleProgress = $derived(mod ? progress.getModuleProgress(mod.slug) : 0);
 	let completedSessions = $derived(mod ? progress.getCompletedSessions(mod.slug) : []);
+	let showNotes = $state(false);
 </script>
 
 <div class="module-page">
@@ -168,17 +172,29 @@
 				{#if activeSession}
 					<div class="session-toolbar">
 						<h2>{mod.sessions.find(s => s.id === activeSession)?.title}</h2>
-						<button
-							class="complete-btn"
-							class:done={progress.isSessionCompleted(mod.slug, activeSession)}
-							onclick={() => toggleComplete(activeSession)}
-						>
-							{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
-						</button>
+						<div class="toolbar-actions">
+							<button
+								class="notes-toggle-btn"
+								class:active={showNotes}
+								onclick={() => showNotes = !showNotes}
+							>
+								📝 Catatan
+							</button>
+							<button
+								class="complete-btn"
+								class:done={progress.isSessionCompleted(mod.slug, activeSession)}
+								onclick={() => toggleComplete(activeSession)}
+							>
+								{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
+							</button>
+						</div>
 					</div>
 					<div class="markdown-content">
 						{@html sessionHtml}
 					</div>
+					{#if showNotes}
+						<NotesPanel {slug} sessionId={activeSession} />
+					{/if}
 				{:else}
 					<div class="readme-content">
 						<h2>📖 README — {mod.title}</h2>
@@ -321,6 +337,22 @@
 	}
 
 	.session-toolbar h2 { font-size: 18px; font-weight: 600; }
+
+	.toolbar-actions {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+	}
+
+	.notes-toggle-btn {
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.notes-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.notes-toggle-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
 	.complete-btn {
 		padding: 8px 16px; border-radius: 8px;

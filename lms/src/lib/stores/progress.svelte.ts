@@ -4,6 +4,7 @@ import { modules, type Module } from './modules';
 const STREAK_KEY = 'lms-streak';
 const LAST_READ_KEY = 'lms-last-read';
 const DATE_KEY = 'lms-last-date';
+const COMPLETION_DATES_KEY = 'lms-completion-dates';
 
 function getProgressKey(slug: string): string {
 	return `lms-progress-${slug}`;
@@ -30,6 +31,26 @@ function createProgressStore() {
 		return Math.round((completed.length / mod.sessions.length) * 100);
 	}
 
+	function getCompletionDates(): string[] {
+		if (!browser) return [];
+		try {
+			const raw = localStorage.getItem(COMPLETION_DATES_KEY);
+			return raw ? JSON.parse(raw) : [];
+		} catch {
+			return [];
+		}
+	}
+
+	function saveCompletionDate(): void {
+		if (!browser) return;
+		const today = new Date().toISOString().split('T')[0];
+		const dates = getCompletionDates();
+		if (!dates.includes(today)) {
+			dates.push(today);
+			localStorage.setItem(COMPLETION_DATES_KEY, JSON.stringify(dates));
+		}
+	}
+
 	function toggleSession(slug: string, sessionId: string): void {
 		if (!browser) return;
 		const key = getProgressKey(slug);
@@ -39,6 +60,7 @@ function createProgressStore() {
 			completed.splice(idx, 1);
 		} else {
 			completed.push(sessionId);
+			saveCompletionDate();
 		}
 		localStorage.setItem(key, JSON.stringify(completed));
 		version++;
@@ -160,6 +182,7 @@ function createProgressStore() {
 		getOverallProgress,
 		getFilteredCompletedCount,
 		getFilteredOverallProgress,
+		getCompletionDates,
 	};
 }
 

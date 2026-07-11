@@ -2,7 +2,9 @@
 	import { user } from '$lib/stores/user.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
+	import { bookmarks } from '$lib/stores/bookmarks.svelte';
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
+	import ProgressChart from '$lib/components/ProgressChart.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -21,15 +23,22 @@
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 	let activeLevel = $state<string | null>(null);
 
-	const levelFilters: { label: string; value: string | null }[] = [
+	let bookmarkedCount = $derived(modules.filter(m => bookmarks.isBookmarked(m.slug)).length);
+
+	let levelFilters = $derived<{ label: string; value: string | null }[]>([
 		{ label: 'Semua', value: null },
 		{ label: '🌱 Beginner', value: 'Beginner' },
 		{ label: '📐 Intermediate', value: 'Intermediate' },
 		{ label: '🚀 Advanced', value: 'Advanced' },
-	];
+		{ label: `⭐ Tersimpan (${bookmarkedCount})`, value: '__bookmarked__' },
+	]);
 
 	let filteredModules = $derived(
-		activeLevel === null ? modules : modules.filter(m => m.level === activeLevel)
+		activeLevel === null
+			? modules
+			: activeLevel === '__bookmarked__'
+				? modules.filter(m => bookmarks.isBookmarked(m.slug))
+				: modules.filter(m => m.level === activeLevel)
 	);
 
 	// Overview reactive to level filter
@@ -74,6 +83,14 @@
 			</div>
 		</div>
 	</section>
+
+	<!-- Progress chart bar -->
+	<ProgressChart
+		{filteredCompletedCount}
+		{filteredTotalModules}
+		{filteredProgress}
+		streak={progress.getStreak()}
+	/>
 
 	<!-- Continue reading -->
 	{#if lastReadModule}

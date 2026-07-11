@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ProgressBar from './ProgressBar.svelte';
+	import { bookmarks } from '$lib/stores/bookmarks.svelte';
 
 	let {
 		slug = '',
@@ -14,6 +15,11 @@
 		progress?: number;
 		onclick?: () => void;
 	} = $props();
+
+	function handleBookmarkToggle(e: MouseEvent) {
+		e.stopPropagation();
+		bookmarks.toggle(slug);
+	}
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -21,6 +27,13 @@
 <div class="module-card" onclick={onclick} role="button" tabindex={0}>
 	<div class="card-header">
 		<span class="card-progress-text">{progress}%</span>
+		<button
+			class="bookmark-btn"
+			onclick={handleBookmarkToggle}
+			aria-label={bookmarks.isBookmarked(slug) ? 'Hapus bookmark' : 'Tambah bookmark'}
+		>
+			{bookmarks.isBookmarked(slug) ? '⭐' : '☆'}
+		</button>
 	</div>
 	<h3 class="card-title">{title}</h3>
 	<p class="card-desc">{description}</p>
@@ -53,7 +66,22 @@
 
 	.card-header {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.bookmark-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-size: 16px;
+		padding: 2px;
+		line-height: 1;
+		transition: transform 0.15s ease;
+	}
+
+	.bookmark-btn:hover {
+		transform: scale(1.2);
 	}
 
 	.card-progress-text {
