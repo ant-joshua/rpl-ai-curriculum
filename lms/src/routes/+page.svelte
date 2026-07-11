@@ -27,13 +27,8 @@
 				pengembangan software modern berbasis AI.
 			</p>
 			<div class="hero-actions">
-				{#if user.isLoggedIn}
-					<a href="/dashboard" class="btn btn-primary">Lanjut Belajar</a>
-					<a href="/progress" class="btn btn-secondary">Lihat Progres</a>
-				{:else}
-					<a href="/login" class="btn btn-primary">Mulai Belajar</a>
-					<a href="/dashboard" class="btn btn-secondary">Coba Lihat</a>
-				{/if}
+				<a href="/dashboard" class="btn btn-primary">Mulai Belajar →</a>
+				<a href="/progress" class="btn btn-secondary">Lihat Progres</a>
 			</div>
 		</div>
 		<div class="hero-stats">

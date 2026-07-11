@@ -93,19 +93,6 @@
 				<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
 				<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
 			</button>
-			{#if user.isLoggedIn}
-				<div class="user-info">
-					<span class="user-avatar">{user.username.charAt(0).toUpperCase()}</span>
-					<span class="user-name">{user.username}</span>
-				</div>
-				<button onclick={() => { user.logout(); closeSidebar(); }} class="logout-btn">
-					Keluar
-				</button>
-			{:else}
-				<a href="/login" onclick={closeSidebar} class="login-btn">
-					Masuk
-				</a>
-			{/if}
 		</div>
 	</aside>
 
