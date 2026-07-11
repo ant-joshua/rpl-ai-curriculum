@@ -22,6 +22,20 @@
 }
 
 /* Light theme overrides */
+.theme-light {
+	--bg: #f5f6fa;
+	--bg-secondary: #eef0f6;
+	--surface: #ffffff;
+	--surface-hover: #f0f1f6;
+	--border: #e2e4ed;
+	--text: #1a1d2e;
+	--text-secondary: #6b7089;
+	--accent: #6c5ce7;
+	--accent-secondary: #a29bfe;
+	--accent-dim: rgba(108, 92, 231, 0.08);
+	--hover: rgba(0, 0, 0, 0.04);
+}
+
 @media (prefers-color-scheme: light) {
 	:root {
 		--bg: #f5f6fa;

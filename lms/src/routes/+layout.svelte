@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
+	import { themeStore } from '$lib/stores/theme.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
@@ -24,6 +25,10 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<link rel="manifest" href="/manifest.json" />
+	<meta name="theme-color" content="#6c5ce7" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </svelte:head>
 
 <button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigasi">
@@ -59,6 +64,10 @@
 			<span class="nav-icon">📈</span>
 			<span>Progres</span>
 		</a>
+		<a href="/search" onclick={closeSidebar} class:active={isActive('/search')}>
+			<span class="nav-icon">🔍</span>
+			<span>Cari</span>
+		</a>
 		<div class="sidebar-separator"></div>
 		<div class="sidebar-group-label">📚 Referensi</div>
 		<a href="/challenges" onclick={closeSidebar} target="_blank" rel="noreferrer">
@@ -80,6 +89,10 @@
 	</nav>
 
 	<div class="sidebar-footer">
+		<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
+			<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
+			<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
+		</button>
 		{#if user.isLoggedIn}
 			<div class="user-info">
 				<span class="user-avatar">{user.username.charAt(0).toUpperCase()}</span>
@@ -288,6 +301,27 @@
 	.user-name {
 		font-size: 13px;
 		font-weight: 500;
+		color: var(--text);
+	}
+
+	.theme-btn {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 12px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		width: 100%;
+	}
+
+	.theme-btn:hover {
+		background: var(--hover);
 		color: var(--text);
 	}
 

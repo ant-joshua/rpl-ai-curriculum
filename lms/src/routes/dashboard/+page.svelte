@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { user } from '$lib/stores/user.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
-	import { modules } from '$lib/stores/modules';
+	import { modules, type Module } from '$lib/stores/modules';
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -19,6 +19,21 @@
 	);
 
 	let overallProgress = $derived(progress.getOverallProgress());
+
+	// Level filter
+	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
+	let activeLevel = $state<string | null>(null);
+
+	const levelFilters: { label: string; value: string | null }[] = [
+		{ label: 'Semua', value: null },
+		{ label: '🌱 Beginner', value: 'Beginner' },
+		{ label: '📐 Intermediate', value: 'Intermediate' },
+		{ label: '🚀 Advanced', value: 'Advanced' },
+	];
+
+	let filteredModules = $derived(
+		activeLevel === null ? modules : modules.filter(m => m.level === activeLevel)
+	);
 </script>
 
 <div class="dashboard">
@@ -73,16 +88,29 @@
 		</section>
 	{/if}
 
+	<!-- Level filter tabs -->
+	<section class="level-filters">
+		{#each levelFilters as filter}
+			<button
+				class="filter-btn"
+				class:active={activeLevel === filter.value}
+				onclick={() => activeLevel = filter.value}
+			>
+				{filter.label}
+			</button>
+		{/each}
+	</section>
+
 	<!-- Login prompt + Module grid -->
 	<section class="module-section">
 		<div class="module-header">
-			<h2>Semua Modul ({modules.length})</h2>
+			<h2>Semua Modul ({filteredModules.length})</h2>
 			{#if !user.isLoggedIn}
 				<a href="/login" class="login-prompt">Login untuk sync progress →</a>
 			{/if}
 		</div>
 		<div class="module-grid">
-			{#each modules as mod}
+			{#each filteredModules as mod}
 				<ModuleCard
 					slug={mod.slug}
 					title={mod.title}
@@ -228,6 +256,38 @@
 	.continue-arrow {
 		font-size: 20px;
 		color: var(--accent);
+	}
+
+	/* Level filter tabs */
+	.level-filters {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 24px;
+		flex-wrap: wrap;
+	}
+
+	.filter-btn {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 20px;
+		padding: 8px 18px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-family: inherit;
+	}
+
+	.filter-btn:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+
+	.filter-btn.active {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: #fff;
 	}
 
 	.module-header {
