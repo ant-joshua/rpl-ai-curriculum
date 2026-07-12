@@ -8,3 +8,7 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 binding = "DB"
 database_name = "rpl-ai-lms-db"
 database_id = "505dca85-f77a-4d00-a3ae-ce0ce2d91e9a"
+
+[[r2_buckets]]
+binding = "ASSETS_BUCKET"
+bucket_name = "rpl-ai-lms-assets"

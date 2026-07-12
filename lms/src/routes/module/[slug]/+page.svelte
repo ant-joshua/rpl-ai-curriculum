@@ -368,9 +368,27 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 			<a href="/dashboard" class="back-link">&larr; Kembali ke Dashboard</a>
 		</div>
 	{:else if mod}
+		{#if mod}
+			<div class="module-banner">
+				<img
+					src="/assets/thumbnails/{mod.slug}.svg"
+					alt=""
+					class="banner-img"
+					loading="lazy"
+					onerror={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+					onload={(e) => { (e.target as HTMLImageElement).style.opacity = '1'; }}
+				/>
+				<div class="banner-overlay">
+					<div class="banner-content">
+						<span class="banner-level">{mod.level}</span>
+						<h1 class="banner-title">{mod.title}</h1>
+						<p class="banner-desc">{mod.description}</p>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<header class="module-header">
 			<a href="/dashboard" class="back-link">&larr; Dashboard</a>
-			<h1>{mod.title}</h1>
 			<div class="module-meta">
 				<span>{mod.sessions.length} sesi</span>
 				<span class="meta-dot">&middot;</span>
@@ -646,6 +664,86 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.module-page {
 		max-width: 1100px;
 		margin: 0 auto;
+	}
+
+	.module-banner {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 16 / 7;
+		border-radius: 16px;
+		overflow: hidden;
+		margin-bottom: 24px;
+	}
+
+	.banner-img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+
+	.banner-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 100%);
+		display: flex;
+		align-items: flex-end;
+		padding: 32px;
+	}
+
+	.banner-content {
+		max-width: 80%;
+	}
+
+	.banner-level {
+		display: inline-block;
+		font-size: 12px;
+		font-weight: 600;
+		padding: 3px 12px;
+		border-radius: 20px;
+		background: rgba(255,255,255,0.15);
+		color: rgba(255,255,255,0.9);
+		margin-bottom: 8px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.banner-title {
+		font-size: 32px;
+		font-weight: 700;
+		color: #fff;
+		margin: 0 0 6px 0;
+		line-height: 1.2;
+	}
+
+	.banner-desc {
+		font-size: 14px;
+		color: rgba(255,255,255,0.7);
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	@media (max-width: 768px) {
+		.module-banner {
+			aspect-ratio: 16 / 9;
+			border-radius: 12px;
+			margin-bottom: 16px;
+		}
+		.banner-overlay {
+			padding: 20px;
+		}
+		.banner-content {
+			max-width: 100%;
+		}
+		.banner-title {
+			font-size: 22px;
+		}
+		.banner-desc {
+			font-size: 13px;
+		}
 	}
 
 	.loading, .error-page {

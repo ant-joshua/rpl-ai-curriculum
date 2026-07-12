@@ -1,0 +1,287 @@
+{
+  "fundamentals": {
+    "thumbnail": "/assets/thumbnails/fundamentals.svg",
+    "level": "Beginner",
+    "title": "Fundamental Pemrograman & Web"
+  },
+  "js-fundamentals": {
+    "thumbnail": "/assets/thumbnails/js-fundamentals.svg",
+    "level": "Beginner",
+    "title": "JavaScript Fundamentals"
+  },
+  "algorithms-data-structures": {
+    "thumbnail": "/assets/thumbnails/algorithms-data-structures.svg",
+    "level": "Intermediate",
+    "title": "Algoritma & Struktur Data"
+  },
+  "typescript": {
+    "thumbnail": "/assets/thumbnails/typescript.svg",
+    "level": "Beginner",
+    "title": "TypeScript"
+  },
+  "web-basics": {
+    "thumbnail": "/assets/thumbnails/web-basics.svg",
+    "level": "Beginner",
+    "title": "Web Basics (HTML, CSS, Tailwind, DOM)"
+  },
+  "git-deploy": {
+    "thumbnail": "/assets/thumbnails/git-deploy.svg",
+    "level": "Beginner",
+    "title": "Git & Deployment"
+  },
+  "node-express": {
+    "thumbnail": "/assets/thumbnails/node-express.svg",
+    "level": "Beginner",
+    "title": "Node.js & Express"
+  },
+  "mastra-ai": {
+    "thumbnail": "/assets/thumbnails/mastra-ai.svg",
+    "level": "Beginner",
+    "title": "Mastra AI Framework"
+  },
+  "project": {
+    "thumbnail": "/assets/thumbnails/project.svg",
+    "level": "Beginner",
+    "title": "Project — Aplikasi AI Chatbot"
+  },
+  "testing": {
+    "thumbnail": "/assets/thumbnails/testing.svg",
+    "level": "Beginner",
+    "title": "Software Testing"
+  },
+  "design-patterns": {
+    "thumbnail": "/assets/thumbnails/design-patterns.svg",
+    "level": "Intermediate",
+    "title": "Design Patterns"
+  },
+  "system-design": {
+    "thumbnail": "/assets/thumbnails/system-design.svg",
+    "level": "Intermediate",
+    "title": "System Design"
+  },
+  "ui-ux-design": {
+    "thumbnail": "/assets/thumbnails/ui-ux-design.svg",
+    "level": "Intermediate",
+    "title": "UI/UX Design"
+  },
+  "flutter-mobile": {
+    "thumbnail": "/assets/thumbnails/flutter-mobile.svg",
+    "level": "Intermediate",
+    "title": "Flutter Mobile"
+  },
+  "cybersecurity": {
+    "thumbnail": "/assets/thumbnails/cybersecurity.svg",
+    "level": "Intermediate",
+    "title": "Cybersecurity"
+  },
+  "agile-scrum": {
+    "thumbnail": "/assets/thumbnails/agile-scrum.svg",
+    "level": "Intermediate",
+    "title": "Agile & Scrum"
+  },
+  "realtime-apps": {
+    "thumbnail": "/assets/thumbnails/realtime-apps.svg",
+    "level": "Intermediate",
+    "title": "Real-Time Applications"
+  },
+  "advanced-database": {
+    "thumbnail": "/assets/thumbnails/advanced-database.svg",
+    "level": "Intermediate",
+    "title": "Advanced Database"
+  },
+  "ai-prompt-engineering": {
+    "thumbnail": "/assets/thumbnails/ai-prompt-engineering.svg",
+    "level": "Intermediate",
+    "title": "AI Prompt Engineering"
+  },
+  "technical-interview": {
+    "thumbnail": "/assets/thumbnails/technical-interview.svg",
+    "level": "Intermediate",
+    "title": "Technical Interview Prep"
+  },
+  "frontend-frameworks": {
+    "thumbnail": "/assets/thumbnails/frontend-frameworks.svg",
+    "level": "Intermediate",
+    "title": "Frontend Frameworks (React, Next.js)"
+  },
+  "docker": {
+    "thumbnail": "/assets/thumbnails/docker.svg",
+    "level": "Intermediate",
+    "title": "Docker"
+  },
+  "monorepo": {
+    "thumbnail": "/assets/thumbnails/monorepo.svg",
+    "level": "Intermediate",
+    "title": "Monorepo"
+  },
+  "system-runtime": {
+    "thumbnail": "/assets/thumbnails/system-runtime.svg",
+    "level": "Intermediate",
+    "title": "System & Runtime"
+  },
+  "resilience-patterns": {
+    "thumbnail": "/assets/thumbnails/resilience-patterns.svg",
+    "level": "Intermediate",
+    "title": "Resilience Patterns"
+  },
+  "soft-skills": {
+    "thumbnail": "/assets/thumbnails/soft-skills.svg",
+    "level": "Intermediate",
+    "title": "Soft Skills"
+  },
+  "pragmatic-programming": {
+    "thumbnail": "/assets/thumbnails/pragmatic-programming.svg",
+    "level": "Intermediate",
+    "title": "Pragmatic Programming"
+  },
+  "linux-terminal": {
+    "thumbnail": "/assets/thumbnails/linux-terminal.svg",
+    "level": "Beginner",
+    "title": "Linux & Terminal"
+  },
+  "rest-api-design": {
+    "thumbnail": "/assets/thumbnails/rest-api-design.svg",
+    "level": "Intermediate",
+    "title": "REST API Design"
+  },
+  "cloud-computing": {
+    "thumbnail": "/assets/thumbnails/cloud-computing.svg",
+    "level": "Intermediate",
+    "title": "Cloud Computing"
+  },
+  "graphql-trpc": {
+    "thumbnail": "/assets/thumbnails/graphql-trpc.svg",
+    "level": "Intermediate",
+    "title": "GraphQL & tRPC"
+  },
+  "auth-identity": {
+    "thumbnail": "/assets/thumbnails/auth-identity.svg",
+    "level": "Intermediate",
+    "title": "Authentication & Identity"
+  },
+  "performance": {
+    "thumbnail": "/assets/thumbnails/performance.svg",
+    "level": "Intermediate",
+    "title": "Web Performance"
+  },
+  "data-visualization": {
+    "thumbnail": "/assets/thumbnails/data-visualization.svg",
+    "level": "Intermediate",
+    "title": "Data Visualization"
+  },
+  "pwa-offline": {
+    "thumbnail": "/assets/thumbnails/pwa-offline.svg",
+    "level": "Intermediate",
+    "title": "PWA & Offline"
+  },
+  "html-css-intro": {
+    "thumbnail": "/assets/thumbnails/html-css-intro.svg",
+    "level": "Beginner",
+    "title": "HTML & CSS Intro"
+  },
+  "web-architecture": {
+    "thumbnail": "/assets/thumbnails/web-architecture.svg",
+    "level": "Beginner",
+    "title": "Web Architecture"
+  },
+  "database-intro": {
+    "thumbnail": "/assets/thumbnails/database-intro.svg",
+    "level": "Beginner",
+    "title": "Database Intro"
+  },
+  "ai-dev-workflow": {
+    "thumbnail": "/assets/thumbnails/ai-dev-workflow.svg",
+    "level": "Beginner",
+    "title": "AI Developer Workflow"
+  },
+  "payment-integration": {
+    "thumbnail": "/assets/thumbnails/payment-integration.svg",
+    "level": "Intermediate",
+    "title": "Payment Integration"
+  },
+  "background-jobs": {
+    "thumbnail": "/assets/thumbnails/background-jobs.svg",
+    "level": "Advanced",
+    "title": "Background Jobs"
+  },
+  "monitoring": {
+    "thumbnail": "/assets/thumbnails/monitoring.svg",
+    "level": "Advanced",
+    "title": "Monitoring & Observability"
+  },
+  "file-upload": {
+    "thumbnail": "/assets/thumbnails/file-upload.svg",
+    "level": "Advanced",
+    "title": "File Upload"
+  },
+  "search-implementation": {
+    "thumbnail": "/assets/thumbnails/search-implementation.svg",
+    "level": "Advanced",
+    "title": "Search Implementation"
+  },
+  "portfolio-branding": {
+    "thumbnail": "/assets/thumbnails/portfolio-branding.svg",
+    "level": "Advanced",
+    "title": "Portfolio & Personal Branding"
+  },
+  "internationalization": {
+    "thumbnail": "/assets/thumbnails/internationalization.svg",
+    "level": "Advanced",
+    "title": "Internationalization (i18n)"
+  },
+  "debugging-devtools": {
+    "thumbnail": "/assets/thumbnails/debugging-devtools.svg",
+    "level": "Beginner",
+    "title": "Debugging & DevTools"
+  },
+  "team-git-workflow": {
+    "thumbnail": "/assets/thumbnails/team-git-workflow.svg",
+    "level": "Advanced",
+    "title": "Team Git Workflow"
+  },
+  "portfolio-project-series": {
+    "thumbnail": "/assets/thumbnails/portfolio-project-series.svg",
+    "level": "Advanced",
+    "title": "Portfolio Project Series"
+  },
+  "production-ready-code": {
+    "thumbnail": "/assets/thumbnails/production-ready-code.svg",
+    "level": "Advanced",
+    "title": "Production-Ready Code"
+  },
+  "microservices-hands-on": {
+    "thumbnail": "/assets/thumbnails/microservices-hands-on.svg",
+    "level": "Advanced",
+    "title": "Microservices Hands-On"
+  },
+  "lks-competition-prep": {
+    "thumbnail": "/assets/thumbnails/lks-competition-prep.svg",
+    "level": "Advanced",
+    "title": "LKS Competition Prep"
+  },
+  "indonesian-tech-ecosystem": {
+    "thumbnail": "/assets/thumbnails/indonesian-tech-ecosystem.svg",
+    "level": "Advanced",
+    "title": "Indonesian Tech Ecosystem"
+  },
+  "ai-coding-agents": {
+    "thumbnail": "/assets/thumbnails/ai-coding-agents.svg",
+    "level": "Advanced",
+    "title": "AI Coding Agents"
+  },
+  "prompt-engineering-dev": {
+    "thumbnail": "/assets/thumbnails/prompt-engineering-dev.svg",
+    "level": "Advanced",
+    "title": "Prompt Engineering untuk Developer"
+  },
+  "ai-docs-spec": {
+    "thumbnail": "/assets/thumbnails/ai-docs-spec.svg",
+    "level": "Advanced",
+    "title": "AI Docs & Spec"
+  },
+  "advanced-ai-dev": {
+    "thumbnail": "/assets/thumbnails/advanced-ai-dev.svg",
+    "level": "Advanced",
+    "title": "Advanced AI Development"
+  }
+}
