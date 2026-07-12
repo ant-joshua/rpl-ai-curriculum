@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/1181677/pexels-photo-1181677.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Docker" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 01 — Docker Basics: Kontainer Pertamamu
 
 > **Durasi:** 2 JP (90 menit)

@@ -142,6 +142,10 @@
 				<span class="nav-icon">📥</span>
 				<span>PDF</span>
 			</a>
+			<a href="/case-studies" onclick={closeSidebar} class:active={isActive('/case-studies')}>
+				<span class="nav-icon">📋</span>
+				<span>Case Studies</span>
+			</a>
 			<a href="/mini-projects" onclick={closeSidebar}>
 				<span class="nav-icon">🔨</span>
 				<span>Mini Projects</span>
@@ -153,6 +157,10 @@
 			<a href="/feed" onclick={closeSidebar} class:active={isActive('/feed')}>
 				<span class="nav-icon">📡</span>
 				<span>RSS</span>
+			</a>
+			<a href="/slides/list" onclick={closeSidebar} class:active={isActive('/slides')}>
+				<span class="nav-icon">🖥️</span>
+				<span>Slides</span>
 			</a>
 		</nav>
 

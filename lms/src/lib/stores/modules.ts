@@ -281,6 +281,8 @@ export const modules: Module[] = [
 		sessions: [
 			s('Teknik Prompt', '01-prompt-techniques'),
 			s('Prompt Kode & Production', '02-prompt-code-production'),
+			s('System Prompts & Structured Output', '03-system-prompts'),
+			s('Prompt Chaining & Multi-Step', '04-prompt-chaining'),
 		]
 	},
 	{
@@ -294,6 +296,7 @@ export const modules: Module[] = [
 			s('Behavioral & CV', '01-behavioral-cv'),
 			s('DSA & System Design', '02-dsa-system-design'),
 			s('Mock & Portfolio', '03-mock-portfolio'),
+			s('System Design Round', '04-system-design-round'),
 		]
 	},
 	{

@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { modules, type Module } from './modules';
 import { certificate } from './certificate.svelte';
+import { api } from '$lib/utils/api';
 
 const STREAK_KEY = 'lms-streak';
 const LAST_READ_KEY = 'lms-last-read';
@@ -52,20 +53,82 @@ function createProgressStore() {
 		}
 	}
 
+	async function apiSync(slug: string, sessionId: string, completed: boolean): Promise<void> {
+		if (!browser) return;
+		await api('/api/progress', {
+			method: 'POST',
+			body: JSON.stringify({
+				module_slug: slug,
+				session_id: sessionId,
+				completed: completed ? 1 : 0,
+			}),
+		});
+	}
+
+	/** Upload all local progress to API */
+	async function syncProgress(): Promise<void> {
+		if (!browser) return;
+		for (const mod of modules) {
+			const completed = getCompletedSessions(mod.slug);
+			for (const sessionId of completed) {
+				await api('/api/progress', {
+					method: 'POST',
+					body: JSON.stringify({
+						module_slug: mod.slug,
+						session_id: sessionId,
+						completed: 1,
+					}),
+				});
+			}
+		}
+	}
+
+	/** Try to merge API data into localStorage on init */
+	async function fetchFromApi(): Promise<void> {
+		if (!browser) return;
+		try {
+			const res = await api<Array<{ module_slug: string; session_id: string; completed: number }>>('/api/progress');
+			if (res.success && res.data) {
+				for (const row of res.data) {
+					if (row.completed) {
+						const key = getProgressKey(row.module_slug);
+						const local = getCompletedSessions(row.module_slug);
+						if (!local.includes(row.session_id)) {
+							local.push(row.session_id);
+							localStorage.setItem(key, JSON.stringify(local));
+						}
+					}
+				}
+				version++;
+			}
+		} catch {
+			// offline — use localStorage only
+		}
+	}
+
+	// Init: fetch from API once on browser
+	if (browser) {
+		fetchFromApi();
+	}
+
 	function toggleSession(slug: string, sessionId: string): void {
 		if (!browser) return;
 		const key = getProgressKey(slug);
 		const completed = getCompletedSessions(slug);
 		const idx = completed.indexOf(sessionId);
+		let nowCompleted = false;
 		if (idx >= 0) {
 			completed.splice(idx, 1);
 		} else {
 			completed.push(sessionId);
 			saveCompletionDate();
+			nowCompleted = true;
 		}
 		localStorage.setItem(key, JSON.stringify(completed));
 		version++;
 		certificate.checkAndMark();
+		// Async API sync
+		apiSync(slug, sessionId, nowCompleted);
 	}
 
 	function isSessionCompleted(slug: string, sessionId: string): boolean {
@@ -185,6 +248,7 @@ function createProgressStore() {
 		getFilteredCompletedCount,
 		getFilteredOverallProgress,
 		getCompletionDates,
+		syncProgress,
 	};
 }
 

@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { api } from '$lib/utils/api';
 
 const STORAGE_KEY = 'lms-activity';
 
@@ -47,6 +48,16 @@ function createActivityStore() {
 		const entries = getAll();
 		entries.push(entry);
 		saveAll(entries);
+
+		// Post to API async
+		api('/api/activity', {
+			method: 'POST',
+			body: JSON.stringify({
+				action,
+				module_slug: moduleSlug,
+				session_id: sessionId,
+			}),
+		});
 	}
 
 	function getRecent(limit = 50): ActivityEntry[] {

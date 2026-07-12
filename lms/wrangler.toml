@@ -3,3 +3,8 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 pages_build_output_dir = ".svelte-kit/cloudflare"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rpl-ai-lms-db"
+database_id = "505dca85-f77a-4d00-a3ae-ce0ce2d91e9a"

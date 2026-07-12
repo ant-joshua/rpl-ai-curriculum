@@ -1,6 +1,6 @@
-# 1.1 Variable & Tipe Data
+<img src="https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="JavaScript Fundamentals" style="width:100%;border-radius:12px;margin:12px 0;">
 
-## Variable — Cara Nyimpen Data
+# 1. Variabel & Tipe Data
 
 Variable = wadah buat nyimpen data di memory komputer. Anggap aja kaya **label kotak** — lo tulis "Buku" di luar kotak, isinya buku beneran.
 

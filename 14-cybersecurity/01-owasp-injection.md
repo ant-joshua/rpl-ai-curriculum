@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Cybersecurity" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # Sesi 1: OWASP Top 10 & Injection Attacks
 
 > **Durasi:** 2 jam

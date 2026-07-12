@@ -4,6 +4,7 @@ import FontSizeControl from '$lib/components/FontSizeControl.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
+import { getCaseStudyByModule } from '$lib/stores/case-studies';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { activity } from '$lib/stores/activity.svelte';
 	import { lastActivity } from '$lib/stores/last-activity.svelte';
@@ -570,6 +571,25 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				<span class="nav-btn disabled"></span>
 			{/if}
 		</div>
+
+		<!-- Case Study section -->
+		{#if mod}
+			{@const cs = getCaseStudyByModule(mod.slug)}
+			{#if cs}
+				<div class="case-study-section">
+					<h2>📋 Case Study Terkait</h2>
+					<a href="/case-study/{cs.slug}" class="case-study-card">
+						<div class="cs-card-header">
+							<span class="cs-company">{cs.company}</span>
+							<span class="cs-level">{cs.level}</span>
+						</div>
+						<h3>{cs.title}</h3>
+						<p>{cs.description}</p>
+						<span class="cs-read-more">Baca selengkapnya &rarr;</span>
+					</a>
+				</div>
+			{/if}
+		{/if}
 	{/if}
 </div>
 
@@ -1065,21 +1085,84 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		height: 100%;
 	}
 
-	/* Toast */
-	.toast {
-		position: fixed;
-		bottom: 24px;
-		right: 24px;
-		background: #1a1a2e;
-		color: #e0e0e0;
-		padding: 10px 20px;
-		border-radius: 10px;
-		font-size: 13px;
-		font-weight: 500;
-		z-index: 600;
-		animation: toast-in 0.3s ease;
-		box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-	}
+		/* Toast */
+		.toast {
+			position: fixed;
+			bottom: 24px;
+			right: 24px;
+			background: #1a1a2e;
+			color: #e0e0e0;
+			padding: 10px 20px;
+			border-radius: 10px;
+			font-size: 13px;
+			font-weight: 500;
+			z-index: 600;
+			animation: toast-in 0.3s ease;
+			box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+		}
+
+		/* Case Study section */
+		.case-study-section {
+			margin-top: 32px;
+			padding-top: 20px;
+			border-top: 1px solid var(--border);
+		}
+		.case-study-section h2 {
+			font-size: 18px;
+			font-weight: 600;
+			margin-bottom: 12px;
+		}
+		.case-study-card {
+			display: block;
+			padding: 20px;
+			border-radius: 12px;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			text-decoration: none !important;
+			transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		}
+		.case-study-card:hover {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 2px var(--accent-dim);
+		}
+		.case-study-card .cs-card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 8px;
+		}
+		.case-study-card .cs-company {
+			font-size: 11px;
+			font-weight: 600;
+			color: var(--text-secondary);
+			text-transform: uppercase;
+			letter-spacing: 0.03em;
+		}
+		.case-study-card .cs-level {
+			font-size: 10px;
+			font-weight: 600;
+			padding: 2px 8px;
+			border-radius: 4px;
+			background: var(--bg-secondary);
+			color: var(--text-secondary);
+		}
+		.case-study-card h3 {
+			font-size: 16px;
+			font-weight: 700;
+			margin-bottom: 6px;
+			color: var(--text);
+		}
+		.case-study-card p {
+			font-size: 13px;
+			color: var(--text-secondary);
+			line-height: 1.5;
+			margin-bottom: 8px;
+		}
+		.case-study-card .cs-read-more {
+			font-size: 12px;
+			font-weight: 600;
+			color: var(--accent);
+		}
 
 	@keyframes toast-in {
 		from { opacity: 0; transform: translateY(12px); }

@@ -1,6 +1,6 @@
-# 3.1 Tipe Dasar TypeScript
+<img src="https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="TypeScript" style="width:100%;border-radius:12px;margin:12px 0;">
 
-## Kenapa TypeScript?
+# 1. Dasar TypeScript
 
 TypeScript = JavaScript + **static types**. Error ketangkep **pas ngetik** (compile time), bukan pas jalan (runtime).
 

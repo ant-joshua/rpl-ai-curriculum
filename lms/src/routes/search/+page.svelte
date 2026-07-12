@@ -138,13 +138,21 @@
 		{:else if results.length > 0}
 			<p class="result-count">{results.length} hasil ditemukan</p>
 			{#each results as result (result.slug + result.matchType + result.sessionId)}
-				<a href="/module/{result.slug}" class="result-card">
+				<a
+					href="/module/{result.slug}{result.sessionId ? '?session=' + result.sessionId : ''}"
+					class="result-card"
+				>
 					<div class="result-header">
 						<span class="result-title">{result.title}</span>
 						<span class="badge {badgeClass(result.matchType)}">{badgeLabel(result.matchType)}</span>
 					</div>
-					<p class="result-preview">{result.matchPreview}</p>
-					<span class="result-module">Modul: {result.slug}</span>
+					<p class="result-preview">{@html result.matchPreview}</p>
+					<span class="result-module">
+						Modul: {result.slug}
+						{#if result.matchType === 'session' || result.matchType === 'content'}
+							· Sesi: {result.title}
+						{/if}
+					</span>
 				</a>
 			{/each}
 		{:else if hasSearched}

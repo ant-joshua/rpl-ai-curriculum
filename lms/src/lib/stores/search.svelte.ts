@@ -95,13 +95,22 @@ export async function searchModules(query: string): Promise<SearchResult[]> {
 		if (!content) continue;
 
 		for (const [key, text] of Object.entries(content)) {
-			if (text.toLowerCase().includes(q)) {
-				const idx = text.toLowerCase().indexOf(q);
+			const lowerText = text.toLowerCase();
+			if (lowerText.includes(q)) {
+				const idx = lowerText.indexOf(q);
 				const start = Math.max(0, idx - 40);
-				const preview =
+				let preview =
 					(start > 0 ? '\u2026' : '') +
 					text.slice(start, start + 100) +
 					(start + 100 < text.length ? '\u2026' : '');
+				// Highlight matched term
+				const lowerPreview = preview.toLowerCase();
+				const matchIdx = lowerPreview.indexOf(q);
+				if (matchIdx >= 0) {
+					preview = preview.slice(0, matchIdx) +
+						'<mark>' + preview.slice(matchIdx, matchIdx + q.length) + '</mark>' +
+						preview.slice(matchIdx + q.length);
+				}
 				const matchingSession = mod.sessions.find((s) => s.id === key);
 				results.push({
 					slug: mod.slug,

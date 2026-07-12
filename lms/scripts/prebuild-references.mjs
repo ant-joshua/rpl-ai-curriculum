@@ -1,7 +1,8 @@
 // Prebuild: scan reference content dirs, read all .md content, write as static JSON in static/content/references/
+// Also copy case studies and slides for rendering as individual pages
 // These are fetched as static assets at runtime — no Worker, no fs access needed on CF Pages
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, cpSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 
 const repoRoot = resolve(process.cwd(), '..');
@@ -70,3 +71,61 @@ writeFileSync(join(outputDir, 'mini-projects.json'), JSON.stringify(miniProjects
 
 const totalItems = glossary.items.length + challenges.items.length + cheatsheets.items.length + miniProjects.items.length;
 console.log(`✅ References generated: ${totalItems} total items → ${outputDir}/`);
+
+// --- Copy Case Studies ---
+const caseStudiesDir = join(repoRoot, 'case-studies');
+const caseStudiesOutputDir = join(outputDir, 'case-studies');
+if (existsSync(caseStudiesDir)) {
+  mkdirSync(caseStudiesOutputDir, { recursive: true });
+  const csFiles = readdirSync(caseStudiesDir).filter(f => f.endsWith('.md'));
+  for (const file of csFiles) {
+    cpSync(join(caseStudiesDir, file), join(caseStudiesOutputDir, file));
+  }
+  console.log(`  📋 Case studies: ${csFiles.length} files → ${caseStudiesOutputDir}/`);
+}
+
+// --- Copy & Combine Slides ---
+const slidesDir = join(repoRoot, 'slides');
+const slidesOutputDir = resolve(process.cwd(), 'static', 'content', 'slides');
+if (existsSync(slidesDir)) {
+  mkdirSync(slidesOutputDir, { recursive: true });
+  let totalSlideFiles = 0;
+
+  // Copy theme CSS
+  const themeDir = join(slidesDir, 'themes');
+  if (existsSync(themeDir)) {
+    const themeFiles = readdirSync(themeDir).filter(f => f.endsWith('.css'));
+    for (const file of themeFiles) {
+      cpSync(join(themeDir, file), join(slidesOutputDir, file));
+    }
+  }
+
+  // Each module subdir: combine all .md files into one slides/[slug].md with --- separators
+  const slideDirs = readdirSync(slidesDir).filter(d => {
+    const fullPath = join(slidesDir, d);
+    return existsSync(fullPath) && statSync(fullPath).isDirectory() && d !== 'themes';
+  });
+
+  for (const dir of slideDirs) {
+    const fullDirPath = join(slidesDir, dir);
+    const slideFiles = readdirSync(fullDirPath)
+      .filter(f => f.endsWith('.md'))
+      .sort();
+
+    if (slideFiles.length === 0) continue;
+
+    // Combine all slides with --- separator
+    const combined = slideFiles.map(file => {
+      const content = readFileSync(join(fullDirPath, file), 'utf-8');
+      // Remove frontmatter if present
+      const clean = content.replace(/^---[\s\S]*?---\n*/, '').trim();
+      return clean;
+    }).join('\n\n---\n\n');
+
+    writeFileSync(join(slidesOutputDir, `${dir}.md`), combined);
+    totalSlideFiles += slideFiles.length;
+    console.log(`  🖥️  Slides combined: ${dir} → ${dir}.md (${slideFiles.length} files)`);
+  }
+
+  console.log(`  🖥️  Total: ${totalSlideFiles} slide files → ${slidesOutputDir}/`);
+}

@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/270404/pexels-photo-270404.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Algorithms" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 2.1 Big O Notation — Ukur Kecepatan Kode
 
 **Big O = bahasa buat ngomongin "seberapa cepet" kode jalan**, dalam jumlah langkah, bukan detik. Detik beda-beda tergantung komputer. Langkah = absolut.

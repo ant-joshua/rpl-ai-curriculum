@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { api } from '$lib/utils/api';
 
 const NOTES_KEY = 'lms-notes';
 
@@ -27,6 +28,44 @@ function createNotesStore() {
 		return all[getKey(slug, sessionId)] || '';
 	}
 
+	async function apiSync(slug: string, sessionId: string, content: string): Promise<void> {
+		if (!browser) return;
+		await api('/api/notes', {
+			method: 'POST',
+			body: JSON.stringify({ module_slug: slug, session_id: sessionId, content }),
+		});
+	}
+
+	/** Load notes from API and merge into localStorage */
+	async function fetchFromApi(): Promise<void> {
+		if (!browser) return;
+		try {
+			const res = await api<Array<{ module_slug: string; session_id: string; content: string }>>('/api/notes');
+			if (res.success && res.data) {
+				const local = getAllNotes();
+				let changed = false;
+				for (const row of res.data) {
+					const k = getKey(row.module_slug, row.session_id);
+					if (row.content && !local[k]) {
+						local[k] = row.content;
+						changed = true;
+					}
+				}
+				if (changed) {
+					localStorage.setItem(NOTES_KEY, JSON.stringify(local));
+					version++;
+				}
+			}
+		} catch {
+			// offline
+		}
+	}
+
+	// Init: fetch from API
+	if (browser) {
+		fetchFromApi();
+	}
+
 	function setNotes(slug: string, sessionId: string, text: string): void {
 		if (!browser) return;
 		const all = getAllNotes();
@@ -38,6 +77,8 @@ function createNotesStore() {
 		}
 		localStorage.setItem(NOTES_KEY, JSON.stringify(all));
 		version++;
+		// Async API sync
+		apiSync(slug, sessionId, text);
 	}
 
 	function getSessionNotes(slug: string, sessionId: string): string {

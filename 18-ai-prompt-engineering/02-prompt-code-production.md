@@ -1,3 +1,5 @@
+<img src="https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800&h=300&dpr=1" alt="Code & Production" style="width:100%;border-radius:12px;margin:12px 0;">
+
 # 2. Prompt for Code & Production
 
 > **Durasi:** 2 Jam  
