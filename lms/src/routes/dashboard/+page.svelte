@@ -12,12 +12,17 @@
 	import { moduleVideos } from '$lib/stores/videos';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
+	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import { api } from '$lib/utils/api';
 
 	let loading = $state(true);
 
 	onMount(() => {
 		progress.updateStreak();
+		initHeatmap();
+		loadRecommendations();
 		// Brief delay so skeleton is visible during hydration
 		requestAnimationFrame(() => {
 			loading = false;
@@ -118,6 +123,55 @@
 		dailyGoal.setTarget(editTarget);
 		dailyTarget = editTarget;
 		showGoalInput = false;
+	}
+
+	// ─── Activity Heatmap ───
+	let heatmapData = $state<Record<string, number>>({});
+	let localActivity = $state<{timestamp: number}[]>([]);
+
+	// ─── AI Recommendations ───
+	let recommendations = $state<string[]>([]);
+	let recWeakTopics = $state<string[]>([]);
+	let recLoading = $state(false);
+	let recSuggestion = $state('');
+
+	async function loadRecommendations() {
+		if (!browser) return;
+		recLoading = true;
+		try {
+			const completedModules: { slug: string; title: string; pct: number }[] = [];
+			for (const mod of modules) {
+				const pct = progress.getModuleProgress(mod.slug);
+				if (pct > 0) {
+					completedModules.push({ slug: mod.slug, title: mod.title, pct });
+				}
+			}
+			const res = await api<any>('/api/recommendations', {
+				method: 'POST',
+				body: JSON.stringify({
+					progress: completedModules,
+					streak: progress.getStreak(),
+					total_sessions: progress.getOverallProgress(),
+				}),
+			});
+			if (res.success && res.data) {
+				recommendations = res.data.recommendations || [];
+				recWeakTopics = res.data.weak_topics || [];
+				recSuggestion = res.data.suggestion || '';
+			}
+		} catch {
+			// fallback - offline
+		} finally {
+			recLoading = false;
+		}
+	}
+
+	function initHeatmap() {
+		if (!browser) return;
+		try {
+			const raw = localStorage.getItem('lms-activity');
+			if (raw) localActivity = JSON.parse(raw);
+		} catch {}
 	}
 </script>
 
@@ -235,6 +289,12 @@
 			</div>
 		</section>
 
+		<!-- Activity Heatmap -->
+		<section class="section-card">
+			<h2>🔥 Activity Heatmap</h2>
+			<ActivityHeatmap data={localActivity} />
+		</section>
+
 		<!-- Next uncompleted session card -->
 		{#if nextSessionOverall}
 			<section class="continue-reading">
@@ -291,6 +351,30 @@
 				</div>
 			</section>
 		{/if}
+
+		<!-- AI Recommendations -->
+		<section class="section-card">
+			<div class="rec-header">
+				<h2>🤖 Rekomendasi AI</h2>
+				<button class="rec-refresh-btn" onclick={loadRecommendations} disabled={recLoading}>
+					{recLoading ? 'Memuat...' : 'Refresh'}
+				</button>
+			</div>
+			{#if recommendations.length > 0}
+				<ul class="rec-list">
+					{#each recommendations as rec}
+						<li class="rec-item">{rec}</li>
+					{/each}
+				</ul>
+				{#if recSuggestion}
+					<p class="rec-suggestion">{recSuggestion}</p>
+				{/if}
+			{:else if !recLoading}
+				<p class="empty-text">Belum ada rekomendasi. Klik "Refresh" untuk mendapatkan saran belajar.</p>
+			{:else}
+				<p class="empty-text">Memuat rekomendasi...</p>
+			{/if}
+		</section>
 
 	<!-- Level filter tabs -->
 	<section class="level-filters">
@@ -802,8 +886,82 @@
 			color: var(--text-secondary);
 		}
 
-		.ap-continue {
-			font-weight: 600;
-			color: var(--ap-color, var(--accent));
-		}
-	</style>
+				.ap-continue {
+					font-weight: 600;
+					color: var(--ap-color, var(--accent));
+				}
+
+				/* Section Card for heatmap + recs */
+			.section-card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+				margin-bottom: 16px;
+			}
+			.section-card h2 {
+				font-size: 15px;
+				font-weight: 600;
+				margin-bottom: 14px;
+			}
+
+			/* Rec header */
+			.rec-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 14px;
+			}
+			.rec-header h2 {
+				margin-bottom: 0;
+			}
+			.rec-refresh-btn {
+				background: var(--accent);
+				border: none;
+				color: #fff;
+				padding: 4px 14px;
+				border-radius: 8px;
+				font-size: 12px;
+				font-weight: 600;
+				cursor: pointer;
+				font-family: inherit;
+			}
+			.rec-refresh-btn:hover {
+				opacity: 0.9;
+			}
+			.rec-refresh-btn:disabled {
+				opacity: 0.5;
+				cursor: default;
+			}
+			.rec-list {
+				list-style: none;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+			.rec-item {
+				font-size: 13px;
+				color: var(--text);
+				padding: 8px 12px;
+				background: var(--bg);
+				border-radius: 8px;
+				border: 1px solid var(--border);
+				line-height: 1.5;
+			}
+			.rec-suggestion {
+				font-size: 13px;
+				color: var(--accent);
+				font-weight: 600;
+				margin-top: 10px;
+				padding: 10px 14px;
+				background: var(--accent-dim);
+				border-radius: 8px;
+			}
+			.empty-text {
+				font-size: 13px;
+				color: var(--text-secondary);
+				text-align: center;
+				padding: 20px;
+			}
+			</style>

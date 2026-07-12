@@ -464,6 +464,9 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 						📥 Download PDF
 					</a>
 				{/if}
+				<a href="/api/export/module/{slug}" class="pdf-download-btn" download>
+					📥 Download HTML
+				</a>
 			</div>
 		</header>
 

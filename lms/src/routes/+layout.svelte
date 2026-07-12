@@ -144,6 +144,10 @@
 				<span class="nav-icon">📊</span>
 				<span>{t('nav.dashboard')}</span>
 			</a>
+			<a href="/insights" onclick={closeSidebar} class:active={isActive('/insights')}>
+				<span class="nav-icon">📊</span>
+				<span>Insights</span>
+			</a>
 			<a href="/path" onclick={closeSidebar} class:active={isActive('/path')}>
 				<span class="nav-icon">📚</span>
 				<span>{t('nav.paths')}</span>
@@ -176,6 +180,18 @@
 				<span class="nav-icon">🏆</span>
 				<span>{t('nav.leaderboard')}</span>
 			</a>
+			<a href="/groups" onclick={closeSidebar} class:active={isActive('/groups')}>
+				<span class="nav-icon">👥</span>
+				<span>Groups</span>
+			</a>
+			<a href="/mentorship" onclick={closeSidebar} class:active={isActive('/mentorship')}>
+				<span class="nav-icon">🎯</span>
+				<span>Mentorship</span>
+			</a>
+			<a href="/reviews" onclick={closeSidebar} class:active={isActive('/reviews')}>
+				<span class="nav-icon">🔍</span>
+				<span>Peer Review</span>
+			</a>
 			<a href="/planner" onclick={closeSidebar} class:active={isActive('/planner')}>
 				<span class="nav-icon">📅</span>
 				<span>{t('nav.planner')}</span>
@@ -192,6 +208,18 @@
 			<a href="/exercises" onclick={closeSidebar} class:active={isActive('/exercises')}>
 				<span class="nav-icon">🏋️</span>
 				<span>{t('nav.exercises')}</span>
+			</a>
+			<a href="/capstone" onclick={closeSidebar} class:active={isActive('/capstone')}>
+				<span class="nav-icon">🎓</span>
+				<span>Capstone</span>
+			</a>
+			<a href="/quiz" onclick={closeSidebar} class:active={isActive('/quiz')}>
+				<span class="nav-icon">📝</span>
+				<span>Quiz</span>
+			</a>
+			<a href="/progress-quiz" onclick={closeSidebar} class:active={isActive('/progress-quiz')}>
+				<span class="nav-icon">📊</span>
+				<span>Progress Quiz</span>
 			</a>
 			<div class="sidebar-group-label">📚 {t('nav.references')}</div>
 			<a href="/challenges" onclick={closeSidebar}>

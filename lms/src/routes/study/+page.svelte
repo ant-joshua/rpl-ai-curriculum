@@ -22,7 +22,6 @@
 	let pomodoroCount = $state(0);
 
 	$effect(() => {
-		// Reset timer when duration changes (only if not running)
 		if (!isRunning) {
 			if (timerMode === 'focus') timeLeft = TOTAL_FOCUS_SECS;
 			else timeLeft = TOTAL_BREAK_SECS;
@@ -449,6 +448,26 @@
 			</div>
 		</section>
 	</div>
+
+	<!-- Google Calendar Sync -->
+	<section class="tool-card calendar-card">
+		<h2>📅 Google Calendar</h2>
+		<p class="tool-desc">Sinkronkan jadwal belajar ke Google Calendar</p>
+		<p class="calendar-info">Download file .ics untuk diimpor ke Google Calendar, Apple Calendar, atau Outlook.</p>
+		<a href="/api/export/ical" class="calendar-btn" target="_blank" download="calendar.ics">
+			📥 Sync ke Google Calendar
+		</a>
+	</section>
+
+	<!-- Discord Notification -->
+	<section class="tool-card discord-card">
+		<h2>🔔 Discord</h2>
+		<p class="tool-desc">Notifikasi belajar via Discord webhook</p>
+		<div class="discord-info">
+			<p>Notifikasi Discord akan dikirim untuk pengingat belajar, streak, dan pencapaian.</p>
+			<p class="discord-note">Konfigurasi webhook URL melalui environment variable <code>DISCORD_WEBHOOK_URL</code>.</p>
+		</div>
+	</section>
 </div>
 
 <style>
@@ -927,19 +946,6 @@
 		font-weight: 500;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
-		.tools-grid {
-			grid-template-columns: 1fr;
-		}
-		.pomodoro-card, .stats-card, .streak-card, .quick-links-card, .reminder-card {
-			grid-column: 1;
-		}
-		.stats-grid {
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-
 	/* Reminder Card */
 	.reminder-card {
 		grid-column: 1;
@@ -1084,4 +1090,67 @@
 		color: var(--text);
 		border-color: var(--text-secondary);
 	}
-	</style>
+
+	/* Calendar & Discord cards */
+	.calendar-card, .discord-card {
+		margin-top: 16px;
+	}
+
+	.calendar-info {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin-bottom: 12px;
+	}
+
+	.calendar-btn {
+		display: inline-block;
+		padding: 10px 20px;
+		border-radius: 8px;
+		background: var(--accent);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		transition: opacity 0.15s ease;
+	}
+	.calendar-btn:hover {
+		opacity: 0.9;
+		text-decoration: none;
+	}
+
+	.discord-info p {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin-bottom: 6px;
+	}
+
+	.discord-note {
+		font-size: 11px;
+		color: var(--muted);
+		background: var(--bg);
+		padding: 8px 12px;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+	}
+
+	.discord-note code {
+		font-size: 11px;
+		background: var(--surface);
+		padding: 2px 6px;
+		border-radius: 4px;
+		color: var(--accent);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.tools-grid {
+			grid-template-columns: 1fr;
+		}
+		.pomodoro-card, .stats-card, .streak-card, .quick-links-card, .reminder-card {
+			grid-column: 1;
+		}
+		.stats-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>
