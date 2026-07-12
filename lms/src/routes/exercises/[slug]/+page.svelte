@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
+	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
+	import { submitCode } from '$lib/stores/submissions.svelte';
 
 	let { data } = $props();
 
@@ -22,6 +24,33 @@
 		bash: 'Bash',
 		python: 'Python',
 	};
+
+	let showEditor = $state(false);
+	let submitStatus = $state<'idle' | 'submitting' | 'submitted' | 'error'>('idle');
+	let submitMessage = $state('');
+
+	function handleRun(output: string) {
+		if (!exercise) return;
+		submitStatus = 'submitting';
+		submitMessage = '';
+		const lang = exercise.type === 'html' ? 'html' : exercise.type === 'js' ? 'javascript' : exercise.type;
+		submitCode(exercise.slug, '', lang, output, true)
+			.then((res) => {
+				if (res && res.success) {
+					submitStatus = 'submitted';
+					submitMessage = res.passed
+						? `✓ Submitted! +${res.xpAwarded} XP earned`
+						: '✓ Submitted (check output)';
+				} else {
+					submitStatus = 'error';
+					submitMessage = res?.errors?.join(', ') || 'Submission failed';
+				}
+			})
+			.catch(() => {
+				submitStatus = 'error';
+				submitMessage = 'Network error';
+			});
+	}
 
 	// Simple markdown to HTML renderer (client-side)
 	async function renderMarkdown() {
@@ -102,12 +131,41 @@
 					&larr; Kembali ke Modul
 				</a>
 			{/if}
-			{#if exercise.hasCode}
-				<a href="/editor/{exercise.slug}" class="btn btn-primary">
-					▶ Coba Kode
-				</a>
-			{/if}
 		</div>
+
+		{#if exercise.hasCode}
+			{#if !showEditor}
+				<div class="code-section-prompt">
+					<p class="prompt-text">Latihan ini memiliki kode yang bisa kamu coba langsung.</p>
+					<button class="btn btn-primary" onclick={() => showEditor = true}>
+						▶ Coba Kode
+					</button>
+				</div>
+			{:else}
+				<div class="code-section">
+					<h2 class="section-title">🏋️ Coba Kode</h2>
+					<ExerciseRunner
+						language={exercise.type === 'js' ? 'javascript' : exercise.type === 'html' ? 'html' : exercise.type}
+						exerciseType={exercise.type === 'html' ? 'html' : 'js'}
+						starterCode=""
+					/>
+					<div class="submit-area">
+						<button
+							class="btn btn-primary submit-btn"
+							onclick={() => submitCode(exercise.slug, '', exercise.type === 'html' ? 'html' : 'javascript', 'Output submitted', true)}
+							disabled={submitStatus === 'submitting'}
+						>
+							{submitStatus === 'submitting' ? '⏳ Mengirim...' : submitStatus === 'submitted' ? '✓ Terkirim' : '📤 Kirim Jawaban'}
+						</button>
+						{#if submitMessage}
+							<p class="submit-message" class:success={submitStatus === 'submitted'} class:error={submitStatus === 'error'}>
+								{submitMessage}
+							</p>
+						{/if}
+					</div>
+				</div>
+			{/if}
+		{/if}
 
 		<div class="content">
 			{#if markdownHtml}
@@ -336,5 +394,63 @@
 
 	.back-link:hover {
 		text-decoration: underline;
+	}
+
+	.code-section-prompt {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 24px;
+		margin-bottom: 24px;
+		text-align: center;
+	}
+
+	.prompt-text {
+		color: var(--text-secondary);
+		margin-bottom: 16px;
+		font-size: 14px;
+	}
+
+	.code-section {
+		margin-bottom: 24px;
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 12px;
+		color: var(--text);
+	}
+
+	.submit-area {
+		margin-top: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+	}
+
+	.submit-btn {
+		background: var(--success) !important;
+		color: #fff !important;
+		border: none !important;
+	}
+
+	.submit-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.submit-message {
+		font-size: 13px;
+		margin: 0;
+	}
+
+	.submit-message.success {
+		color: var(--success);
+	}
+
+	.submit-message.error {
+		color: var(--danger);
 	}
 </style>

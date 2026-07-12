@@ -284,4 +284,23 @@
 		color: var(--text-secondary);
 		opacity: 0.7;
 	}
+
+	@media (max-width: 768px) {
+		.controls {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.search-box {
+			min-width: unset;
+		}
+		.grid {
+			grid-template-columns: 1fr !important;
+		}
+		.card-title {
+			font-size: 13px;
+		}
+		.card-desc {
+			font-size: 12px;
+		}
+	}
 </style>

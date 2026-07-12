@@ -182,4 +182,16 @@
 		color: var(--accent);
 		font-weight: 500;
 	}
+
+	@media (max-width: 768px) {
+		.badges-grid {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+		.badge-icon {
+			font-size: 32px;
+		}
+		.level-number {
+			font-size: 18px;
+		}
+	}
 </style>

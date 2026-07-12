@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { paths, getPathBySlug, type LearningPath } from './paths';
 import { getModuleBySlug } from './modules';
+import { api } from '$lib/utils/api';
 
 const PLANNER_KEY = 'lms-planner';
 
@@ -50,6 +51,63 @@ function createPlannerStore() {
 		}
 	}
 
+	async function fetchFromApi(): Promise<void> {
+		if (!browser) return;
+		try {
+			const res = await api<{
+				id: string;
+				pathSlug: string;
+				startDate: string;
+				targetDate: string;
+				dailyTarget: number;
+				status: string;
+				progress: { session_id: string; completed: number; completed_date: string | null }[];
+			}>('/api/planner');
+			if (res.success && res.data) {
+				const plan: StudyPlan = {
+					id: res.data.id,
+					pathSlug: res.data.pathSlug,
+					startDate: res.data.startDate,
+					targetDate: res.data.targetDate,
+					dailyTarget: res.data.dailyTarget,
+					completedDays: res.data.progress.filter((p) => p.completed).length,
+					totalDays: 1, // recalculated from path
+					status: res.data.status as 'active',
+				};
+				// Recalculate totalDays from path
+				const path = getPathBySlug(res.data.pathSlug);
+				const now = new Date();
+				const start = new Date(res.data.startDate);
+				const target = new Date(res.data.targetDate);
+				const diffTime = target.getTime() - start.getTime();
+				plan.totalDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+				activePlan = plan;
+				saveToStorage();
+			}
+		} catch {
+			// offline — use localStorage
+		}
+	}
+
+	async function saveToApi(): Promise<void> {
+		if (!browser || !activePlan) return;
+		try {
+			await api('/api/planner', {
+				method: 'POST',
+				body: JSON.stringify({
+					id: activePlan.id,
+					pathSlug: activePlan.pathSlug,
+					startDate: activePlan.startDate,
+					targetDate: activePlan.targetDate,
+					dailyTarget: activePlan.dailyTarget,
+					status: activePlan.status,
+				}),
+			});
+		} catch {
+			// offline — queued locally
+		}
+	}
+
 	function createPlan(pathSlug: string, targetDate: string): StudyPlan {
 		const path = getPathBySlug(pathSlug);
 		if (!path) throw new Error(`Path not found: ${pathSlug}`);
@@ -76,6 +134,7 @@ function createPlannerStore() {
 
 		activePlan = plan;
 		saveToStorage();
+		saveToApi();
 		return plan;
 	}
 
@@ -83,6 +142,7 @@ function createPlannerStore() {
 		if (activePlan) {
 			activePlan = { ...activePlan, status: 'abandoned' };
 			saveToStorage();
+			saveToApi();
 		}
 	}
 
@@ -90,6 +150,7 @@ function createPlannerStore() {
 		if (activePlan) {
 			activePlan = { ...activePlan, status: 'completed' };
 			saveToStorage();
+			saveToApi();
 		}
 	}
 
@@ -197,6 +258,7 @@ function createPlannerStore() {
 
 	if (browser) {
 		loadFromStorage();
+		fetchFromApi();
 	}
 
 	return {
@@ -213,6 +275,8 @@ function createPlannerStore() {
 		getDaysUntilDeadline,
 		loadFromStorage,
 		saveToStorage,
+		fetchFromApi,
+		saveToApi,
 	};
 }
 

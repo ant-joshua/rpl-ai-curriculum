@@ -323,4 +323,25 @@
   .empty-icon { font-size: 48px; margin-bottom: 8px; }
   .empty-screen h2 { font-size: 18px; font-weight: 600; }
   .empty-screen p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  @media (max-width: 768px) {
+    .page {
+      padding: 12px;
+      padding-top: 16px;
+    }
+    .card-container {
+      margin-bottom: 16px;
+    }
+    .card-face {
+      padding: 24px 16px;
+      min-height: 200px;
+    }
+    .card-text {
+      font-size: 16px;
+    }
+    .rating-buttons {
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+  }
 </style>

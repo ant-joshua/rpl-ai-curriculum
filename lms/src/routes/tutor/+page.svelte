@@ -424,4 +424,26 @@
     margin-top: 4px;
     opacity: 0.5;
   }
+
+  @media (max-width: 768px) {
+    .chat-page {
+      height: calc(100vh - 60px);
+      padding: 0;
+    }
+    .chat-header h1 {
+      font-size: 16px;
+    }
+    .msg-bubble {
+      max-width: 92%;
+    }
+    .welcome {
+      padding: 24px 12px;
+    }
+    .welcome h2 {
+      font-size: 16px;
+    }
+    .chat-input {
+      font-size: 13px;
+    }
+  }
 </style>

@@ -1802,4 +1802,41 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
+
+	@media (max-width: 768px) {
+		.module-layout {
+			flex-direction: column !important;
+		}
+		.session-sidebar {
+			width: 100% !important;
+			min-width: unset !important;
+			position: static !important;
+		}
+		.module-banner img.banner-img {
+			max-width: 100%;
+			height: auto;
+		}
+		.banner-title {
+			font-size: 20px;
+		}
+		.content-area {
+			padding: 0;
+		}
+		.session-toolbar {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+		.toolbar-actions {
+			flex-wrap: wrap;
+		}
+		.module-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+		.header-actions {
+			flex-wrap: wrap;
+		}
+	}
 </style>

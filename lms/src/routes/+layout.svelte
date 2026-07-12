@@ -94,6 +94,25 @@
 				<span class="logo-icon">📘</span>
 				<span class="logo-text">RPL AI</span>
 			</a>
+			<div class="sidebar-search">
+				<span class="sidebar-search-icon">🔍</span>
+				<input
+					type="text"
+					class="sidebar-search-input"
+					placeholder="Cari..."
+					onkeydown={(e) => {
+						if (e.key === 'Enter') {
+							const target = e.target as HTMLInputElement;
+							const q = target.value.trim();
+							if (q) {
+								import('$app/navigation').then(mod => mod.goto('/search?q=' + encodeURIComponent(q)));
+								closeSidebar();
+							}
+						}
+					}}
+					aria-label="Cari"
+				/>
+			</div>
 		</div>
 
 		<nav class="sidebar-nav">
@@ -132,6 +151,10 @@
 			<a href="/badges" onclick={closeSidebar} class:active={isActive('/badges')}>
 				<span class="nav-icon">🏆</span>
 				<span>Badges</span>
+			</a>
+			<a href="/leaderboard" onclick={closeSidebar} class:active={isActive('/leaderboard')}>
+				<span class="nav-icon">🏆</span>
+				<span>Leaderboard</span>
 			</a>
 			<a href="/planner" onclick={closeSidebar} class:active={isActive('/planner')}>
 				<span class="nav-icon">📅</span>
@@ -519,6 +542,44 @@
 		opacity: 0.9;
 	}
 
+	/* Sidebar search */
+	.sidebar-search {
+		position: relative;
+		margin-top: 10px;
+	}
+
+	.sidebar-search-icon {
+		position: absolute;
+		left: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 13px;
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	.sidebar-search-input {
+		width: 100%;
+		padding: 7px 10px 7px 30px;
+		font-size: 13px;
+		font-family: inherit;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-secondary);
+		color: var(--text);
+		outline: none;
+		transition: border-color 0.15s ease;
+	}
+
+	.sidebar-search-input:focus {
+		border-color: var(--accent);
+	}
+
+	.sidebar-search-input::placeholder {
+		color: var(--text-secondary);
+		opacity: 0.6;
+	}
+
 	.main-content {
 		flex: 1;
 		min-width: 0;
@@ -592,15 +653,18 @@
 
 		.sidebar {
 			position: fixed;
+			left: 0;
 			top: 0;
-			left: -280px;
+			height: 100vh;
+			width: 260px;
+			transform: translateX(-100%);
+			transition: transform 0.3s ease;
 			z-index: 200;
-			transition: left 0.25s ease;
 			box-shadow: 4px 0 20px rgba(0,0,0,0.3);
 		}
 
 		.sidebar.sidebar--open {
-			left: 0;
+			transform: translateX(0);
 		}
 
 		.sidebar-overlay {

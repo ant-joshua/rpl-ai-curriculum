@@ -323,6 +323,18 @@ function createGamificationStore() {
 
 		if (newlyUnlocked.length > 0) {
 			saveToStorage();
+			// Sync badges to API (fire-and-forget)
+			if (browser) {
+				try {
+					fetch('/api/xp', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ xp: 0, badge_ids: newlyUnlocked }),
+					});
+				} catch {
+					// offline — queued locally
+				}
+			}
 		}
 
 		return newlyUnlocked;
@@ -417,7 +429,18 @@ export function afterSessionComplete(moduleSlug: string, sessionId: string): voi
 
 	// Reload store state
 	gamification.loadFromStorage();
-	gamification.checkBadges();
+	const newlyUnlocked = gamification.checkBadges();
+
+	// Sync to API (fire-and-forget)
+	try {
+		fetch('/api/xp', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ xp: XP_PER_SESSION, badge_ids: newlyUnlocked }),
+		});
+	} catch {
+		// offline — queued locally
+	}
 }
 
 export const gamification = createGamificationStore();

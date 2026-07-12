@@ -426,4 +426,27 @@
 		text-align: center;
 		padding: 20px;
 	}
+
+	@media (max-width: 768px) {
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+		.profile-header {
+			flex-direction: column;
+			text-align: center;
+		}
+		.profile-info h1 {
+			font-size: 18px;
+		}
+		.level-badge {
+			margin-top: 8px;
+		}
+		.mini-stats {
+			flex-direction: column;
+			gap: 4px;
+		}
+		.profile-page {
+			padding: 12px 0;
+		}
+	}
 </style>
