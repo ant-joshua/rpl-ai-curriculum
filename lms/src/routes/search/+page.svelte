@@ -114,19 +114,26 @@
 			<div class="search-skeleton-list" in:fade={{ duration: 150 }}>
 				{#each [1, 2, 3, 4] as _}
 					<div class="result-card-skeleton">
-						<Skeleton width="65%" height="18px" />
-						<div style="margin-bottom: 8px;"></div>
-						<Skeleton width="90%" height="14px" />
-						<div style="margin-bottom: 6px;"></div>
-						<Skeleton width="30%" height="12px" />
+						<div class="skeleton-bar" style="width: 65%; height: 18px; margin-bottom: 8px;"></div>
+						<div class="skeleton-bar" style="width: 90%; height: 14px; margin-bottom: 6px;"></div>
+						<div class="skeleton-bar" style="width: 30%; height: 12px;"></div>
 					</div>
 				{/each}
 			</div>
 		{:else if loading}
 			<div class="search-state" in:fade={{ duration: 150 }}>
-				<Skeleton width="100%" height="60px" borderRadius="10px" />
-				<div style="margin-top: 8px;"><Skeleton width="100%" height="60px" borderRadius="10px" /></div>
-				<div style="margin-top: 8px;"><Skeleton width="100%" height="60px" borderRadius="10px" /></div>
+				<div class="result-card-skeleton" style="width: 100%;">
+					<div class="skeleton-bar" style="width: 75%; height: 16px; margin-bottom: 10px;"></div>
+					<div class="skeleton-bar" style="width: 50%; height: 13px;"></div>
+				</div>
+				<div class="result-card-skeleton" style="width: 100%; margin-top: 8px;">
+					<div class="skeleton-bar" style="width: 60%; height: 16px; margin-bottom: 10px;"></div>
+					<div class="skeleton-bar" style="width: 70%; height: 13px;"></div>
+				</div>
+				<div class="result-card-skeleton" style="width: 100%; margin-top: 8px;">
+					<div class="skeleton-bar" style="width: 80%; height: 16px; margin-bottom: 10px;"></div>
+					<div class="skeleton-bar" style="width: 45%; height: 13px;"></div>
+				</div>
 			</div>
 		{:else if results.length > 0}
 			<p class="result-count">{results.length} hasil ditemukan</p>
@@ -333,6 +340,27 @@
 		padding: 14px 16px;
 		position: relative;
 		overflow: hidden;
+	}
+
+	.skeleton-bar {
+		background: #1e2240;
+		border-radius: 6px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.skeleton-bar::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			#2a2f52 25%,
+			transparent 50%
+		);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s ease-in-out infinite;
 	}
 
 	.result-card-skeleton::after {
