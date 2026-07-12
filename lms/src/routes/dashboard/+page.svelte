@@ -17,12 +17,21 @@
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import { api } from '$lib/utils/api';
 
+	let latestAnnouncements = $state<any[]>([]);
+
+	function formatDate(d: string) {
+		try {
+			return new Date(d + 'Z').toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+		} catch { return d; }
+	}
+
 	let loading = $state(true);
 
 	onMount(() => {
 		progress.updateStreak();
 		initHeatmap();
 		loadRecommendations();
+		loadLatestAnnouncements();
 		// Brief delay so skeleton is visible during hydration
 		requestAnimationFrame(() => {
 			loading = false;
@@ -164,6 +173,16 @@
 		} finally {
 			recLoading = false;
 		}
+	}
+
+	async function loadLatestAnnouncements() {
+		try {
+			const res = await fetch('/api/announcements');
+			const json = await res.json();
+			if (json.success) {
+				latestAnnouncements = (json.data || []).slice(0, 3);
+			}
+		} catch {}
 	}
 
 	function initHeatmap() {
@@ -422,6 +441,27 @@
 					videoCount={videoCountMap[mod.slug] || 0}
 					onclick={() => goto('/module/' + mod.slug)}
 				/>
+			{/each}
+		</div>
+	</section>
+
+	<!-- Announcements -->
+	<section class="section-card">
+		<div class="announcements-header">
+			<h2>📢 Pengumuman</h2>
+			<a href="/announcements" class="see-all">Lihat semua →</a>
+		</div>
+		<div class="announcements-preview">
+			{#each latestAnnouncements as ann}
+				<div class="ann-preview-item">
+					<div class="ann-preview-title">{ann.title}</div>
+					<div class="ann-preview-meta">
+						<span>{ann.author}</span>
+						<span>{formatDate(ann.created_at)}</span>
+					</div>
+				</div>
+			{:else}
+				<p class="empty-text">Belum ada pengumuman.</p>
 			{/each}
 		</div>
 	</section>
@@ -958,10 +998,53 @@
 				background: var(--accent-dim);
 				border-radius: 8px;
 			}
-			.empty-text {
-				font-size: 13px;
-				color: var(--text-secondary);
-				text-align: center;
-				padding: 20px;
-			}
-			</style>
+						.empty-text {
+							font-size: 13px;
+							color: var(--text-secondary);
+							text-align: center;
+							padding: 20px;
+						}
+
+						/* Announcements */
+						.announcements-header {
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							margin-bottom: 14px;
+						}
+						.announcements-header h2 {
+							margin-bottom: 0;
+						}
+						.see-all {
+							font-size: 0.8rem;
+							font-weight: 600;
+							color: var(--accent);
+							text-decoration: none;
+						}
+						.see-all:hover {
+							text-decoration: underline;
+						}
+						.announcements-preview {
+							display: flex;
+							flex-direction: column;
+							gap: 8px;
+						}
+						.ann-preview-item {
+							padding: 10px 12px;
+							background: var(--bg);
+							border: 1px solid var(--border);
+							border-radius: 8px;
+						}
+						.ann-preview-title {
+							font-size: 0.85rem;
+							font-weight: 600;
+							color: var(--text);
+							margin-bottom: 4px;
+						}
+						.ann-preview-meta {
+							display: flex;
+							gap: 1rem;
+							font-size: 0.7rem;
+							color: var(--text-secondary);
+						}
+						</style>

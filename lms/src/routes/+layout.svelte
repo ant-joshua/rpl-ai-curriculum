@@ -10,6 +10,7 @@
 	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
 	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
+	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 
 	let { children } = $props();
 
@@ -172,6 +173,10 @@
 				<span class="nav-icon">📜</span>
 				<span>{t('nav.history')}</span>
 			</a>
+			<a href="/announcements" onclick={closeSidebar} class:active={isActive('/announcements')}>
+				<span class="nav-icon">📢</span>
+				<span>Announcements</span>
+			</a>
 			<a href="/badges" onclick={closeSidebar} class:active={isActive('/badges')}>
 				<span class="nav-icon">🏆</span>
 				<span>{t('nav.badges')}</span>
@@ -285,8 +290,8 @@
 				<span>{getLang() === 'id' ? 'Indonesia' : 'English'}</span>
 			</button>
 			<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
-				<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
-				<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
+				<span class="nav-icon">{themeStore.theme === 'dark' ? '🌙' : '☀️'}</span>
+				<span>{themeStore.theme === 'dark' ? 'Gelap' : 'Terang'}</span>
 			</button>
 		</div>
 	</aside>
@@ -306,6 +311,8 @@
 {#if showBackToTop}
 	<button class="back-to-top" onclick={scrollToTop} aria-label="Kembali ke atas">↑</button>
 {/if}
+
+<PWAInstallPrompt />
 
 <ShortcutHelp show={showShortcuts} onclose={() => showShortcuts = false} />
 
