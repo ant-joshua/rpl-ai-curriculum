@@ -36,6 +36,9 @@
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 	let activeLevel = $state<string | null>(null);
 
+	// Search filter
+	let searchText = $state('');
+
 	let bookmarkedCount = $derived(modules.filter(m => bookmarks.isBookmarked(m.slug)).length);
 
 	let levelFilters = $derived<{ label: string; value: string | null }[]>([
@@ -46,12 +49,18 @@
 		{ label: `⭐ Tersimpan (${bookmarkedCount})`, value: '__bookmarked__' },
 	]);
 
-	let filteredModules = $derived(
+	let filteredByLevel = $derived(
 		activeLevel === null
 			? modules
 			: activeLevel === '__bookmarked__'
 				? modules.filter(m => bookmarks.isBookmarked(m.slug))
 				: modules.filter(m => m.level === activeLevel)
+	);
+
+	let filteredModules = $derived(
+		searchText
+			? filteredByLevel.filter(m => m.title.toLowerCase().includes(searchText.toLowerCase()))
+			: filteredByLevel
 	);
 
 	// Overview reactive to level filter
@@ -176,6 +185,19 @@
 		{/each}
 	</section>
 
+	<!-- Search input -->
+	<div class="search-wrap">
+		<input
+			type="text"
+			class="search-input"
+			placeholder="🔍 Cari modul..."
+			bind:value={searchText}
+		/>
+		{#if searchText}
+			<button class="search-clear" onclick={() => searchText = ''}>✕</button>
+		{/if}
+	</div>
+
 	<!-- Login prompt + Module grid -->
 	<section class="module-section">
 		<div class="module-header">
@@ -185,8 +207,10 @@
 			{/if}
 		</div>
 		<div class="module-grid">
-			{#each filteredModules as mod}
+			{#each filteredModules as mod, i}
 				<ModuleCard
+					index={mod.index}
+					level={mod.level}
 					slug={mod.slug}
 					title={mod.title}
 					description={mod.description}
@@ -378,6 +402,56 @@
 		font-size: 12px;
 		color: var(--text-secondary);
 		font-weight: 400;
+	}
+
+	/* Search input */
+	.search-wrap {
+		position: relative;
+		margin-bottom: 16px;
+	}
+
+	.search-input {
+		width: 100%;
+		height: 36px;
+		padding: 0 32px 0 12px;
+		font-size: 0.85rem;
+		color: var(--text);
+		background: #13141f;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		outline: none;
+		font-family: inherit;
+		box-sizing: border-box;
+		transition: border-color 0.2s ease;
+	}
+
+	.search-input:focus {
+		border-color: var(--accent);
+	}
+
+	.search-input::placeholder {
+		color: var(--text-secondary);
+		opacity: 0.7;
+	}
+
+	.search-clear {
+		position: absolute;
+		right: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		color: var(--text-secondary);
+		cursor: pointer;
+		font-size: 14px;
+		padding: 4px;
+		line-height: 1;
+		border-radius: 4px;
+		transition: color 0.15s ease;
+	}
+
+	.search-clear:hover {
+		color: var(--text);
 	}
 
 	@media (max-width: 768px) {

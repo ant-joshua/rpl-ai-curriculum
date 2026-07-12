@@ -61,6 +61,14 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	let totalWords = $state(0);
 	let readingTime = $derived(Math.max(1, Math.round(totalWords / 200)));
 
+	// Estimated reading time for current session (Indonesian WPM: 200)
+	let sessionWordCount = $derived.by(() => {
+		if (!sessionHtml) return 0;
+		const text = sessionHtml.replace(/<[^>]*>/g, '').trim();
+		return text ? text.split(/\s+/).length : 0;
+	});
+	let sessionReadingTime = $derived(sessionWordCount > 0 ? Math.max(1, Math.round(sessionWordCount / 200)) : null);
+
 	// Load content from static JSON
 	async function loadContent() {
 		mod = modules.find(m => m.slug === slug) ?? null;
@@ -163,6 +171,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		// Log complete activity (log after toggling — it now counts as completed)
 		if (progress.isSessionCompleted(mod.slug, sessionId)) {
 			activity.logAction('complete', mod.slug, sessionId);
+			// Trigger celebration animation
+			celebrateSession = sessionId;
 		}
 	}
 
@@ -177,6 +187,18 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	let quizQuestions = $state<QuizQuestion[]>([]);
 	let moduleVideos = $derived(mod ? getVideosByModule(mod.slug) : []);
 	let selectedVideo = $state<VideoEntry | null>(null);
+	let scrollProgress = $state(0);
+	let celebrateSession = $state<string | null>(null);
+
+	// Auto-remove celebration after animation completes
+	$effect(() => {
+		if (celebrateSession) {
+			const timer = setTimeout(() => {
+				celebrateSession = null;
+			}, 400);
+			return () => clearTimeout(timer);
+		}
+	});
 
 	// Parse quiz content from loaded JSON
 	function loadQuizFromContent(json: Record<string, string>) {
@@ -219,7 +241,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		});
 	});
 
-	// Debounced scroll position save
+	// Debounced scroll position save + reading progress
 	let scrollTimer: ReturnType<typeof setTimeout> | undefined;
 	function handleScroll() {
 		if (!activeSession) return;
@@ -227,11 +249,19 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		scrollTimer = setTimeout(() => {
 			localStorage.setItem(getScrollKey(activeSession), String(window.scrollY));
 		}, 300);
+		const scrollEl = document.documentElement;
+		const pct = (scrollEl.scrollTop / (scrollEl.scrollHeight - scrollEl.clientHeight)) * 100;
+		scrollProgress = Math.min(100, Math.max(0, pct));
 	}
 
-	// Keyboard shortcuts: left/right arrows for prev/next session
+	// Keyboard shortcuts: arrows for prev/next, letters for toggles
 	function handleKeydown(e: KeyboardEvent) {
 		if (!mod || !activeSession) return;
+		// Ignore if modifier keys pressed (mobile keyboards, etc.)
+		if (e.altKey || e.ctrlKey || e.metaKey) return;
+		// Ignore if focus is on input/textarea
+		const tag = (e.target as HTMLElement)?.tagName;
+		if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 		if (e.key === 'ArrowLeft') {
 			const prevIdx = currentSessionIndex - 1;
 			if (prevIdx >= 0) {
@@ -244,20 +274,42 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				e.preventDefault();
 				loadSession(mod.sessions[nextIdx].id);
 			}
+		} else if (e.key === 'n') {
+			showNotes = !showNotes;
+		} else if (e.key === 'q') {
+			showQuiz = !showQuiz;
+		} else if (e.key === 'e') {
+			showExercise = !showExercise;
+		} else if (e.key === 'v') {
+			showVideos = !showVideos;
+		} else if (e.key === 'd') {
+			toggleComplete(activeSession);
 		}
 	}
 
-		onMount(() => {
-			loadContent();
-			loadPdfIndex();
-			window.addEventListener('scroll', handleScroll, { passive: true });
-			window.addEventListener('keydown', handleKeydown);
-			return () => {
+	onMount(() => {
+		loadContent();
+		loadPdfIndex();
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('keydown', handleKeydown);
+		return () => {
 			window.removeEventListener('scroll', handleScroll);
 			window.removeEventListener('keydown', handleKeydown);
 		};
 	});
 </script>
+
+<!-- Reading progress bar -->
+{#if activeSession}
+	<div
+		class="reading-progress"
+		style="width: {scrollProgress}%"
+		role="progressbar"
+		aria-valuenow={scrollProgress}
+		aria-valuemin={0}
+		aria-valuemax={100}
+	></div>
+{/if}
 
 <div class="module-page">
 	{#if loading}
@@ -372,12 +424,16 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 							{#if sessionPosition}
 								<span class="session-position">{sessionPosition}</span>
 							{/if}
+							{#if sessionReadingTime != null}
+								<span class="session-reading-time">📖 ~{sessionReadingTime} menit</span>
+							{/if}
 						</h2>
 						<div class="toolbar-actions">
 							<button
 								class="notes-toggle-btn"
 								class:active={showNotes}
 								onclick={() => showNotes = !showNotes}
+								title="Catatan (n)"
 							>
 								📝 Catatan
 							</button>
@@ -387,6 +443,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 									class="quiz-toggle-btn"
 									class:active={showQuiz}
 									onclick={() => showQuiz = !showQuiz}
+									title="Quiz (q)"
 								>
 									🧪 Quiz
 								</button>
@@ -396,6 +453,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 									class="exercise-toggle-btn"
 									class:active={showExercise}
 									onclick={() => showExercise = !showExercise}
+									title="Coba Kode (e)"
 								>
 									▶️ Coba Kode
 								</button>
@@ -405,6 +463,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 									class="video-toggle-btn"
 									class:active={showVideos}
 									onclick={() => showVideos = !showVideos}
+									title="Video (v)"
 								>
 									🎥 Video
 								</button>
@@ -412,7 +471,9 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 							<button
 								class="complete-btn"
 								class:done={progress.isSessionCompleted(mod.slug, activeSession)}
+								class:celebrate={celebrateSession === activeSession}
 								onclick={() => toggleComplete(activeSession)}
+								title="Tandai Selesai (d)"
 							>
 								{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
 							</button>
@@ -697,6 +758,16 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		white-space: nowrap;
 	}
 
+	.session-reading-time {
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--text-secondary);
+		background: var(--bg-secondary);
+		padding: 2px 10px;
+		border-radius: 10px;
+		white-space: nowrap;
+	}
+
 	.toolbar-actions {
 		display: flex;
 		gap: 8px;
@@ -750,6 +821,17 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 
 	.complete-btn:hover { border-color: var(--accent); color: var(--accent); }
 	.complete-btn.done { background: var(--success, #22c55e); color: #fff; border-color: var(--success, #22c55e); }
+
+	/* Celebration animation on complete button */
+	.complete-btn.celebrate {
+		animation: celebrate-pulse 0.4s ease;
+	}
+
+	@keyframes celebrate-pulse {
+		0% { transform: scale(1); background: var(--success, #22c55e); }
+		50% { transform: scale(1.15); background: #22c55e; }
+		100% { transform: scale(1); }
+	}
 
 	.markdown-content {
 		background: var(--surface); border: 1px solid var(--border);
@@ -1002,5 +1084,17 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	@keyframes toast-in {
 		from { opacity: 0; transform: translateY(12px); }
 		to { opacity: 1; transform: translateY(0); }
+	}
+
+	/* Reading progress bar */
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 3px;
+		z-index: 1000;
+		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		transition: none;
+		pointer-events: none;
 	}
 </style>

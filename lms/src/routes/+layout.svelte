@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import { user } from '$lib/stores/user.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte';
 	import favicon from '$lib/assets/favicon.svg';
@@ -8,6 +9,9 @@
 	let { children } = $props();
 
 	let sidebarOpen = $state(false);
+	let offline = $state(false);
+	let showBackToTop = $state(false);
+	let dismissedOffline = $state(false);
 
 	function closeSidebar() {
 		sidebarOpen = false;
@@ -19,6 +23,44 @@
 
 	function isActive(path: string) {
 		return $page.url.pathname === path;
+	}
+
+	if (browser) {
+		offline = !navigator.onLine;
+	}
+
+	$effect(() => {
+		if (!browser) return;
+
+		function onOnline() { offline = false; dismissedOffline = false; }
+		function onOffline() { offline = true; dismissedOffline = false; }
+
+		window.addEventListener('online', onOnline);
+		window.addEventListener('offline', onOffline);
+
+		return () => {
+			window.removeEventListener('online', onOnline);
+			window.removeEventListener('offline', onOffline);
+		};
+	});
+
+	$effect(() => {
+		if (!browser) return;
+
+		function onScroll() {
+			showBackToTop = window.scrollY > 300;
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+		};
+	});
+
+	function scrollToTop() {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 </script>
 
@@ -129,6 +171,17 @@
 		{@render children()}
 	</main>
 </div>
+
+{#if offline && !dismissedOffline}
+	<div class="offline-badge" transition:fly={{ y: 20, duration: 300 }}>
+		<span>🔴 Luring</span>
+		<button class="offline-dismiss" onclick={() => dismissedOffline = true}>✕</button>
+	</div>
+{/if}
+
+{#if showBackToTop}
+	<button class="back-to-top" onclick={scrollToTop} aria-label="Kembali ke atas">↑</button>
+{/if}
 
 <style>
 	:global(*) {
@@ -385,6 +438,65 @@
 		min-width: 0;
 		padding: 20px 24px;
 		max-width: 100%;
+	}
+
+	.offline-badge {
+		position: fixed;
+		bottom: 16px;
+		left: 16px;
+		z-index: 9999;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: var(--surface, #1e1e2e);
+		border: 1px solid var(--danger, #e74c3c);
+		border-radius: 20px;
+		padding: 6px 14px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text, #e0e0e0);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+	}
+
+	.offline-dismiss {
+		background: none;
+		border: none;
+		color: var(--text-secondary, #888);
+		cursor: pointer;
+		font-size: 14px;
+		padding: 0 2px;
+		line-height: 1;
+	}
+
+	.offline-dismiss:hover {
+		color: var(--text, #e0e0e0);
+	}
+
+	.back-to-top {
+		position: fixed;
+		bottom: 16px;
+		right: 16px;
+		z-index: 9999;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: var(--accent, #6c5ce7);
+		color: #fff;
+		border: none;
+		font-size: 20px;
+		font-weight: 700;
+		line-height: 1;
+		cursor: pointer;
+		box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+		transition: all 0.15s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.back-to-top:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(108, 92, 231, 0.5);
 	}
 
 	@media (max-width: 768px) {

@@ -7,14 +7,27 @@
 		title = '',
 		description = '',
 		progress = 0,
+		index = 0,
+		level = '',
 		onclick
 	}: {
 		slug?: string;
 		title?: string;
 		description?: string;
 		progress?: number;
+		index?: number;
+		level?: string;
 		onclick?: () => void;
 	} = $props();
+
+	let isNew = $derived(index < 3);
+
+	let levelBadge = $derived(
+		level === 'Beginner' ? { text: '🔵 Beginner', color: 'var(--level-beginner, #3b82f6)' } :
+		level === 'Intermediate' ? { text: '🟡 Intermediate', color: 'var(--level-intermediate, #eab308)' } :
+		level === 'Advanced' ? { text: '🟣 Advanced', color: 'var(--level-advanced, #a855f7)' } :
+		null
+	);
 
 	function handleBookmarkToggle(e: MouseEvent) {
 		e.stopPropagation();
@@ -26,7 +39,14 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="module-card" onclick={onclick} role="button" tabindex={0}>
 	<div class="card-header">
-		<span class="card-progress-text">{progress}%</span>
+		<div class="card-tags">
+			{#if levelBadge}
+				<span class="level-badge" style="background: {levelBadge.color}22; color: {levelBadge.color}">{levelBadge.text}</span>
+			{/if}
+			{#if isNew}
+				<span class="new-badge">🆕 NEW</span>
+			{/if}
+		</div>
 		<button
 			class="bookmark-btn"
 			onclick={handleBookmarkToggle}
@@ -84,13 +104,29 @@
 		transform: scale(1.2);
 	}
 
-	.card-progress-text {
-		font-size: 13px;
+	.card-tags {
+		display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	.level-badge {
+		font-size: 0.7rem;
 		font-weight: 600;
-		color: var(--accent);
-		background: var(--accent-dim);
-		padding: 2px 10px;
+		padding: 2px 8px;
 		border-radius: 20px;
+		line-height: 1.4;
+	}
+
+	.new-badge {
+		font-size: 0.7rem;
+		font-weight: 700;
+		padding: 2px 8px;
+		border-radius: 20px;
+		line-height: 1.4;
+		background: var(--accent-dim, #1e3a5f);
+		color: var(--accent, #60a5fa);
 	}
 
 	.card-title {
