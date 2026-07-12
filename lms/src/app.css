@@ -136,14 +136,20 @@ input, textarea, select {
 
 /* Code blocks (highlight.js output) */
 .markdown-content pre {
-	background: #13141f;
+	background: #0d0e17;
 	border: 1px solid var(--border);
 	border-radius: 8px;
 	padding: 1rem 1.25rem;
 	overflow-x: auto;
 	font-size: 0.85rem;
-	line-height: 1.55;
+	line-height: 1.6;
 	tab-size: 2;
+	position: relative;
+	margin: 1.25rem 0;
+}
+
+.markdown-content pre:hover .copy-btn {
+	opacity: 1;
 }
 
 .markdown-content pre code {
@@ -161,6 +167,65 @@ input, textarea, select {
 	border-radius: 4px;
 	font-size: 0.85em;
 	font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* Code block lang badge */
+.markdown-content pre::before {
+	content: attr(data-lang);
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0.25rem 0.6rem;
+	font-size: 0.7rem;
+	font-family: 'JetBrains Mono', monospace;
+	color: var(--text-secondary);
+	background: var(--surface);
+	border-radius: 0 8px 0 8px;
+	border-bottom: 1px solid var(--border);
+	border-left: 1px solid var(--border);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+/* Copy button */
+.copy-btn {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	opacity: 0;
+	transition: opacity 0.2s;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text-secondary);
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+	font-size: 0.75rem;
+	cursor: pointer;
+	z-index: 2;
+	line-height: 1;
+}
+
+.copy-btn:hover {
+	color: var(--accent);
+	border-color: var(--accent);
+}
+
+.copy-btn.copied {
+	opacity: 1;
+	color: #22c55e;
+	border-color: #22c55e;
+}
+
+/* Inline code refinement */
+.markdown-content p > code,
+.markdown-content li > code {
+	background: rgba(199, 146, 234, 0.12);
+	color: #d4a6f5;
+	padding: 0.15em 0.45em;
+	border-radius: 4px;
+	font-size: 0.85em;
 }
 
 /* Highlight.js overrides for dark theme */

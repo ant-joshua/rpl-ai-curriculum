@@ -13,5 +13,35 @@
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
+		<script>
+			// Enhance code blocks globally: lang badge + copy button
+			function enhanceCodeBlocks() {
+				document.querySelectorAll('.markdown-content pre').forEach(pre => {
+					if (pre.querySelector('.copy-btn')) return;
+					const code = pre.querySelector('code');
+					if (!code) return;
+					const cls = [...code.classList].find(c => c.startsWith('language-'));
+					if (cls && !pre.hasAttribute('data-lang')) {
+						pre.setAttribute('data-lang', cls.replace('language-', ''));
+					}
+					const btn = document.createElement('button');
+					btn.className = 'copy-btn';
+					btn.textContent = 'Copy';
+					btn.onclick = async e => {
+						e.stopPropagation();
+						try {
+							await navigator.clipboard.writeText(code.textContent || '');
+							btn.textContent = '✓ Copied!';
+							btn.classList.add('copied');
+							setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+						} catch { btn.textContent = 'Failed'; }
+					};
+					pre.appendChild(btn);
+				});
+			}
+			// Run after DOM ready and after SvelteKit navigation
+			document.addEventListener('DOMContentLoaded', enhanceCodeBlocks);
+			document.addEventListener('sveltekit:navigation-end', enhanceCodeBlocks);
+		</script>
 	</body>
 </html>
