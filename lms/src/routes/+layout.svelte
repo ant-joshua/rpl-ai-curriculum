@@ -6,6 +6,10 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+	import { t, toggleLang, getLang } from '$lib/stores/i18n.svelte';
+	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
+	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
+	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
 
 	let { children } = $props();
 
@@ -13,6 +17,7 @@
 	let offline = $state(false);
 	let showBackToTop = $state(false);
 	let dismissedOffline = $state(false);
+	let showShortcuts = $state(false);
 
 	function closeSidebar() {
 		sidebarOpen = false;
@@ -57,6 +62,21 @@
 
 		return () => {
 			window.removeEventListener('scroll', onScroll);
+		};
+	});
+
+	// Keyboard shortcuts
+	$effect(() => {
+		if (!browser) return;
+		initShortcuts();
+		const unsub = onShortcut((action) => {
+			if (action === 'showHelp') {
+				showShortcuts = true;
+			}
+		});
+		return () => {
+			unsub();
+			destroyShortcuts();
 		};
 	});
 
@@ -118,62 +138,62 @@
 		<nav class="sidebar-nav">
 			<a href="/" onclick={closeSidebar} class:active={isActive('/')}>
 				<span class="nav-icon">🏠</span>
-				<span>Beranda</span>
+				<span>{t('home.title')}</span>
 			</a>
 			<a href="/dashboard" onclick={closeSidebar} class:active={isActive('/dashboard')}>
 				<span class="nav-icon">📊</span>
-				<span>Dashboard</span>
+				<span>{t('nav.dashboard')}</span>
 			</a>
 			<a href="/path" onclick={closeSidebar} class:active={isActive('/path')}>
 				<span class="nav-icon">📚</span>
-				<span>Learning Paths</span>
+				<span>{t('nav.paths')}</span>
 			</a>
 			<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
 				<span class="nav-icon">📈</span>
-				<span>Progres</span>
+				<span>{t('nav.progress')}</span>
 			</a>
 			<a href="/search" onclick={closeSidebar} class:active={isActive('/search')}>
 				<span class="nav-icon">🔍</span>
-				<span>Cari</span>
+				<span>{t('nav.search')}</span>
 			</a>
 			<a href="/tutor" onclick={closeSidebar} class:active={isActive('/tutor')}>
 				<span class="nav-icon">🤖</span>
-				<span>AI Tutor</span>
+				<span>{t('nav.tutor')}</span>
 			</a>
 			<a href="/flashcards" onclick={closeSidebar} class:active={isActive('/flashcards')}>
 				<span class="nav-icon">🃏</span>
-				<span>Flashcards</span>
+				<span>{t('nav.flashcards')}</span>
 			</a>
 			<a href="/history" onclick={closeSidebar} class:active={isActive('/history')}>
 				<span class="nav-icon">📜</span>
-				<span>Riwayat</span>
+				<span>{t('nav.history')}</span>
 			</a>
 			<a href="/badges" onclick={closeSidebar} class:active={isActive('/badges')}>
 				<span class="nav-icon">🏆</span>
-				<span>Badges</span>
+				<span>{t('nav.badges')}</span>
 			</a>
 			<a href="/leaderboard" onclick={closeSidebar} class:active={isActive('/leaderboard')}>
 				<span class="nav-icon">🏆</span>
-				<span>Leaderboard</span>
+				<span>{t('nav.leaderboard')}</span>
 			</a>
 			<a href="/planner" onclick={closeSidebar} class:active={isActive('/planner')}>
 				<span class="nav-icon">📅</span>
-				<span>Planner</span>
+				<span>{t('nav.planner')}</span>
 			</a>
 			<a href="/certificate" onclick={closeSidebar} class:active={isActive('/certificate')}>
 				<span class="nav-icon">🎓</span>
-				<span>Sertifikat</span>
+				<span>{t('nav.certificate')}</span>
 			</a>
 			<a href="/profile" onclick={closeSidebar} class:active={isActive('/profile')}>
 				<span class="nav-icon">👤</span>
-				<span>Profil</span>
+				<span>{t('nav.profile')}</span>
 			</a>
 			<div class="sidebar-separator"></div>
 			<a href="/exercises" onclick={closeSidebar} class:active={isActive('/exercises')}>
 				<span class="nav-icon">🏋️</span>
-				<span>Exercises</span>
+				<span>{t('nav.exercises')}</span>
 			</a>
-			<div class="sidebar-group-label">📚 Referensi</div>
+			<div class="sidebar-group-label">📚 {t('nav.references')}</div>
 			<a href="/challenges" onclick={closeSidebar}>
 				<span class="nav-icon">🏋️</span>
 				<span>Challenges</span>
@@ -200,7 +220,7 @@
 			</a>
 			<a href="/videos" onclick={closeSidebar} class:active={isActive('/videos')}>
 				<span class="nav-icon">🎬</span>
-				<span>Video</span>
+				<span>{t('nav.videos')}</span>
 			</a>
 			<a href="/feed" onclick={closeSidebar} class:active={isActive('/feed')}>
 				<span class="nav-icon">📡</span>
@@ -208,7 +228,7 @@
 			</a>
 			<a href="/export" onclick={closeSidebar} class:active={isActive('/export')}>
 				<span class="nav-icon">📤</span>
-				<span>Export</span>
+				<span>{t('nav.export')}</span>
 			</a>
 			<a href="/slides/list" onclick={closeSidebar} class:active={isActive('/slides')}>
 				<span class="nav-icon">🖥️</span>
@@ -232,6 +252,10 @@
 			{#if !user.isLoggedIn}
 				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
 			{/if}
+			<button onclick={() => { toggleLang(); closeSidebar(); }} class="theme-btn">
+				<span class="nav-icon">🌐</span>
+				<span>{getLang() === 'id' ? 'Indonesia' : 'English'}</span>
+			</button>
 			<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
 				<span class="nav-icon">{themeStore.theme === 'dark' ? '☀️' : '🌙'}</span>
 				<span>{themeStore.theme === 'dark' ? 'Terang' : 'Gelap'}</span>
@@ -254,6 +278,10 @@
 {#if showBackToTop}
 	<button class="back-to-top" onclick={scrollToTop} aria-label="Kembali ke atas">↑</button>
 {/if}
+
+<ShortcutHelp show={showShortcuts} onclose={() => showShortcuts = false} />
+
+<OnboardingOverlay />
 
 <style>
 	:global(*) {

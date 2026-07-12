@@ -4,6 +4,7 @@
 	import { certificate } from '$lib/stores/certificate.svelte';
 	import { user } from '$lib/stores/user.svelte';
 	import { onMount } from 'svelte';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	onMount(() => {
 		certificate.checkAndMark();
@@ -73,6 +74,11 @@
 			<button onclick={handlePrint} class="print-btn">
 				⬇️ Download / Cetak Sertifikat
 			</button>
+			<ShareButton
+				title="Sertifikat RPL AI Curriculum"
+				text="Aku lulus RPL AI Curriculum! 🎓🎉"
+				url={typeof window !== 'undefined' ? window.location.href : ''}
+			/>
 		</div>
 
 		<div class="certificate" id="certificate">
@@ -267,7 +273,9 @@
 	.cert-actions {
 		display: flex;
 		justify-content: center;
+		gap: 12px;
 		margin-bottom: 24px;
+		flex-wrap: wrap;
 	}
 
 	.print-btn {

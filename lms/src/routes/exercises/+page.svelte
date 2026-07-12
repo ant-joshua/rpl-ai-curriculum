@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { adaptive } from '$lib/stores/adaptive.svelte';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
@@ -23,6 +25,10 @@
 			}
 		}
 		load();
+	});
+
+	onMount(() => {
+		adaptive.refresh();
 	});
 
 	let filtered = $derived.by(() => {
@@ -111,6 +117,41 @@
 			</select>
 			<span class="count">{filtered.length} dari {exercisesData.exercises.length} latihan</span>
 		</div>
+
+		<!-- Adaptive difficulty recommendation -->
+		<div class="adaptive-recommendation">
+			<h2>🎯 Rekomendasi untukmu (level {adaptive.difficulty})</h2>
+			<p class="rec-desc">
+				{adaptive.level === 'beginner' ? 'Mulai dengan latihan dasar untuk membangun fondasi.' : ''}
+				{adaptive.level === 'intermediate' ? 'Kamu sudah siap untuk latihan tingkat menengah. Terus tingkatkan!' : ''}
+				{adaptive.level === 'advanced' ? 'Kamu sudah mahir! Coba latihan tingkat lanjut.' : ''}
+			</p>
+			<div class="grid">
+				{#each filtered.filter(e => e.difficulty?.toLowerCase() === adaptive.difficulty).slice(0, 3) as exercise}
+					<a href="/exercises/{exercise.slug}" class="card">
+						<div class="card-header">
+							<span class="badge rec-badge">🎯 Rekomendasi</span>
+							<span
+								class="badge difficulty"
+								style="background: {difficultyColors[exercise.difficulty] || '#888'}22; color: {difficultyColors[exercise.difficulty] || '#888'}; border-color: {difficultyColors[exercise.difficulty] || '#888'}44"
+							>
+								{exercise.difficulty}
+							</span>
+						</div>
+						<h3 class="card-title">{exercise.title}</h3>
+						<p class="card-desc">{exercise.description || 'Tidak ada deskripsi.'}</p>
+						{#if exercise.moduleSlug}
+							<span class="module-context">📦 {exercise.moduleSlug}</span>
+						{/if}
+					</a>
+				{/each}
+			</div>
+			{#if filtered.filter(e => e.difficulty?.toLowerCase() === adaptive.difficulty).length === 0}
+				<p class="empty-rec">Tidak ada latihan untuk level ini. Coba filter lain.</p>
+			{/if}
+		</div>
+
+		<hr class="section-sep" />
 
 		{#if filtered.length === 0}
 			<div class="empty">Tidak ada latihan yang cocok dengan filter.</div>
@@ -213,6 +254,38 @@
 		font-size: 13px;
 		color: var(--text-secondary);
 		white-space: nowrap;
+	}
+
+	.adaptive-recommendation {
+		margin-bottom: 24px;
+	}
+	.adaptive-recommendation h2 {
+		font-size: 18px;
+		font-weight: 600;
+		margin-bottom: 4px;
+	}
+	.rec-desc {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin-bottom: 12px;
+	}
+	.rec-badge {
+		background: var(--accent) !important;
+		color: #fff !important;
+	}
+	.section-sep {
+		border: none;
+		border-top: 1px solid var(--border);
+		margin: 24px 0;
+	}
+	.empty-rec {
+		font-size: 13px;
+		color: var(--text-secondary);
+		padding: 20px 0;
+		text-align: center;
+	}
+	@media (max-width: 768px) {
+		.adaptive-recommendation h2 { font-size: 16px; }
 	}
 
 	.grid {

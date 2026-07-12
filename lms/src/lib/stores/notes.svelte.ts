@@ -85,10 +85,30 @@ function createNotesStore() {
 		return getNotes(slug, sessionId);
 	}
 
+	/** Get all notes for a module (across all sessions) */
+	function getModuleNotesMap(slug: string): Record<string, string> {
+		const all = getAllNotes();
+		const result: Record<string, string> = {};
+		for (const [key, val] of Object.entries(all)) {
+			if (key.startsWith(slug + '/')) {
+				const sessionPart = key.slice(slug.length + 1);
+				result[sessionPart] = val;
+			}
+		}
+		return result;
+	}
+
+	/** Count of sessions with notes for a given module */
+	function getModuleNotesCount(slug: string): number {
+		return Object.keys(getModuleNotesMap(slug)).length;
+	}
+
 	return {
 		getNotes,
 		setNotes,
 		getSessionNotes,
+		getModuleNotesCount,
+		getModuleNotesMap,
 		get version() {
 			void version;
 			return version;

@@ -5,6 +5,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { api, getDeviceId } from '$lib/utils/api';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let userData = $state<{ username: string; created_at: string } | null>(null);
 	let activityData = $state<Array<{ module_slug: string | null; session_id: string | null; action: string; created_at: string }>>([]);
@@ -118,6 +119,13 @@
 		<!-- Progress Summary -->
 		<div class="section-card">
 			<h2>📊 Progress</h2>
+			<div class="share-row">
+				<ShareButton
+					title="Progres RPL AI - {userData?.username || 'Pengguna'}"
+					text="Aku sudah menyelesaikan {stats.completedSessions} sesi di RPL AI Curriculum! 🎯"
+					url={typeof window !== 'undefined' ? window.location.href : ''}
+				/>
+			</div>
 			<div class="progress-bar-wrapper">
 				<div class="completion-bar">
 					<div class="completion-fill" style="width: {completionPct}%"></div>
@@ -301,6 +309,12 @@
 		font-size: 16px;
 		font-weight: 600;
 		margin-bottom: 16px;
+	}
+
+	.share-row {
+		margin-bottom: 12px;
+		display: flex;
+		justify-content: flex-end;
 	}
 
 	.progress-bar-wrapper {

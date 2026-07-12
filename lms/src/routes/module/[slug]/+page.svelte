@@ -201,6 +201,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	// Exercises for this module
 	let moduleExercises = $state<any[]>([]);
 
+	let moduleNotesCount = $derived(mod ? notes.getModuleNotesCount(slug) : 0);
+
 	$effect(() => {
 		async function loadExercises() {
 			if (!mod) return;
@@ -440,6 +442,10 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				<span>{mod.sessions.length} sesi</span>
 				<span class="meta-dot">&middot;</span>
 				<span>{completedSessions.length} selesai</span>
+				{#if moduleNotesCount > 0}
+					<span class="meta-dot">&middot;</span>
+					<span>📝 {moduleNotesCount} catatan</span>
+				{/if}
 				{#if totalWords > 0}
 					<span class="meta-dot">&middot;</span>
 					<span>📝 ~{totalWords} kata</span>

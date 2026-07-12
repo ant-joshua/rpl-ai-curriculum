@@ -3,6 +3,7 @@
 	import { user } from '$lib/stores/user.svelte';
 	import { fade } from 'svelte/transition';
 	import { getDeviceId } from '$lib/utils/api';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let loading = $state(true);
 	let entries = $state<Array<{ user_id: string; xp: number; level: number; badge_count: number }>>([]);
@@ -63,6 +64,14 @@
 <div class="leaderboard-page">
 	<h1 class="page-title">🏆 Papan Peringkat</h1>
 	<p class="page-subtitle">Top users ranked by XP — terus belajar untuk naik peringkat!</p>
+
+	<div class="share-row">
+		<ShareButton
+			title="Leaderboard RPL AI"
+			text="Lihat papan peringkat RPL AI Curriculum! 🏆"
+			url={typeof window !== 'undefined' ? window.location.href : ''}
+		/>
+	</div>
 
 	<div class="tabs">
 		<button
@@ -291,6 +300,12 @@
 	.empty-hint {
 		font-size: 13px;
 		opacity: 0.7;
+	}
+
+	.share-row {
+		margin-bottom: 16px;
+		display: flex;
+		justify-content: flex-end;
 	}
 
 	.leaderboard-list {

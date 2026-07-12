@@ -5,6 +5,8 @@
 	import { flashcards } from '$lib/stores/flashcards.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
+	import { reminders, type ReminderSchedule } from '$lib/stores/reminders.svelte';
+	import { browser } from '$app/environment';
 
 	// ─── Pomodoro Timer ───
 	const FOCUS_OPTIONS = [5, 25, 45];
@@ -146,6 +148,54 @@
 
 	let refreshKey = $state(0);
 	onMount(() => { refreshKey++; });
+
+	// ─── Study Reminders ───
+	let reminderSchedule = $state<ReminderSchedule>({ enabled: false, time: '19:00', days: [] });
+	let reminderSaved = $state(false);
+	let reminderTime = $state('19:00');
+	let reminderDays = $state<number[]>([]);
+	let reminderEnabled = $state(false);
+
+	$effect(() => {
+		if (!browser) return;
+		reminderSchedule = reminders.getSchedule();
+		reminderEnabled = reminderSchedule.enabled;
+		reminderTime = reminderSchedule.time;
+		reminderDays = reminderSchedule.days;
+		reminders.startReminderCheck();
+	});
+
+	function saveReminder() {
+		const schedule: ReminderSchedule = {
+			enabled: reminderEnabled,
+			time: reminderTime,
+			days: reminderDays,
+		};
+		reminders.saveSchedule(schedule);
+		reminderSchedule = schedule;
+		reminderSaved = true;
+		setTimeout(() => { reminderSaved = false; }, 2000);
+	}
+
+	function toggleDay(day: number) {
+		if (reminderDays.includes(day)) {
+			reminderDays = reminderDays.filter(d => d !== day);
+		} else {
+			reminderDays = [...reminderDays, day].sort();
+		}
+	}
+
+	function testNotification() {
+		reminders.requestPermission().then(granted => {
+			if (granted) {
+				reminders.showNotification('Test Notifikasi', 'Notifikasi berhasil! 🔔');
+			} else {
+				alert('Izin notifikasi belum diberikan. Periksa pengaturan browser.');
+			}
+		});
+	}
+
+	const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 </script>
 
 <div class="study-page">
@@ -226,6 +276,58 @@
 					🍅 {pomodoroCount} pomodoro selesai
 				</div>
 			{/if}
+		</section>
+
+		<!-- Study Reminders -->
+		<section class="tool-card reminder-card" in:fade={{ duration: 300, delay: 50 }}>
+			<h2>🔔 Reminder</h2>
+			<p class="tool-desc">Atur pengingat belajar harian</p>
+
+			<div class="reminder-toggle-row">
+				<label class="reminder-label" for="reminder-toggle">Aktifkan Reminder</label>
+				<button
+					id="reminder-toggle"
+					class="toggle-switch"
+					class:active={reminderEnabled}
+					onclick={() => { reminderEnabled = !reminderEnabled; }}
+					role="switch"
+					aria-checked={reminderEnabled}
+				>
+					<span class="toggle-knob"></span>
+				</button>
+			</div>
+
+			<div class="reminder-field">
+				<label for="reminder-time">Waktu</label>
+				<input
+					id="reminder-time"
+					type="time"
+					bind:value={reminderTime}
+					class="reminder-input"
+				/>
+			</div>
+
+			<div class="reminder-field">
+				<label>Hari</label>
+				<div class="reminder-days">
+					{#each dayLabels as label, i}
+						<button
+							class="day-btn"
+							class:active={reminderDays.includes(i)}
+							onclick={() => toggleDay(i)}
+						>{label}</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="reminder-actions">
+				<button class="reminder-save-btn" onclick={saveReminder}>
+					{reminderSaved ? '✓ Tersimpan' : 'Simpan'}
+				</button>
+				<button class="reminder-test-btn" onclick={testNotification}>
+					Test Notification
+				</button>
+			</div>
 		</section>
 
 		<!-- Quick Links -->
@@ -830,11 +932,156 @@
 		.tools-grid {
 			grid-template-columns: 1fr;
 		}
-		.pomodoro-card, .stats-card, .streak-card, .quick-links-card {
+		.pomodoro-card, .stats-card, .streak-card, .quick-links-card, .reminder-card {
 			grid-column: 1;
 		}
 		.stats-grid {
 			grid-template-columns: 1fr 1fr;
 		}
 	}
-</style>
+
+	/* Reminder Card */
+	.reminder-card {
+		grid-column: 1;
+	}
+
+	.reminder-toggle-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 16px;
+	}
+
+	.reminder-label {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text);
+	}
+
+	.toggle-switch {
+		width: 44px;
+		height: 24px;
+		border-radius: 12px;
+		border: none;
+		background: var(--border);
+		cursor: pointer;
+		position: relative;
+		transition: background 0.2s ease;
+		padding: 0;
+	}
+
+	.toggle-switch.active {
+		background: var(--accent);
+	}
+
+	.toggle-knob {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: #fff;
+		transition: transform 0.2s ease;
+	}
+
+	.toggle-switch.active .toggle-knob {
+		transform: translateX(20px);
+	}
+
+	.reminder-field {
+		margin-bottom: 14px;
+	}
+
+	.reminder-field label {
+		display: block;
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-secondary);
+		margin-bottom: 6px;
+	}
+
+	.reminder-input {
+		width: 120px;
+		padding: 6px 10px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: var(--bg);
+		color: var(--text);
+		font-size: 14px;
+		font-weight: 600;
+		font-family: inherit;
+	}
+
+	.reminder-days {
+		display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
+	}
+
+	.day-btn {
+		padding: 4px 10px;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 11px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.15s ease;
+	}
+
+	.day-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	.day-btn.active {
+		background: var(--accent);
+		color: #fff;
+		border-color: var(--accent);
+	}
+
+	.reminder-actions {
+		display: flex;
+		gap: 8px;
+		margin-top: 12px;
+	}
+
+	.reminder-save-btn {
+		flex: 1;
+		padding: 8px 16px;
+		border-radius: 8px;
+		border: none;
+		background: var(--accent);
+		color: #fff;
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.15s ease;
+	}
+
+	.reminder-save-btn:hover {
+		opacity: 0.9;
+	}
+
+	.reminder-test-btn {
+		padding: 8px 16px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.15s ease;
+	}
+
+	.reminder-test-btn:hover {
+		color: var(--text);
+		border-color: var(--text-secondary);
+	}
+	</style>

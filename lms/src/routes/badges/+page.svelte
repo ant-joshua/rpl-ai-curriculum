@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { onMount } from 'svelte';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let level = $derived(gamification.getLevelProgress());
 	let badges = $derived(gamification.badges);
@@ -42,6 +43,13 @@
 		<div class="level-info">
 			<span class="level-number">Level {level.level}</span>
 			<span class="badge-count">{totalUnlocked}/{totalBadges} badges unlocked</span>
+		</div>
+		<div class="share-row">
+			<ShareButton
+				title="Badges RPL AI - {totalUnlocked} badges"
+				text="Aku sudah membuka {totalUnlocked} dari {totalBadges} badges di RPL AI Curriculum! 🏆"
+				url={typeof window !== 'undefined' ? window.location.href : ''}
+			/>
 		</div>
 		<div class="xp-bar-container">
 			<div class="xp-bar" style="width: {level.level > 1 ? (level.currentXp / (level.currentXp + level.xpToNext)) * 100 : (level.currentXp / 100) * 100}%"></div>
@@ -156,6 +164,12 @@
 	.badge-card:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.share-row {
+		margin-bottom: 12px;
+		display: flex;
+		justify-content: flex-end;
 	}
 
 	.badge-icon {

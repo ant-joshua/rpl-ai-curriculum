@@ -26,6 +26,10 @@
 			window.location.href = '/dashboard';
 		}, 50);
 	}
+
+	function handleOAuth(provider: string) {
+		alert(`Coming soon — gunakan username untuk sekarang.\n\nLogin via ${provider} akan segera tersedia.`);
+	}
 </script>
 
 <div class="login-page">
@@ -49,6 +53,23 @@
 				Mulai Belajar
 			</button>
 		</form>
+
+		<div class="oauth-divider">
+			<span class="divider-line"></span>
+			<span class="divider-text">atau</span>
+			<span class="divider-line"></span>
+		</div>
+
+		<div class="oauth-buttons">
+			<button onclick={() => handleOAuth('Google')} class="oauth-btn google">
+				<span class="oauth-icon">🔵</span>
+				<span>Login dengan Google</span>
+			</button>
+			<button onclick={() => handleOAuth('GitHub')} class="oauth-btn github">
+				<span class="oauth-icon">🐙</span>
+				<span>Login dengan GitHub</span>
+			</button>
+		</div>
 	</div>
 </div>
 
@@ -135,5 +156,57 @@
 
 	.login-submit:hover {
 		opacity: 0.9;
+	}
+
+	.oauth-divider {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin: 24px 0 16px;
+	}
+
+	.divider-line {
+		flex: 1;
+		height: 1px;
+		background: var(--border);
+	}
+
+	.divider-text {
+		font-size: 13px;
+		color: var(--text-secondary);
+		white-space: nowrap;
+	}
+
+	.oauth-buttons {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.oauth-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		width: 100%;
+		padding: 12px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--bg);
+		color: var(--text);
+		font-size: 14px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		font-family: inherit;
+	}
+
+	.oauth-btn:hover {
+		background: var(--hover);
+		border-color: var(--accent);
+	}
+
+	.oauth-icon {
+		font-size: 18px;
 	}
 </style>
