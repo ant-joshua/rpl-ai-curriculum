@@ -3,20 +3,33 @@
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { bookmarks } from '$lib/stores/bookmarks.svelte';
+	import { lastActivity } from '$lib/stores/last-activity.svelte';
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
 	import ProgressChart from '$lib/components/ProgressChart.svelte';
+	import Skeleton from '$lib/components/Skeleton.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
-	let lastReadSlug = $state<string | null>(null);
+	let loading = $state(true);
 
 	onMount(() => {
 		progress.updateStreak();
-		lastReadSlug = progress.getLastRead();
+		// Brief delay so skeleton is visible during hydration
+		requestAnimationFrame(() => {
+			loading = false;
+		});
 	});
 
-	let lastReadModule = $derived(
-		lastReadSlug ? modules.find(m => m.slug === lastReadSlug) : null
+	// Last activity (session-level tracking)
+	let lastActivityData = $derived(lastActivity.get);
+	let lastActivityModule = $derived(
+		lastActivityData ? modules.find(m => m.slug === lastActivityData.moduleSlug) : null
+	);
+	let lastActivitySession = $derived(
+		lastActivityData && lastActivityModule
+			? lastActivityModule.sessions.find(s => s.id === lastActivityData.sessionId)
+			: null
 	);
 
 	// Level filter
@@ -48,6 +61,47 @@
 </script>
 
 <div class="dashboard">
+	{#if loading}
+		<!-- Skeleton: header -->
+		<div class="dashboard-header" style="margin-bottom: 16px;">
+			<div>
+				<Skeleton width="260px" height="24px" />
+				<div style="margin-top: 8px;"><Skeleton width="180px" height="14px" /></div>
+			</div>
+			<Skeleton width="140px" height="28px" borderRadius="20px" />
+		</div>
+
+		<!-- Skeleton: overview cards -->
+		<section class="overview-cards" style="margin-bottom: 16px;">
+			{#each [1, 2, 3] as _}
+				<Skeleton height="56px" borderRadius="10px" />
+			{/each}
+		</section>
+
+		<!-- Skeleton: chart bar -->
+		<Skeleton height="60px" borderRadius="10px" />
+		<div style="margin-bottom: 16px;"></div>
+
+		<!-- Skeleton: filter tabs -->
+		<section class="level-filters" style="margin-bottom: 16px;">
+			{#each [1, 2, 3, 4, 5] as _}
+				<Skeleton width="80px" height="28px" borderRadius="16px" />
+			{/each}
+		</section>
+
+		<!-- Skeleton: module grid -->
+		<section class="module-section">
+			<div class="module-header">
+				<Skeleton width="140px" height="18px" />
+			</div>
+			<div class="module-grid">
+				{#each [1, 2, 3, 4, 5, 6] as _}
+					<Skeleton variant="card" />
+				{/each}
+			</div>
+		</section>
+	{:else}
+		<div in:fade={{ duration: 200 }}>
 	<header class="dashboard-header">
 		<div>
 			<h1>Selamat datang, {user.isLoggedIn ? user.username : 'Teman'}! 👋</h1>
@@ -92,15 +146,17 @@
 		streak={progress.getStreak()}
 	/>
 
-	<!-- Continue reading -->
-	{#if lastReadModule}
+	<!-- Lanjut Belajar (last session activity) -->
+	{#if lastActivityModule}
 		<section class="continue-reading">
-			<h2>Lanjutkan Belajar</h2>
-			<a href="/module/{lastReadModule.slug}" class="continue-card">
+			<h2>📖 Lanjut Belajar</h2>
+			<a href="/module/{lastActivityModule.slug}" class="continue-card">
 				<div class="continue-info">
-					<span class="continue-badge">Terakhir dibaca</span>
-					<h3>{lastReadModule.title}</h3>
-					<p>{lastReadModule.description}</p>
+					{#if lastActivitySession}
+						<span class="continue-session-name">{lastActivitySession.title}</span>
+					{/if}
+					<h3>{lastActivityModule.title}</h3>
+					<span class="continue-cta">Lanjutkan &rarr;</span>
 				</div>
 				<span class="continue-arrow">&rarr;</span>
 			</a>
@@ -140,6 +196,8 @@
 			{/each}
 		</div>
 	</section>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -252,6 +310,23 @@
 		padding: 2px 10px;
 		border-radius: 20px;
 		margin-bottom: 6px;
+	}
+
+	.continue-session-name {
+		display: inline-block;
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--accent);
+		background: var(--accent-dim);
+		padding: 2px 10px;
+		border-radius: 20px;
+		margin-bottom: 6px;
+	}
+
+	.continue-cta {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent);
 	}
 
 	.continue-arrow {

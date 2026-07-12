@@ -1,17 +1,22 @@
 <script lang="ts">
 	import NotesPanel from '$lib/components/NotesPanel.svelte';
+import FontSizeControl from '$lib/components/FontSizeControl.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { activity } from '$lib/stores/activity.svelte';
+	import { lastActivity } from '$lib/stores/last-activity.svelte';
 	import { notes } from '$lib/stores/notes.svelte';
+import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	import { parseMarkdown, stripFrontmatter, hasExercise, getExerciseStarterCode } from '$lib/utils/markdown';
 	import { onMount } from 'svelte';
 	import QuizCard from '$lib/components/QuizCard.svelte';
 	import type { QuizQuestion } from '$lib/utils/quiz';
 	import { parseQuizHtml } from '$lib/utils/quiz';
 	import { getVideosByModule, type VideoEntry } from '$lib/stores/videos';
+	import Skeleton from '$lib/components/Skeleton.svelte';
+	import { fade } from 'svelte/transition';
 
 	let { data } = $props();
 
@@ -25,18 +30,24 @@
 	let errorMsg = $state('');
 	let pdfIndex = $state<Record<string, boolean>>({});
 
-	// Font size toggle
-	let fontSize = $state(16);
-	onMount(() => {
-		const saved = localStorage.getItem('lms-font-size');
-		if (saved) {
-			const n = parseInt(saved, 10);
-			if (n === 14 || n === 16 || n === 18) fontSize = n;
+	// Share link + toast
+	let toastMsg = $state('');
+	let toastTimer: ReturnType<typeof setTimeout>;
+
+	async function copyShareLink() {
+		const url = `${window.location.origin}/module/${slug}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			showToast('Tersalin!');
+		} catch {
+			showToast('Gagal menyalin');
 		}
-	});
-	function setFontSize(size: number) {
-		fontSize = size;
-		localStorage.setItem('lms-font-size', String(size));
+	}
+
+	function showToast(msg: string) {
+		clearTimeout(toastTimer);
+		toastMsg = msg;
+		toastTimer = setTimeout(() => { toastMsg = ''; }, 2000);
 	}
 
 	// Next / Prev module navigation
@@ -122,6 +133,9 @@
 
 			// Log view activity
 			activity.logAction('view', mod.slug, sessionId);
+
+			// Save last-activity for "Lanjut Belajar" on dashboard
+			lastActivity.save(mod.slug, sessionId);
 
 			// Detect if session has exercises
 			if (hasExercise(cleaned)) {
@@ -247,7 +261,49 @@
 
 <div class="module-page">
 	{#if loading}
-		<div class="loading">Memuat...</div>
+		<div class="skeleton-loading" in:fade={{ duration: 150 }}>
+			<!-- Skeleton: header -->
+			<div class="module-header" style="margin-bottom: 24px;">
+				<Skeleton width="100px" height="16px" />
+				<div style="margin-bottom: 12px;"></div>
+				<Skeleton width="60%" height="26px" />
+				<div style="margin-bottom: 8px;"></div>
+				<Skeleton width="40%" height="16px" />
+				<div style="margin-bottom: 12px;"></div>
+				<Skeleton width="100%" height="8px" borderRadius="4px" />
+			</div>
+
+			<!-- Skeleton: layout with sidebar + content -->
+			<div class="module-layout" style="display: flex; gap: 24px; align-items: flex-start;">
+				<!-- Sidebar skeleton -->
+				<aside class="session-sidebar" style="width: 240px; min-width: 240px; padding: 16px; background: transparent; border: none;">
+					<Skeleton width="100px" height="16px" />
+					<div style="margin-bottom: 16px;"></div>
+					{#each [1, 2, 3, 4, 5] as _}
+						<Skeleton width="100%" height="32px" borderRadius="8px" />
+						<div style="margin-bottom: 4px;"></div>
+					{/each}
+				</aside>
+
+				<!-- Content area skeleton -->
+				<div class="content-area" style="flex: 1;">
+					<Skeleton width="180px" height="20px" />
+					<div style="margin-bottom: 20px;"></div>
+					{#each [1, 2, 3, 4, 5, 6] as i}
+						<Skeleton width="{70 + (i * 4)}%" height="14px" />
+						<div style="margin-bottom: 10px;"></div>
+					{/each}
+					<Skeleton width="45%" height="14px" />
+					<div style="margin-bottom: 24px;"></div>
+					<Skeleton width="100%" height="120px" borderRadius="10px" />
+					<div style="margin-bottom: 16px;"></div>
+					{#each [1, 2, 3, 4] as i}
+						<Skeleton width="{60 + (i * 7)}%" height="14px" />
+						<div style="margin-bottom: 10px;"></div>
+					{/each}
+				</div>
+			</div>
+		</div>
 	{:else if errorMsg}
 		<div class="error-page">
 			<h2>{errorMsg}</h2>
@@ -269,16 +325,17 @@
 				{/if}
 			</div>
 			<ProgressBar value={moduleProgress} />
-			<div class="font-size-controls">
-				<button class="font-btn" class:active={fontSize === 14} onclick={() => setFontSize(14)} title="Ukuran kecil">A-</button>
-				<button class="font-btn" class:active={fontSize === 16} onclick={() => setFontSize(16)} title="Ukuran normal">A</button>
-				<button class="font-btn" class:active={fontSize === 18} onclick={() => setFontSize(18)} title="Ukuran besar">A+</button>
+			<div class="header-actions">
+				<FontSizeControl />
+				<button class="share-btn" onclick={copyShareLink}>
+					🔗 Share
+				</button>
+				{#if mod && pdfIndex[mod.dirName]}
+					<a href="/pdfs/{mod.dirName}.pdf" target="_blank" class="pdf-download-btn" download>
+						📥 Download PDF
+					</a>
+				{/if}
 			</div>
-			{#if mod && pdfIndex[mod.dirName]}
-				<a href="/pdfs/{mod.dirName}.pdf" target="_blank" class="pdf-download-btn" download>
-					📥 Download PDF
-				</a>
-			{/if}
 		</header>
 
 		<div class="module-layout">
@@ -307,7 +364,7 @@
 				</ul>
 			</aside>
 
-			<div class="content-area" style="font-size: {fontSize}px">
+			<div class="content-area" style="font-size: var(--reading-font-size, 16px)">
 				{#if activeSession}
 					<div class="session-toolbar">
 						<h2>
@@ -324,6 +381,7 @@
 							>
 								📝 Catatan
 							</button>
+							<FontSizeControl />
 							{#if quizQuestions.length > 0}
 								<button
 									class="quiz-toggle-btn"
@@ -478,6 +536,11 @@
 	</div>
 {/if}
 
+<!-- Toast -->
+{#if toastMsg}
+	<div class="toast">{toastMsg}</div>
+{/if}
+
 <style>
 	.module-page {
 		max-width: 1100px;
@@ -524,23 +587,33 @@
 
 	.meta-dot { color: var(--border); }
 
-	.font-size-controls {
+	.header-actions {
 		display: flex;
-		gap: 4px;
+		align-items: center;
+		gap: 8px;
 		margin-top: 10px;
+		flex-wrap: wrap;
 	}
 
-	.font-btn {
-		width: 32px; height: 28px;
-		display: flex; align-items: center; justify-content: center;
+	.share-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 8px 18px;
 		border: 1px solid var(--border);
-		border-radius: 6px; background: var(--surface);
-		color: var(--text-secondary); font-size: 12px; font-weight: 600;
-		cursor: pointer; transition: all 0.15s ease;
+		border-radius: 8px;
+		background: var(--surface);
+		color: var(--text);
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s ease;
 	}
 
-	.font-btn:hover { border-color: var(--accent); color: var(--accent); }
-	.font-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+	.share-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
 
 	.pdf-download-btn {
 		display: inline-block;
@@ -908,5 +981,26 @@
 		inset: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	/* Toast */
+	.toast {
+		position: fixed;
+		bottom: 24px;
+		right: 24px;
+		background: #1a1a2e;
+		color: #e0e0e0;
+		padding: 10px 20px;
+		border-radius: 10px;
+		font-size: 13px;
+		font-weight: 500;
+		z-index: 600;
+		animation: toast-in 0.3s ease;
+		box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+	}
+
+	@keyframes toast-in {
+		from { opacity: 0; transform: translateY(12px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 </style>

@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { searchModules, type SearchResult } from '$lib/stores/search.svelte';
 	import { page } from '$app/stores';
+	import Skeleton from '$lib/components/Skeleton.svelte';
+	import { fade } from 'svelte/transition';
 
 	let query = $state('');
 	let results = $state<SearchResult[]>([]);
 	let loading = $state(false);
 	let hasSearched = $state(false);
 	let inputEl: HTMLInputElement | undefined = $state();
+	let initialLoading = $state(true);
 
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -58,9 +61,11 @@
 		return 'Konten';
 	}
 
-	// Focus input on mount
+	// Focus input on mount, clear initial loading
 	$effect(() => {
 		inputEl?.focus();
+		const timer = setTimeout(() => { initialLoading = false; }, 200);
+		return () => clearTimeout(timer);
 	});
 
 	// Cleanup debounce on unmount
@@ -105,10 +110,23 @@
 	</div>
 
 	<div class="search-results">
-		{#if loading}
-			<div class="search-state">
-				<span class="spinner"></span>
-				<span>Mencari...</span>
+		{#if initialLoading}
+			<div class="search-skeleton-list" in:fade={{ duration: 150 }}>
+				{#each [1, 2, 3, 4] as _}
+					<div class="result-card-skeleton">
+						<Skeleton width="65%" height="18px" />
+						<div style="margin-bottom: 8px;"></div>
+						<Skeleton width="90%" height="14px" />
+						<div style="margin-bottom: 6px;"></div>
+						<Skeleton width="30%" height="12px" />
+					</div>
+				{/each}
+			</div>
+		{:else if loading}
+			<div class="search-state" in:fade={{ duration: 150 }}>
+				<Skeleton width="100%" height="60px" borderRadius="10px" />
+				<div style="margin-top: 8px;"><Skeleton width="100%" height="60px" borderRadius="10px" /></div>
+				<div style="margin-top: 8px;"><Skeleton width="100%" height="60px" borderRadius="10px" /></div>
 			</div>
 		{:else if results.length > 0}
 			<p class="result-count">{results.length} hasil ditemukan</p>
@@ -302,6 +320,36 @@
 		gap: 8px;
 	}
 
+	.search-skeleton-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.result-card-skeleton {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		padding: 14px 16px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.result-card-skeleton::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			#2a2f52 25%,
+			transparent 50%
+		);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s ease-in-out infinite;
+		pointer-events: none;
+	}
+
 	.empty-icon {
 		font-size: 40px;
 		margin-bottom: 4px;
@@ -312,18 +360,8 @@
 		opacity: 0.7;
 	}
 
-	.spinner {
-		width: 24px;
-		height: 24px;
-		border: 3px solid var(--border);
-		border-top-color: var(--accent);
-		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
+	@keyframes shimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
 	}
 </style>

@@ -83,3 +83,176 @@ button {
 input, textarea, select {
 	font-family: inherit;
 }
+
+/* ===== Markdown Content Styles ===== */
+
+.markdown-content {
+	line-height: 1.75;
+	overflow-wrap: break-word;
+}
+
+/* Tables */
+.markdown-content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.25rem 0;
+	font-size: 0.9rem;
+	display: block;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	white-space: nowrap;
+}
+
+.markdown-content thead {
+	background: var(--surface);
+	position: sticky;
+	top: 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+	padding: 0.65rem 0.85rem;
+	border: 1px solid var(--border);
+	text-align: left;
+	vertical-align: top;
+}
+
+.markdown-content th {
+	font-weight: 600;
+	color: var(--accent-secondary);
+}
+
+.markdown-content tbody tr {
+	transition: background-color 0.15s ease;
+}
+
+.markdown-content tbody tr:nth-child(even) {
+	background: var(--hover);
+}
+
+.markdown-content tbody tr:hover {
+	background: var(--accent-dim);
+}
+
+/* Code blocks (highlight.js output) */
+.markdown-content pre {
+	background: #13141f;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 1rem 1.25rem;
+	overflow-x: auto;
+	font-size: 0.85rem;
+	line-height: 1.55;
+	tab-size: 2;
+}
+
+.markdown-content pre code {
+	background: none;
+	padding: 0;
+	border: none;
+	font-size: inherit;
+	color: inherit;
+}
+
+.markdown-content code {
+	background: var(--accent-dim);
+	color: var(--accent-secondary);
+	padding: 0.15em 0.4em;
+	border-radius: 4px;
+	font-size: 0.85em;
+	font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+
+/* Highlight.js overrides for dark theme */
+.markdown-content .hljs {
+	background: transparent;
+	padding: 0;
+	color: #e8eaf0;
+}
+
+.markdown-content .hljs-keyword { color: #c792ea; }
+.markdown-content .hljs-string { color: #c3e88d; }
+.markdown-content .hljs-number { color: #f78c6c; }
+.markdown-content .hljs-comment { color: #546e7a; font-style: italic; }
+.markdown-content .hljs-function { color: #82aaff; }
+.markdown-content .hljs-title { color: #82aaff; }
+.markdown-content .hljs-built_in { color: #ffcb6b; }
+.markdown-content .hljs-attr { color: #f07178; }
+.markdown-content .hljs-attribute { color: #c792ea; }
+.markdown-content .hljs-type { color: #ffcb6b; }
+.markdown-content .hljs-literal { color: #f78c6c; }
+.markdown-content .hljs-meta { color: #89ddff; }
+.markdown-content .hljs-tag { color: #f07178; }
+.markdown-content .hljs-name { color: #f07178; }
+.markdown-content .hljs-selector-class { color: #82aaff; }
+.markdown-content .hljs-selector-id { color: #f07178; }
+.markdown-content .hljs-regexp { color: #c3e88d; }
+.markdown-content .hljs-symbol { color: #f78c6c; }
+.markdown-content .hljs-section { color: #82aaff; }
+.markdown-content .hljs-link { color: #c792ea; }
+.markdown-content .hljs-deletion { color: #ef4444; }
+.markdown-content .hljs-addition { color: #22c55e; }
+
+/* Headings */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+	margin-top: 2rem;
+	margin-bottom: 0.75rem;
+	color: var(--text);
+	line-height: 1.3;
+}
+
+.markdown-content h1 { font-size: 1.75rem; }
+.markdown-content h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+.markdown-content h3 { font-size: 1.15rem; }
+.markdown-content h4 { font-size: 1rem; }
+
+/* Paragraphs and lists */
+.markdown-content p {
+	margin: 0.75rem 0;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+	margin: 0.75rem 0;
+	padding-left: 1.5rem;
+}
+
+.markdown-content li {
+	margin: 0.35rem 0;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+	border-left: 3px solid var(--accent);
+	padding: 0.5rem 1rem;
+	margin: 1rem 0;
+	background: var(--accent-dim);
+	border-radius: 0 6px 6px 0;
+	color: var(--text-secondary);
+}
+
+/* Horizontal rules */
+.markdown-content hr {
+	border: none;
+	border-top: 1px solid var(--border);
+	margin: 1.5rem 0;
+}
+
+/* Images */
+.markdown-content img {
+	max-width: 100%;
+	border-radius: 6px;
+}
+
+/* Links */
+.markdown-content a {
+	color: var(--accent-secondary);
+	text-decoration: none;
+}
+
+.markdown-content a:hover {
+	text-decoration: underline;
+}

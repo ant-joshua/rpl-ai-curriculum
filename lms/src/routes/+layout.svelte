@@ -28,6 +28,8 @@
 	<meta name="theme-color" content="#6c5ce7" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<link rel="alternate" type="application/rss+xml" title="RPL AI Curriculum RSS" href="/feed.xml" />
+	<link rel="alternate" type="application/feed+json" title="RPL AI Curriculum JSON Feed" href="/feed.json" />
 </svelte:head>
 
 <button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigasi">
@@ -59,6 +61,10 @@
 			<a href="/dashboard" onclick={closeSidebar} class:active={isActive('/dashboard')}>
 				<span class="nav-icon">📊</span>
 				<span>Dashboard</span>
+			</a>
+			<a href="/path" onclick={closeSidebar} class:active={isActive('/path')}>
+				<span class="nav-icon">🗺️</span>
+				<span>Path</span>
 			</a>
 			<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
 				<span class="nav-icon">📈</span>
@@ -101,6 +107,10 @@
 			<a href="/videos" onclick={closeSidebar} class:active={isActive('/videos')}>
 				<span class="nav-icon">🎬</span>
 				<span>Video</span>
+			</a>
+			<a href="/feed" onclick={closeSidebar} class:active={isActive('/feed')}>
+				<span class="nav-icon">📡</span>
+				<span>RSS</span>
 			</a>
 		</nav>
 

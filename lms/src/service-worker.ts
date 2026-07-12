@@ -3,59 +3,63 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
+import { build, files, version } from '$service-worker';
+
 const sw = self as unknown as ServiceWorkerGlobalScope;
+const CACHE = 'lms-cache-v1';
 
-const CACHE = 'rpl-lms-v1';
-const STATIC_ASSETS = [
-	'/',
-	'/dashboard',
-	'/progress',
-	'/search',
-	'/content/manifest.json',
-];
+// Static assets: build output (JS/CSS) + static files (fonts, favicons, manifest.json)
+const ASSETS = [...build, ...files];
 
-// Install: pre-cache static assets
+// Install: pre-cache all static assets, activate immediately
 sw.addEventListener('install', (event) => {
-	event.waitUntil(
-		caches.open(CACHE).then((cache) => {
-			return cache.addAll(STATIC_ASSETS);
-		})
-	);
+	async function addFilesToCache() {
+		const cache = await caches.open(CACHE);
+		await cache.addAll(ASSETS);
+	}
+	event.waitUntil(addFilesToCache());
 	sw.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: prune old caches, take control of all clients
 sw.addEventListener('activate', (event) => {
-	event.waitUntil(
-		caches.keys().then((keys) => {
-			return Promise.all(
-				keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))
-			);
-		})
-	);
+	async function deleteOldCaches() {
+		for (const key of await caches.keys()) {
+			if (key !== CACHE) await caches.delete(key);
+		}
+	}
+	event.waitUntil(deleteOldCaches());
 	sw.clients.claim();
 });
 
-// Fetch: cache-first for content JSON, network-first for everything else
+// Fetch: network-first for content, cache-first for static assets
 sw.addEventListener('fetch', (event) => {
 	const url = new URL(event.request.url);
 
-	// Only handle same-origin requests
+	// Only handle same-origin GET requests
 	if (url.origin !== sw.location.origin) return;
+	if (event.request.method !== 'GET') return;
 
-	// Content JSON: cache-first (large, rarely changes)
-	if (url.pathname.startsWith('/content/') && url.pathname.endsWith('.json')) {
-		event.respondWith(cacheFirst(event.request));
+	const path = url.pathname;
+
+	// Network-first for dynamic content
+	if (
+		(path.startsWith('/content/') && path.endsWith('.json')) ||
+		path.startsWith('/pdfs/') ||
+		path.startsWith('/references/')
+	) {
+		event.respondWith(networkFirst(event.request));
 		return;
 	}
 
-	// App shell & API: network-first with cache fallback
-	event.respondWith(networkFirst(event.request));
+	// Cache-first for all other requests (static assets, pages)
+	event.respondWith(cacheFirst(event.request));
 });
 
 async function cacheFirst(request: Request): Promise<Response> {
 	const cached = await caches.match(request);
 	if (cached) return cached;
+
 	try {
 		const response = await fetch(request);
 		if (response.ok) {
@@ -76,14 +80,17 @@ async function networkFirst(request: Request): Promise<Response> {
 			cache.put(request, response.clone());
 		}
 		return response;
-	} catch (e) {
+	} catch {
+		// Offline: fall back to cache
 		const cached = await caches.match(request);
 		if (cached) return cached;
-		// For page navigations, return the cached index (SPA fallback)
+
+		// Navigations: serve cached index (SPA fallback)
 		if (request.mode === 'navigate') {
 			const index = await caches.match('/');
 			if (index) return index;
 		}
+
 		return new Response('Offline', { status: 503 });
 	}
 }
