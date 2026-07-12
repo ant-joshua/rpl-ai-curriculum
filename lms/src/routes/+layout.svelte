@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { user } from '$lib/stores/user.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte';
+	import { gamification } from '$lib/stores/gamification.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
@@ -128,11 +129,27 @@
 				<span class="nav-icon">📜</span>
 				<span>Riwayat</span>
 			</a>
+			<a href="/badges" onclick={closeSidebar} class:active={isActive('/badges')}>
+				<span class="nav-icon">🏆</span>
+				<span>Badges</span>
+			</a>
+			<a href="/planner" onclick={closeSidebar} class:active={isActive('/planner')}>
+				<span class="nav-icon">📅</span>
+				<span>Planner</span>
+			</a>
 			<a href="/certificate" onclick={closeSidebar} class:active={isActive('/certificate')}>
 				<span class="nav-icon">🎓</span>
 				<span>Sertifikat</span>
 			</a>
+			<a href="/profile" onclick={closeSidebar} class:active={isActive('/profile')}>
+				<span class="nav-icon">👤</span>
+				<span>Profil</span>
+			</a>
 			<div class="sidebar-separator"></div>
+			<a href="/exercises" onclick={closeSidebar} class:active={isActive('/exercises')}>
+				<span class="nav-icon">🏋️</span>
+				<span>Exercises</span>
+			</a>
 			<div class="sidebar-group-label">📚 Referensi</div>
 			<a href="/challenges" onclick={closeSidebar}>
 				<span class="nav-icon">🏋️</span>
@@ -166,6 +183,10 @@
 				<span class="nav-icon">📡</span>
 				<span>RSS</span>
 			</a>
+			<a href="/export" onclick={closeSidebar} class:active={isActive('/export')}>
+				<span class="nav-icon">📤</span>
+				<span>Export</span>
+			</a>
 			<a href="/slides/list" onclick={closeSidebar} class:active={isActive('/slides')}>
 				<span class="nav-icon">🖥️</span>
 				<span>Slides</span>
@@ -173,6 +194,18 @@
 		</nav>
 
 		<div class="sidebar-footer">
+			{#if browser}
+				{@const lvl = gamification.getLevelProgress()}
+				<div class="sidebar-xp">
+					<div class="xp-header">
+						<span class="xp-level">Level {lvl.level}</span>
+						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext} XP</span>
+					</div>
+					<div class="xp-bar">
+						<div class="xp-bar-fill" style="width: {(lvl.level > 1 ? (lvl.currentXp / (lvl.currentXp + lvl.xpToNext)) : (lvl.currentXp / 100)) * 100}%"></div>
+					</div>
+				</div>
+			{/if}
 			{#if !user.isLoggedIn}
 				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
 			{/if}
@@ -426,6 +459,43 @@
 		cursor: pointer;
 		transition: all 0.15s ease;
 		text-decoration: none !important;
+	}
+
+	.sidebar-xp {
+		padding: 8px 12px;
+		margin-bottom: 4px;
+	}
+
+	.xp-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 4px;
+	}
+
+	.xp-level {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--accent);
+	}
+
+	.xp-amount {
+		font-size: 11px;
+		color: var(--text-secondary);
+	}
+
+	.xp-bar {
+		height: 6px;
+		background: var(--bg-secondary);
+		border-radius: 3px;
+		overflow: hidden;
+	}
+
+	.xp-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		border-radius: 3px;
+		transition: width 0.3s ease;
 	}
 
 	.logout-btn {

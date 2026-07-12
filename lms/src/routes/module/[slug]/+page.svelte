@@ -16,6 +16,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	import type { QuizQuestion } from '$lib/utils/quiz';
 	import { parseQuizHtml } from '$lib/utils/quiz';
 	import { getVideosByModule, type VideoEntry } from '$lib/stores/videos';
+	import { discussions } from '$lib/stores/discussions.svelte';
+	import { getDeviceId } from '$lib/utils/api';
 	import Skeleton from '$lib/components/Skeleton.svelte';
 	import { fade } from 'svelte/transition';
 
@@ -196,6 +198,42 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	let scrollProgress = $state(0);
 	let celebrateSession = $state<string | null>(null);
 
+	// Exercises for this module
+	let moduleExercises = $state<any[]>([]);
+
+	$effect(() => {
+		async function loadExercises() {
+			if (!mod) return;
+			try {
+				const res = await fetch('/content/exercises.json');
+				const data = await res.json();
+				if (data.grouped && data.grouped[mod.slug]) {
+					moduleExercises = data.grouped[mod.slug];
+				}
+			} catch {
+				// silent fail
+			}
+		}
+		loadExercises();
+	});
+	let showDiscussions = $state(false);
+	let discussionInput = $state('');
+	let replyToId = $state<string | null>(null);
+
+	function formatTime(iso: string): string {
+		try {
+			const date = new Date(iso + 'Z');
+			const now = new Date();
+			const diff = now.getTime() - date.getTime();
+			if (diff < 60000) return 'baru saja';
+			if (diff < 3600000) return `${Math.floor(diff / 60000)}m lalu`;
+			if (diff < 86400000) return `${Math.floor(diff / 3600000)}j lalu`;
+			return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+		} catch {
+			return iso;
+		}
+	}
+
 	// Auto-remove celebration after animation completes
 	$effect(() => {
 		if (celebrateSession) {
@@ -203,6 +241,13 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				celebrateSession = null;
 			}, 400);
 			return () => clearTimeout(timer);
+		}
+	});
+
+	// Load discussions when panel opens
+	$effect(() => {
+		if (showDiscussions && mod) {
+			discussions.loadComments(mod.slug, activeSession ?? undefined);
 		}
 	});
 
@@ -288,6 +333,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 			showExercise = !showExercise;
 		} else if (e.key === 'v') {
 			showVideos = !showVideos;
+		} else if (e.key === 'c') {
+			showDiscussions = !showDiscussions;
 		} else if (e.key === 'd') {
 			toggleComplete(activeSession);
 		}
@@ -516,6 +563,14 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 							>
 								{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
 							</button>
+							<button
+								class="discuss-toggle-btn"
+								class:active={showDiscussions}
+								onclick={() => showDiscussions = !showDiscussions}
+								title="Diskusi (c)"
+							>
+								💬 Diskusi
+							</button>
 						</div>
 					</div>
 					<div class="markdown-content">
@@ -581,6 +636,121 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 							</div>
 						</div>
 					{/if}
+					{#if showDiscussions}
+						<div class="discussions-section">
+							<h3>
+								💬 Diskusi
+								<span class="discussion-count">{discussions.getTopLevelComments(slug).length} komentar</span>
+							</h3>
+
+							<!-- Comment list -->
+							<div class="discussion-list">
+								{#each discussions.getTopLevelComments(slug) as comment}
+									<div class="discussion-item">
+										<div class="discussion-avatar">
+											{(comment.username || comment.user_id).charAt(0).toUpperCase()}
+										</div>
+										<div class="discussion-body">
+											<div class="discussion-meta">
+												<strong>{comment.username || comment.user_id.slice(0, 8)}</strong>
+												<span class="discussion-time">{formatTime(comment.created_at)}</span>
+											</div>
+											<p class="discussion-content">{comment.content}</p>
+											<div class="discussion-actions">
+												<button
+													class="reply-btn"
+													onclick={() => replyToId = replyToId === comment.id ? null : comment.id}
+												>↩ Balas</button>
+												{#if getDeviceId() === comment.user_id}
+													<button
+														class="delete-btn"
+														onclick={async () => {
+															await discussions.deleteComment(comment.id, slug, activeSession ?? undefined);
+														}}
+													>🗑 Hapus</button>
+												{/if}
+											</div>
+
+											<!-- Replies -->
+											{#each discussions.getReplies(comment.id) as reply}
+												<div class="discussion-item reply">
+													<div class="discussion-avatar small">
+														{(reply.username || reply.user_id).charAt(0).toUpperCase()}
+													</div>
+													<div class="discussion-body">
+														<div class="discussion-meta">
+															<strong>{reply.username || reply.user_id.slice(0, 8)}</strong>
+															<span class="discussion-time">{formatTime(reply.created_at)}</span>
+														</div>
+														<p class="discussion-content">{reply.content}</p>
+														{#if getDeviceId() === reply.user_id}
+															<button
+																class="delete-btn"
+																onclick={async () => {
+																	await discussions.deleteComment(reply.id, slug, activeSession ?? undefined);
+																}}
+															>🗑 Hapus</button>
+														{/if}
+													</div>
+												</div>
+											{/each}
+
+											<!-- Reply input -->
+											{#if replyToId === comment.id}
+												<div class="reply-input">
+													<input
+														type="text"
+														placeholder="Tulis balasan..."
+														bind:value={discussionInput}
+														onkeydown={async (e) => {
+															if (e.key === 'Enter' && discussionInput.trim()) {
+																await discussions.addComment(discussionInput.trim(), slug, activeSession ?? undefined, comment.id);
+																discussionInput = '';
+																replyToId = null;
+															}
+														}}
+													/>
+													<button
+														class="send-reply-btn"
+														disabled={!discussionInput.trim()}
+														onclick={async () => {
+															if (discussionInput.trim()) {
+																await discussions.addComment(discussionInput.trim(), slug, activeSession ?? undefined, comment.id);
+																discussionInput = '';
+																replyToId = null;
+															}
+														}}
+													>Kirim</button>
+												</div>
+											{/if}
+										</div>
+									</div>
+								{/each}
+							</div>
+
+							<!-- New comment input -->
+							{#if replyToId === null}
+								<div class="discussion-input-area">
+									<div class="discussion-avatar">
+										{getDeviceId().charAt(0).toUpperCase()}
+									</div>
+									<div class="discussion-input-wrapper">
+										<input
+											type="text"
+											placeholder="Tulis komentar... (Enter untuk kirim)"
+											bind:value={discussionInput}
+											onkeydown={async (e) => {
+												if (e.key === 'Enter' && discussionInput.trim()) {
+													await discussions.addComment(discussionInput.trim(), slug, activeSession ?? undefined);
+													discussionInput = '';
+												}
+											}}
+										/>
+									</div>
+								</div>
+							{/if}
+						</div>
+					{/if}
 				{:else}
 					<div class="readme-content">
 						<h2>📖 README — {mod.title}</h2>
@@ -628,6 +798,32 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				</div>
 			{/if}
 		{/if}
+	{/if}
+
+	<!-- Exercise section -->
+	{#if mod && moduleExercises.length > 0}
+		<div class="exercise-section">
+			<h2>🏋️ Latihan Soal</h2>
+			<p class="section-desc">Latihan untuk modul ini — coba kerjakan untuk menguji pemahaman.</p>
+			<div class="exercise-list">
+				{#each moduleExercises as ex}
+					<a href="/exercises/{ex.slug}" class="exercise-item">
+						<div class="ex-header">
+							<span class="ex-title">{ex.title}</span>
+							<div class="ex-meta">
+								<span class="badge" class:beginner={ex.difficulty === 'Beginner'} class:intermediate={ex.difficulty === 'Intermediate'} class:advanced={ex.difficulty === 'Advanced'}>
+									{ex.difficulty}
+								</span>
+								<span class="ex-type">{ex.type}</span>
+							</div>
+						</div>
+						{#if ex.description}
+							<p class="ex-desc">{ex.description}</p>
+						{/if}
+					</a>
+				{/each}
+			</div>
+		</div>
 	{/if}
 </div>
 
@@ -1350,5 +1546,260 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 	.banner-link:hover {
 		opacity: 0.9;
+	}
+
+	/* Discussion section */
+	.discuss-toggle-btn {
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	.discuss-toggle-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+	.discuss-toggle-btn.active { background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; color: #3b82f6; }
+
+	.discussions-section {
+		margin-top: 24px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 20px;
+	}
+	.discussions-section h3 {
+		font-size: 16px;
+		font-weight: 600;
+		margin-bottom: 16px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.discussion-count {
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--text-secondary);
+		background: var(--bg-secondary);
+		padding: 2px 10px;
+		border-radius: 10px;
+	}
+	.discussion-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+	.discussion-item {
+		display: flex;
+		gap: 10px;
+		padding: 8px;
+		border-radius: 10px;
+	}
+	.discussion-item.reply {
+		margin-left: 36px;
+		padding: 6px 8px;
+		background: var(--bg-secondary);
+		border-radius: 8px;
+	}
+	.discussion-avatar {
+		width: 32px;
+		height: 32px;
+		min-width: 32px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.discussion-avatar.small {
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
+		font-size: 11px;
+	}
+	.discussion-body {
+		flex: 1;
+		min-width: 0;
+	}
+	.discussion-meta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 4px;
+	}
+	.discussion-meta strong {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text);
+	}
+	.discussion-time {
+		font-size: 11px;
+		color: var(--text-secondary);
+	}
+	.discussion-content {
+		font-size: 14px;
+		color: var(--text);
+		line-height: 1.5;
+		margin-bottom: 6px;
+		word-break: break-word;
+	}
+	.discussion-actions {
+		display: flex;
+		gap: 8px;
+	}
+	.reply-btn, .delete-btn {
+		padding: 2px 8px;
+		border: none;
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 500;
+		cursor: pointer;
+		border-radius: 4px;
+		transition: all 0.15s ease;
+	}
+	.reply-btn:hover { color: var(--accent); background: var(--accent-dim); }
+	.delete-btn:hover { color: var(--danger, #ef4444); background: rgba(239, 68, 68, 0.1); }
+
+	.reply-input {
+		display: flex;
+		gap: 8px;
+		margin-top: 8px;
+		align-items: center;
+	}
+	.reply-input input {
+		flex: 1;
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg);
+		color: var(--text);
+		font-size: 13px;
+		outline: none;
+	}
+	.reply-input input:focus {
+		border-color: var(--accent);
+	}
+	.send-reply-btn {
+		padding: 8px 16px;
+		border: 1px solid var(--accent);
+		border-radius: 8px;
+		background: var(--accent-dim);
+		color: var(--accent);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: all 0.15s ease;
+	}
+	.send-reply-btn:hover { background: var(--accent); color: #fff; }
+	.send-reply-btn:disabled { opacity: 0.4; cursor: default; }
+
+	.discussion-input-area {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		padding-top: 12px;
+		border-top: 1px solid var(--border);
+	}
+	.discussion-input-wrapper {
+		flex: 1;
+	}
+	.discussion-input-wrapper input {
+		width: 100%;
+		padding: 10px 14px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--bg);
+		color: var(--text);
+		font-size: 14px;
+		outline: none;
+		transition: border-color 0.15s ease;
+	}
+	.discussion-input-wrapper input:focus {
+		border-color: var(--accent);
+	}
+
+	/* Exercise section */
+	.exercise-section {
+		margin-top: 32px;
+		padding: 24px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+	}
+	.exercise-section h2 {
+		font-size: 20px;
+		font-weight: 700;
+		margin-bottom: 4px;
+	}
+	.section-desc {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin-bottom: 16px;
+	}
+	.exercise-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.exercise-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 12px 16px;
+		border-radius: 8px;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		text-decoration: none !important;
+		color: inherit;
+		transition: border-color 0.15s ease;
+	}
+	.exercise-item:hover {
+		border-color: var(--accent);
+	}
+	.ex-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px;
+	}
+	.ex-title {
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.ex-meta {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		flex-shrink: 0;
+	}
+	.ex-meta .badge {
+		font-size: 10px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 12px;
+		text-transform: uppercase;
+	}
+	.ex-meta .badge.beginner { background: #10b98122; color: #10b981; }
+	.ex-meta .badge.intermediate { background: #f59e0b22; color: #f59e0b; }
+	.ex-meta .badge.advanced { background: #ef444422; color: #ef4444; }
+	.ex-type {
+		font-size: 11px;
+		color: var(--text-secondary);
+		background: var(--surface);
+		padding: 2px 8px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+	}
+	.ex-desc {
+		font-size: 12px;
+		color: var(--text-secondary);
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 </style>

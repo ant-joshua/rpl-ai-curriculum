@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { modules, type Module } from './modules';
 import { certificate } from './certificate.svelte';
 import { api } from '$lib/utils/api';
+import { afterSessionComplete } from './gamification.svelte';
 
 const STREAK_KEY = 'lms-streak';
 const LAST_READ_KEY = 'lms-last-read';
@@ -127,6 +128,10 @@ function createProgressStore() {
 		localStorage.setItem(key, JSON.stringify(completed));
 		version++;
 		certificate.checkAndMark();
+		// Gamification: award XP and check badges
+		if (nowCompleted) {
+			afterSessionComplete(slug, sessionId);
+		}
 		// Async API sync
 		apiSync(slug, sessionId, nowCompleted);
 	}
