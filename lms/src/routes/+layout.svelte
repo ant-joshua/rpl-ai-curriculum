@@ -105,8 +105,8 @@
 				<span>Dashboard</span>
 			</a>
 			<a href="/path" onclick={closeSidebar} class:active={isActive('/path')}>
-				<span class="nav-icon">🗺️</span>
-				<span>Path</span>
+				<span class="nav-icon">📚</span>
+				<span>Learning Paths</span>
 			</a>
 			<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
 				<span class="nav-icon">📈</span>

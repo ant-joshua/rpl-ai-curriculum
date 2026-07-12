@@ -56,6 +56,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	let prevModule = $derived(moduleIndex > 0 ? modules[moduleIndex - 1] : undefined);
 	let nextModule = $derived(moduleIndex >= 0 && moduleIndex < modules.length - 1 ? modules[moduleIndex + 1] : undefined);
 
+	// All sessions completed?
+	let allSessionsCompleted = $derived(
+		mod && mod.sessions.length > 0 && completedSessions.length === mod.sessions.length
+	);
+
 	// Content cache from static JSON (no API needed — works on CF Pages)
 	let contentCache = $state<Record<string, string>>({});
 	let sessionWordCounts = $state<Record<string, number>>({});
@@ -390,6 +395,21 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				{/if}
 			</div>
 		</header>
+
+		{#if allSessionsCompleted && nextModule}
+			<div class="module-complete-banner">
+				<div class="banner-content">
+					<span class="banner-icon">🎉</span>
+					<div class="banner-text">
+						<strong>Modul selesai!</strong>
+						<span>Lanjut ke modul selanjutnya</span>
+					</div>
+					<a href="/module/{nextModule.slug}" class="banner-link">
+						{nextModule.title} &rarr;
+					</a>
+				</div>
+			</div>
+		{/if}
 
 		<div class="module-layout">
 			<aside class="session-sidebar">
@@ -1179,5 +1199,58 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
 		transition: none;
 		pointer-events: none;
+	}
+
+	/* Module complete banner */
+	.module-complete-banner {
+		margin-bottom: 20px;
+		background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.05));
+		border: 1px solid rgba(34, 197, 94, 0.3);
+		border-radius: 12px;
+		padding: 16px 20px;
+	}
+
+	.banner-content {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.banner-icon {
+		font-size: 28px;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
+	.banner-text {
+		flex: 1;
+	}
+
+	.banner-text strong {
+		display: block;
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--text);
+	}
+
+	.banner-text span {
+		font-size: 12px;
+		color: var(--text-secondary);
+	}
+
+	.banner-link {
+		padding: 8px 16px;
+		border-radius: 8px;
+		background: #22c55e;
+		color: #fff !important;
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none !important;
+		white-space: nowrap;
+		transition: opacity 0.15s ease;
+		flex-shrink: 0;
+	}
+	.banner-link:hover {
+		opacity: 0.9;
 	}
 </style>
