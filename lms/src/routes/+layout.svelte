@@ -72,6 +72,10 @@
 				<span class="nav-icon">📜</span>
 				<span>Riwayat</span>
 			</a>
+			<a href="/certificate" onclick={closeSidebar} class:active={isActive('/certificate')}>
+				<span class="nav-icon">🎓</span>
+				<span>Sertifikat</span>
+			</a>
 			<div class="sidebar-separator"></div>
 			<div class="sidebar-group-label">📚 Referensi</div>
 			<a href="/challenges" onclick={closeSidebar}>
@@ -86,9 +90,17 @@
 				<span class="nav-icon">📝</span>
 				<span>Cheatsheets</span>
 			</a>
+			<a href="/resources" onclick={closeSidebar}>
+				<span class="nav-icon">📥</span>
+				<span>PDF</span>
+			</a>
 			<a href="/mini-projects" onclick={closeSidebar}>
 				<span class="nav-icon">🔨</span>
 				<span>Mini Projects</span>
+			</a>
+			<a href="/videos" onclick={closeSidebar} class:active={isActive('/videos')}>
+				<span class="nav-icon">🎬</span>
+				<span>Video</span>
 			</a>
 		</nav>
 

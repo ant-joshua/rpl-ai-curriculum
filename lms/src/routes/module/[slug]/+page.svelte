@@ -11,6 +11,7 @@
 	import QuizCard from '$lib/components/QuizCard.svelte';
 	import type { QuizQuestion } from '$lib/utils/quiz';
 	import { parseQuizHtml } from '$lib/utils/quiz';
+	import { getVideosByModule, type VideoEntry } from '$lib/stores/videos';
 
 	let { data } = $props();
 
@@ -22,6 +23,7 @@
 	let sessionHtml = $state<string>('');
 	let loading = $state(true);
 	let errorMsg = $state('');
+	let pdfIndex = $state<Record<string, boolean>>({});
 
 	// Font size toggle
 	let fontSize = $state(16);
@@ -92,6 +94,21 @@
 		loading = false;
 	}
 
+	// Load PDF index to know which PDFs exist
+	async function loadPdfIndex() {
+		try {
+			const res = await fetch('/pdfs/index.json');
+			if (res.ok) {
+				const idx = await res.json();
+				const map: Record<string, boolean> = {};
+				for (const f of idx.files) {
+					map[f.dirName] = true;
+				}
+				pdfIndex = map;
+			}
+		} catch { /* silent fail — PDF button just won't show */ }
+	}
+
 	async function loadSession(sessionId: string) {
 		if (!mod) return;
 		activeSession = sessionId;
@@ -140,9 +157,12 @@
 	let showNotes = $state(false);
 	let showQuiz = $state(false);
 	let showExercise = $state(false);
+	let showVideos = $state(false);
 	let exerciseCode = $state('');
 	let exerciseLang = $state('javascript');
 	let quizQuestions = $state<QuizQuestion[]>([]);
+	let moduleVideos = $derived(mod ? getVideosByModule(mod.slug) : []);
+	let selectedVideo = $state<VideoEntry | null>(null);
 
 	// Parse quiz content from loaded JSON
 	function loadQuizFromContent(json: Record<string, string>) {
@@ -213,11 +233,12 @@
 		}
 	}
 
-	onMount(() => {
-		loadContent();
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		window.addEventListener('keydown', handleKeydown);
-		return () => {
+		onMount(() => {
+			loadContent();
+			loadPdfIndex();
+			window.addEventListener('scroll', handleScroll, { passive: true });
+			window.addEventListener('keydown', handleKeydown);
+			return () => {
 			window.removeEventListener('scroll', handleScroll);
 			window.removeEventListener('keydown', handleKeydown);
 		};
@@ -253,6 +274,11 @@
 				<button class="font-btn" class:active={fontSize === 16} onclick={() => setFontSize(16)} title="Ukuran normal">A</button>
 				<button class="font-btn" class:active={fontSize === 18} onclick={() => setFontSize(18)} title="Ukuran besar">A+</button>
 			</div>
+			{#if mod && pdfIndex[mod.dirName]}
+				<a href="/pdfs/{mod.dirName}.pdf" target="_blank" class="pdf-download-btn" download>
+					📥 Download PDF
+				</a>
+			{/if}
 		</header>
 
 		<div class="module-layout">
@@ -316,6 +342,15 @@
 									▶️ Coba Kode
 								</button>
 							{/if}
+							{#if moduleVideos.length > 0}
+								<button
+									class="video-toggle-btn"
+									class:active={showVideos}
+									onclick={() => showVideos = !showVideos}
+								>
+									🎥 Video
+								</button>
+							{/if}
 							<button
 								class="complete-btn"
 								class:done={progress.isSessionCompleted(mod.slug, activeSession)}
@@ -343,6 +378,49 @@
 								language={exerciseLang}
 								exerciseType={exerciseLang === 'html' ? 'html' : 'js'}
 							/>
+						</div>
+					{/if}
+					{#if showVideos && moduleVideos.length > 0}
+						<div class="videos-section">
+							<h3>🎥 Video Pembelajaran</h3>
+							<div class="video-list">
+								{#each moduleVideos as v}
+									<div class="video-item" class:planned={!v.url}>
+										<div class="video-thumb">
+											{#if v.url}
+												{@const ytId = v.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1]}
+												{#if ytId}
+													<img
+														src="https://img.youtube.com/vi/{ytId}/hqdefault.jpg"
+														alt={v.title}
+														loading="lazy"
+													/>
+												{/if}
+											{/if}
+										</div>
+										<div class="video-info">
+											<h4>{v.title}</h4>
+											{#if v.description}
+												<p class="video-desc">{v.description}</p>
+											{/if}
+											<div class="video-meta">
+												{#if v.duration}
+													<span class="video-duration">{v.duration}</span>
+												{/if}
+												{#if v.url}
+													<span class="video-status published">Published</span>
+													<button
+														class="video-play-btn"
+														onclick={() => selectedVideo = v}
+													>▶ Putar</button>
+												{:else}
+													<span class="video-status planned">Planned</span>
+												{/if}
+											</div>
+										</div>
+									</div>
+								{/each}
+							</div>
 						</div>
 					{/if}
 				{:else}
@@ -375,6 +453,30 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Video Player Modal -->
+{#if selectedVideo && selectedVideo.url}
+	{@const ytId = selectedVideo.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1]}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal-overlay" onclick={() => selectedVideo = null} role="button" tabindex="-1">
+		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+			<button class="modal-close" onclick={() => selectedVideo = null}>&times;</button>
+			<h3 class="modal-title">{selectedVideo.title}</h3>
+			{#if ytId}
+				<div class="video-wrapper">
+					<iframe
+						src="https://www.youtube-nocookie.com/embed/{ytId}?autoplay=1"
+						title={selectedVideo.title}
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen
+					></iframe>
+				</div>
+			{/if}
+		</div>
+	</div>
+{/if}
 
 <style>
 	.module-page {
@@ -439,6 +541,24 @@
 
 	.font-btn:hover { border-color: var(--accent); color: var(--accent); }
 	.font-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+	.pdf-download-btn {
+		display: inline-block;
+		margin-top: 12px;
+		padding: 8px 18px;
+		border: 1px solid var(--accent);
+		border-radius: 8px;
+		background: var(--accent-dim);
+		color: var(--accent);
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none !important;
+		transition: all 0.15s ease;
+	}
+	.pdf-download-btn:hover {
+		background: var(--accent);
+		color: #fff;
+	}
 
 	.module-layout { display: flex; gap: 24px; align-items: flex-start; }
 
@@ -628,5 +748,165 @@
 		.module-layout { flex-direction: column; }
 		.session-sidebar { width: 100%; min-width: 0; position: static; }
 		h1 { font-size: 20px; }
+	}
+
+	/* Video toggle button */
+	.video-toggle-btn {
+		padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--surface);
+		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	.video-toggle-btn:hover { border-color: #ef4444; color: #ef4444; }
+	.video-toggle-btn.active { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
+
+	/* Videos section */
+	.videos-section {
+		margin-top: 24px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 20px;
+	}
+	.videos-section h3 {
+		font-size: 16px;
+		font-weight: 600;
+		margin-bottom: 16px;
+	}
+	.video-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.video-item {
+		display: flex;
+		gap: 14px;
+		padding: 12px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		align-items: flex-start;
+	}
+	.video-item.planned {
+		opacity: 0.75;
+	}
+	.video-thumb {
+		width: 160px;
+		min-width: 160px;
+		aspect-ratio: 16 / 9;
+		background: var(--bg-secondary);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.video-thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.video-info {
+		flex: 1;
+		min-width: 0;
+	}
+	.video-info h4 {
+		font-size: 14px;
+		font-weight: 600;
+		margin-bottom: 4px;
+	}
+	.video-desc {
+		font-size: 12px;
+		color: var(--text-secondary);
+		line-height: 1.4;
+		margin-bottom: 8px;
+	}
+	.video-meta {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+	}
+	.video-duration {
+		font-size: 11px;
+		color: var(--text-secondary);
+	}
+	.video-status {
+		font-size: 10px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 4px;
+	}
+	.video-status.published {
+		background: rgba(34, 197, 94, 0.12);
+		color: #22c55e;
+	}
+	.video-status.planned {
+		background: rgba(245, 158, 11, 0.12);
+		color: #f59e0b;
+	}
+	.video-play-btn {
+		padding: 4px 12px;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		color: var(--text);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		margin-left: auto;
+	}
+	.video-play-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	/* Video modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 500;
+		background: rgba(0,0,0,0.7);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 24px;
+	}
+	.modal-content {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		max-width: 800px;
+		width: 100%;
+		padding: 24px;
+		position: relative;
+	}
+	.modal-close {
+		position: absolute;
+		top: 12px;
+		right: 16px;
+		background: none;
+		border: none;
+		font-size: 28px;
+		color: var(--text-secondary);
+		cursor: pointer;
+		line-height: 1;
+		z-index: 1;
+	}
+	.modal-close:hover { color: var(--text); }
+	.modal-title {
+		font-size: 18px;
+		font-weight: 600;
+		margin-bottom: 16px;
+		padding-right: 32px;
+	}
+	.video-wrapper {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		background: #000;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.video-wrapper iframe {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 	}
 </style>

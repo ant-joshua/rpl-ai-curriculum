@@ -1,0 +1,289 @@
+{
+  "files": [
+    {
+      "filename": "00-fundamentals.pdf",
+      "dirName": "00-fundamentals",
+      "title": "Fundamentals"
+    },
+    {
+      "filename": "01-js-fundamentals.pdf",
+      "dirName": "01-js-fundamentals",
+      "title": "Js Fundamentals"
+    },
+    {
+      "filename": "02-algorithms-data-structures.pdf",
+      "dirName": "02-algorithms-data-structures",
+      "title": "Algorithms Data Structures"
+    },
+    {
+      "filename": "03-typescript.pdf",
+      "dirName": "03-typescript",
+      "title": "Typescript"
+    },
+    {
+      "filename": "04-web-basics.pdf",
+      "dirName": "04-web-basics",
+      "title": "Web Basics"
+    },
+    {
+      "filename": "05-git-deploy.pdf",
+      "dirName": "05-git-deploy",
+      "title": "Git Deploy"
+    },
+    {
+      "filename": "06-node-express.pdf",
+      "dirName": "06-node-express",
+      "title": "Node Express"
+    },
+    {
+      "filename": "07-mastra-ai.pdf",
+      "dirName": "07-mastra-ai",
+      "title": "Mastra Ai"
+    },
+    {
+      "filename": "08-project.pdf",
+      "dirName": "08-project",
+      "title": "Project"
+    },
+    {
+      "filename": "09-testing.pdf",
+      "dirName": "09-testing",
+      "title": "Testing"
+    },
+    {
+      "filename": "10-design-patterns.pdf",
+      "dirName": "10-design-patterns",
+      "title": "Design Patterns"
+    },
+    {
+      "filename": "11-system-design.pdf",
+      "dirName": "11-system-design",
+      "title": "System Design"
+    },
+    {
+      "filename": "12-ui-ux-design.pdf",
+      "dirName": "12-ui-ux-design",
+      "title": "Ui Ux Design"
+    },
+    {
+      "filename": "13-flutter-mobile.pdf",
+      "dirName": "13-flutter-mobile",
+      "title": "Flutter Mobile"
+    },
+    {
+      "filename": "14-cybersecurity.pdf",
+      "dirName": "14-cybersecurity",
+      "title": "Cybersecurity"
+    },
+    {
+      "filename": "15-agile-scrum.pdf",
+      "dirName": "15-agile-scrum",
+      "title": "Agile Scrum"
+    },
+    {
+      "filename": "16-realtime-apps.pdf",
+      "dirName": "16-realtime-apps",
+      "title": "Realtime Apps"
+    },
+    {
+      "filename": "17-advanced-database.pdf",
+      "dirName": "17-advanced-database",
+      "title": "Advanced Database"
+    },
+    {
+      "filename": "18-ai-prompt-engineering.pdf",
+      "dirName": "18-ai-prompt-engineering",
+      "title": "Ai Prompt Engineering"
+    },
+    {
+      "filename": "19-technical-interview.pdf",
+      "dirName": "19-technical-interview",
+      "title": "Technical Interview"
+    },
+    {
+      "filename": "20-frontend-frameworks.pdf",
+      "dirName": "20-frontend-frameworks",
+      "title": "Frontend Frameworks"
+    },
+    {
+      "filename": "21-docker.pdf",
+      "dirName": "21-docker",
+      "title": "Docker"
+    },
+    {
+      "filename": "22-monorepo.pdf",
+      "dirName": "22-monorepo",
+      "title": "Monorepo"
+    },
+    {
+      "filename": "23-system-runtime.pdf",
+      "dirName": "23-system-runtime",
+      "title": "System Runtime"
+    },
+    {
+      "filename": "24-resilience-patterns.pdf",
+      "dirName": "24-resilience-patterns",
+      "title": "Resilience Patterns"
+    },
+    {
+      "filename": "25-soft-skills.pdf",
+      "dirName": "25-soft-skills",
+      "title": "Soft Skills"
+    },
+    {
+      "filename": "26-pragmatic-programming.pdf",
+      "dirName": "26-pragmatic-programming",
+      "title": "Pragmatic Programming"
+    },
+    {
+      "filename": "27-linux-terminal.pdf",
+      "dirName": "27-linux-terminal",
+      "title": "Linux Terminal"
+    },
+    {
+      "filename": "28-rest-api-design.pdf",
+      "dirName": "28-rest-api-design",
+      "title": "Rest Api Design"
+    },
+    {
+      "filename": "29-cloud-computing.pdf",
+      "dirName": "29-cloud-computing",
+      "title": "Cloud Computing"
+    },
+    {
+      "filename": "30-graphql-trpc.pdf",
+      "dirName": "30-graphql-trpc",
+      "title": "Graphql Trpc"
+    },
+    {
+      "filename": "31-auth-identity.pdf",
+      "dirName": "31-auth-identity",
+      "title": "Auth Identity"
+    },
+    {
+      "filename": "32-performance.pdf",
+      "dirName": "32-performance",
+      "title": "Performance"
+    },
+    {
+      "filename": "33-data-visualization.pdf",
+      "dirName": "33-data-visualization",
+      "title": "Data Visualization"
+    },
+    {
+      "filename": "34-pwa-offline.pdf",
+      "dirName": "34-pwa-offline",
+      "title": "Pwa Offline"
+    },
+    {
+      "filename": "35-html-css-intro.pdf",
+      "dirName": "35-html-css-intro",
+      "title": "Html Css Intro"
+    },
+    {
+      "filename": "36-web-architecture.pdf",
+      "dirName": "36-web-architecture",
+      "title": "Web Architecture"
+    },
+    {
+      "filename": "37-database-intro.pdf",
+      "dirName": "37-database-intro",
+      "title": "Database Intro"
+    },
+    {
+      "filename": "38-ai-dev-workflow.pdf",
+      "dirName": "38-ai-dev-workflow",
+      "title": "Ai Dev Workflow"
+    },
+    {
+      "filename": "39-payment-integration.pdf",
+      "dirName": "39-payment-integration",
+      "title": "Payment Integration"
+    },
+    {
+      "filename": "40-background-jobs.pdf",
+      "dirName": "40-background-jobs",
+      "title": "Background Jobs"
+    },
+    {
+      "filename": "41-monitoring.pdf",
+      "dirName": "41-monitoring",
+      "title": "Monitoring"
+    },
+    {
+      "filename": "42-file-upload.pdf",
+      "dirName": "42-file-upload",
+      "title": "File Upload"
+    },
+    {
+      "filename": "43-search-implementation.pdf",
+      "dirName": "43-search-implementation",
+      "title": "Search Implementation"
+    },
+    {
+      "filename": "44-portfolio-branding.pdf",
+      "dirName": "44-portfolio-branding",
+      "title": "Portfolio Branding"
+    },
+    {
+      "filename": "45-internationalization.pdf",
+      "dirName": "45-internationalization",
+      "title": "Internationalization"
+    },
+    {
+      "filename": "46-debugging-devtools.pdf",
+      "dirName": "46-debugging-devtools",
+      "title": "Debugging Devtools"
+    },
+    {
+      "filename": "47-team-git-workflow.pdf",
+      "dirName": "47-team-git-workflow",
+      "title": "Team Git Workflow"
+    },
+    {
+      "filename": "48-portfolio-project-series.pdf",
+      "dirName": "48-portfolio-project-series",
+      "title": "Portfolio Project Series"
+    },
+    {
+      "filename": "49-production-ready-code.pdf",
+      "dirName": "49-production-ready-code",
+      "title": "Production Ready Code"
+    },
+    {
+      "filename": "50-microservices-hands-on.pdf",
+      "dirName": "50-microservices-hands-on",
+      "title": "Microservices Hands On"
+    },
+    {
+      "filename": "51-lks-competition-prep.pdf",
+      "dirName": "51-lks-competition-prep",
+      "title": "Lks Competition Prep"
+    },
+    {
+      "filename": "52-indonesian-tech-ecosystem.pdf",
+      "dirName": "52-indonesian-tech-ecosystem",
+      "title": "Indonesian Tech Ecosystem"
+    },
+    {
+      "filename": "53-ai-coding-agents.pdf",
+      "dirName": "53-ai-coding-agents",
+      "title": "Ai Coding Agents"
+    },
+    {
+      "filename": "54-prompt-engineering-dev.pdf",
+      "dirName": "54-prompt-engineering-dev",
+      "title": "Prompt Engineering Dev"
+    },
+    {
+      "filename": "55-ai-docs-spec.pdf",
+      "dirName": "55-ai-docs-spec",
+      "title": "Ai Docs Spec"
+    },
+    {
+      "filename": "56-advanced-ai-dev.pdf",
+      "dirName": "56-advanced-ai-dev",
+      "title": "Advanced Ai Dev"
+    }
+  ]
+}
