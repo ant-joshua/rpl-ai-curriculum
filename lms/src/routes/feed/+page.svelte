@@ -22,7 +22,7 @@
 			<div class="url-label">RSS 2.0</div>
 			<code>https://lms-syllabus.ant-joshua.my.id/feed.xml</code>
 			<button
-				class="copy-btn"
+				class="feed-copy-btn"
 				onclick={() => navigator.clipboard.writeText('https://lms-syllabus.ant-joshua.my.id/feed.xml')}
 			>
 				📋 Salin
@@ -33,7 +33,7 @@
 			<div class="url-label">JSON Feed 1.1</div>
 			<code>https://lms-syllabus.ant-joshua.my.id/feed.json</code>
 			<button
-				class="copy-btn"
+				class="feed-copy-btn"
 				onclick={() => navigator.clipboard.writeText('https://lms-syllabus.ant-joshua.my.id/feed.json')}
 			>
 				📋 Salin
@@ -149,7 +149,7 @@
 		word-break: break-all;
 	}
 
-	.copy-btn {
+	.feed-copy-btn {
 		background: var(--accent);
 		color: #fff;
 		border: none;
@@ -161,7 +161,7 @@
 		white-space: nowrap;
 	}
 
-	.copy-btn:hover {
+	.feed-copy-btn:hover {
 		opacity: 0.85;
 	}
 
