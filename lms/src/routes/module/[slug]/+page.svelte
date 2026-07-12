@@ -4,6 +4,7 @@
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
+	import { activity } from '$lib/stores/activity.svelte';
 	import { notes } from '$lib/stores/notes.svelte';
 	import { parseMarkdown, stripFrontmatter, hasExercise, getExerciseStarterCode } from '$lib/utils/markdown';
 	import { onMount } from 'svelte';
@@ -102,6 +103,9 @@
 			const cleaned = stripFrontmatter(content);
 			sessionHtml = parseMarkdown(cleaned);
 
+			// Log view activity
+			activity.logAction('view', mod.slug, sessionId);
+
 			// Detect if session has exercises
 			if (hasExercise(cleaned)) {
 				const starterCode = getExerciseStarterCode(cleaned);
@@ -125,6 +129,10 @@
 	function toggleComplete(sessionId: string | null) {
 		if (!mod || !sessionId) return;
 		progress.toggleSession(mod.slug, sessionId);
+		// Log complete activity (log after toggling — it now counts as completed)
+		if (progress.isSessionCompleted(mod.slug, sessionId)) {
+			activity.logAction('complete', mod.slug, sessionId);
+		}
 	}
 
 	let moduleProgress = $derived(mod ? progress.getModuleProgress(mod.slug) : 0);

@@ -68,21 +68,25 @@
 				<span class="nav-icon">🔍</span>
 				<span>Cari</span>
 			</a>
+			<a href="/history" onclick={closeSidebar} class:active={isActive('/history')}>
+				<span class="nav-icon">📜</span>
+				<span>Riwayat</span>
+			</a>
 			<div class="sidebar-separator"></div>
 			<div class="sidebar-group-label">📚 Referensi</div>
-			<a href="/challenges" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<a href="/challenges" onclick={closeSidebar}>
 				<span class="nav-icon">🏋️</span>
 				<span>Challenges</span>
 			</a>
-			<a href="/glossary" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<a href="/glossary" onclick={closeSidebar}>
 				<span class="nav-icon">📖</span>
 				<span>Glossary</span>
 			</a>
-			<a href="/cheatsheets" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<a href="/cheatsheets" onclick={closeSidebar}>
 				<span class="nav-icon">📝</span>
 				<span>Cheatsheets</span>
 			</a>
-			<a href="/mini-projects" onclick={closeSidebar} target="_blank" rel="noreferrer">
+			<a href="/mini-projects" onclick={closeSidebar}>
 				<span class="nav-icon">🔨</span>
 				<span>Mini Projects</span>
 			</a>
