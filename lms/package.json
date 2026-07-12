@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"prebuild": "node scripts/prebuild-references.mjs && node scripts/prebuild-content.mjs && node scripts/prebuild-pdfs.mjs",
-		"build": "npm run prebuild && vite build",
+		"build": "npm run prebuild && vite build && node scripts/patch-routes.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

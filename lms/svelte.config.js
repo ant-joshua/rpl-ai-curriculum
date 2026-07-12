@@ -5,7 +5,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			routes: {
-				exclude: ['<all>']
+				exclude: ['<_app/*>', '<content/*>', '<pdfs/*>', '<build/*>']
 			}
 		}),
 		alias: {
