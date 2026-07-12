@@ -1,23 +1,13 @@
-// Video content registry — RPL AI Curriculum
-// Maps each module to curated YouTube playlists and videos from Indonesian creators.
-//
-// Sources:
-//   Web Programming UNPAS (WPU)  → youtube.com/@sandhikagalih
-//   Programmer Zaman Now         → youtube.com/@programmerzamannow
-//   Kelas Terbuka                → youtube.com/@KelasTerbuka
-//   Dea Afrizal                  → youtube.com/@deaafrizal
-//   Pukis Code                   → youtube.com/@pukiscode
+// Prebuild: generate static JSON from curriculum video registry
+// Output: static/content/videos.json (fetched by frontend at runtime)
+import { writeFileSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
 
-export interface ModuleVideo {
-  moduleSlug: string;
-  title: string;
-  videos: { id: string; title: string; duration?: string }[];
-  playlistUrl?: string;
-}
+const outputDir = resolve(process.cwd(), 'static', 'content');
 
-// Curated YouTube playlists per module
-export const moduleVideos: ModuleVideo[] = [
-  // ── 0: Fundamentals ──────────────────────────────────────────────
+// ── Video registry (mirrors src/lib/stores/videos.ts moduleVideos) ──
+// Kept as JS here so Node can run it directly without TS compilation.
+const moduleVideos = [
   {
     moduleSlug: 'fundamentals',
     title: 'Fundamental Pemrograman & Web',
@@ -29,7 +19,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Deployment untuk Pemula', duration: '13:00' },
     ],
   },
-  // ── 1: JavaScript Fundamentals ───────────────────────────────────
   {
     moduleSlug: 'js-fundamentals',
     title: 'JavaScript Fundamentals',
@@ -42,7 +31,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Vh7P1pGm6p0', title: 'Fungsi & Scope', duration: '16:45' },
     ],
   },
-  // ── 2: Algoritma & Struktur Data ────────────────────────────────
   {
     moduleSlug: 'algorithms-data-structures',
     title: 'Algoritma & Struktur Data',
@@ -56,7 +44,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'L8fWqD5pRvE', title: 'Tree & Graph', duration: '25:30' },
     ],
   },
-  // ── 3: TypeScript ────────────────────────────────────────────────
   {
     moduleSlug: 'typescript',
     title: 'TypeScript',
@@ -68,7 +55,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'TypeScript dengan Node.js', duration: '13:45' },
     ],
   },
-  // ── 4: Web Basics ────────────────────────────────────────────────
   {
     moduleSlug: 'web-basics',
     title: 'Web Basics (HTML, CSS, Tailwind, DOM)',
@@ -80,7 +66,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'kM8LXNP4Y6o', title: 'DOM Manipulation & Fetch API', duration: '21:00' },
     ],
   },
-  // ── 5: Git & Deployment ─────────────────────────────────────────
   {
     moduleSlug: 'git-deploy',
     title: 'Git & Deployment',
@@ -92,7 +77,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Deploy ke Vercel & Netlify', duration: '12:30' },
     ],
   },
-  // ── 6: Node.js & Express ─────────────────────────────────────────
   {
     moduleSlug: 'node-express',
     title: 'Node.js & Express',
@@ -104,7 +88,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'cN7wVj2BqT9', title: 'REST CRUD API Lengkap', duration: '25:00' },
     ],
   },
-  // ── 7: Mastra AI Framework ───────────────────────────────────────
   {
     moduleSlug: 'mastra-ai',
     title: 'Mastra AI Framework',
@@ -115,7 +98,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'p2oJ8sVjXqA', title: 'RAG Pattern & Workflow', duration: '22:10' },
     ],
   },
-  // ── 8: Project ──────────────────────────────────────────────────
   {
     moduleSlug: 'project',
     title: 'Project — Aplikasi AI Chatbot',
@@ -126,7 +108,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'cN7wVj2BqT9', title: 'Sprint 4 — Deploy & Polish', duration: '14:20' },
     ],
   },
-  // ── 9: Testing ──────────────────────────────────────────────────
   {
     moduleSlug: 'testing',
     title: 'Software Testing',
@@ -136,7 +117,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'B4tCVS7CZAM', title: 'CI/CD Pipeline GitHub Actions', duration: '22:00' },
     ],
   },
-  // ── 10: Design Patterns ─────────────────────────────────────────
   {
     moduleSlug: 'design-patterns',
     title: 'Design Patterns',
@@ -147,7 +127,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'L8fWqD5pRvE', title: 'Design Pattern di Dunia Nyata', duration: '17:45' },
     ],
   },
-  // ── 11: System Design ───────────────────────────────────────────
   {
     moduleSlug: 'system-design',
     title: 'System Design',
@@ -158,7 +137,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Message Queue & Hosting', duration: '16:00' },
     ],
   },
-  // ── 12: UI/UX Design ────────────────────────────────────────────
   {
     moduleSlug: 'ui-ux-design',
     title: 'UI/UX Design',
@@ -169,7 +147,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: '5TZqY5jJgXc', title: 'Aksesibilitas Web (A11y)', duration: '14:20' },
     ],
   },
-  // ── 13: Flutter Mobile ──────────────────────────────────────────
   {
     moduleSlug: 'flutter-mobile',
     title: 'Flutter Mobile',
@@ -180,7 +157,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'Firebase & Deploy ke Play Store', duration: '23:00' },
     ],
   },
-  // ── 14: Cybersecurity ───────────────────────────────────────────
   {
     moduleSlug: 'cybersecurity',
     title: 'Cybersecurity',
@@ -191,7 +167,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'L8fWqD5pRvE', title: 'HTTPS, CORS & DevSecOps', duration: '22:00' },
     ],
   },
-  // ── 15: Agile & Scrum ──────────────────────────────────────────
   {
     moduleSlug: 'agile-scrum',
     title: 'Agile & Scrum',
@@ -201,7 +176,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'R3qP8mLkx5Y', title: 'Scrum Tools (Jira, Linear, Notion)', duration: '15:20' },
     ],
   },
-  // ── 16: Real-Time Applications ──────────────────────────────────
   {
     moduleSlug: 'realtime-apps',
     title: 'Real-Time Applications',
@@ -211,7 +185,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'Scaling WebSocket di Production', duration: '18:00' },
     ],
   },
-  // ── 17: Advanced Database ───────────────────────────────────────
   {
     moduleSlug: 'advanced-database',
     title: 'Advanced Database',
@@ -221,7 +194,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'L8fWqD5pRvE', title: 'Database Scaling & Backup', duration: '20:00' },
     ],
   },
-  // ── 18: AI Prompt Engineering ───────────────────────────────────
   {
     moduleSlug: 'ai-prompt-engineering',
     title: 'AI Prompt Engineering',
@@ -232,7 +204,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xq3YhUcO0Lc', title: 'Prompt Chaining & Multi-Step', duration: '16:45' },
     ],
   },
-  // ── 19: Technical Interview Prep ────────────────────────────────
   {
     moduleSlug: 'technical-interview',
     title: 'Technical Interview Prep',
@@ -243,7 +214,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Mock Interview & Portfolio', duration: '18:20' },
     ],
   },
-  // ── 20: Frontend Frameworks ─────────────────────────────────────
   {
     moduleSlug: 'frontend-frameworks',
     title: 'Frontend Frameworks (React, Next.js)',
@@ -253,7 +223,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'kM8LXNP4Y6o', title: 'Next.js — App Router & SSR', duration: '24:00' },
     ],
   },
-  // ── 21: Docker ──────────────────────────────────────────────────
   {
     moduleSlug: 'docker',
     title: 'Docker',
@@ -264,7 +233,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'wLk9PqT4R6m', title: 'Docker untuk Production', duration: '18:00' },
     ],
   },
-  // ── 22: Monorepo ────────────────────────────────────────────────
   {
     moduleSlug: 'monorepo',
     title: 'Monorepo',
@@ -275,11 +243,9 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'CI Monorepo Strategy', duration: '17:00' },
     ],
   },
-  // ── 23: System & Runtime ───────────────────────────────────────
   {
     moduleSlug: 'system-runtime',
     title: 'System & Runtime',
-    // Philip Roberts' event loop talk — referenced in curriculum
     playlistUrl: 'https://youtube.com/playlist?list=PLFIM0718LjIW-XBdVOerYgKegBtD6rSfD',
     videos: [
       { id: '8aGhZQkoFbQ', title: 'What the heck is the event loop anyway? (JSConf)', duration: '26:30' },
@@ -288,7 +254,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Rsq5tP4K6oM', title: 'Runtime Performance Optimization', duration: '24:00' },
     ],
   },
-  // ── 24: Resilience Patterns ─────────────────────────────────────
   {
     moduleSlug: 'resilience-patterns',
     title: 'Resilience Patterns',
@@ -299,7 +264,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Saga Pattern & Health Check', duration: '20:00' },
     ],
   },
-  // ── 25: Soft Skills ────────────────────────────────────────────
   {
     moduleSlug: 'soft-skills',
     title: 'Soft Skills',
@@ -310,7 +274,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'cN7wVj2BqT9', title: 'Growth Mindset & Continuous Learning', duration: '12:00' },
     ],
   },
-  // ── 26: Pragmatic Programming ──────────────────────────────────
   {
     moduleSlug: 'pragmatic-programming',
     title: 'Pragmatic Programming',
@@ -321,7 +284,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'B4tCVS7CZAM', title: 'Code Review Best Practices', duration: '16:45' },
     ],
   },
-  // ── 27: Linux & Terminal ───────────────────────────────────────
   {
     moduleSlug: 'linux-terminal',
     title: 'Linux & Terminal',
@@ -332,7 +294,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'Shell Scripting untuk Otomasi', duration: '22:00' },
     ],
   },
-  // ── 28: REST API Design ─────────────────────────────────────────
   {
     moduleSlug: 'rest-api-design',
     title: 'REST API Design',
@@ -343,7 +304,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Rsq5tP4K6oM', title: 'API Versioning & Security', duration: '20:30' },
     ],
   },
-  // ── 29: Cloud Computing ─────────────────────────────────────────
   {
     moduleSlug: 'cloud-computing',
     title: 'Cloud Computing',
@@ -354,7 +314,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Infrastructure as Code (Terraform)', duration: '24:00' },
     ],
   },
-  // ── 30: GraphQL & tRPC ─────────────────────────────────────────
   {
     moduleSlug: 'graphql-trpc',
     title: 'GraphQL & tRPC',
@@ -364,7 +323,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'B4tCVS7CZAM', title: 'tRPC — End-to-End Typesafe API', duration: '16:00' },
     ],
   },
-  // ── 31: Authentication & Identity ──────────────────────────────
   {
     moduleSlug: 'auth-identity',
     title: 'Authentication & Identity',
@@ -375,7 +333,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'R3qP8mLkx5Y', title: 'Security Best Practices Auth', duration: '18:00' },
     ],
   },
-  // ── 32: Web Performance ────────────────────────────────────────
   {
     moduleSlug: 'performance',
     title: 'Web Performance',
@@ -386,7 +343,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'BmKv7gYvBcI', title: 'Lighthouse CI & Performance Budget', duration: '14:30' },
     ],
   },
-  // ── 33: Data Visualization ─────────────────────────────────────
   {
     moduleSlug: 'data-visualization',
     title: 'Data Visualization',
@@ -397,7 +353,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'p2oJ8sVjXqA', title: 'Dashboard Real-World', duration: '20:00' },
     ],
   },
-  // ── 34: PWA & Offline ──────────────────────────────────────────
   {
     moduleSlug: 'pwa-offline',
     title: 'PWA & Offline',
@@ -407,7 +362,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'R3qP8mLkx5Y', title: 'PWA Manifest & Push Notifications', duration: '16:00' },
     ],
   },
-  // ── 35: HTML & CSS Intro ──────────────────────────────────────
   {
     moduleSlug: 'html-css-intro',
     title: 'HTML & CSS Intro',
@@ -419,7 +373,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Form & Deploy Website', duration: '14:00' },
     ],
   },
-  // ── 36: Web Architecture ──────────────────────────────────────
   {
     moduleSlug: 'web-architecture',
     title: 'Web Architecture',
@@ -430,7 +383,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'cN7wVj2BqT9', title: 'Hosting, Domain & Deploy Strategy', duration: '17:00' },
     ],
   },
-  // ── 37: Database Intro ─────────────────────────────────────────
   {
     moduleSlug: 'database-intro',
     title: 'Database Intro',
@@ -441,7 +393,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Z3BQY5r7mLk', title: 'Database Design & Normalization', duration: '22:00' },
     ],
   },
-  // ── 38: AI Developer Workflow ──────────────────────────────────
   {
     moduleSlug: 'ai-dev-workflow',
     title: 'AI Developer Workflow',
@@ -452,7 +403,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'L8fWqD5pRvE', title: 'AI Workflow untuk Produktivitas', duration: '15:30' },
     ],
   },
-  // ── 39: Payment Integration ────────────────────────────────────
   {
     moduleSlug: 'payment-integration',
     title: 'Payment Integration',
@@ -462,7 +412,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'yKbYh2P3cFg', title: 'Stripe Webhook & Production', duration: '20:00' },
     ],
   },
-  // ── 40: Background Jobs ────────────────────────────────────────
   {
     moduleSlug: 'background-jobs',
     title: 'Background Jobs',
@@ -472,7 +421,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'B4tCVS7CZAM', title: 'Real-World Queue Architecture', duration: '20:00' },
     ],
   },
-  // ── 41: Monitoring & Observability ─────────────────────────────
   {
     moduleSlug: 'monitoring',
     title: 'Monitoring & Observability',
@@ -482,7 +430,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'wLk9PqT4R6m', title: 'Health Check & Uptime Monitoring', duration: '15:00' },
     ],
   },
-  // ── 42: File Upload ────────────────────────────────────────────
   {
     moduleSlug: 'file-upload',
     title: 'File Upload',
@@ -492,7 +439,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'kM8LXNP4Y6o', title: 'Image Optimization (Sharp, AVIF)', duration: '18:00' },
     ],
   },
-  // ── 43: Search Implementation ──────────────────────────────────
   {
     moduleSlug: 'search-implementation',
     title: 'Search Implementation',
@@ -502,7 +448,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Rsq5tP4K6oM', title: 'Client-Side Search (Fuse.js, Lunr)', duration: '14:00' },
     ],
   },
-  // ── 44: Portfolio & Personal Branding ─────────────────────────
   {
     moduleSlug: 'portfolio-branding',
     title: 'Portfolio & Personal Branding',
@@ -512,7 +457,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Z3BQY5r7mLk', title: 'LinkedIn & Personal Branding', duration: '14:30' },
     ],
   },
-  // ── 45: Internationalization ──────────────────────────────────
   {
     moduleSlug: 'internationalization',
     title: 'Internationalization (i18n)',
@@ -522,7 +466,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'cN7wVj2BqT9', title: 'RTL Support & Backend i18n', duration: '17:00' },
     ],
   },
-  // ── 46: Debugging & DevTools ──────────────────────────────────
   {
     moduleSlug: 'debugging-devtools',
     title: 'Debugging & DevTools',
@@ -532,7 +475,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'B4tCVS7CZAM', title: 'API Debugging (Postman, Thunder Client)', duration: '14:00' },
     ],
   },
-  // ── 47: Team Git Workflow ─────────────────────────────────────
   {
     moduleSlug: 'team-git-workflow',
     title: 'Team Git Workflow',
@@ -543,7 +485,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'BmKv7gYvBcI', title: 'GitHub Actions untuk Automation', duration: '22:00' },
     ],
   },
-  // ── 48: Portfolio Project Series ──────────────────────────────
   {
     moduleSlug: 'portfolio-project-series',
     title: 'Portfolio Project Series',
@@ -555,7 +496,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Z3BQY5r7mLk', title: 'Production Deploy & Monitoring', duration: '18:00' },
     ],
   },
-  // ── 49: Production-Ready Code ─────────────────────────────────
   {
     moduleSlug: 'production-ready-code',
     title: 'Production-Ready Code',
@@ -566,7 +506,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'Environment Config (dotenv, 12-factor)', duration: '12:30' },
     ],
   },
-  // ── 50: Microservices Hands-On ────────────────────────────────
   {
     moduleSlug: 'microservices-hands-on',
     title: 'Microservices Hands-On',
@@ -577,7 +516,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: '5TZqY5jJgXc', title: 'API Gateway Pattern (Kong, Traefik)', duration: '18:00' },
     ],
   },
-  // ── 51: LKS Competition Prep ─────────────────────────────────
   {
     moduleSlug: 'lks-competition-prep',
     title: 'LKS Competition Prep',
@@ -587,7 +525,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'gCjJ4ZNcWgQ', title: 'Mock Project — Mobile LKS', duration: '28:00' },
     ],
   },
-  // ── 52: Indonesian Tech Ecosystem ─────────────────────────────
   {
     moduleSlug: 'indonesian-tech-ecosystem',
     title: 'Indonesian Tech Ecosystem',
@@ -598,7 +535,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Z3BQY5r7mLk', title: 'Tech Community & Networking', duration: '12:00' },
     ],
   },
-  // ── 53: AI Coding Agents ─────────────────────────────────────
   {
     moduleSlug: 'ai-coding-agents',
     title: 'AI Coding Agents',
@@ -609,7 +545,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'Xp4Lk6NvR8m', title: 'Mastering Hermes Agent', duration: '16:00' },
     ],
   },
-  // ── 54: Prompt Engineering untuk Developer ───────────────────
   {
     moduleSlug: 'prompt-engineering-dev',
     title: 'Prompt Engineering untuk Developer',
@@ -620,7 +555,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: '5TZqY5jJgXc', title: 'Production Prompting (Caching, Evals)', duration: '18:00' },
     ],
   },
-  // ── 55: AI Docs & Spec ───────────────────────────────────────
   {
     moduleSlug: 'ai-docs-spec',
     title: 'AI Docs & Spec',
@@ -630,7 +564,6 @@ export const moduleVideos: ModuleVideo[] = [
       { id: 'gCjJ4ZNcWgQ', title: 'Context Files & Rules Files (cursorrules)', duration: '14:00' },
     ],
   },
-  // ── 56: Advanced AI Development ───────────────────────────────
   {
     moduleSlug: 'advanced-ai-dev',
     title: 'Advanced AI Development',
@@ -643,79 +576,23 @@ export const moduleVideos: ModuleVideo[] = [
   },
 ];
 
-// ── Legacy flat VideoEntry list ─────────────────────────────────
-// Used by existing components. Contains URLs found in markdown content.
-export interface VideoEntry {
-  moduleSlug?: string;
-  title: string;
-  url?: string; // empty until published
-  platform: 'youtube' | 'other' | 'planned';
-  description?: string;
-  duration?: string;
-  sessionId?: string;
+// Build the output object
+const output = {
+  modules: {}  // keyed by moduleSlug
+};
+
+for (const mv of moduleVideos) {
+  output.modules[mv.moduleSlug] = {
+    title: mv.title,
+    playlistUrl: mv.playlistUrl || null,
+    videos: mv.videos,
+  };
 }
 
-export const videos: VideoEntry[] = [
-  // ── Actual published video found in curriculum ──────────────
-  {
-    moduleSlug: 'system-runtime',
-    title: 'What the heck is the event loop anyway? (JSConf)',
-    description: 'Philip Roberts explains the JavaScript event loop.',
-    url: 'https://www.youtube.com/watch?v=8aGhZQkoFbQ',
-    platform: 'youtube',
-    sessionId: '01-event-loop',
-  },
-  // ...add more VideoEntry items here as videos get published.
-];
+// Write JSON
+mkdirSync(outputDir, { recursive: true });
+const jsonPath = resolve(outputDir, 'videos.json');
+writeFileSync(jsonPath, JSON.stringify(output, null, 2));
 
-/**
- * Get videos (from moduleVideos) filtered by module slug.
- * Returns VideoEntry-compatible objects.
- */
-export function getVideosByModule(slug: string): VideoEntry[] {
-  const mv = moduleVideos.find(m => m.moduleSlug === slug);
-  if (!mv) return [];
-  return mv.videos.map(v => ({
-    moduleSlug: slug,
-    title: v.title,
-    url: `https://www.youtube.com/watch?v=${v.id}`,
-    platform: 'youtube' as const,
-    duration: v.duration,
-  }));
-}
-
-/**
- * Get all published videos from moduleVideos.
- */
-export function getPublishedVideos(): VideoEntry[] {
-  const entries: VideoEntry[] = [];
-  for (const mv of moduleVideos) {
-    for (const v of mv.videos) {
-      entries.push({
-        moduleSlug: mv.moduleSlug,
-        title: v.title,
-        url: `https://www.youtube.com/watch?v=${v.id}`,
-        platform: 'youtube' as const,
-        duration: v.duration,
-      });
-    }
-  }
-  return entries;
-}
-
-/**
- * Get all videos grouped by module.
- */
-export function getVideosGroupedByModule(): Record<string, VideoEntry[]> {
-  const grouped: Record<string, VideoEntry[]> = {};
-  for (const mv of moduleVideos) {
-    grouped[mv.moduleSlug] = mv.videos.map(v => ({
-      moduleSlug: mv.moduleSlug,
-      title: v.title,
-      url: `https://www.youtube.com/watch?v=${v.id}`,
-      platform: 'youtube' as const,
-      duration: v.duration,
-    }));
-  }
-  return grouped;
-}
+const totalVideos = moduleVideos.reduce((sum, m) => sum + m.videos.length, 0);
+console.log(`✅ Videos generated: ${moduleVideos.length} modules, ${totalVideos} videos → ${jsonPath}`);

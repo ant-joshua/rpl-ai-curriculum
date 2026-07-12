@@ -9,6 +9,7 @@
 		progress = 0,
 		index = 0,
 		level = '',
+		videoCount = 0,
 		onclick
 	}: {
 		slug?: string;
@@ -17,6 +18,7 @@
 		progress?: number;
 		index?: number;
 		level?: string;
+		videoCount?: number;
 		onclick?: () => void;
 	} = $props();
 
@@ -57,6 +59,9 @@
 	</div>
 	<h3 class="card-title">{title}</h3>
 	<p class="card-desc">{description}</p>
+	{#if videoCount > 0}
+		<div class="video-badge">🎬 {videoCount} Video</div>
+	{/if}
 	<div class="card-footer">
 		<ProgressBar value={progress} />
 		<a href="/module/{slug}" class="card-link" onclick={(e) => e.stopPropagation()}>
@@ -144,6 +149,18 @@
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+
+	.video-badge {
+		font-size: 11px;
+		font-weight: 600;
+		padding: 3px 10px;
+		border-radius: 20px;
+		background: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+		display: inline-block;
+		align-self: flex-start;
+		line-height: 1.3;
 	}
 
 	.card-footer {

@@ -2,20 +2,30 @@
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { dailyGoal } from '$lib/stores/daily-goal.svelte';
+	import { flashcards } from '$lib/stores/flashcards.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
 	// ─── Pomodoro Timer ───
-	const FOCUS_MINUTES = 25;
-	const BREAK_MINUTES = 5;
-	const TOTAL_FOCUS_SECS = FOCUS_MINUTES * 60;
-	const TOTAL_BREAK_SECS = BREAK_MINUTES * 60;
+	const FOCUS_OPTIONS = [5, 25, 45];
+	let focusMinutes = $state(25);
+	let breakMinutes = $state(5);
+	let TOTAL_FOCUS_SECS = $derived(focusMinutes * 60);
+	let TOTAL_BREAK_SECS = $derived(breakMinutes * 60);
 
 	let timerMode = $state<'focus' | 'break'>('focus');
 	let timeLeft = $state(TOTAL_FOCUS_SECS);
 	let isRunning = $state(false);
 	let timerInterval: ReturnType<typeof setInterval> | undefined;
 	let pomodoroCount = $state(0);
+
+	$effect(() => {
+		// Reset timer when duration changes (only if not running)
+		if (!isRunning) {
+			if (timerMode === 'focus') timeLeft = TOTAL_FOCUS_SECS;
+			else timeLeft = TOTAL_BREAK_SECS;
+		}
+	});
 
 	let minutes = $derived(Math.floor(timeLeft / 60));
 	let seconds = $derived(timeLeft % 60);
@@ -67,6 +77,12 @@
 		timeLeft = TOTAL_BREAK_SECS;
 	}
 
+	function setFocusDuration(mins: number) {
+		if (isRunning) return;
+		focusMinutes = mins;
+		if (timerMode === 'focus') timeLeft = mins * 60;
+	}
+
 	onDestroy(() => {
 		if (timerInterval) clearInterval(timerInterval);
 	});
@@ -82,6 +98,33 @@
 		dailyTarget = editTarget;
 		showGoalInput = false;
 	}
+
+	// ─── Flashcards ───
+	let flashcardCounts = $derived.by(() => {
+		void flashcards.version;
+		return flashcards.getCardCounts();
+	});
+
+	// ─── Study Streak Calendar ───
+	let completionDates = $derived.by(() => {
+		void progress.completedCount;
+		return progress.getCompletionDates();
+	});
+
+	let streakCalendar = $derived.by(() => {
+		const cal: { date: string; day: number; active: boolean }[] = [];
+		const today = new Date();
+		const dates = completionDates;
+		for (let i = 29; i >= 0; i--) {
+			const d = new Date(today);
+			d.setDate(d.getDate() - i);
+			const dateStr = d.toISOString().split('T')[0];
+			const day = d.getDate();
+			const active = dates.includes(dateStr);
+			cal.push({ date: dateStr, day, active });
+		}
+		return cal;
+	});
 
 	// ─── Study Stats ───
 	let totalSessions = $derived(modules.reduce((acc, m) => acc + m.sessions.length, 0));
@@ -99,8 +142,10 @@
 	let streak = $derived(progress.getStreak());
 	let todayCompletions = $derived(dailyGoal.getTodayCompletions());
 
-	// Estimated study time (500 words/session, 200 wpm reading)
 	let estimatedMinutes = $derived(completedSessions * (500 / 200));
+
+	let refreshKey = $state(0);
+	onMount(() => { refreshKey++; });
 </script>
 
 <div class="study-page">
@@ -111,7 +156,19 @@
 		<!-- Pomodoro Timer -->
 		<section class="tool-card pomodoro-card" in:fade={{ duration: 300 }}>
 			<h2>🍅 Pomodoro Timer</h2>
-			<p class="tool-desc">{FOCUS_MINUTES} menit fokus / {BREAK_MINUTES} menit istirahat</p>
+			<p class="tool-desc">{focusMinutes} menit fokus / {breakMinutes} menit istirahat</p>
+
+			<div class="pomodoro-presets">
+				<span class="preset-label">Durasi Fokus:</span>
+				{#each FOCUS_OPTIONS as opt}
+					<button
+						class="preset-btn"
+						class:active={focusMinutes === opt}
+						disabled={isRunning}
+						onclick={() => setFocusDuration(opt)}
+					>{opt}m</button>
+				{/each}
+			</div>
 
 			<div class="pomodoro-ring-wrap">
 				<svg class="pomodoro-ring" viewBox="0 0 200 200">
@@ -171,40 +228,90 @@
 			{/if}
 		</section>
 
-		<!-- Daily Goal -->
-		<section class="tool-card" in:fade={{ duration: 300, delay: 100 }}>
-			<h2>🎯 Target Harian</h2>
-			<p class="tool-desc">Tetapkan target sesi per hari</p>
+		<!-- Quick Links -->
+		<section class="tool-card quick-links-card" in:fade={{ duration: 300, delay: 150 }}>
+			<h2>🔗 Akses Cepat</h2>
+			<p class="tool-desc">Lompat ke alat belajar lainnya</p>
 
-			<div class="daily-goal-progress">
-				<div class="dgp-bar">
-					<div class="dgp-fill" style="width: {todayProgress.pct}%"></div>
-				</div>
-				<div class="dgp-stats">
-					<span class="dgp-done">{todayProgress.completed}</span>
-					<span class="dgp-sep">/</span>
-					<span class="dgp-target">{todayProgress.target}</span>
-					<span class="dgp-label">sesi</span>
-				</div>
+			<div class="quick-links">
+				<a href="/flashcards" class="quick-link">
+					<span class="ql-icon">🃏</span>
+					<span class="ql-text">
+						<span class="ql-title">Flashcards</span>
+						<span class="ql-desc">{flashcardCounts.dueToday} kartu hari ini</span>
+					</span>
+					<span class="ql-badge" class:has-items={flashcardCounts.dueToday > 0}>
+						{flashcardCounts.dueToday}
+					</span>
+				</a>
+				<a href="/tutor" class="quick-link">
+					<span class="ql-icon">🤖</span>
+					<span class="ql-text">
+						<span class="ql-title">AI Tutor</span>
+						<span class="ql-desc">Tanya materi RPL</span>
+					</span>
+					<span class="ql-arrow">→</span>
+				</a>
 			</div>
 
-			{#if showGoalInput}
-				<div class="goal-edit-row">
-					<input type="number" min="1" max="20" bind:value={editTarget} class="goal-input" />
-					<button class="goal-save-btn" onclick={saveDailyTarget}>Simpan</button>
-					<button class="goal-cancel-btn" onclick={() => showGoalInput = false}>Batal</button>
+			<div class="daily-goal-compact">
+				<h3>🎯 Target Harian</h3>
+				<div class="daily-goal-progress">
+					<div class="dgp-bar">
+						<div class="dgp-fill" style="width: {todayProgress.pct}%"></div>
+					</div>
+					<div class="dgp-stats">
+						<span class="dgp-done">{todayProgress.completed}</span>
+						<span class="dgp-sep">/</span>
+						<span class="dgp-target">{todayProgress.target}</span>
+						<span class="dgp-label">sesi</span>
+					</div>
 				</div>
-			{:else}
-				<button class="change-goal-btn" onclick={() => { editTarget = dailyTarget; showGoalInput = true; }}>
-					Ubah target ({dailyTarget} sesi/hari)
-				</button>
-			{/if}
 
-			{#if todayProgress.completed >= todayProgress.target && todayProgress.target > 0}
-				<div class="goal-achieved" in:fade={{ duration: 200 }}>
-					🎉 Target hari ini tercapai!
-				</div>
-			{/if}
+				{#if showGoalInput}
+					<div class="goal-edit-row">
+						<input type="number" min="1" max="20" bind:value={editTarget} class="goal-input" />
+						<button class="goal-save-btn" onclick={saveDailyTarget}>Simpan</button>
+						<button class="goal-cancel-btn" onclick={() => showGoalInput = false}>Batal</button>
+					</div>
+				{:else}
+					<button class="change-goal-btn" onclick={() => { editTarget = dailyTarget; showGoalInput = true; }}>
+						Ubah target ({dailyTarget} sesi/hari)
+					</button>
+				{/if}
+
+				{#if todayProgress.completed >= todayProgress.target && todayProgress.target > 0}
+					<div class="goal-achieved" in:fade={{ duration: 200 }}>
+						🎉 Target hari ini tercapai!
+					</div>
+				{/if}
+			</div>
+		</section>
+
+		<!-- Study Streak Calendar -->
+		<section class="tool-card streak-card" in:fade={{ duration: 300, delay: 100 }}>
+			<h2>📅 Streak Kalender</h2>
+			<p class="tool-desc">30 hari terakhir — 🔥 {streak} hari streak</p>
+
+			<div class="streak-calendar">
+				{#each streakCalendar as day}
+					<div
+						class="streak-day"
+						class:active={day.active}
+						title="{day.date}: {day.active ? 'Aktif' : 'Tidak aktif'}"
+					>
+						{day.day}
+					</div>
+				{/each}
+			</div>
+			<div class="streak-legend">
+				<span class="legend-item">
+					<span class="legend-box inactive"></span> Tidak aktif
+				</span>
+				<span class="legend-item">
+					<span class="legend-box active"></span> Aktif
+				</span>
+			</div>
 		</section>
 
 		<!-- Study Stats -->
@@ -289,6 +396,38 @@
 	.pomodoro-card {
 		grid-column: 1;
 	}
+
+	.pomodoro-presets {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-bottom: 16px;
+	}
+	.preset-label {
+		font-size: 12px;
+		color: var(--text-secondary);
+		font-weight: 500;
+		margin-right: 4px;
+	}
+	.preset-btn {
+		padding: 4px 12px;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.15s ease;
+	}
+	.preset-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+	.preset-btn.active {
+		background: var(--accent);
+		color: #fff;
+		border-color: var(--accent);
+	}
+	.preset-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 	.pomodoro-ring-wrap {
 		position: relative;
@@ -427,9 +566,66 @@
 		border-radius: 8px;
 	}
 
-	/* Daily Goal */
+	/* Quick Links */
+	.quick-links-card {
+		grid-column: 2;
+	}
+
+	.quick-links {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-bottom: 20px;
+	}
+
+	.quick-link {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 16px;
+		border-radius: 12px;
+		border: 1px solid var(--border);
+		background: var(--bg);
+		text-decoration: none !important;
+		transition: all 0.15s ease;
+	}
+	.quick-link:hover {
+		border-color: var(--accent);
+		background: var(--accent-dim);
+	}
+
+	.ql-icon { font-size: 24px; }
+	.ql-text { flex: 1; display: flex; flex-direction: column; }
+	.ql-title { font-size: 14px; font-weight: 600; color: var(--text); }
+	.ql-desc { font-size: 11px; color: var(--text-secondary); }
+	.ql-badge {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: var(--border);
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.ql-badge.has-items {
+		background: var(--accent);
+		color: #fff;
+	}
+	.ql-arrow { font-size: 18px; color: var(--accent); }
+
+	/* Daily Goal Compact */
+	.daily-goal-compact h3 {
+		font-size: 14px;
+		font-weight: 600;
+		margin-bottom: 12px;
+		color: var(--text);
+	}
+
 	.daily-goal-progress {
-		margin-bottom: 16px;
+		margin-bottom: 12px;
 	}
 
 	.dgp-bar {
@@ -455,24 +651,24 @@
 	}
 
 	.dgp-done {
-		font-size: 28px;
+		font-size: 22px;
 		font-weight: 700;
 		color: var(--text);
 	}
 
 	.dgp-sep {
-		font-size: 20px;
+		font-size: 18px;
 		color: var(--text-secondary);
 	}
 
 	.dgp-target {
-		font-size: 28px;
+		font-size: 22px;
 		font-weight: 700;
 		color: var(--text-secondary);
 	}
 
 	.dgp-label {
-		font-size: 14px;
+		font-size: 13px;
 		color: var(--text-secondary);
 		margin-left: 4px;
 	}
@@ -549,6 +745,52 @@
 		text-align: center;
 	}
 
+	/* Streak Calendar */
+	.streak-card {
+		grid-column: 1;
+	}
+
+	.streak-calendar {
+		display: grid;
+		grid-template-columns: repeat(10, 1fr);
+		gap: 4px;
+		margin-bottom: 12px;
+	}
+
+	.streak-day {
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 6px;
+		font-size: 10px;
+		font-weight: 600;
+		background: var(--bg-secondary);
+		color: var(--text-secondary);
+		border: 1px solid var(--border);
+	}
+	.streak-day.active {
+		background: var(--accent-dim);
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+
+	.streak-legend {
+		display: flex;
+		gap: 16px;
+		font-size: 11px;
+		color: var(--text-secondary);
+	}
+	.legend-item { display: flex; align-items: center; gap: 6px; }
+	.legend-box {
+		width: 14px;
+		height: 14px;
+		border-radius: 4px;
+		border: 1px solid var(--border);
+	}
+	.legend-box.inactive { background: var(--bg-secondary); }
+	.legend-box.active { background: var(--accent-dim); border-color: var(--accent); }
+
 	/* Stats */
 	.stats-card {
 		grid-column: 2;
@@ -588,7 +830,7 @@
 		.tools-grid {
 			grid-template-columns: 1fr;
 		}
-		.pomodoro-card, .stats-card {
+		.pomodoro-card, .stats-card, .streak-card, .quick-links-card {
 			grid-column: 1;
 		}
 		.stats-grid {

@@ -1,31 +1,86 @@
 <script lang="ts">
-	import { videos, getPublishedVideos, getVideosByModule, type VideoEntry } from '$lib/stores/videos';
-	import { modules } from '$lib/stores/modules';
-	import { page } from '$app/stores';
+	import { modules, type Module } from '$lib/stores/modules';
+	import { onMount } from 'svelte';
+
+	let videosJson = $state<Record<string, {
+		title: string;
+		playlistUrl: string | null;
+		videos: { id: string; title: string; duration?: string }[];
+	}>>({});
+	let loading = $state(true);
+	let errorMsg = $state('');
 
 	let filterModule = $state('');
-	let showPlanned = $state(true);
+	let filterLevel = $state('');
+	let searchQuery = $state('');
 
-	let filtered = $derived.by(() => {
-		let list = showPlanned ? videos : getPublishedVideos();
-		if (filterModule) {
-			list = list.filter((v) => v.moduleSlug === filterModule);
+	onMount(async () => {
+		try {
+			const res = await fetch('/content/videos.json');
+			if (!res.ok) throw new Error('Failed to load');
+			const json = await res.json();
+			videosJson = json.modules || {};
+		} catch {
+			errorMsg = 'Gagal memuat data video.';
 		}
-		return list;
+		loading = false;
 	});
 
-	let publishedCount = $derived(getPublishedVideos().length);
-	let plannedCount = $derived(videos.length - publishedCount);
+	// Derive module-level mapping for quick lookup
+	let moduleLevelMap = $derived.by(() => {
+		const map: Record<string, string> = {};
+		for (const m of modules) {
+			map[m.slug] = m.level;
+		}
+		return map;
+	});
 
-	function getModuleTitle(slug?: string): string {
-		if (!slug) return 'Lainnya';
-		const m = modules.find((x) => x.slug === slug);
-		return m ? m.title : slug;
-	}
+	let filteredModules = $derived.by(() => {
+		let entries = Object.entries(videosJson);
+		if (filterModule) {
+			entries = entries.filter(([slug]) => slug === filterModule);
+		}
+		if (filterLevel) {
+			entries = entries.filter(([slug]) => moduleLevelMap[slug] === filterLevel);
+		}
+		return entries;
+	});
 
-	let selectedVideo = $state<VideoEntry | null>(null);
+	// Flatten all videos for the list view, applying search + filters
+	type FlatVideo = {
+		moduleSlug: string;
+		moduleTitle: string;
+		level: string;
+		id: string;
+		title: string;
+		duration?: string;
+		playlistUrl?: string | null;
+	};
+	let flatVideos = $derived.by(() => {
+		const result: FlatVideo[] = [];
+		for (const [slug, mv] of filteredModules) {
+			for (const v of mv.videos) {
+				if (searchQuery) {
+					const q = searchQuery.toLowerCase();
+					if (!v.title.toLowerCase().includes(q)) continue;
+				}
+				result.push({
+					moduleSlug: slug,
+					moduleTitle: mv.title,
+					level: moduleLevelMap[slug] || '',
+					id: v.id,
+					title: v.title,
+					duration: v.duration,
+					playlistUrl: mv.playlistUrl,
+				});
+			}
+		}
+		return result;
+	});
 
-	function openPlayer(v: VideoEntry) {
+	let selectedVideo = $state<FlatVideo | null>(null);
+
+	function openPlayer(v: FlatVideo) {
 		selectedVideo = v;
 	}
 
@@ -33,12 +88,10 @@
 		selectedVideo = null;
 	}
 
-	function getYoutubeId(url: string): string | null {
-		const m = url.match(
-			/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
-		);
-		return m ? m[1] : null;
-	}
+	let totalModules = $derived(Object.keys(videosJson).length);
+	let totalVideos = $derived(
+		Object.values(videosJson).reduce((s, m) => s + m.videos.length, 0)
+	);
 </script>
 
 <svelte:head>
@@ -50,7 +103,7 @@
 		<h1>🎬 Video Pembelajaran</h1>
 		<p class="subtitle">
 			Koleksi video pembelajaran RPL AI Curriculum.
-			{publishedCount} published &middot; {plannedCount} planned
+			{totalModules} modul &middot; {totalVideos} video
 		</p>
 	</header>
 
@@ -62,56 +115,65 @@
 			{/each}
 		</select>
 
-		<label class="toggle-planned">
-			<input type="checkbox" bind:checked={showPlanned} />
-			<span>Tampilkan planned</span>
-		</label>
+		<select bind:value={filterLevel}>
+			<option value="">Semua Level</option>
+			<option value="Beginner">🔵 Beginner</option>
+			<option value="Intermediate">🟡 Intermediate</option>
+			<option value="Advanced">🟣 Advanced</option>
+		</select>
+
+		<input
+			type="search"
+			placeholder="Cari video..."
+			bind:value={searchQuery}
+			class="search-input"
+		/>
 	</div>
 
-	{#if filtered.length === 0}
+	{#if loading}
+		<div class="loading">
+			<p>Memuat video...</p>
+		</div>
+	{:else if errorMsg}
+		<div class="empty">
+			<p>{errorMsg}</p>
+		</div>
+	{:else if flatVideos.length === 0}
 		<div class="empty">
 			<p>Tidak ada video ditemukan.</p>
 		</div>
 	{:else}
 		<div class="video-grid">
-			{#each filtered as v (v.title + (v.moduleSlug ?? ''))}
+			{#each flatVideos as v (v.moduleSlug + v.id)}
 				<button
 					class="video-card"
-					class:published={!!v.url}
-					class:planned={!v.url}
-					onclick={() => v.url ? openPlayer(v) : null}
-					disabled={!v.url}
+					onclick={() => openPlayer(v)}
 				>
 					<div class="thumbnail">
-						{#if v.url && getYoutubeId(v.url)}
-							<img
-								src="https://img.youtube.com/vi/{getYoutubeId(v.url)}/mqdefault.jpg"
-								alt={v.title}
-								loading="lazy"
-							/>
-							<div class="play-badge">▶</div>
-						{:else}
-							<div class="placeholder-thumb">
-								<span class="placeholder-icon">🎬</span>
-								<span class="placeholder-label">Planned</span>
-							</div>
-						{/if}
+						<img
+							src="https://img.youtube.com/vi/{v.id}/mqdefault.jpg"
+							alt={v.title}
+							loading="lazy"
+						/>
+						<div class="play-badge">▶</div>
 					</div>
 					<div class="card-body">
 						<h3 class="card-title">{v.title}</h3>
-						{#if v.description}
-							<p class="card-desc">{v.description}</p>
-						{/if}
 						<div class="card-meta">
-							{#if getModuleTitle(v.moduleSlug)}
-								<span class="module-badge">{getModuleTitle(v.moduleSlug)}</span>
+							<span class="module-badge">{v.moduleTitle}</span>
+							{#if v.level}
+								<span
+									class="level-badge"
+									class:level-beginner={v.level === 'Beginner'}
+									class:level-intermediate={v.level === 'Intermediate'}
+									class:level-advanced={v.level === 'Advanced'}
+								>
+									{v.level}
+								</span>
 							{/if}
 							{#if v.duration}
 								<span class="duration">{v.duration}</span>
 							{/if}
-							<span class="status-badge" class:status-published={!!v.url} class:status-planned={!v.url}>
-								{v.url ? 'Published' : 'Planned'}
-							</span>
 						</div>
 					</div>
 				</button>
@@ -121,26 +183,35 @@
 </div>
 
 <!-- Video Player Modal -->
-{#if selectedVideo && selectedVideo.url}
+{#if selectedVideo}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="modal-overlay" onclick={closePlayer} role="button" tabindex="-1">
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<button class="modal-close" onclick={closePlayer}>&times;</button>
 			<h2 class="modal-title">{selectedVideo.title}</h2>
-			{#if selectedVideo.url && getYoutubeId(selectedVideo.url)}
-				<div class="video-wrapper">
-					<iframe
-						src="https://www.youtube-nocookie.com/embed/{getYoutubeId(selectedVideo.url)}?autoplay=1"
-						title={selectedVideo.title}
-						frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-						allowfullscreen
-					></iframe>
-				</div>
-			{/if}
-			{#if selectedVideo.description}
-				<p class="modal-desc">{selectedVideo.description}</p>
+			<div class="module-context">
+				<span class="context-badge">{selectedVideo.moduleTitle}</span>
+				{#if selectedVideo.level}
+					<span class="context-level">{selectedVideo.level}</span>
+				{/if}
+				{#if selectedVideo.duration}
+					<span class="context-duration">{selectedVideo.duration}</span>
+				{/if}
+			</div>
+			<div class="video-wrapper">
+				<iframe
+					src="https://www.youtube-nocookie.com/embed/{selectedVideo.id}?autoplay=1"
+					title={selectedVideo.title}
+					frameborder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					allowfullscreen
+				></iframe>
+			</div>
+			{#if selectedVideo.playlistUrl}
+				<a href={selectedVideo.playlistUrl} target="_blank" class="playlist-link">
+					📺 Lihat Playlist Lengkap &rarr;
+				</a>
 			{/if}
 		</div>
 	</div>
@@ -175,7 +246,8 @@
 		flex-wrap: wrap;
 	}
 
-	.filters select {
+	.filters select,
+	.search-input {
 		padding: 8px 12px;
 		border: 1px solid var(--border);
 		border-radius: 8px;
@@ -185,13 +257,21 @@
 		cursor: pointer;
 	}
 
-	.toggle-planned {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 13px;
+	.search-input {
+		flex: 1;
+		min-width: 180px;
+		cursor: text;
+	}
+
+	.search-input:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
+
+	.loading {
+		text-align: center;
+		padding: 60px 20px;
 		color: var(--text-secondary);
-		cursor: pointer;
 	}
 
 	.video-grid {
@@ -214,14 +294,9 @@
 		padding: 0;
 	}
 
-	.video-card:hover:not(:disabled) {
+	.video-card:hover {
 		border-color: var(--accent);
 		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-	}
-
-	.video-card:disabled {
-		cursor: default;
-		opacity: 0.85;
 	}
 
 	.thumbnail {
@@ -249,30 +324,6 @@
 		pointer-events: none;
 	}
 
-	.placeholder-thumb {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 6px;
-		background: var(--bg-secondary);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.placeholder-icon {
-		font-size: 36px;
-	}
-
-	.placeholder-label {
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
 	.card-body {
 		padding: 12px 14px;
 		flex: 1;
@@ -285,16 +336,6 @@
 		font-size: 15px;
 		font-weight: 600;
 		line-height: 1.3;
-	}
-
-	.card-desc {
-		font-size: 12px;
-		color: var(--text-secondary);
-		line-height: 1.4;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
 	}
 
 	.card-meta {
@@ -319,27 +360,31 @@
 		max-width: 180px;
 	}
 
-	.duration {
-		font-size: 11px;
-		color: var(--text-secondary);
-	}
-
-	.status-badge {
+	.level-badge {
 		font-size: 10px;
 		font-weight: 600;
 		padding: 2px 8px;
 		border-radius: 4px;
-		margin-left: auto;
 	}
 
-	.status-published {
-		background: rgba(34, 197, 94, 0.12);
-		color: #22c55e;
+	.level-beginner {
+		background: rgba(59, 130, 246, 0.12);
+		color: #3b82f6;
 	}
 
-	.status-planned {
-		background: rgba(245, 158, 11, 0.12);
-		color: #f59e0b;
+	.level-intermediate {
+		background: rgba(234, 179, 8, 0.12);
+		color: #eab308;
+	}
+
+	.level-advanced {
+		background: rgba(168, 85, 247, 0.12);
+		color: #a855f7;
+	}
+
+	.duration {
+		font-size: 11px;
+		color: var(--text-secondary);
 	}
 
 	.empty {
@@ -390,8 +435,35 @@
 	.modal-title {
 		font-size: 18px;
 		font-weight: 600;
-		margin-bottom: 16px;
+		margin-bottom: 8px;
 		padding-right: 32px;
+	}
+
+	.module-context {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		margin-bottom: 16px;
+		font-size: 12px;
+	}
+
+	.context-badge {
+		background: var(--accent-dim);
+		color: var(--accent);
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-weight: 600;
+	}
+
+	.context-level {
+		padding: 2px 8px;
+		border-radius: 4px;
+		background: var(--bg-secondary);
+		color: var(--text-secondary);
+	}
+
+	.context-duration {
+		color: var(--text-secondary);
 	}
 
 	.video-wrapper {
@@ -409,10 +481,20 @@
 		height: 100%;
 	}
 
-	.modal-desc {
+	.playlist-link {
+		display: inline-block;
 		margin-top: 16px;
-		font-size: 14px;
-		color: var(--text-secondary);
-		line-height: 1.5;
+		padding: 8px 16px;
+		border: 1px solid var(--accent);
+		border-radius: 8px;
+		color: var(--accent);
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none !important;
+		transition: all 0.15s ease;
+	}
+
+	.playlist-link:hover {
+		background: var(--accent-dim);
 	}
 </style>

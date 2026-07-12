@@ -116,6 +116,14 @@
 				<span class="nav-icon">🔍</span>
 				<span>Cari</span>
 			</a>
+			<a href="/tutor" onclick={closeSidebar} class:active={isActive('/tutor')}>
+				<span class="nav-icon">🤖</span>
+				<span>AI Tutor</span>
+			</a>
+			<a href="/flashcards" onclick={closeSidebar} class:active={isActive('/flashcards')}>
+				<span class="nav-icon">🃏</span>
+				<span>Flashcards</span>
+			</a>
 			<a href="/history" onclick={closeSidebar} class:active={isActive('/history')}>
 				<span class="nav-icon">📜</span>
 				<span>Riwayat</span>

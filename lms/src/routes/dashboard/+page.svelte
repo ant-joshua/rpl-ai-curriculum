@@ -9,6 +9,7 @@
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
 	import ProgressChart from '$lib/components/ProgressChart.svelte';
 	import Skeleton from '$lib/components/Skeleton.svelte';
+	import { moduleVideos } from '$lib/stores/videos';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
@@ -64,6 +65,15 @@
 			? filteredByLevel.filter(m => m.title.toLowerCase().includes(searchText.toLowerCase()))
 			: filteredByLevel
 	);
+
+	// Video count per module for badge
+	let videoCountMap = $derived.by(() => {
+		const map: Record<string, number> = {};
+		for (const mv of moduleVideos) {
+			map[mv.moduleSlug] = mv.videos.length;
+		}
+		return map;
+	});
 
 	// Overview reactive to level filter
 	let filteredCompletedCount = $derived(progress.getFilteredCompletedCount(filteredModules));
@@ -325,6 +335,7 @@
 					title={mod.title}
 					description={mod.description}
 					progress={progress.getModuleProgress(mod.slug)}
+					videoCount={videoCountMap[mod.slug] || 0}
 					onclick={() => goto('/module/' + mod.slug)}
 				/>
 			{/each}
