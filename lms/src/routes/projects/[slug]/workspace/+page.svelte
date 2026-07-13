@@ -14,6 +14,7 @@
 	let showHint = $state(false);
 	let verifyResult = $state<{passed: boolean; checks: any[]; message: string} | null>(null);
 	let activeTab = $state<'code' | 'preview'>('code');
+	let mobileTab = $state<'instructions' | 'code' | 'preview'>('instructions');
 	let verifying = $state(false);
 	let saving = $state(false);
 	let completedSteps = $state<number[]>([]);
@@ -249,7 +250,26 @@
 		</div>
 	{:else if currentStep}
 		<div class="workspace-body">
-			<div class="instruction-panel">
+			<!-- Mobile tab bar (hidden on desktop) -->
+			<div class="mobile-tab-bar">
+				<button
+					class="mobile-tab"
+					class:active={mobileTab === 'instructions'}
+					onclick={() => (mobileTab = 'instructions')}
+				>📝 Instruksi</button>
+				<button
+					class="mobile-tab"
+					class:active={mobileTab === 'code'}
+					onclick={() => { mobileTab = 'code'; activeTab = 'code'; }}
+				>✏️ Code</button>
+				<button
+					class="mobile-tab"
+					class:active={mobileTab === 'preview'}
+					onclick={() => { mobileTab = 'preview'; activeTab = 'preview'; }}
+				>👁️ Preview</button>
+			</div>
+
+			<div class="instruction-panel" class:mobile-show={mobileTab === 'instructions'}>
 				<div class="step-header">
 					<span class="step-badge">Langkah {currentStep.id}/{totalSteps}</span>
 					<h2>{currentStep.title}</h2>
@@ -266,9 +286,14 @@
 				<button class="hint-btn" onclick={() => (showHint = !showHint)}>
 					{showHint ? '🙈 Sembunyikan' : '💡 Petunjuk'}
 				</button>
+				<div class="mobile-verify-row">
+					<button class="verify-btn" onclick={verifyStep} disabled={verifying || !code.trim()}>
+						{verifying ? '⏳ Mengecek...' : '✅ Verifikasi'}
+					</button>
+				</div>
 			</div>
 
-			<div class="code-panel">
+			<div class="code-panel" class:mobile-show={mobileTab === 'code' || mobileTab === 'preview'}>
 				<div class="panel-tabs">
 					<button
 						class="panel-tab"
@@ -486,10 +511,68 @@
 	.next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 	.verify-btn:hover:not(:disabled), .next-btn:hover:not(:disabled) { opacity: 0.9; }
 
+	/* Mobile tab bar — hidden on desktop */
+	.mobile-tab-bar { display: none; }
+	.mobile-verify-row { display: none; }
+
 	@media (max-width: 768px) {
-		.workspace-body { flex-direction: column; }
-		.instruction-panel { width: 100%; min-width: 0; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+		.workspace-body { flex-direction: column; position: relative; }
+
+		.mobile-tab-bar {
+			display: flex;
+			background: var(--surface);
+			border-bottom: 1px solid var(--border);
+			flex-shrink: 0;
+			position: sticky;
+			top: 0;
+			z-index: 10;
+		}
+
+		.mobile-tab {
+			flex: 1;
+			padding: 0.75rem 0.5rem;
+			min-height: 44px;
+			background: none;
+			border: none;
+			border-bottom: 2px solid transparent;
+			color: var(--muted);
+			font-size: 0.85rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.15s;
+			text-align: center;
+			font-family: inherit;
+		}
+
+		.mobile-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+		.mobile-tab:active { background: var(--hover); }
+
+		.instruction-panel {
+			width: 100%; min-width: 0;
+			border-right: none; border-bottom: 1px solid var(--border);
+			display: none; overflow-y: auto; flex: 1;
+		}
+		.instruction-panel.mobile-show { display: block; }
+
+		.code-panel { display: none; flex: 1; }
+		.code-panel.mobile-show { display: flex; flex-direction: column; }
+
+		.mobile-verify-row { display: block; margin-top: 1rem; }
+
+		.mobile-verify-row .verify-btn {
+			width: 100%; padding: 0.75rem 1.2rem;
+			min-height: 44px;
+			background: var(--accent-dim); color: var(--accent);
+			border: none; border-radius: 8px;
+			font-size: 0.9rem; font-weight: 600; cursor: pointer;
+			font-family: inherit; transition: opacity 0.15s;
+		}
+		.mobile-verify-row .verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+		.mobile-verify-row .verify-btn:hover:not(:disabled) { opacity: 0.9; }
+
 		.header-center { display: none; }
 		.step-dot { width: 24px; height: 24px; font-size: 0.7rem; }
+
+		.verify-btn, .next-btn { min-height: 44px; padding: 0.6rem 1rem; }
 	}
 </style>

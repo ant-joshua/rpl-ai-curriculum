@@ -3,124 +3,194 @@
 	import { onMount } from 'svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules } from '$lib/stores/modules';
-	import { api, getDeviceId } from '$lib/utils/api';
 
-	let lastExportDate = $state<string | null>(null);
-	let exportStats = $state<{ totalSessionsCompleted: number; modulesCompleted: number } | null>(null);
-	let loading = $state(true);
+	let hasChatHistory = $state(false);
 
-	let totalCompleted = $derived(progress.getOverallProgress() > 0);
-	let modulesDone = $derived(progress.completedCount);
-	let allDone = $derived(modulesDone >= modules.length);
-
-	onMount(async () => {
-		try {
-			const res = await api<{ exportedAt: string; stats: { totalSessionsCompleted: number; modulesCompleted: number }; lastExport: string | null }>('/api/export/progress');
-			if (res.success && res.data) {
-				lastExportDate = res.data.lastExport || res.data.exportedAt;
-				exportStats = {
-					totalSessionsCompleted: res.data.stats.totalSessionsCompleted,
-					modulesCompleted: res.data.stats.modulesCompleted,
-				};
+	onMount(() => {
+		if (browser) {
+			try {
+				const raw = localStorage.getItem('lms-tutor-chat');
+				hasChatHistory = !!raw && JSON.parse(raw).length > 0;
+			} catch {
+				hasChatHistory = false;
 			}
-		} catch {
-			// offline
 		}
-		loading = false;
 	});
 
-	function formatDate(iso: string): string {
-		try {
-			const d = new Date(iso + 'Z');
-			return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-		} catch {
-			return iso;
-		}
+	function downloadBlob(content: string, filename: string, mime: string) {
+		const blob = new Blob([content], { type: mime });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
 	}
 
 	function downloadCsv() {
-		window.open('/api/export/progress?format=csv', '_blank');
+		const rows: string[][] = [];
+		// Header
+		rows.push(['Modul', 'Sesi', 'Tipe', 'Status', 'Skor']);
+
+		for (const mod of modules) {
+			const modCompleted = progress.getCompletedSessions(mod.slug).length;
+			const modTotal = mod.sessions.length;
+			// Module summary row
+			rows.push([
+				mod.title,
+				`${modCompleted}/${modTotal} sesi`,
+				'Modul',
+				modCompleted >= modTotal ? 'Selesai' : 'Dalam Proses',
+				`${Math.round((modCompleted / modTotal) * 100)}%`,
+			]);
+			// Session rows
+			for (const sess of mod.sessions) {
+				const completed = progress.isSessionCompleted(mod.slug, sess.id);
+				rows.push([
+					mod.title,
+					sess.title,
+					'Sesi',
+					completed ? 'Selesai' : 'Belum',
+					completed ? '100' : '0',
+				]);
+			}
+			// Blank separator
+			rows.push([]);
+		}
+
+		const csv = rows
+			.map((r) =>
+				r
+					.map((cell) => {
+						if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+							return `"${cell.replace(/"/g, '""')}"`;
+						}
+						return cell;
+					})
+					.join(',')
+			)
+			.join('\n');
+
+		// BOM for Excel UTF-8
+		const bom = '\uFEFF';
+		downloadBlob(bom + csv, 'rpl-progress.csv', 'text/csv;charset=utf-8');
 	}
 
 	function downloadJson() {
-		window.open('/api/export/progress', '_blank');
+		const data: Record<string, any> = {
+			exportedAt: new Date().toISOString(),
+			overall: {
+				overallProgressPercent: progress.getOverallProgress(),
+				completedModules: progress.completedCount,
+				totalModules: modules.length,
+				totalSessions: modules.reduce((a, m) => a + m.sessions.length, 0),
+			},
+			modules: modules.map((mod) => {
+				const completedSessions = progress.getCompletedSessions(mod.slug);
+				return {
+					title: mod.title,
+					slug: mod.slug,
+					level: mod.level,
+					sessions: mod.sessions.map((sess) => ({
+						id: sess.id,
+						title: sess.title,
+						completed: progress.isSessionCompleted(mod.slug, sess.id),
+					})),
+					sessionsCompleted: completedSessions.length,
+					sessionsTotal: mod.sessions.length,
+					progressPercent: progress.getModuleProgress(mod.slug),
+				};
+			}),
+			gamification: (() => {
+				if (!browser) return null;
+				try {
+					const rawXp = localStorage.getItem('lms-xp');
+					const rawBadges = localStorage.getItem('lms-badges');
+					const streak = localStorage.getItem('lms-streak');
+					const completionDates = localStorage.getItem('lms-completion-dates');
+					return {
+						xp: rawXp ? parseInt(rawXp, 10) : 0,
+						badges: rawBadges ? JSON.parse(rawBadges) : [],
+						streak: streak ? parseInt(streak, 10) : 0,
+						completionDates: completionDates ? JSON.parse(completionDates) : [],
+					};
+				} catch {
+					return null;
+				}
+			})(),
+		};
+
+		const json = JSON.stringify(data, null, 2);
+		downloadBlob(json, 'rpl-progress.json', 'application/json');
 	}
 
-	function openCertificate() {
-		window.open('/api/export/certificate', '_blank');
-	}
-
-	function printPlan() {
-		window.print();
+	function downloadChatHistory() {
+		if (!browser) return;
+		try {
+			const raw = localStorage.getItem('lms-tutor-chat');
+			if (!raw) return;
+			const data = JSON.parse(raw);
+			const json = JSON.stringify(data, null, 2);
+			downloadBlob(json, 'rpl-tutor-chat.json', 'application/json');
+		} catch {
+			// silent
+		}
 	}
 </script>
+
+<svelte:head>
+	<title>Export — RPL AI Curriculum</title>
+</svelte:head>
 
 <div class="export-page">
 	<h1>📤 Export Data</h1>
 
-	{#if !loading}
-		<div class="info-card">
-			<h2>Ringkasan</h2>
-			<div class="info-grid">
-				<div class="info-item">
-					<span class="info-label">Total Sesi Terselesaikan</span>
-					<span class="info-value">{exportStats?.totalSessionsCompleted ?? progress.getOverallProgress()} / {modules.reduce((acc, m) => acc + m.sessions.length, 0)}</span>
-				</div>
-				<div class="info-item">
-					<span class="info-label">Modul Selesai</span>
-					<span class="info-value">{exportStats?.modulesCompleted ?? progress.completedCount} / {modules.length}</span>
-				</div>
-				{#if lastExportDate}
-					<div class="info-item">
-						<span class="info-label">Terakhir Export</span>
-						<span class="info-value">{formatDate(lastExportDate)}</span>
-					</div>
-				{/if}
-				<div class="info-item">
-					<span class="info-label">Eligible Sertifikat</span>
-					<span class="info-value">{allDone ? '✅ Ya' : '❌ Belum'}</span>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<div class="actions-card">
-		<h2>Opsi Export</h2>
+	<div class="card">
+		<h2>📊 Export Progress</h2>
+		<p class="card-desc">Download kemajuan belajarmu dalam format CSV (Excel) atau JSON.</p>
 		<div class="export-actions">
 			<button class="export-btn csv" onclick={downloadCsv}>
 				<span class="btn-icon">📊</span>
 				<span>Download Progress CSV</span>
-				<small>.csv</small>
+				<small>.csv — Excel compatible</small>
 			</button>
 			<button class="export-btn json" onclick={downloadJson}>
 				<span class="btn-icon">📄</span>
 				<span>Download Progress JSON</span>
-				<small>.json</small>
-			</button>
-			<button class="export-btn certificate" onclick={openCertificate} disabled={!allDone}>
-				<span class="btn-icon">🎓</span>
-				<span>Sertifikat</span>
-				<small>{allDone ? 'Cetak' : 'Belum tersedia'}</small>
-			</button>
-			<button class="export-btn plan" onclick={printPlan}>
-				<span class="btn-icon">📅</span>
-				<span>Rencana Belajar</span>
-				<small>Cetak</small>
+				<small>.json — full data</small>
 			</button>
 		</div>
 	</div>
 
-	{#if !allDone}
-		<div class="note-card">
-			<p>💡 Selesaikan semua <strong>{modules.length} modul</strong> untuk mendapatkan sertifikat kelulusan.</p>
-			<div class="progress-mini">
-				<div class="bar">
-					<div class="fill" style="width: {Math.round((modulesDone / modules.length) * 100)}%"></div>
-				</div>
-				<span>{modulesDone}/{modules.length} modul</span>
+	<div class="card">
+		<h2>💬 Export Chat History</h2>
+		<p class="card-desc">Download riwayat chat dengan AI Tutor sebagai file JSON.</p>
+		{#if hasChatHistory}
+			<button class="export-btn chat" onclick={downloadChatHistory}>
+				<span class="btn-icon">💬</span>
+				<span>Download Chat History</span>
+				<small>.json</small>
+			</button>
+		{:else}
+			<div class="empty-state">
+				<span class="empty-icon">💭</span>
+				<p>Belum ada riwayat chat</p>
+				<span class="empty-hint">Mulai chat dengan AI Tutor di halaman Tutor untuk mengumpulkan riwayat.</span>
 			</div>
-		</div>
-	{/if}
+		{/if}
+	</div>
+
+	<div class="card note-card">
+		<h2>ℹ️ Informasi</h2>
+		<ul>
+			<li>Data progress diambil dari penyimpanan lokal perangkatmu.</li>
+			<li>File CSV bisa dibuka dengan Excel, Google Sheets, atau Numbers.</li>
+			<li>File JSON berisi seluruh data progress termasuk XP, badge, dan streak.</li>
+			<li>Data bersifat <strong>read-only</strong> — tidak ada data yang dikirim ke server.</li>
+		</ul>
+	</div>
 </div>
 
 <style>
@@ -139,10 +209,10 @@
 	h2 {
 		font-size: 16px;
 		font-weight: 600;
-		margin-bottom: 16px;
+		margin-bottom: 8px;
 	}
 
-	.info-card, .actions-card, .note-card {
+	.card {
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 16px;
@@ -150,31 +220,10 @@
 		margin-bottom: 20px;
 	}
 
-	.info-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 12px;
-	}
-
-	.info-item {
-		padding: 12px;
-		background: var(--bg-secondary);
-		border-radius: 10px;
-	}
-
-	.info-label {
-		display: block;
-		font-size: 11px;
+	.card-desc {
+		font-size: 13px;
 		color: var(--text-secondary);
-		margin-bottom: 4px;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-
-	.info-value {
-		font-size: 16px;
-		font-weight: 600;
-		color: var(--text);
+		margin-bottom: 16px;
 	}
 
 	.export-actions {
@@ -220,38 +269,41 @@
 		color: var(--text-secondary);
 	}
 
-	.note-card {
-		background: var(--accent-dim);
-		border-color: var(--accent);
+	.empty-state {
+		text-align: center;
+		padding: 24px 12px;
+		color: var(--text-secondary);
+	}
+	.empty-icon {
+		font-size: 36px;
+		display: block;
+		margin-bottom: 8px;
+	}
+	.empty-state p {
+		font-size: 14px;
+		font-weight: 600;
+		margin-bottom: 4px;
+	}
+	.empty-hint {
+		font-size: 12px;
+		color: var(--text-muted, var(--text-secondary));
 	}
 
-	.note-card p {
+	.note-card {
+		background: var(--surface);
+	}
+	.note-card ul {
+		margin: 0;
+		padding-left: 20px;
 		font-size: 13px;
 		color: var(--text-secondary);
-		margin-bottom: 12px;
+		line-height: 1.8;
+	}
+	.note-card li {
+		margin-bottom: 4px;
 	}
 
-	.progress-mini {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-	.progress-mini .bar {
-		flex: 1;
-		height: 8px;
-		background: var(--bg-secondary);
-		border-radius: 4px;
-		overflow: hidden;
-	}
-	.progress-mini .fill {
-		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-		border-radius: 4px;
-		transition: width 0.3s ease;
-	}
-	.progress-mini span {
-		font-size: 12px;
-		color: var(--text-secondary);
-		white-space: nowrap;
+	.chat {
+		grid-column: 1 / -1;
 	}
 </style>
