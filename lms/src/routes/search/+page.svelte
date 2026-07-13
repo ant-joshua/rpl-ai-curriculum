@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { searchModules, type GroupedSearchResults, type SearchResult } from '$lib/stores/search.svelte';
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 
@@ -73,6 +74,8 @@
 		{ id: 'content', label: 'Konten' },
 		{ id: 'exercise', label: 'Latihan' },
 		{ id: 'video', label: 'Video' },
+		{ id: 'project', label: 'Proyek' },
+		{ id: 'flashcard', label: 'Flashcard' },
 	];
 
 	function badgeLabel(type: SearchResult['matchType']): string {
@@ -83,6 +86,7 @@
 			exercise: 'Latihan',
 			video: 'Video',
 			flashcard: 'Flashcard',
+			project: 'Proyek',
 		};
 		return labels[type] || type;
 	}
@@ -95,6 +99,7 @@
 			exercise: 'badge-exercise',
 			video: 'badge-video',
 			flashcard: 'badge-flashcard',
+			project: 'badge-project',
 		};
 		return classes[type] || 'badge-content';
 	}
@@ -103,6 +108,8 @@
 		if (r.matchType === 'exercise') return `/exercises/${r.slug}`;
 		if (r.matchType === 'video') return `/module/${r.slug}?videos=1`;
 		if (r.matchType === 'module') return `/module/${r.slug}`;
+		if (r.matchType === 'project') return `/projects/${r.slug}`;
+		if (r.matchType === 'flashcard') return `/module/${r.slug}?flashcards=1`;
 		return `/module/${r.slug}${r.sessionId ? '?session=' + r.sessionId : ''}`;
 	}
 
@@ -114,6 +121,7 @@
 			exercises: '🏋️ Latihan',
 			videos: '🎬 Video',
 			flashcards: '🃏 Flashcard',
+			projects: '🚀 Proyek',
 		};
 		return titles[key] || key;
 	}
@@ -126,11 +134,12 @@
 			exercises: '🏋️',
 			videos: '🎬',
 			flashcards: '🃏',
+			projects: '🚀',
 		};
 		return icons[key] || '📌';
 	}
 
-	type SectionKey = 'modules' | 'sessions' | 'contents' | 'exercises' | 'videos' | 'flashcards';
+	type SectionKey = 'modules' | 'sessions' | 'contents' | 'exercises' | 'videos' | 'flashcards' | 'projects';
 	let collapsedSections = $state<Set<SectionKey>>(new Set());
 
 	function toggleSection(key: SectionKey) {
@@ -147,6 +156,19 @@
 		inputEl?.focus();
 		const timer = setTimeout(() => { initialLoading = false; }, 200);
 		return () => clearTimeout(timer);
+	});
+
+	// / key shortcut to focus search (from any page)
+	$effect(() => {
+		if (!browser) return;
+		function handler(e: KeyboardEvent) {
+			if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) {
+				e.preventDefault();
+				inputEl?.focus();
+			}
+		}
+		window.addEventListener('keydown', handler);
+		return () => window.removeEventListener('keydown', handler);
 	});
 
 	// Cleanup debounce on unmount
@@ -246,12 +268,13 @@
 						</button>
 						{#if !collapsedSections.has(sectionKey)}
 							<div class="section-items">
-								{#each items as result (result.slug + result.matchType + (result.sessionId || result.moduleSlug || ''))}
-									<a
-										href={resultLink(result)}
-										class="result-card"
-									>
-										<div class="result-header">
+									{#each items as result, i (result.slug + result.matchType + (result.sessionId || result.moduleSlug || ''))}
+										<a
+											href={resultLink(result)}
+											class="result-card"
+											style="--i: {i}"
+											>
+											<div class="result-header">
 											<span class="result-title">
 												{result.matchType === 'module' ? '📦 ' : ''}
 												{result.matchType === 'session' ? '📖 ' : ''}
@@ -271,6 +294,10 @@
 												Latihan · {result.difficulty || ''}
 											{:else if result.matchType === 'video'}
 												Video · {result.moduleSlug}
+											{:else if result.matchType === 'project'}
+												Proyek · {result.difficulty || ''}
+											{:else if result.matchType === 'flashcard'}
+												Flashcard · {result.moduleSlug}
 											{/if}
 										</span>
 									</a>
@@ -477,7 +504,11 @@
 		padding: 12px 16px;
 		border-top: 1px solid var(--border);
 		text-decoration: none !important;
-		transition: background 0.15s ease;
+		transition: background 0.15s ease, opacity 0.3s ease, transform 0.3s ease;
+		opacity: 0;
+		animation: stagger-in 0.3s ease forwards;
+		animation-delay: calc(var(--i, 0) * 50ms);
+		transform-origin: top center;
 	}
 
 	.result-card:first-child {
@@ -541,6 +572,11 @@
 	.badge-flashcard {
 		background: rgba(253, 121, 168, 0.15);
 		color: #fd79a8;
+	}
+
+	.badge-project {
+		background: rgba(46, 213, 115, 0.15);
+		color: #2ed573;
 	}
 
 	.result-preview {
@@ -644,6 +680,17 @@
 	@keyframes shimmer {
 		0% { background-position: 200% 0; }
 		100% { background-position: -200% 0; }
+	}
+
+	@keyframes stagger-in {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	@media (max-width: 768px) {

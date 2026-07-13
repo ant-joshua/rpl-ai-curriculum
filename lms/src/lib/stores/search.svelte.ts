@@ -4,7 +4,7 @@ export interface SearchResult {
 	slug: string;
 	dirName: string;
 	title: string;
-	matchType: 'module' | 'session' | 'content' | 'exercise' | 'video' | 'flashcard';
+	matchType: 'module' | 'session' | 'content' | 'exercise' | 'video' | 'flashcard' | 'project';
 	matchPreview: string;
 	sessionId?: string;
 	moduleSlug?: string;
@@ -18,6 +18,7 @@ export interface GroupedSearchResults {
 	exercises: SearchResult[];
 	videos: SearchResult[];
 	flashcards: SearchResult[];
+	projects: SearchResult[];
 	total: number;
 }
 
@@ -25,6 +26,8 @@ const contentCache = new Map<string, Record<string, string>>();
 const pendingFetches = new Map<string, Promise<Record<string, string> | null>>();
 let exercisesCache: any[] | null = null;
 let videosCache: Record<string, { title: string; videos: { id: string; title: string; duration?: string }[] }> | null = null;
+let projectsCache: any[] | null = null;
+let flashcardsCache: Record<string, { title: string; dirName: string; quizCount: number; questions: { question: string; answer: string }[] }> | null = null;
 
 async function getContent(dirName: string): Promise<Record<string, string> | null> {
 	if (contentCache.has(dirName)) return contentCache.get(dirName)!;
@@ -76,6 +79,32 @@ async function getVideos(): Promise<Record<string, { title: string; videos: { id
 	}
 }
 
+async function getProjects(): Promise<any[]> {
+	if (projectsCache) return projectsCache;
+	try {
+		const res = await fetch('/content/projects.json');
+		if (!res.ok) return [];
+		const data = await res.json();
+		projectsCache = Array.isArray(data) ? data : [];
+		return projectsCache;
+	} catch {
+		return [];
+	}
+}
+
+async function getFlashcards(): Promise<Record<string, { title: string; dirName: string; quizCount: number; questions: { question: string; answer: string }[] }>> {
+	if (flashcardsCache) return flashcardsCache;
+	try {
+		const res = await fetch('/content/quiz-index.json');
+		if (!res.ok) return {};
+		const data = await res.json();
+		flashcardsCache = data || {};
+		return flashcardsCache;
+	} catch {
+		return {};
+	}
+}
+
 function highlightMatch(text: string, query: string): string {
 	if (!text || !query) return text || '';
 	const lowerText = text.toLowerCase();
@@ -111,6 +140,7 @@ export async function searchModules(query: string, filterType?: string): Promise
 		exercises: [],
 		videos: [],
 		flashcards: [],
+		projects: [],
 		total: 0,
 	};
 
@@ -221,16 +251,56 @@ export async function searchModules(query: string, filterType?: string): Promise
 		}
 	}
 
+	// — Search projects —
+	if (!filterType || filterType === 'project') {
+		const projects = await getProjects();
+		for (const p of projects) {
+			const titleLower = p.title.toLowerCase();
+			const descLower = (p.description || '').toLowerCase();
+			const techsLower = (Array.isArray(p.techs) ? p.techs.join(' ') : '').toLowerCase();
+			if (titleLower.includes(q) || descLower.includes(q) || techsLower.includes(q)) {
+				grouped.projects.push({
+					slug: p.slug,
+					dirName: '',
+					title: p.title,
+					matchType: 'project',
+					matchPreview: highlightMatch(p.description || '', q),
+					difficulty: p.difficulty,
+				});
+			}
+		}
+	}
+
+	// — Search flashcards —
+	if (!filterType || filterType === 'flashcard') {
+		const quizIndex = await getFlashcards();
+		for (const [, modData] of Object.entries(quizIndex)) {
+			for (const flashQ of modData.questions) {
+				if (flashQ.question.toLowerCase().includes(q)) {
+					const slug = modData.dirName.replace(/^\d{2}-/, '');
+					grouped.flashcards.push({
+						slug,
+						dirName: modData.dirName,
+						title: flashQ.question,
+						matchType: 'flashcard',
+						matchPreview: `🃏 ${flashQ.answer}`,
+						moduleSlug: slug,
+					});
+				}
+			}
+		}
+	}
+
 	// — Compute total and cap per-group —
 	const MAX_PER_GROUP = 10;
-	for (const key of ['modules', 'sessions', 'contents', 'exercises', 'videos', 'flashcards'] as const) {
+	for (const key of ['modules', 'sessions', 'contents', 'exercises', 'videos', 'flashcards', 'projects'] as const) {
 		if (grouped[key].length > MAX_PER_GROUP) {
 			grouped[key] = grouped[key].slice(0, MAX_PER_GROUP);
 		}
 	}
 
 	grouped.total = grouped.modules.length + grouped.sessions.length + grouped.contents.length +
-		grouped.exercises.length + grouped.videos.length + grouped.flashcards.length;
+		grouped.exercises.length + grouped.videos.length + grouped.flashcards.length + grouped.projects.length;
 
 	return grouped;
 }
