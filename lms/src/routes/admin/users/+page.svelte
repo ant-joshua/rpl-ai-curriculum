@@ -8,6 +8,24 @@
 	let searchQuery = $state('');
 	let sortBy = $state<'username' | 'xp' | 'level' | 'sessions'>('xp');
 
+	let editUser: any = $state(null);
+	let editRole = $state('');
+	let editDisplayName = $state('');
+	let editEmail = $state('');
+	let editIsActive = $state(true);
+	let saving = $state(false);
+	let saveError = $state('');
+
+	const VALID_ROLES = ['superadmin', 'admin', 'instructor', 'ta', 'student'];
+
+	const roleColors: Record<string, string> = {
+		superadmin: 'var(--color-red, #e74c3c)',
+		admin: 'var(--color-purple, #9b59b6)',
+		instructor: 'var(--color-blue, #3498db)',
+		ta: 'var(--color-green, #2ecc71)',
+		student: 'var(--color-gray, #95a5a6)',
+	};
+
 	onMount(() => {
 		if (!browser) return;
 		loadUsers();
@@ -35,6 +53,90 @@
 				return (b.completed_sessions || 0) - (a.completed_sessions || 0);
 			})
 	);
+
+	function openEdit(user: any) {
+		editUser = user;
+		editRole = user.role || 'student';
+		editDisplayName = user.display_name || '';
+		editEmail = user.email || '';
+		editIsActive = user.is_active !== false;
+		saveError = '';
+	}
+
+	function closeEdit() {
+		editUser = null;
+	}
+
+	async function saveUser() {
+		if (!editUser) return;
+		saving = true;
+		saveError = '';
+		try {
+			const body: Record<string, any> = {};
+			if (editRole !== editUser.role) body.role = editRole;
+			if (editDisplayName !== (editUser.display_name || '')) body.display_name = editDisplayName;
+			if (editEmail !== (editUser.email || '')) body.email = editEmail;
+			if (editIsActive !== (editUser.is_active !== false)) body.is_active = editIsActive;
+
+			if (Object.keys(body).length === 0) {
+				closeEdit();
+				return;
+			}
+
+			const res = await fetch(`/api/admin/users/${editUser.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			const json = await res.json();
+			if (json.success) {
+				// Update local state
+				const idx = users.findIndex(u => u.id === editUser.id);
+				if (idx !== -1) users[idx] = json.data;
+				closeEdit();
+			} else {
+				saveError = json.error || 'Failed to save';
+			}
+		} catch {
+			saveError = 'Failed to save';
+		} finally {
+			saving = false;
+		}
+	}
+
+	// Bulk emails state
+	let bulkEmails = $state('');
+	let bulkSaving = $state(false);
+	let bulkResult = $state('');
+
+	async function bulkCreateUsers() {
+		if (!bulkEmails.trim()) return;
+		bulkSaving = true;
+		bulkResult = '';
+		try {
+			const emails = bulkEmails
+				.split(/[\n,]+/)
+				.map(e => e.trim())
+				.filter(e => e.length > 0 && e.includes('@'));
+			const res = await fetch('/api/admin/enrollments/create-users', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ emails }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				bulkResult = `✅ Created ${json.data?.created || 0} user(s).`;
+				bulkEmails = '';
+				loadUsers();
+			} else {
+				bulkResult = `❌ ${json.error || 'Failed'}`;
+			}
+		} catch {
+			bulkResult = '❌ Failed';
+		} finally {
+			bulkSaving = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -74,21 +176,36 @@
 						<th>XP</th>
 						<th>Sessions Done</th>
 						<th>Projects Done</th>
+						<th>Role</th>
+						<th>Email</th>
+						<th>Status</th>
 						<th>Joined</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each filtered as u}
-						<tr>
+						<tr onclick={() => openEdit(u)} class="clickable-row">
 							<td class="username-cell">
 								<span class="avatar">{u.username?.charAt(0)?.toUpperCase() || '?'}</span>
 								{u.username || 'anonymous'}
+								{#if u.display_name && u.display_name !== u.username}
+									<span class="display-name">({u.display_name})</span>
+								{/if}
 							</td>
 							<td class="mono">{u.id?.slice(0, 12)}...</td>
 							<td><span class="level-badge">Lv.{u.level || 1}</span></td>
 							<td class="xp-cell">{Number(u.xp || 0).toLocaleString()} XP</td>
 							<td>{u.completed_sessions || 0}</td>
 							<td>{u.completed_projects || 0}</td>
+							<td>
+								<span class="role-badge" style="background: {roleColors[u.role] || roleColors['student']}20; color: {roleColors[u.role] || roleColors['student']}; border: 1px solid {roleColors[u.role] || roleColors['student']}40;">
+									{u.role || 'student'}
+								</span>
+							</td>
+							<td class="mono">{u.email || '-'}</td>
+							<td>
+								<span class="status-dot" class:active={u.is_active !== false}></span>
+							</td>
 							<td>{new Date(u.created_at).toLocaleDateString()}</td>
 						</tr>
 					{/each}
@@ -98,11 +215,80 @@
 		{#if filtered.length === 0}
 			<p class="empty">No users found.</p>
 		{/if}
+
+		<!-- Bulk user creation -->
+		<div class="bulk-section">
+			<h2>📋 Bulk Create Users</h2>
+			<p class="bulk-hint">Paste email addresses (one per line or comma-separated) to create user accounts.</p>
+			<textarea bind:value={bulkEmails} placeholder="user1@example.com&#10;user2@example.com" rows={4} class="bulk-textarea"></textarea>
+			<div class="bulk-actions">
+				<button onclick={bulkCreateUsers} disabled={bulkSaving} class="btn">
+					{bulkSaving ? 'Creating...' : 'Create Users'}
+				</button>
+				{#if bulkResult}
+					<span class="bulk-result">{bulkResult}</span>
+				{/if}
+			</div>
+		</div>
 	{/if}
 </div>
 
+<!-- Edit User Modal -->
+{#if editUser}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-overlay" onclick={closeEdit} role="dialog" tabindex="-1" onkeydown={(e) => e.key === 'Escape' && closeEdit()}>
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
+			<div class="modal-header">
+				<h2>✏️ Edit User</h2>
+				<button onclick={closeEdit} class="modal-close">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="field">
+					<label for="edit-username">Username</label>
+					<input id="edit-username" type="text" value={editUser.username} disabled class="input-disabled" />
+				</div>
+				<div class="field">
+					<label for="edit-display-name">Display Name</label>
+					<input id="edit-display-name" type="text" bind:value={editDisplayName} placeholder="Display name" class="input" />
+				</div>
+				<div class="field">
+					<label for="edit-email">Email</label>
+					<input id="edit-email" type="email" bind:value={editEmail} placeholder="Email address" class="input" />
+				</div>
+				<div class="field">
+					<label for="edit-role">Role</label>
+					<select id="edit-role" bind:value={editRole} class="input">
+						{#each VALID_ROLES as role}
+							<option value={role}>{role}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="field field-checkbox">
+					<label>
+						<input type="checkbox" bind:checked={editIsActive} />
+						<span>Active</span>
+					</label>
+				</div>
+				{#if saveError}
+					<div class="save-error">{saveError}</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button onclick={closeEdit} class="btn btn-cancel">Cancel</button>
+				<button onclick={saveUser} disabled={saving} class="btn btn-primary">
+					{saving ? 'Saving...' : 'Save Changes'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
-	.users-page { max-width: 1100px; }
+	.users-page { max-width: 1200px; }
 	h1 { font-size: 26px; font-weight: 700; }
 	.loading, .error-state { text-align: center; padding: 60px; color: var(--text-secondary); }
 
@@ -145,8 +331,10 @@
 	td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
 	tr:last-child td { border-bottom: none; }
 	tr:hover td { background: var(--hover); }
+	.clickable-row { cursor: pointer; }
 	.mono { font-family: monospace; font-size: 12px; }
 	.username-cell { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+	.display-name { color: var(--text-secondary); font-size: 12px; font-weight: 400; }
 	.avatar {
 		width: 28px; height: 28px; border-radius: 50%;
 		background: var(--accent-dim); color: var(--accent);
@@ -155,6 +343,29 @@
 	}
 	.level-badge { padding: 2px 8px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px; font-weight: 600; }
 	.xp-cell { font-weight: 600; color: var(--accent); }
+
+	.role-badge {
+		display: inline-block;
+		padding: 2px 8px;
+		border-radius: 6px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.status-dot {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--color-gray, #95a5a6);
+	}
+	.status-dot.active {
+		background: var(--color-green, #2ecc71);
+		box-shadow: 0 0 6px var(--color-green, #2ecc71);
+	}
+
 	.empty { color: var(--text-secondary); text-align: center; padding: 40px; }
 
 	.btn {
@@ -164,6 +375,133 @@
 	}
 	.btn-sm { padding: 5px 10px; font-size: 12px; }
 	.btn:hover { opacity: 0.85; }
+	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+	/* Bulk section */
+	.bulk-section {
+		margin-top: 40px;
+		padding: 20px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+	}
+	.bulk-section h2 { font-size: 18px; margin-bottom: 8px; }
+	.bulk-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+	.bulk-textarea {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-secondary);
+		color: var(--text);
+		font-family: monospace;
+		font-size: 13px;
+		resize: vertical;
+		box-sizing: border-box;
+	}
+	.bulk-actions {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-top: 10px;
+	}
+	.bulk-result { font-size: 13px; font-weight: 500; }
+
+	/* Modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0,0,0,0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 20px;
+	}
+	.modal {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		width: 100%;
+		max-width: 480px;
+		box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+	}
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 16px 20px;
+		border-bottom: 1px solid var(--border);
+	}
+	.modal-header h2 { font-size: 18px; margin: 0; }
+	.modal-close {
+		background: none;
+		border: none;
+		font-size: 24px;
+		color: var(--text-secondary);
+		cursor: pointer;
+		padding: 0;
+		line-height: 1;
+	}
+	.modal-body {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.field { display: flex; flex-direction: column; gap: 4px; }
+	.field label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+	.field-checkbox label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--text);
+		text-transform: none;
+		letter-spacing: normal;
+		cursor: pointer;
+	}
+	.input {
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-secondary);
+		color: var(--text);
+		font-size: 14px;
+	}
+	.input-disabled {
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-secondary);
+		color: var(--text-secondary);
+		font-size: 14px;
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	select.input { cursor: pointer; }
+	.save-error {
+		padding: 8px 12px;
+		background: var(--color-red, #e74c3c)15;
+		border: 1px solid var(--color-red, #e74c3c)30;
+		color: var(--color-red, #e74c3c);
+		border-radius: 8px;
+		font-size: 13px;
+	}
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 8px;
+		padding: 16px 20px;
+		border-top: 1px solid var(--border);
+	}
+	.btn-cancel { background: var(--bg-secondary); }
+	.btn-primary {
+		background: var(--accent);
+		color: #fff;
+		border-color: var(--accent);
+	}
 
 	@media (max-width: 768px) {
 		.toolbar { flex-direction: column; align-items: stretch; }

@@ -97,3 +97,28 @@ export function getBearerToken(request: Request): string | null {
 	if (!auth || !auth.startsWith('Bearer ')) return null;
 	return auth.slice(7).trim() || null;
 }
+
+export async function getOrCreateUsersRow(
+	platform: App.Platform,
+	oauthUserId: string,
+	email?: string,
+	name?: string
+): Promise<any> {
+	const db = getDB(platform);
+	const existing = await db.prepare('SELECT * FROM users WHERE id = ?').bind(oauthUserId).first<any>();
+	if (existing) return existing;
+
+	const now = new Date().toISOString();
+	await db.prepare(
+		'INSERT INTO users (id, username, email, display_name, role, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+	).bind(
+		oauthUserId,
+		email?.split('@')[0] || `user_${oauthUserId.slice(0, 8)}`,
+		email || '',
+		name || '',
+		'student',
+		1,
+		now
+	).run();
+	return db.prepare('SELECT * FROM users WHERE id = ?').bind(oauthUserId).first<any>();
+}

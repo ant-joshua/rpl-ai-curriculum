@@ -23,6 +23,8 @@
 		{ path: '/admin/projects', icon: '🚀', label: 'Projects' },
 		{ path: '/admin/users', icon: '👥', label: 'Users' },
 		{ path: '/admin/analytics', icon: '📈', label: 'Analytics' },
+		{ path: '/admin/courses', icon: '📖', label: 'Courses' },
+		{ path: '/admin/question-bank', icon: '❓', label: 'Question Bank' },
 	];
 </script>
 
@@ -38,7 +40,7 @@
 	</div>
 {:else}
 	<div class="admin-layout">
-		<button class="sidebar-toggle" onclick={() => sidebarOpen = !sidebarOpen}>
+		<button class="sidebar-toggle" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle sidebar menu">
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>

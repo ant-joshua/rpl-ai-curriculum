@@ -1,5 +1,5 @@
 import { getDB } from '$lib/server/d1';
-import { createSession } from '$lib/server/auth';
+import { createSession, getOrCreateUsersRow } from '$lib/server/auth';
 
 function corsHeaders() {
 	return {
@@ -140,6 +140,7 @@ export async function GET({ request, platform }: {
 		}
 
 		const finalUserId = existing?.id || userId;
+		await getOrCreateUsersRow(platform, finalUserId, userInfo.email, userInfo.name);
 		const token = await createSession(platform, finalUserId, provider);
 
 		const userJson = encodeURIComponent(JSON.stringify({
