@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { user } from '$lib/stores/user.svelte';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { onMount } from 'svelte';
 
@@ -27,8 +28,8 @@
 		}, 50);
 	}
 
-	function handleOAuth(provider: string) {
-		alert(`Coming soon — gunakan username untuk sekarang.\n\nLogin via ${provider} akan segera tersedia.`);
+	function redirectOAuth(provider: string) {
+		window.location.href = `/api/auth/oauth/redirect/${provider}`;
 	}
 </script>
 
@@ -61,15 +62,20 @@
 		</div>
 
 		<div class="oauth-buttons">
-			<button onclick={() => handleOAuth('Google')} class="oauth-btn google">
+			<a href="/api/auth/oauth/redirect/google" class="oauth-btn google" role="button">
 				<span class="oauth-icon">🔵</span>
 				<span>Login dengan Google</span>
-			</button>
-			<button onclick={() => handleOAuth('GitHub')} class="oauth-btn github">
+			</a>
+			<a href="/api/auth/oauth/redirect/github" class="oauth-btn github" role="button">
 				<span class="oauth-icon">🐙</span>
 				<span>Login dengan GitHub</span>
-			</button>
+			</a>
 		</div>
+
+		<p class="oauth-note">
+			Login via OAuth akan mengirim kamu ke Google/GitHub untuk verifikasi.
+			Data kamu aman dan tidak dibagikan.
+		</p>
 	</div>
 </div>
 
@@ -199,6 +205,7 @@
 		cursor: pointer;
 		transition: all 0.15s ease;
 		font-family: inherit;
+		text-decoration: none !important;
 	}
 
 	.oauth-btn:hover {
@@ -208,5 +215,13 @@
 
 	.oauth-icon {
 		font-size: 18px;
+	}
+
+	.oauth-note {
+		margin-top: 16px;
+		font-size: 12px;
+		color: var(--text-secondary);
+		opacity: 0.7;
+		line-height: 1.4;
 	}
 </style>

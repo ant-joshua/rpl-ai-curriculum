@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { user } from '$lib/stores/user.svelte';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte';
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import favicon from '$lib/assets/favicon.svg';
@@ -35,6 +36,39 @@
 	if (browser) {
 		offline = !navigator.onLine;
 	}
+
+	// Handle OAuth callback redirect — parse token from URL
+	$effect(() => {
+		if (!browser) return;
+		const params = new URLSearchParams(window.location.search);
+		const token = params.get('oauth_token');
+		const userJson = params.get('oauth_user');
+		if (token && userJson) {
+			try {
+				const oauthUser = JSON.parse(decodeURIComponent(userJson));
+				auth.setSession(token, oauthUser);
+				// Clean URL and redirect to dashboard
+				window.history.replaceState({}, '', '/');
+				// Also set legacy user store for backward compat
+				if (oauthUser.name) {
+					user.username = oauthUser.name;
+				}
+				setTimeout(() => {
+					window.location.href = '/dashboard';
+				}, 50);
+			} catch {
+				// ignore bad parse
+			}
+		}
+	});
+
+	// Validate stored session on app load
+	$effect(() => {
+		if (!browser) return;
+		if (auth.authToken && !auth.authUser) {
+			auth.validateSession();
+		}
+	});
 
 	$effect(() => {
 		if (!browser) return;

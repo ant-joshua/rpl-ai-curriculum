@@ -1,31 +1,15 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
-	let isAdmin = $state(false);
+	let stats: any = $state(null);
 	let loading = $state(true);
-	let stats: {
-		total_users: number;
-		total_sessions: number;
-		total_xp: number;
-		active_today: number;
-		recent_users: Array<{ id: string; username: string; created_at: string }>;
-		top_exercises: Array<{ exercise_slug: string; count: number }>;
-		badge_distribution: Array<{ badge_id: string; count: number; name?: string }>;
-	} | null = $state(null);
 	let error = $state('');
-	let resetUserId = $state('');
-	let resetMessage = $state('');
 
 	onMount(() => {
 		if (!browser) return;
-		const adminMode = localStorage.getItem('lms-admin') === 'true';
-		isAdmin = adminMode;
-		if (adminMode) {
-			loadStats();
-		} else {
-			loading = false;
-		}
+		loadStats();
 	});
 
 	async function loadStats() {
@@ -37,66 +21,43 @@
 			if (json.success) {
 				stats = json.data;
 			} else {
-				error = json.error || 'Gagal memuat stats';
+				error = json.error || 'Failed to load stats';
 			}
 		} catch (e) {
-			error = 'Gagal memuat stats: ' + (e instanceof Error ? e.message : 'Unknown');
+			error = 'Failed to load stats';
 		} finally {
 			loading = false;
 		}
 	}
 
-	async function handleReset() {
-		const confirmed = confirm(`Yakin reset progress untuk user "${resetUserId}"?`);
-		if (!confirmed) return;
-		try {
-			const res = await fetch('/api/admin/reset', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json', 'x-admin-key': 'admin' },
-				body: JSON.stringify({ user_id: resetUserId }),
-			});
-			const json = await res.json();
-			if (json.success) {
-				resetMessage = `✅ Progress direset untuk ${resetUserId}`;
-				resetUserId = '';
-				loadStats();
-			} else {
-				resetMessage = `❌ ${json.error || 'Gagal'}`;
-			}
-		} catch (e) {
-			resetMessage = '❌ Error: ' + (e instanceof Error ? e.message : 'Unknown');
-		}
-	}
-
-	function handleClearCache() {
-		if (!confirm('Yakin hapus semua data lokal (progress, XP, badges)?')) return;
-		const keys = Object.keys(localStorage).filter(k => k.startsWith('lms-'));
-		for (const k of keys) localStorage.removeItem(k);
-		alert(`Cache dibersihkan (${keys.length} keys). Refresh halaman.`);
-		window.location.reload();
+	function timeAgo(dateStr: string) {
+		const d = new Date(dateStr + 'Z');
+		const now = new Date();
+		const sec = Math.floor((now.getTime() - d.getTime()) / 1000);
+		if (sec < 60) return 'just now';
+		if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
+		if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
+		return `${Math.floor(sec / 86400)}d ago`;
 	}
 </script>
 
 <svelte:head>
-	<title>⚙️ Admin Dashboard — RPL AI Curriculum</title>
+	<title>📊 Admin Dashboard — RPL AI Curriculum</title>
 </svelte:head>
 
-<div class="admin-page">
-	{#if !isAdmin}
-		<div class="access-denied">
-			<span class="denied-icon">🔒</span>
-			<h1>Akses Ditolak</h1>
-			<p>Halaman ini hanya untuk admin. Set <code>lms-admin</code> ke <code>true</code> di localStorage untuk mengakses.</p>
+{#if loading}
+	<div class="loading">Loading dashboard data...</div>
+{:else if error}
+	<div class="error-state">
+		<p class="error-msg">{error}</p>
+		<button onclick={loadStats} class="btn">Retry</button>
+	</div>
+{:else if stats}
+	<div class="dashboard">
+		<div class="header-row">
+			<h1>📊 Admin Dashboard</h1>
+			<button onclick={loadStats} class="btn btn-sm">🔄 Refresh</button>
 		</div>
-	{:else if loading}
-		<div class="loading">Memuat data admin...</div>
-	{:else if error}
-		<div class="error-state">
-			<p class="error-msg">{error}</p>
-			<button onclick={loadStats} class="btn">Coba Lagi</button>
-		</div>
-	{:else if stats}
-		<h1>⚙️ Admin Dashboard</h1>
 
 		<!-- Stats Cards -->
 		<div class="stats-grid">
@@ -108,295 +69,240 @@
 			<div class="stat-card">
 				<span class="stat-icon">✅</span>
 				<span class="stat-value">{stats.total_sessions}</span>
-				<span class="stat-label">Total Sessions Completed</span>
+				<span class="stat-label">Sessions Completed</span>
 			</div>
 			<div class="stat-card">
 				<span class="stat-icon">✨</span>
-				<span class="stat-value">{stats.total_xp.toLocaleString()}</span>
+				<span class="stat-value">{Number(stats.total_xp).toLocaleString()}</span>
 				<span class="stat-label">Total XP Awarded</span>
 			</div>
 			<div class="stat-card">
 				<span class="stat-icon">🔥</span>
 				<span class="stat-value">{stats.active_today}</span>
-				<span class="stat-label">Active Users Today</span>
+				<span class="stat-label">Active Today</span>
+			</div>
+			<div class="stat-card">
+				<span class="stat-icon">📅</span>
+				<span class="stat-value">{stats.active_week}</span>
+				<span class="stat-label">Active This Week</span>
+			</div>
+			<div class="stat-card">
+				<span class="stat-icon">🚀</span>
+				<span class="stat-value">{stats.total_projects}</span>
+				<span class="stat-label">Projects Completed</span>
 			</div>
 		</div>
 
-		<!-- Tables -->
-		<div class="tables-grid">
-			<!-- Recent Users -->
-			<div class="table-section">
-				<h2>👤 Recent Users</h2>
-				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>Device ID</th>
-								<th>Username</th>
-								<th>Joined</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats.recent_users as u}
-								<tr>
-									<td class="mono">{u.id.slice(0, 16)}...</td>
-									<td>{u.username}</td>
-									<td>{new Date(u.created_at).toLocaleDateString('id-ID')}</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<!-- Top Exercises -->
-			<div class="table-section">
-				<h2>🏋️ Top Exercises</h2>
-				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>Exercise</th>
-								<th>Submissions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats.top_exercises as ex}
-								<tr>
-									<td>{ex.exercise_slug}</td>
-									<td><strong>{ex.count}</strong></td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<!-- Badge Distribution -->
-			<div class="table-section">
-				<h2>🏅 Badge Distribution</h2>
-				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>Badge</th>
-								<th>Users</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats.badge_distribution as b}
-								<tr>
-									<td>{b.badge_id}</td>
-									<td><strong>{b.count}</strong></td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-
-		<!-- Quick Actions -->
-		<div class="quick-actions">
+		<!-- Quick Links -->
+		<div class="quick-links">
 			<h2>⚡ Quick Actions</h2>
-			<div class="actions-grid">
-				<div class="action-card">
-					<h3>Reset User Progress</h3>
-					<p>Masukkan device ID user untuk mereset semua progress.</p>
-					<div class="reset-form">
-						<input
-							type="text"
-							bind:value={resetUserId}
-							placeholder="Device ID..."
-							class="reset-input"
-						/>
-						<button onclick={handleReset} disabled={!resetUserId.trim()} class="btn btn-danger">
-							Reset
-						</button>
-					</div>
-					{#if resetMessage}
-						<p class="reset-msg">{resetMessage}</p>
+			<div class="links-grid">
+				<a href="/admin/content" class="quick-link">
+					<span class="ql-icon">📚</span>
+					<span class="ql-title">Manage Content</span>
+					<span class="ql-desc">Edit modules, exercises, flashcards</span>
+				</a>
+				<a href="/admin/projects" class="quick-link">
+					<span class="ql-icon">🚀</span>
+					<span class="ql-title">Manage Projects</span>
+					<span class="ql-desc">CRUD projects and steps</span>
+				</a>
+				<a href="/admin/users" class="quick-link">
+					<span class="ql-icon">👥</span>
+					<span class="ql-title">Manage Users</span>
+					<span class="ql-desc">View users and progress</span>
+				</a>
+				<a href="/admin/analytics" class="quick-link">
+					<span class="ql-icon">📈</span>
+					<span class="ql-title">Analytics</span>
+					<span class="ql-desc">Completion stats, XP distribution</span>
+				</a>
+			</div>
+		</div>
+
+		<!-- Recent Activity & Stats -->
+		<div class="grid-2col">
+			<!-- Recent Activity -->
+			<div class="section">
+				<h2>🕐 Recent Activity</h2>
+				<div class="activity-list">
+					{#if stats.recent_activity?.length}
+						{#each stats.recent_activity.slice(0, 10) as act}
+							<div class="activity-item">
+								<span class="act-user">{act.username || act.user_id?.slice(0, 12)}</span>
+								<span class="act-action">{act.action}</span>
+								<span class="act-time">{timeAgo(act.created_at)}</span>
+							</div>
+						{/each}
+					{:else}
+						<p class="empty">No recent activity</p>
 					{/if}
 				</div>
+			</div>
 
-				<div class="action-card">
-					<h3>Clear Cache</h3>
-					<p>Hapus semua data lokal (progress, XP, badges) dari localStorage.</p>
-					<button onclick={handleClearCache} class="btn btn-warning">Clear Cache</button>
-				</div>
-
-				<div class="action-card">
-					<h3>Submissions</h3>
-					<p>Lihat semua submission yang masuk dari pengguna.</p>
-					<a href="/api/submissions" class="btn" target="_blank">View All Submissions</a>
+			<!-- Module Completion Stats -->
+			<div class="section">
+				<h2>📚 Top Modules</h2>
+				<div class="module-stats">
+					{#if stats.module_stats?.length}
+						{#each stats.module_stats as ms}
+							<div class="module-stat-row">
+								<span class="ms-name">{ms.module_slug}</span>
+								<div class="ms-bar-wrap">
+									<div class="ms-bar" style="width: {Math.min(100, (ms.completions / Math.max(...stats.module_stats.map((m: any) => m.completions))) * 100)}%"></div>
+								</div>
+								<span class="ms-count">{ms.completions}</span>
+							</div>
+						{/each}
+					{:else}
+						<p class="empty">No module completions yet</p>
+					{/if}
 				</div>
 			</div>
 		</div>
-	{/if}
-</div>
+
+		<!-- Recent Users -->
+		<div class="section">
+			<h2>👤 Recent Users</h2>
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Username</th>
+							<th>Device ID</th>
+							<th>Joined</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each stats.recent_users.slice(0, 15) as u}
+							<tr>
+								<td>{u.username}</td>
+								<td class="mono">{u.id.slice(0, 16)}...</td>
+								<td>{new Date(u.created_at).toLocaleDateString()}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
-	.admin-page {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 20px 0;
-	}
-
-	h1 {
-		font-size: 28px;
-		font-weight: 700;
-		margin-bottom: 24px;
-	}
-
-	h2 {
-		font-size: 18px;
-		font-weight: 600;
-		margin-bottom: 12px;
-	}
-
-	.access-denied {
-		text-align: center;
-		padding: 80px 20px;
-	}
-	.denied-icon { font-size: 48px; display: block; margin-bottom: 16px; }
-	.access-denied h1 { font-size: 24px; margin-bottom: 12px; }
-	.access-denied p { color: var(--text-secondary); font-size: 14px; }
-	.access-denied code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; }
-
-	.loading, .error-state {
-		text-align: center;
-		padding: 60px 20px;
-		color: var(--text-secondary);
-	}
-
+	.loading, .error-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.error-msg { color: var(--danger); margin-bottom: 12px; }
+	h1 { font-size: 26px; font-weight: 700; }
+	h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+
+	.header-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	}
 
 	.stats-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 16px;
-		margin-bottom: 32px;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 14px;
+		margin-bottom: 28px;
 	}
-
 	.stat-card {
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 12px;
-		padding: 20px;
+		padding: 18px;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 4px;
 	}
-	.stat-icon { font-size: 28px; }
-	.stat-value { font-size: 28px; font-weight: 700; color: var(--accent); }
-	.stat-label { font-size: 12px; color: var(--text-secondary); }
+	.stat-icon { font-size: 24px; }
+	.stat-value { font-size: 24px; font-weight: 700; color: var(--accent); }
+	.stat-label { font-size: 11px; color: var(--text-secondary); }
 
-	.tables-grid {
+	.quick-links { margin-bottom: 28px; }
+	.links-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 12px;
+	}
+	.quick-link {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 16px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		text-decoration: none !important;
+		transition: border-color 0.15s;
+	}
+	.quick-link:hover { border-color: var(--accent); }
+	.ql-icon { font-size: 24px; }
+	.ql-title { font-weight: 600; font-size: 14px; color: var(--text); }
+	.ql-desc { font-size: 12px; color: var(--text-secondary); }
+
+	.grid-2col {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 20px;
-		margin-bottom: 32px;
+		margin-bottom: 28px;
 	}
 
-	.table-section {
+	.section {
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 12px;
 		padding: 16px;
+		margin-bottom: 20px;
 	}
 
-	.table-section:last-child {
-		grid-column: 1 / -1;
-	}
-
-	.table-wrap {
-		overflow-x: auto;
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 13px;
-	}
-
-	th {
-		text-align: left;
-		padding: 8px 10px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		border-bottom: 1px solid var(--border);
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	td {
-		padding: 8px 10px;
-		border-bottom: 1px solid var(--border);
-		color: var(--text);
-	}
-
-	tr:last-child td { border-bottom: none; }
-
-	.mono { font-family: monospace; font-size: 12px; }
-
-	.quick-actions { margin-top: 8px; }
-	.actions-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
-	}
-
-	.action-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 16px;
-	}
-
-	.action-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-	.action-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
-
-	.reset-form {
+	.activity-list { display: flex; flex-direction: column; gap: 6px; }
+	.activity-item {
 		display: flex;
 		gap: 8px;
-	}
-	.reset-input {
-		flex: 1;
-		padding: 8px 10px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--bg);
-		color: var(--text);
+		align-items: center;
+		padding: 6px 0;
+		border-bottom: 1px solid var(--border);
 		font-size: 13px;
-		font-family: monospace;
 	}
-	.reset-msg { font-size: 12px; margin-top: 8px; }
+	.activity-item:last-child { border-bottom: none; }
+	.act-user { font-weight: 600; color: var(--text); min-width: 80px; }
+	.act-action { flex: 1; color: var(--text-secondary); }
+	.act-time { color: var(--text-secondary); font-size: 11px; white-space: nowrap; }
+
+	.module-stats { display: flex; flex-direction: column; gap: 6px; }
+	.module-stat-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 13px;
+	}
+	.ms-name { min-width: 120px; font-weight: 500; }
+	.ms-bar-wrap { flex: 1; height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; }
+	.ms-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+	.ms-count { min-width: 30px; text-align: right; font-weight: 600; color: var(--accent); }
+
+	.table-wrap { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; font-size: 13px; }
+	th { text-align: left; padding: 8px 10px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+	td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+	tr:last-child td { border-bottom: none; }
+	.mono { font-family: monospace; font-size: 12px; }
+	.empty { color: var(--text-secondary); font-size: 13px; padding: 20px 0; text-align: center; }
 
 	.btn {
-		display: inline-block;
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-		color: var(--text);
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		text-decoration: none;
-		transition: opacity 0.15s;
+		display: inline-block; padding: 8px 16px; border-radius: 8px;
+		border: 1px solid var(--border); background: var(--bg-secondary);
+		color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer;
 	}
+	.btn-sm { padding: 6px 12px; font-size: 12px; }
 	.btn:hover { opacity: 0.85; }
-	.btn:disabled { opacity: 0.4; cursor: not-allowed; }
-	.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
-	.btn-warning { background: #f59e0b; color: #fff; border-color: #f59e0b; }
 
 	@media (max-width: 768px) {
+		.grid-2col { grid-template-columns: 1fr; }
 		.stats-grid { grid-template-columns: repeat(2, 1fr); }
-		.tables-grid { grid-template-columns: 1fr; }
-		.actions-grid { grid-template-columns: 1fr; }
-		.stat-value { font-size: 22px; }
 	}
 </style>

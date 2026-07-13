@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { projectsStore, type Project, type Step } from '$lib/stores/projects.svelte';
 	import { browser } from '$app/environment';
+	import CodeSandbox from '$lib/components/CodeSandbox.svelte';
+	import ServerPreview from '$lib/components/ServerPreview.svelte';
+	import { auth } from '$lib/stores/auth.svelte';
 
 	let { data } = $props();
 	let project = $state<Project>(data.project);
@@ -16,10 +19,11 @@
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
+	const browserPreviewProjects = ['portfolio-site', 'interactive-quiz', 'component-gallery', 'fullstack-blog'];
+	let isBrowserProject = $derived(browserPreviewProjects.includes(project?.slug));
+
 	$effect(() => {
-		if (browser) {
-			loadProgress();
-		}
+		if (browser) loadProgress();
 	});
 
 	async function loadProgress() {
@@ -36,7 +40,6 @@
 			if (p) {
 				completedSteps = p.completedSteps || [];
 				if (p.completed) projectCompleted = true;
-				// Find first incomplete step
 				let stepToLoad = 0;
 				for (let i = 0; i < project.steps.length; i++) {
 					if (!completedSteps.includes(project.steps[i].id)) {
@@ -46,7 +49,6 @@
 				}
 				currentStepIdx = stepToLoad;
 				code = project.steps[stepToLoad]?.starterCode || '';
-				// Restore code state if exists
 				if (p.codeState && p.codeState[project.steps[stepToLoad]?.id]) {
 					code = p.codeState[project.steps[stepToLoad].id];
 				}
@@ -74,18 +76,28 @@
 		activeTab = 'code';
 	}
 
+	function getAuthHeaders(): Record<string, string> {
+		const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+		if (auth.authToken) {
+			headers['Authorization'] = `Bearer ${auth.authToken}`;
+		} else {
+			const deviceId = localStorage.getItem('device_id') || 'anonymous';
+			headers['x-device-id'] = deviceId;
+		}
+		return headers;
+	}
+
 	async function verifyStep() {
 		if (!currentStep) return;
 		verifying = true;
 		try {
-			const deviceId = localStorage.getItem('device_id') || 'anonymous';
 			const res = await fetch(`/api/project/${project.slug}/verify`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json', 'x-device-id': deviceId },
+				headers: getAuthHeaders(),
 				body: JSON.stringify({ code, stepId: currentStep.id }),
 			});
 			verifyResult = await res.json();
-		} catch (e) {
+		} catch {
 			verifyResult = { passed: false, checks: [], message: 'Gagal verifikasi. Coba lagi.' };
 		} finally {
 			verifying = false;
@@ -97,10 +109,9 @@
 		saving = true;
 		projectsStore.saveCode(currentStep.id, code);
 		try {
-			const deviceId = localStorage.getItem('device_id') || 'anonymous';
 			await fetch(`/api/project/${project.slug}/progress`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json', 'x-device-id': deviceId },
+				headers: getAuthHeaders(),
 				body: JSON.stringify({
 					current_step: currentStep.id,
 					completed_steps: completedSteps,
@@ -129,13 +140,12 @@
 			}
 			projectsStore.saveCode(currentStep.id, code);
 			await saveProgress();
-
 			if (currentStepIdx < totalSteps - 1) {
 				goToStep(currentStepIdx + 1);
 			} else {
 				projectCompleted = true;
-				const gamification = (await import('$lib/stores/gamification.svelte')).gamification;
-				gamification.addXp(50);
+				const gam = (await import('$lib/stores/gamification.svelte')).gamification;
+				gam.addXp(50);
 			}
 		}
 	}
@@ -148,10 +158,9 @@
 		code = project.steps[0]?.starterCode || '';
 		verifyResult = null;
 		showHint = false;
-		const deviceId = localStorage.getItem('device_id') || 'anonymous';
 		await fetch(`/api/project/${project.slug}/progress`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json', 'x-device-id': deviceId },
+			headers: getAuthHeaders(),
 			body: JSON.stringify({ current_step: 0, completed_steps: [], code_state: {} }),
 		});
 	}
@@ -162,7 +171,6 @@
 </svelte:head>
 
 <div class="workspace">
-	<!-- Header bar -->
 	<div class="workspace-header">
 		<div class="header-left">
 			<a href="/projects/{project?.slug}" class="back-link">←</a>
@@ -189,13 +197,11 @@
 		</div>
 	</div>
 
-	<!-- Progress bar -->
 	<div class="progress-bar-track">
 		<div class="progress-bar-fill" style="width: {progressPct}%"></div>
 	</div>
 
 	{#if loading}
-		<!-- Loading skeleton -->
 		<div class="workspace-loading">
 			<div class="loading-skeleton">
 				<div class="skeleton-block skeleton-title"></div>
@@ -208,7 +214,6 @@
 			<p class="loading-text">Memuat studio...</p>
 		</div>
 	{:else if error}
-		<!-- Error state -->
 		<div class="workspace-error">
 			<span class="error-icon">❌</span>
 			<h2>Gagal Memuat Project</h2>
@@ -227,7 +232,6 @@
 		</div>
 	{:else if currentStep}
 		<div class="workspace-body">
-			<!-- Left: Instructions -->
 			<div class="instruction-panel">
 				<div class="step-header">
 					<span class="step-badge">Langkah {currentStep.id}/{totalSteps}</span>
@@ -236,7 +240,6 @@
 				<div class="instruction-content">
 					{currentStep.instruction}
 				</div>
-
 				{#if showHint}
 					<div class="hint-box">
 						<strong>💡 Petunjuk:</strong>
@@ -248,7 +251,6 @@
 				</button>
 			</div>
 
-			<!-- Right: Code editor + Preview -->
 			<div class="code-panel">
 				<div class="panel-tabs">
 					<button
@@ -272,16 +274,21 @@
 							spellcheck="false"
 							placeholder="Tulis kodemu di sini..."
 						></textarea>
+					{:else if isBrowserProject}
+						<CodeSandbox bind:code />
 					{:else}
-						<div class="preview-container">
-							<iframe srcdoc={code} class="preview-frame" title="Preview" sandbox="allow-scripts"></iframe>
-						</div>
+						<ServerPreview
+							projectSlug={project?.slug}
+							techs={project?.techs}
+							stepTitle={currentStep?.title}
+							stepInstruction={currentStep?.instruction}
+							starterCode={code}
+						/>
 					{/if}
 				</div>
 			</div>
 		</div>
 
-		<!-- Footer: Verify + Next -->
 		<div class="workspace-footer">
 			<div class="footer-left">
 				{#if verifyResult}
@@ -316,7 +323,6 @@
 		background: var(--bg);
 		overflow: hidden;
 	}
-
 	.workspace-header {
 		display: flex;
 		align-items: center;
@@ -347,32 +353,18 @@
 	.progress-pct { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 	.reset-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--muted); padding: 0.25rem; border-radius: 4px; }
 	.reset-btn:hover { background: var(--hover); }
-
 	.progress-bar-track { height: 3px; background: var(--border); }
 	.progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
 
-	/* Loading skeleton */
 	.workspace-loading {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 3rem 2rem;
-		gap: 1.5rem;
+		flex: 1; display: flex; flex-direction: column;
+		align-items: center; justify-content: center;
+		padding: 3rem 2rem; gap: 1.5rem;
 	}
-	.loading-skeleton {
-		width: 100%;
-		max-width: 600px;
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
+	.loading-skeleton { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 0.75rem; }
 	.skeleton-block {
 		background: linear-gradient(90deg, var(--surface) 0%, var(--hover) 50%, var(--surface) 100%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s ease-in-out infinite;
-		border-radius: 6px;
+		background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: 6px;
 	}
 	@keyframes shimmer {
 		0% { background-position: 200% 0; }
@@ -385,16 +377,10 @@
 	.skeleton-editor { height: 200px; width: 100%; border-radius: 8px; margin-top: 0.5rem; }
 	.loading-text { color: var(--muted); font-size: 0.9rem; }
 
-	/* Error state */
 	.workspace-error {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 4rem 2rem;
-		text-align: center;
-		gap: 1rem;
+		flex: 1; display: flex; flex-direction: column;
+		align-items: center; justify-content: center;
+		padding: 4rem 2rem; text-align: center; gap: 1rem;
 	}
 	.error-icon { font-size: 3rem; }
 	.workspace-error h2 { font-size: 1.3rem; }
@@ -421,19 +407,12 @@
 	}
 	.action-btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
-	.workspace-body {
-		display: flex;
-		flex: 1;
-		overflow: hidden;
-	}
+	.workspace-body { display: flex; flex: 1; overflow: hidden; }
 
 	.instruction-panel {
-		width: 40%;
-		min-width: 320px;
-		overflow-y: auto;
-		padding: 1.5rem;
-		border-right: 1px solid var(--border);
-		background: var(--surface);
+		width: 40%; min-width: 320px;
+		overflow-y: auto; padding: 1.5rem;
+		border-right: 1px solid var(--border); background: var(--surface);
 	}
 	.step-header { margin-bottom: 1rem; }
 	.step-badge {
@@ -443,14 +422,6 @@
 	}
 	.step-header h2 { font-size: 1.2rem; font-weight: 600; }
 	.instruction-content { font-size: 0.92rem; line-height: 1.7; color: var(--text-secondary); }
-	.instruction-content .code-block {
-		background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px;
-		font-family: 'Fira Code', monospace; font-size: 0.85rem; overflow-x: auto;
-		margin: 0.5rem 0;
-	}
-	.instruction-content .bullet { margin-left: 1rem; list-style: none; }
-	.instruction-content strong { color: var(--text); }
-
 	.hint-box {
 		background: #1b4332; border: 1px solid #27ae60; border-radius: 8px;
 		padding: 1rem; margin: 1rem 0; font-size: 0.9rem;
@@ -461,14 +432,8 @@
 	}
 	.hint-btn:hover { border-color: var(--accent); }
 
-	.code-panel {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-	.panel-tabs {
-		display: flex; border-bottom: 1px solid var(--border); background: var(--surface);
-	}
+	.code-panel { flex: 1; display: flex; flex-direction: column; }
+	.panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
 	.panel-tab {
 		padding: 0.6rem 1.2rem; background: none; border: none;
 		color: var(--muted); font-size: 0.85rem; cursor: pointer;
@@ -478,103 +443,40 @@
 	.panel-content { flex: 1; display: flex; overflow: hidden; }
 
 	.code-editor {
-		flex: 1;
-		background: #1e1e1e;
-		color: #d4d4d4;
+		flex: 1; background: #1e1e1e; color: #d4d4d4;
 		font-family: 'Fira Code', 'Cascadia Code', monospace;
-		font-size: 14px;
-		line-height: 1.6;
-		padding: 1.5rem;
-		border: none;
-		resize: none;
-		outline: none;
-		tab-size: 2;
-		width: 100%;
-		min-height: 200px;
-		box-sizing: border-box;
+		font-size: 14px; line-height: 1.6; padding: 1.5rem;
+		border: none; outline: none; resize: none; tab-size: 2;
 	}
-	.code-editor::placeholder { color: #555; }
-
-	.preview-container { flex: 1; background: #fff; }
-	.preview-frame { width: 100%; height: 100%; border: none; }
 
 	.workspace-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.75rem 1rem;
-		background: var(--surface);
-		border-top: 1px solid var(--border);
-		gap: 1rem;
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 0.75rem 1rem; background: var(--surface);
+		border-top: 1px solid var(--border); gap: 1rem;
 	}
-	.footer-left { display: flex; align-items: center; gap: 1rem; flex: 1; }
-	.verify-result { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
-	.verify-result.passed { color: #27ae60; }
-	.verify-result.failed { color: #e74c3c; }
+	.footer-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; }
+	.verify-result {
+		padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem;
+		display: flex; align-items: center; gap: 0.4rem;
+	}
+	.verify-result.passed { background: #1b4332; color: #27ae60; }
+	.verify-result.failed { background: #4a1a1a; color: #e74c3c; }
 	.save-status { font-size: 0.8rem; color: var(--muted); }
-	.footer-actions { display: flex; gap: 0.75rem; }
+	.footer-actions { display: flex; gap: 0.5rem; }
 	.verify-btn, .next-btn {
-		padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.9rem;
-		font-weight: 600; cursor: pointer; border: none; transition: opacity 0.15s;
+		padding: 0.5rem 1.2rem; border: none; border-radius: 8px;
+		font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
 	}
-	.verify-btn { background: var(--accent); color: #fff; }
+	.verify-btn { background: var(--accent-dim); color: var(--accent); }
 	.verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-	.verify-btn:hover:not(:disabled) { opacity: 0.9; }
-	.next-btn { background: #27ae60; color: #fff; }
+	.next-btn { background: var(--accent); color: #fff; }
 	.next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-	.next-btn:hover:not(:disabled) { opacity: 0.9; }
+	.verify-btn:hover:not(:disabled), .next-btn:hover:not(:disabled) { opacity: 0.9; }
 
-	/* Mobile responsive: stack vertically on <768px */
-	@media (max-width: 767px) {
-		.workspace {
-			height: 100dvh;
-		}
-
-		.workspace-header {
-			flex-wrap: wrap;
-			padding: 0.5rem 0.75rem;
-			gap: 0.4rem;
-		}
-		.header-center { order: 3; flex: 0 0 100%; justify-content: center; }
-		.step-dot { width: 26px; height: 26px; font-size: 0.7rem; }
-
-		.workspace-body {
-			flex-direction: column;
-			overflow-y: auto;
-		}
-
-		.instruction-panel {
-			width: 100%;
-			min-width: 0;
-			border-right: none;
-			border-bottom: 1px solid var(--border);
-			padding: 1rem;
-			max-height: 40vh;
-			overflow-y: auto;
-		}
-
-		.code-panel {
-			flex: 1;
-			min-height: 300px;
-		}
-
-		.code-editor {
-			font-size: 13px;
-			padding: 1rem;
-			min-height: 250px;
-		}
-
-		.preview-container { min-height: 300px; }
-
-		.workspace-footer {
-			flex-wrap: wrap;
-			padding: 0.5rem 0.75rem;
-		}
-		.footer-left { flex: 0 0 100%; order: 2; }
-		.footer-actions { flex: 1; justify-content: flex-end; }
-		.verify-btn, .next-btn { padding: 0.5rem 1rem; font-size: 0.85rem; }
-
-		.completed-banner h2 { font-size: 1.2rem; }
-		.completed-actions { flex-direction: column; }
+	@media (max-width: 768px) {
+		.workspace-body { flex-direction: column; }
+		.instruction-panel { width: 100%; min-width: 0; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+		.header-center { display: none; }
+		.step-dot { width: 24px; height: 24px; font-size: 0.7rem; }
 	}
 </style>

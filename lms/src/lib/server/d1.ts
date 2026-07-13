@@ -7,3 +7,10 @@ export function getDB(platform: App.Platform): D1Database {
 export function getDeviceId(request: Request): string {
 	return request.headers.get('x-device-id') || 'anonymous';
 }
+
+export function jsonResponse(data: unknown, status = 200): Response {
+	return new Response(JSON.stringify(data), {
+		status,
+		headers: { 'Content-Type': 'application/json' },
+	});
+}
