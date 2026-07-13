@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
+	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 
 	let { data } = $props();
@@ -220,12 +221,14 @@
 		</nav>
 
 		<!-- Mark complete button -->
-		<div class="complete-section">
-			<button class="complete-btn" onclick={() => markComplete()}>
-				Mark as Complete
-			</button>
-		</div>
-	{/if}
+				<div class="complete-section">
+					<button class="complete-btn" onclick={() => markComplete()}>
+						Mark as Complete
+					</button>
+				</div>
+				<!-- Discussion panel -->
+				<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId} />
+			{/if}
 </div>
 
 <style>

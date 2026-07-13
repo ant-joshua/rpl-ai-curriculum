@@ -1,0 +1,62 @@
+import { getDB, jsonResponse } from '$lib/server/d1';
+
+export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
+	try {
+		const db = getDB(platform);
+		const assignment_id = url.searchParams.get('assignment_id');
+		const user_id = url.searchParams.get('user_id');
+		let query = 'SELECT asub.*, u.display_name AS user_name FROM assignment_submissions asub LEFT JOIN users u ON u.id = asub.user_id';
+		const params: unknown[] = [];
+		const wheres: string[] = [];
+
+		if (assignment_id) {
+			wheres.push('asub.assignment_id = ?');
+			params.push(assignment_id);
+		}
+		if (user_id) {
+			wheres.push('asub.user_id = ?');
+			params.push(user_id);
+		}
+		if (wheres.length) query += ' WHERE ' + wheres.join(' AND ');
+		query += ' ORDER BY asub.created_at DESC';
+
+		const stmt = db.prepare(query);
+		const bound = params.length ? stmt.bind(...params) : stmt;
+		const { results } = await bound.all<any>();
+		return jsonResponse({ success: true, data: results });
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}
+
+export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+	try {
+		const db = getDB(platform);
+		const body = await request.json();
+		const id = crypto.randomUUID();
+
+		await db.prepare(
+			`INSERT INTO assignment_submissions (id, assignment_id, user_id, status, submission_text, file_urls, score, max_score, graded_by, graded_at, feedback, submitted_at, created_at, updated_at)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+		).bind(
+			id,
+			body.assignment_id,
+			body.user_id,
+			body.status ?? 'submitted',
+			body.submission_text ?? null,
+			body.file_urls ? JSON.stringify(body.file_urls) : null,
+			body.score ?? null,
+			body.max_score ?? null,
+			body.graded_by ?? null,
+			body.graded_at ?? null,
+			body.feedback ?? null,
+			body.status === 'submitted' ? new Date().toISOString() : null
+		).run();
+
+		return jsonResponse({ success: true, data: { id, ...body } }, 201);
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}

@@ -14,6 +14,7 @@
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import NotificationBell from '$lib/components/NotificationBell.svelte';
 
 	const navSections = [
 		{ name: 'belajar', icon: '📚', label: 'Belajar', links: [
@@ -264,6 +265,9 @@
 			{#if !user.isLoggedIn}
 				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
 			{:else}
+				<div class="sidebar-user-section">
+					<NotificationBell />
+				</div>
 				<button onclick={() => { user.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="logout-btn">🔓 Logout</button>
 			{/if}
 			<button onclick={() => { toggleLang(); closeSidebar(); }} class="theme-btn">

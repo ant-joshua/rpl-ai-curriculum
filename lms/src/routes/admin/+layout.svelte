@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import NotificationBell from '$lib/components/NotificationBell.svelte';
 
 	let { children } = $props();
 
@@ -25,6 +26,7 @@
 		{ path: '/admin/analytics', icon: '📈', label: 'Analytics' },
 		{ path: '/admin/courses', icon: '📖', label: 'Courses' },
 		{ path: '/admin/question-bank', icon: '❓', label: 'Question Bank' },
+		{ path: '/admin/gradebook', icon: '📋', label: 'Gradebook' },
 	];
 </script>
 
@@ -77,6 +79,10 @@
 		</aside>
 
 		<main class="main-content">
+			<div class="admin-topbar">
+				<div class="admin-topbar-spacer"></div>
+				<NotificationBell />
+			</div>
 			{@render children()}
 		</main>
 	</div>
@@ -192,6 +198,17 @@
 	.back-link:hover {
 		background: var(--hover);
 		color: var(--text);
+	}
+
+	.admin-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		margin-bottom: 16px;
+		gap: 8px;
+	}
+	.admin-topbar-spacer {
+		flex: 1;
 	}
 
 	.main-content {
