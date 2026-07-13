@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 	import { user } from '$lib/stores/user.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte';
@@ -12,6 +12,8 @@
 	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
+	import Toast from '$lib/components/Toast.svelte';
+	import { addToast } from '$lib/stores/toast.svelte';
 
 	const navSections = [
 		{ name: 'belajar', icon: '📚', label: 'Belajar', links: [
@@ -169,6 +171,13 @@
 	function scrollToTop() {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
+
+	// Scroll to top on route change
+	$effect(() => {
+		if (!browser) return;
+		$page.url.pathname;
+		window.scrollTo({ top: 0, behavior: 'instant' });
+	});
 </script>
 
 <svelte:head>
@@ -254,6 +263,8 @@
 			{/if}
 			{#if !user.isLoggedIn}
 				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
+			{:else}
+				<button onclick={() => { user.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="logout-btn">🔓 Logout</button>
 			{/if}
 			<button onclick={() => { toggleLang(); closeSidebar(); }} class="theme-btn">
 				<span class="nav-icon">🌐</span>
@@ -266,8 +277,12 @@
 		</div>
 	</aside>
 
-	<main class="main-content">
-		{@render children()}
+	<main class="main-content animate-in">
+		{#key $page.url.pathname}
+			<div in:fade={{ duration: 150 }}>
+				{@render children()}
+			</div>
+		{/key}
 	</main>
 </div>
 
@@ -287,6 +302,10 @@
 <ShortcutHelp show={showShortcuts} onclose={() => showShortcuts = false} />
 
 <OnboardingOverlay />
+
+<div class="toast-container">
+	<Toast />
+</div>
 
 <style>
 	:global(*) {
@@ -707,9 +726,27 @@
 		box-shadow: 0 6px 16px rgba(108, 92, 231, 0.5);
 	}
 
+	.toast-container {
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		z-index: 10000;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		pointer-events: none;
+	}
+	.toast-container > * {
+		pointer-events: auto;
+	}
+
 	@media (max-width: 768px) {
 		.hamburger {
 			display: flex;
+			min-width: 44px;
+			min-height: 44px;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.sidebar {
@@ -733,12 +770,16 @@
 			position: fixed;
 			inset: 0;
 			background: rgba(0,0,0,0.5);
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
 			z-index: 150;
 		}
 
 		.main-content {
 			padding: 16px;
 			padding-top: 60px;
+			width: 100%;
+			max-width: 100%;
 		}
 	}
 </style>

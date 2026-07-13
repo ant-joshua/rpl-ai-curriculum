@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import RichEditor from '$lib/components/RichEditor.svelte';
+import { addToast } from '$lib/stores/toast.svelte';
 
 	let projects: any[] = $state([]);
 	let loading = $state(true);
@@ -34,9 +35,9 @@
 				body: JSON.stringify(data),
 			});
 			const json = await res.json();
-			if (json.success) { editModal = null; loadProjects(); }
-			else alert('Error: ' + (json.error || 'Unknown'));
-		} catch { alert('Error saving'); }
+			if (json.success) { editModal = null; loadProjects(); addToast('Project created', 'success'); }
+			else addToast('Error: ' + (json.error || 'Unknown'), 'error');
+		} catch { addToast('Error saving', 'error'); }
 	}
 
 	async function updateProject(slug: string, data: any) {
@@ -47,9 +48,9 @@
 				body: JSON.stringify(data),
 			});
 			const json = await res.json();
-			if (json.success) { editModal = null; loadProjects(); }
-			else alert('Error: ' + (json.error || 'Unknown'));
-		} catch { alert('Error updating'); }
+			if (json.success) { editModal = null; loadProjects(); addToast('Project updated', 'success'); }
+			else addToast('Error: ' + (json.error || 'Unknown'), 'error');
+		} catch { addToast('Error updating', 'error'); }
 	}
 
 	async function deleteProject(slug: string) {
@@ -57,7 +58,8 @@
 		try {
 			await fetch(`/api/admin/projects/${slug}`, { method: 'DELETE' });
 			loadProjects();
-		} catch { alert('Error deleting'); }
+			addToast('Project deleted', 'success');
+		} catch { addToast('Error deleting', 'error'); }
 	}
 
 	async function toggleStatus(slug: string, current: string) {

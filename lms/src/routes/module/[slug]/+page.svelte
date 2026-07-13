@@ -20,6 +20,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	import { getDeviceId } from '$lib/utils/api';
 	import Skeleton from '$lib/components/Skeleton.svelte';
 	import { fade } from 'svelte/transition';
+	import { addToast } from '$lib/stores/toast.svelte';
 
 	let { data } = $props();
 
@@ -33,24 +34,14 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	let errorMsg = $state('');
 	let pdfIndex = $state<Record<string, boolean>>({});
 
-	// Share link + toast
-	let toastMsg = $state('');
-	let toastTimer: ReturnType<typeof setTimeout>;
-
 	async function copyShareLink() {
 		const url = `${window.location.origin}/module/${slug}`;
 		try {
 			await navigator.clipboard.writeText(url);
-			showToast('Tersalin!');
+			addToast('Tersalin!', 'success');
 		} catch {
-			showToast('Gagal menyalin');
+			addToast('Gagal menyalin', 'error');
 		}
-	}
-
-	function showToast(msg: string) {
-		clearTimeout(toastTimer);
-		toastMsg = msg;
-		toastTimer = setTimeout(() => { toastMsg = ''; }, 2000);
 	}
 
 	// Next / Prev module navigation
@@ -860,11 +851,6 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	</div>
 {/if}
 
-<!-- Toast -->
-{#if toastMsg}
-	<div class="toast">{toastMsg}</div>
-{/if}
-
 <style>
 	.module-page {
 		max-width: 1100px;
@@ -1408,23 +1394,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		height: 100%;
 	}
 
-		/* Toast */
-		.toast {
-			position: fixed;
-			bottom: 24px;
-			right: 24px;
-			background: #1a1a2e;
-			color: #e0e0e0;
-			padding: 10px 20px;
-			border-radius: 10px;
-			font-size: 13px;
-			font-weight: 500;
-			z-index: 600;
-			animation: toast-in 0.3s ease;
-			box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-		}
-
-		/* Case Study section */
+			/* Case Study section */
 		.case-study-section {
 			margin-top: 32px;
 			padding-top: 20px;

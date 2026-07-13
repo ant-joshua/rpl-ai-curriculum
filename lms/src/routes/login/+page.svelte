@@ -3,6 +3,7 @@
 	import { auth } from '$lib/stores/auth.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { onMount } from 'svelte';
+	import { addToast } from '$lib/stores/toast.svelte';
 
 	let name = $state('');
 	let error = $state('');
@@ -18,10 +19,12 @@
 		const trimmed = name.trim();
 		if (!trimmed) {
 			error = 'Silakan masukkan nama kamu';
+			addToast('Silakan masukkan nama kamu', 'warning');
 			return;
 		}
 		user.username = trimmed;
 		progress.updateStreak();
+		addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
 
 		setTimeout(() => {
 			window.location.href = '/dashboard';

@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import RichEditor from '$lib/components/RichEditor.svelte';
+import { addToast } from '$lib/stores/toast.svelte';
 
 	let modules: any[] = $state([]);
 	let exercises: any[] = $state([]);
@@ -45,11 +46,12 @@
 			if (json.success) {
 				editModal = null;
 				loadAll();
+				addToast('Module created', 'success');
 			} else {
-				alert('Error: ' + (json.error || 'Unknown'));
+				addToast('Error: ' + (json.error || 'Unknown'), 'error');
 			}
 		} catch (e) {
-			alert('Error saving module');
+			addToast('Error saving module', 'error');
 		}
 	}
 
@@ -64,11 +66,12 @@
 			if (json.success) {
 				editModal = null;
 				loadAll();
+				addToast('Module updated', 'success');
 			} else {
-				alert('Error: ' + (json.error || 'Unknown'));
+				addToast('Error: ' + (json.error || 'Unknown'), 'error');
 			}
 		} catch (e) {
-			alert('Error updating module');
+			addToast('Error updating module', 'error');
 		}
 	}
 
@@ -77,8 +80,9 @@
 		try {
 			await fetch(`/api/admin/modules/${slug}`, { method: 'DELETE' });
 			loadAll();
+			addToast('Module deleted', 'success');
 		} catch (e) {
-			alert('Error deleting module');
+			addToast('Error deleting module', 'error');
 		}
 	}
 
@@ -87,8 +91,9 @@
 		try {
 			await fetch(`/api/admin/exercises/${id}`, { method: 'DELETE' });
 			loadAll();
+			addToast('Exercise deleted', 'success');
 		} catch (e) {
-			alert('Error deleting exercise');
+			addToast('Error deleting exercise', 'error');
 		}
 	}
 
@@ -113,11 +118,12 @@
 			if (json.success) {
 				editModal = null;
 				loadAll();
+				addToast('Exercise created', 'success');
 			} else {
-				alert('Error: ' + (json.error || 'Unknown'));
+				addToast('Error: ' + (json.error || 'Unknown'), 'error');
 			}
 		} catch (e) {
-			alert('Error saving exercise');
+			addToast('Error saving exercise', 'error');
 		}
 	}
 </script>

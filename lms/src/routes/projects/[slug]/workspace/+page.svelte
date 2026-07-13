@@ -5,6 +5,7 @@
 	import ServerPreview from '$lib/components/ServerPreview.svelte';
 	import CodeEditor from '$lib/components/CodeEditor.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
+	import { addToast } from '$lib/stores/toast.svelte';
 
 	let { data } = $props();
 	let project = $state<Project>(data.project);
@@ -106,8 +107,14 @@
 				body: JSON.stringify({ code, stepId: currentStep.id }),
 			});
 			verifyResult = await res.json();
+			if (verifyResult.passed) {
+				addToast('Verifikasi berhasil!', 'success');
+			} else {
+				addToast(verifyResult.message || 'Verifikasi gagal. Coba lagi.', 'error');
+			}
 		} catch {
 			verifyResult = { passed: false, checks: [], message: 'Gagal verifikasi. Coba lagi.' };
+			addToast('Gagal verifikasi. Coba lagi.', 'error');
 		} finally {
 			verifying = false;
 		}
@@ -127,7 +134,10 @@
 					code_state: projectsStore.progress.codeState,
 				}),
 			});
-		} catch {} finally {
+			addToast('Progress tersimpan', 'success');
+		} catch {
+			addToast('Gagal menyimpan progress', 'error');
+		} finally {
 			saving = false;
 		}
 	}
@@ -144,12 +154,16 @@
 			projectsStore.saveCode(currentStep.id, code);
 			await saveProgress();
 			if (currentStepIdx < totalSteps - 1) {
+				addToast('Langkah selesai!', 'success');
 				goToStep(currentStepIdx + 1);
 			} else {
 				projectCompleted = true;
 				const gam = (await import('$lib/stores/gamification.svelte')).gamification;
 				gam.addXp(50);
+				addToast(`🎉 Project "${project.title}" selesai! +50 XP`, 'success');
 			}
+		} else {
+			addToast('Gagal menyelesaikan langkah', 'error');
 		}
 	}
 
