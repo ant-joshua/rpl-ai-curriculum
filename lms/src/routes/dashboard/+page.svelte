@@ -483,13 +483,14 @@
 	.dashboard {
 		max-width: 960px;
 		margin: 0 auto;
+		animation: fadeIn 0.4s ease both;
 	}
 
 	.dashboard-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: 16px;
+		margin-bottom: 24px;
 		gap: 12px;
 	}
 
@@ -498,6 +499,60 @@
 		font-weight: 700;
 		margin-bottom: 2px;
 	}
+	.subtitle {
+		font-size: 14px;
+		color: var(--text-secondary);
+	}
+
+	/* Streak badge — gradient glow */
+	.streak-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+		border: 1px solid rgba(245, 158, 11, 0.3);
+		border-radius: 20px;
+		padding: 6px 14px;
+		font-size: 13px;
+		font-weight: 600;
+		white-space: nowrap;
+		animation: pulse 2s ease-in-out infinite;
+	}
+	.streak-fire { font-size: 16px; }
+
+	/* Overview cards — glassmorphism */
+	.overview-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 12px;
+		margin-bottom: 20px;
+	}
+	.overview-card {
+		background: var(--gradient-card);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 18px 20px;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		transition: all 0.2s ease;
+	}
+	.overview-card:hover {
+		border-color: var(--accent);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 20px rgba(108, 92, 231, 0.1);
+	}
+	.overview-icon { font-size: 28px; }
+	.overview-card div { display: flex; flex-direction: column; gap: 2px; }
+	.overview-value {
+		font-size: 22px;
+		font-weight: 700;
+		background: var(--gradient-primary);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+	.overview-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
 
 	.subtitle {
 		color: var(--text-secondary);

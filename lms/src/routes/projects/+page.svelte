@@ -145,11 +145,16 @@
 		padding: 2rem;
 		max-width: 1200px;
 		margin: 0 auto;
+		animation: fadeIn 0.4s ease both;
 	}
 	h1 {
 		font-size: 1.8rem;
 		font-weight: 700;
 		margin-bottom: 0.5rem;
+		background: var(--gradient-primary);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 	}
 	.subtitle {
 		color: var(--muted);
@@ -187,70 +192,39 @@
 		gap: 1.5rem;
 	}
 
-	/* Loading skeleton cards */
-	.skeleton-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-	.skeleton {
-		background: linear-gradient(90deg, var(--surface) 0%, var(--hover) 50%, var(--surface) 100%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s ease-in-out infinite;
-		border-radius: 6px;
-	}
-	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
-	}
-	.skeleton-icon { width: 48px; height: 48px; border-radius: 10px; }
-	.skeleton-title { width: 70%; height: 20px; }
-	.skeleton-desc { width: 100%; height: 14px; }
-	.skeleton-desc--short { width: 55%; }
-	.skeleton-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.5rem; }
-	.skeleton-badge { width: 80px; height: 22px; border-radius: 4px; }
-	.skeleton-meta { width: 100px; height: 16px; border-radius: 4px; }
-
-	/* Empty state */
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 4rem 2rem;
-		text-align: center;
-		gap: 0.75rem;
-	}
-	.empty-icon { font-size: 3rem; }
-	.empty-state h2 { font-size: 1.3rem; font-weight: 600; }
-	.empty-state p { color: var(--text-secondary); max-width: 400px; }
-	.empty-cta {
-		background: var(--accent); color: #fff; border: none; border-radius: 8px;
-		padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
-		margin-top: 0.5rem;
-	}
-	.empty-cta:hover { opacity: 0.9; }
-
 	.project-card {
-		background: var(--surface);
+		background: var(--gradient-card);
 		border: 1px solid var(--border);
-		border-radius: 12px;
+		border-radius: 14px;
 		padding: 1.5rem;
 		text-decoration: none;
 		color: var(--text);
-		transition: all 0.2s;
+		transition: all 0.25s ease;
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
+		position: relative;
+		overflow: hidden;
 	}
+	.project-card::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		padding: 1px;
+		background: var(--gradient-primary);
+		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		opacity: 0;
+		transition: opacity 0.25s ease;
+		pointer-events: none;
+	}
+	.project-card:hover::before { opacity: 1; }
 	.project-card:hover {
-		border-color: var(--accent);
-		transform: translateY(-3px);
-		box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+		transform: translateY(-4px);
+		box-shadow: 0 12px 32px rgba(108, 92, 231, 0.12);
 	}
 	.card-header {
 		display: flex;
@@ -302,11 +276,10 @@
 	.difficulty.intermediate { color: #f39c12; }
 	.difficulty.advanced { color: #e74c3c; }
 
-	/* Mobile responsive */
+	/* Mobile */
 	@media (max-width: 767px) {
 		.projects-page { padding: 1rem; }
 		h1 { font-size: 1.4rem; }
 		.project-grid { grid-template-columns: 1fr; gap: 1rem; }
-		.skeleton-card { padding: 1rem; }
 	}
 </style>

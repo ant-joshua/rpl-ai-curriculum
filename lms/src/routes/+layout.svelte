@@ -13,6 +13,49 @@
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 
+	const navSections = [
+		{ name: 'belajar', icon: '📚', label: 'Belajar', links: [
+			{ href: '/', icon: '🏠', label: 'Home' },
+			{ href: '/dashboard', icon: '📊', label: 'Dashboard' },
+			{ href: '/path', icon: '🗺️', label: 'Path' },
+			{ href: '/progress', icon: '📈', label: 'Progress' },
+			{ href: '/search', icon: '🔍', label: 'Search' },
+		]},
+		{ name: 'tools', icon: '🛠️', label: 'Tools', links: [
+			{ href: '/tutor', icon: '🤖', label: 'AI Tutor' },
+			{ href: '/flashcards', icon: '🃏', label: 'Flashcards' },
+			{ href: '/exercises', icon: '🏋️', label: 'Exercises' },
+			{ href: '/projects', icon: '🚀', label: 'Project Studio' },
+			{ href: '/quiz', icon: '📝', label: 'Quiz' },
+			{ href: '/capstone', icon: '🎓', label: 'Capstone' },
+		]},
+		{ name: 'social', icon: '👥', label: 'Social', links: [
+			{ href: '/groups', icon: '👥', label: 'Groups' },
+			{ href: '/mentorship', icon: '🎯', label: 'Mentorship' },
+			{ href: '/reviews', icon: '🔍', label: 'Peer Review' },
+			{ href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
+			{ href: '/badges', icon: '🏆', label: 'Badges' },
+		]},
+		{ name: 'referensi', icon: '📖', label: 'Referensi', links: [
+			{ href: '/videos', icon: '🎬', label: 'Videos' },
+			{ href: '/resources', icon: '📥', label: 'PDF' },
+			{ href: '/cheatsheets', icon: '📝', label: 'Cheatsheets' },
+			{ href: '/glossary', icon: '📖', label: 'Glossary' },
+			{ href: '/case-studies', icon: '📋', label: 'Case Studies' },
+			{ href: '/slides/list', icon: '🖥️', label: 'Slides' },
+			{ href: '/mini-projects', icon: '🔨', label: 'Mini Projects' },
+		]},
+		{ name: 'akun', icon: '👤', label: 'Akun', links: [
+			{ href: '/profile', icon: '👤', label: 'Profile' },
+			{ href: '/planner', icon: '📅', label: 'Planner' },
+			{ href: '/certificate', icon: '🎓', label: 'Certificate' },
+			{ href: '/history', icon: '📜', label: 'History' },
+			{ href: '/announcements', icon: '📢', label: 'Announcements' },
+			{ href: '/export', icon: '📤', label: 'Export' },
+			{ href: '/feed', icon: '📡', label: 'RSS' },
+		]},
+	] as const;
+
 	let { children } = $props();
 
 	let sidebarOpen = $state(false);
@@ -20,6 +63,14 @@
 	let showBackToTop = $state(false);
 	let dismissedOffline = $state(false);
 	let showShortcuts = $state(false);
+	let sidebarSection = $state<Record<string, boolean>>({});
+
+	function toggleSection(name: string) {
+		sidebarSection[name] = !sidebarSection[name];
+	}
+	function sectionOpen(name: string) {
+		return sidebarSection[name] !== false;
+	}
 
 	function closeSidebar() {
 		sidebarOpen = false;
@@ -171,140 +222,21 @@
 		</div>
 
 		<nav class="sidebar-nav">
-			<a href="/" onclick={closeSidebar} class:active={isActive('/')}>
-				<span class="nav-icon">🏠</span>
-				<span>{t('home.title')}</span>
-			</a>
-			<a href="/dashboard" onclick={closeSidebar} class:active={isActive('/dashboard')}>
-				<span class="nav-icon">📊</span>
-				<span>{t('nav.dashboard')}</span>
-			</a>
-			<a href="/insights" onclick={closeSidebar} class:active={isActive('/insights')}>
-				<span class="nav-icon">📊</span>
-				<span>Insights</span>
-			</a>
-			<a href="/path" onclick={closeSidebar} class:active={isActive('/path')}>
-				<span class="nav-icon">📚</span>
-				<span>{t('nav.paths')}</span>
-			</a>
-			<a href="/progress" onclick={closeSidebar} class:active={isActive('/progress')}>
-				<span class="nav-icon">📈</span>
-				<span>{t('nav.progress')}</span>
-			</a>
-			<a href="/search" onclick={closeSidebar} class:active={isActive('/search')}>
-				<span class="nav-icon">🔍</span>
-				<span>{t('nav.search')}</span>
-			</a>
-			<a href="/tutor" onclick={closeSidebar} class:active={isActive('/tutor')}>
-				<span class="nav-icon">🤖</span>
-				<span>{t('nav.tutor')}</span>
-			</a>
-			<a href="/flashcards" onclick={closeSidebar} class:active={isActive('/flashcards')}>
-				<span class="nav-icon">🃏</span>
-				<span>{t('nav.flashcards')}</span>
-			</a>
-			<a href="/history" onclick={closeSidebar} class:active={isActive('/history')}>
-				<span class="nav-icon">📜</span>
-				<span>{t('nav.history')}</span>
-			</a>
-			<a href="/announcements" onclick={closeSidebar} class:active={isActive('/announcements')}>
-				<span class="nav-icon">📢</span>
-				<span>Announcements</span>
-			</a>
-			<a href="/badges" onclick={closeSidebar} class:active={isActive('/badges')}>
-				<span class="nav-icon">🏆</span>
-				<span>{t('nav.badges')}</span>
-			</a>
-			<a href="/leaderboard" onclick={closeSidebar} class:active={isActive('/leaderboard')}>
-				<span class="nav-icon">🏆</span>
-				<span>{t('nav.leaderboard')}</span>
-			</a>
-			<a href="/groups" onclick={closeSidebar} class:active={isActive('/groups')}>
-				<span class="nav-icon">👥</span>
-				<span>Groups</span>
-			</a>
-			<a href="/mentorship" onclick={closeSidebar} class:active={isActive('/mentorship')}>
-				<span class="nav-icon">🎯</span>
-				<span>Mentorship</span>
-			</a>
-			<a href="/reviews" onclick={closeSidebar} class:active={isActive('/reviews')}>
-				<span class="nav-icon">🔍</span>
-				<span>Peer Review</span>
-			</a>
-			<a href="/planner" onclick={closeSidebar} class:active={isActive('/planner')}>
-				<span class="nav-icon">📅</span>
-				<span>{t('nav.planner')}</span>
-			</a>
-			<a href="/certificate" onclick={closeSidebar} class:active={isActive('/certificate')}>
-				<span class="nav-icon">🎓</span>
-				<span>{t('nav.certificate')}</span>
-			</a>
-			<a href="/profile" onclick={closeSidebar} class:active={isActive('/profile')}>
-				<span class="nav-icon">👤</span>
-				<span>{t('nav.profile')}</span>
-			</a>
-			<div class="sidebar-separator"></div>
-			<a href="/exercises" onclick={closeSidebar} class:active={isActive('/exercises')}>
-				<span class="nav-icon">🏋️</span>
-				<span>{t('nav.exercises')}</span>
-			</a>
-			<a href="/projects" onclick={closeSidebar} class:active={isActive('/projects')}>
-				<span class="nav-icon">🚀</span>
-				<span>Project Studio</span>
-			</a>
-			<a href="/capstone" onclick={closeSidebar} class:active={isActive('/capstone')}>
-				<span class="nav-icon">🎓</span>
-				<span>Capstone</span>
-			</a>
-			<a href="/quiz" onclick={closeSidebar} class:active={isActive('/quiz')}>
-				<span class="nav-icon">📝</span>
-				<span>Quiz</span>
-			</a>
-			<a href="/progress-quiz" onclick={closeSidebar} class:active={isActive('/progress-quiz')}>
-				<span class="nav-icon">📊</span>
-				<span>Progress Quiz</span>
-			</a>
-			<div class="sidebar-group-label">📚 {t('nav.references')}</div>
-			<a href="/challenges" onclick={closeSidebar}>
-				<span class="nav-icon">🏋️</span>
-				<span>Challenges</span>
-			</a>
-			<a href="/glossary" onclick={closeSidebar}>
-				<span class="nav-icon">📖</span>
-				<span>Glossary</span>
-			</a>
-			<a href="/cheatsheets" onclick={closeSidebar}>
-				<span class="nav-icon">📝</span>
-				<span>Cheatsheets</span>
-			</a>
-			<a href="/resources" onclick={closeSidebar}>
-				<span class="nav-icon">📥</span>
-				<span>PDF</span>
-			</a>
-			<a href="/case-studies" onclick={closeSidebar} class:active={isActive('/case-studies')}>
-				<span class="nav-icon">📋</span>
-				<span>Case Studies</span>
-			</a>
-			<a href="/mini-projects" onclick={closeSidebar}>
-				<span class="nav-icon">🔨</span>
-				<span>Mini Projects</span>
-			</a>
-			<a href="/videos" onclick={closeSidebar} class:active={isActive('/videos')}>
-				<span class="nav-icon">🎬</span>
-				<span>{t('nav.videos')}</span>
-			</a>
-			<a href="/feed" onclick={closeSidebar} class:active={isActive('/feed')}>
-				<span class="nav-icon">📡</span>
-				<span>RSS</span>
-			</a>
-			<a href="/export" onclick={closeSidebar} class:active={isActive('/export')}>
-				<span class="nav-icon">📤</span>
-				<span>{t('nav.export')}</span>
-			</a>
-			<a href="/slides/list" onclick={closeSidebar} class:active={isActive('/slides')}>
-				<span class="nav-icon">🖥️</span>
-				<span>Slides</span>
-			</a>
+			{#each navSections as section}
+				<button class="section-toggle" onclick={() => toggleSection(section.name)}>
+					<span class="section-toggle-icon">{section.icon}</span>
+					<span class="section-toggle-label">{section.label}</span>
+					<span class="section-toggle-arrow" class:rotated={sidebarSection[section.name] !== false}>▾</span>
+				</button>
+				{#if sidebarSection[section.name] !== false}
+					{#each section.links as link}
+						<a href={link.href} onclick={closeSidebar} class:active={isActive(link.href)}>
+							<span class="nav-icon">{link.icon}</span>
+							<span class="nav-label">{link.label}</span>
+						</a>
+					{/each}
+				{/if}
+			{/each}
 		</nav>
 
 		<div class="sidebar-footer">
@@ -499,6 +431,34 @@
 		background: var(--border);
 		margin: 8px 12px;
 	}
+
+	.section-toggle {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px 12px;
+		border-radius: 8px;
+		border: none;
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		width: 100%;
+		margin-top: 4px;
+	}
+	.section-toggle:hover { background: var(--hover); color: var(--text); }
+	.section-toggle-icon { font-size: 14px; width: 20px; text-align: center; }
+	.section-toggle-label { flex: 1; text-align: left; }
+	.section-toggle-arrow {
+		font-size: 10px;
+		transition: transform 0.2s ease;
+		color: var(--muted);
+	}
+	.section-toggle-arrow.rotated { transform: rotate(180deg); }
 
 	.sidebar-group-label {
 		display: flex;
