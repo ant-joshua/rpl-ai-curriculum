@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import RichEditor from '$lib/components/RichEditor.svelte';
 
 	let projects: any[] = $state([]);
 	let loading = $state(true);
@@ -166,7 +167,11 @@
 					</label>
 					<label class="full-width">
 						<span>Description</span>
-						<textarea bind:value={d.description} rows={2}></textarea>
+						<RichEditor
+							content={d.description}
+							placeholder="Project description with rich formatting..."
+							onUpdate={(html) => d.description = html}
+						/>
 					</label>
 					<label>
 						<span>Techs (comma separated)</span>
@@ -200,7 +205,11 @@
 							</div>
 							<input type="text" bind:value={step.id} placeholder="step-id" class="step-id" />
 							<input type="text" bind:value={step.title} placeholder="Step title" />
-							<textarea bind:value={step.instruction} rows={2} placeholder="Step instructions..."></textarea>
+							<RichEditor
+								content={step.instruction}
+								placeholder="Step instructions with rich formatting..."
+								onUpdate={(html) => step.instruction = html}
+							/>
 						</div>
 					{/each}
 				</div>

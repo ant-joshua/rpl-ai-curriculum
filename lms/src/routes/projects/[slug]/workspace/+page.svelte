@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import CodeSandbox from '$lib/components/CodeSandbox.svelte';
 	import ServerPreview from '$lib/components/ServerPreview.svelte';
+	import CodeEditor from '$lib/components/CodeEditor.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 
 	let { data } = $props();
@@ -21,6 +22,14 @@
 
 	const browserPreviewProjects = ['portfolio-site', 'interactive-quiz', 'component-gallery', 'fullstack-blog'];
 	let isBrowserProject = $derived(browserPreviewProjects.includes(project?.slug));
+	let editorLang = $derived.by(() => {
+		const techs = project?.techs || [];
+		if (techs.some((t: string) => /html/i.test(t))) return 'html';
+		if (techs.some((t: string) => /typescript|ts/i.test(t))) return 'typescript';
+		if (techs.some((t: string) => /javascript|js/i.test(t))) return 'javascript';
+		if (techs.some((t: string) => /css/i.test(t))) return 'css';
+		return 'html';
+	});
 
 	$effect(() => {
 		if (browser) loadProgress();
@@ -124,12 +133,6 @@
 	}
 
 	let autoSaveTimer: ReturnType<typeof setTimeout> | undefined;
-	function onCodeChange(value: string) {
-		code = value;
-		projectsStore.saveCode(currentStep.id, value);
-		clearTimeout(autoSaveTimer);
-		autoSaveTimer = setTimeout(saveProgress, 2000);
-	}
 
 	async function completeStep() {
 		if (!project) return;
@@ -267,13 +270,16 @@
 
 				<div class="panel-content">
 					{#if activeTab === 'code'}
-						<textarea
-							class="code-editor"
-							value={code}
-							oninput={(e) => onCodeChange((e.target as HTMLTextAreaElement).value)}
-							spellcheck="false"
-							placeholder="Tulis kodemu di sini..."
-						></textarea>
+						<CodeEditor
+							bind:value={code}
+							lang={editorLang}
+							onchange={(v) => {
+								code = v;
+								projectsStore.saveCode(currentStep.id, v);
+								clearTimeout(autoSaveTimer);
+								autoSaveTimer = setTimeout(saveProgress, 2000);
+							}}
+						/>
 					{:else if isBrowserProject}
 						<CodeSandbox bind:code />
 					{:else}
@@ -441,13 +447,6 @@
 	}
 	.panel-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 	.panel-content { flex: 1; display: flex; overflow: hidden; }
-
-	.code-editor {
-		flex: 1; background: #1e1e1e; color: #d4d4d4;
-		font-family: 'Fira Code', 'Cascadia Code', monospace;
-		font-size: 14px; line-height: 1.6; padding: 1.5rem;
-		border: none; outline: none; resize: none; tab-size: 2;
-	}
 
 	.workspace-footer {
 		display: flex; align-items: center; justify-content: space-between;

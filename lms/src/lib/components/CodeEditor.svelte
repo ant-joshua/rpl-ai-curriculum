@@ -1,224 +1,141 @@
 <script lang="ts">
-	let { language = 'javascript', code = $bindable(''), readOnly = false }: {
-		language?: string;
-		code?: string;
-		readOnly?: boolean;
+	import { browser } from '$app/environment';
+	import { EditorView, basicSetup } from 'codemirror';
+	import { EditorState } from '@codemirror/state';
+	import { oneDark } from '@codemirror/theme-one-dark';
+	import { html } from '@codemirror/lang-html';
+	import { css } from '@codemirror/lang-css';
+	import { javascript } from '@codemirror/lang-javascript';
+	import { keymap } from '@codemirror/view';
+	import { indentWithTab } from '@codemirror/commands';
+
+	let {
+		value = $bindable(''),
+		lang = 'html',
+		onchange,
+	}: {
+		value?: string;
+		lang?: string;
+		onchange?: (value: string) => void;
 	} = $props();
 
-	let editorEl = $state<HTMLTextAreaElement | null>(null);
-	let copyText = $state('Copy');
-	let activeLine = $state(-1);
+	let container = $state<HTMLDivElement | null>(null);
+	let view = $state<EditorView | null>(null);
 
-	function handleInput(e: Event) {
-		if (readOnly) return;
-		const target = e.target as HTMLTextAreaElement;
-		code = target.value;
+	function getLanguageExtension(l: string) {
+		switch (l) {
+			case 'html':
+			case 'htm':
+				return html();
+			case 'css':
+				return css();
+			case 'javascript':
+			case 'js':
+				return javascript();
+			case 'typescript':
+			case 'ts':
+				return javascript({ typescript: true });
+			case 'jsx':
+				return javascript({ jsx: true });
+			case 'tsx':
+				return javascript({ jsx: true, typescript: true });
+			default:
+				return html();
+		}
 	}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Tab') {
-			e.preventDefault();
-			const target = e.target as HTMLTextAreaElement;
-			const start = target.selectionStart;
-			const end = target.selectionEnd;
-			code = code.slice(0, start) + '\t' + code.slice(end);
-			// need to trigger update after microtask
-			requestAnimationFrame(() => {
-				target.selectionStart = target.selectionEnd = start + 1;
+	$effect(() => {
+		if (!browser || !container) return;
+
+		const langExt = getLanguageExtension(lang);
+
+		const state = EditorState.create({
+			doc: value,
+			extensions: [
+				basicSetup,
+				oneDark,
+				langExt,
+				keymap.of([indentWithTab]),
+				EditorView.updateListener.of((update) => {
+					if (update.docChanged) {
+						value = update.state.doc.toString();
+						onchange?.(value);
+					}
+				}),
+				EditorView.theme({
+					'&': { height: '100%' },
+					'.cm-scroller': { overflow: 'auto' },
+				}),
+			],
+		});
+
+		view = new EditorView({
+			state,
+			parent: container,
+		});
+
+		return () => {
+			view?.destroy();
+			view = null;
+		};
+	});
+
+	// Sync external value changes into editor (e.g. step change resets code)
+	$effect(() => {
+		if (!view || !browser) return;
+		const current = view.state.doc.toString();
+		if (value !== current) {
+			view.dispatch({
+				changes: { from: 0, to: current.length, insert: value },
 			});
 		}
-	}
-
-	async function copyCode() {
-		try {
-			await navigator.clipboard.writeText(code);
-			copyText = 'Copied!';
-			setTimeout(() => copyText = 'Copy', 2000);
-		} catch {
-			copyText = 'Failed';
-			setTimeout(() => copyText = 'Copy', 2000);
-		}
-	}
-
-	function trackScroll() {
-		if (!editorEl) return;
-		// sync scroll between textarea and highlight layer
-	}
-
-	// Simple keyword-based highlighting for common languages
-	let highlighted = $derived(highlightCode(code, language));
-
-	function highlightCode(src: string, lang: string): string {
-		if (!src) return '';
-		let escaped = src
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
-
-		if (lang === 'javascript' || lang === 'js' || lang === 'typescript' || lang === 'ts') {
-			return highlightJS(escaped);
-		}
-		if (lang === 'html') {
-			return highlightHTML(escaped);
-		}
-		return escaped;
-	}
-
-	function highlightJS(src: string): string {
-		// Keywords
-		src = src.replace(/\b(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|delete|typeof|instanceof|of|in|class|extends|import|export|default|from|async|await|try|catch|throw|finally|this|super|true|false|null|undefined|NaN|Infinity)\b/g, '<span class="syn-kw">$1</span>');
-		// Numbers
-		src = src.replace(/\b(\d+\.?\d*)\b/g, '<span class="syn-num">$1</span>');
-		// Strings (double)
-		src = src.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, '<span class="syn-str">"$1"</span>');
-		// Strings (single)
-		src = src.replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '<span class="syn-str">\'$1\'</span>');
-		// Template literals
-		src = src.replace(/`([^`\\]*(?:\\.[^`\\]*)*)`/g, '<span class="syn-str">`$1`</span>');
-		// Comments (single line)
-		src = src.replace(/(\/\/[^\n]*)/g, '<span class="syn-cm">$1</span>');
-		// Comments (multi-line)
-		src = src.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="syn-cm">$1</span>');
-		return src;
-	}
-
-	function highlightHTML(src: string): string {
-		// Tags
-		src = src.replace(/(&lt;\/?)(\w+)/g, '$1<span class="syn-tag">$2</span>');
-		// Attributes
-		src = src.replace(/(\s)(\w[\w-]*)(=)/g, '$1<span class="syn-attr">$2</span>$3');
-		// Strings
-		src = src.replace(/"([^"]*)"/g, '<span class="syn-str">"$1"</span>');
-		// Comments
-		src = src.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="syn-cm">$1</span>');
-		return src;
-	}
+	});
 </script>
 
-<div class="code-editor">
-	<div class="editor-header">
-		<span class="editor-lang-badge">{language}</span>
-		<button class="copy-btn" onclick={copyCode}>
-			{copyText === 'Copied!' ? '✓' : copyText === 'Failed' ? '✗' : '📋'} {copyText}
-		</button>
-	</div>
-	<div class="editor-body">
-		<textarea
-			bind:this={editorEl}
-			class="editor-textarea"
-			value={code}
-			oninput={handleInput}
-			onkeydown={handleKeydown}
-			spellcheck="false"
-			readonly={readOnly}
-			wrap="off"></textarea>
-		<div class="editor-highlight" aria-hidden="true">
-			{@html highlighted}
-		</div>
-	</div>
+<div class="code-editor-wrapper" class:hydrated={browser && view !== null}>
+	<div bind:this={container} class="cm-host"></div>
 </div>
 
 <style>
-	.code-editor {
-		border: 1px solid #2d3154;
-		border-radius: 10px;
+	.code-editor-wrapper {
+		flex: 1;
+		display: flex;
 		overflow: hidden;
-		background: #1a1d2e;
-		font-family: 'Cascadia Code', 'JetBrains Mono', 'Consolas', 'Fira Code', monospace;
-		font-size: 13px;
+		background: #1e1e1e;
+		position: relative;
+	}
+
+	.cm-host {
+		flex: 1;
+		display: flex;
+		overflow: hidden;
+		min-height: 0;
+	}
+
+	/* Ensure CM fills the host */
+	.cm-host :global(.cm-editor) {
+		height: 100%;
+	}
+
+	.cm-host :global(.cm-scroller) {
+		font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+		font-size: 14px;
 		line-height: 1.6;
 	}
 
-	.editor-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 8px 14px;
-		background: #141726;
-		border-bottom: 1px solid #2d3154;
-	}
-
-	.editor-lang-badge {
-		font-size: 11px;
-		font-weight: 600;
-		color: #8b8fa3;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.copy-btn {
+	/* Loading placeholder before CM hydrates */
+	.code-editor-wrapper:not(.hydrated) {
+		background: #1e1e1e;
+		color: #555;
 		display: flex;
 		align-items: center;
-		gap: 4px;
-		padding: 4px 10px;
-		border-radius: 6px;
-		border: 1px solid #2d3154;
-		background: transparent;
-		color: #8b8fa3;
-		font-size: 11px;
-		font-family: inherit;
-		cursor: pointer;
-		transition: all 0.15s ease;
+		justify-content: center;
+		font-family: monospace;
+		font-size: 14px;
 	}
 
-	.copy-btn:hover {
-		border-color: #6366f1;
-		color: #e8eaf0;
-	}
-
-	.editor-body {
-		position: relative;
-	}
-
-	.editor-textarea,
-	.editor-highlight {
-		padding: 16px;
-		margin: 0;
-		white-space: pre;
-		tab-size: 2;
-		overflow: auto;
-		min-height: 120px;
-	}
-
-	.editor-textarea {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		height: 100%;
-		min-height: 120px;
-		color: transparent;
-		caret-color: #e8eaf0;
-		background: transparent;
-		border: none;
-		resize: vertical;
-		outline: none;
-		font: inherit;
-		line-height: inherit;
-	}
-
-	.editor-textarea::selection {
-		background: rgba(99, 102, 241, 0.35);
-	}
-
-	.editor-highlight {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		pointer-events: none;
-		z-index: 0;
+	.code-editor-wrapper:not(.hydrated)::after {
+		content: 'Loading editor...';
+		color: #555;
 	}
 </style>
-
-<!-- Syntax highlight styles -->
-<svelte:head>
-	<style>
-		.syn-kw { color: #c678dd; }
-		.syn-num { color: #d19a66; }
-		.syn-str { color: #98c379; }
-		.syn-cm { color: #5c6370; font-style: italic; }
-		.syn-tag { color: #e06c75; }
-		.syn-attr { color: #d19a66; }
-	</style>
-</svelte:head>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import RichEditor from '$lib/components/RichEditor.svelte';
 
 	let modules: any[] = $state([]);
 	let exercises: any[] = $state([]);
@@ -239,7 +240,11 @@
 					</label>
 					<label>
 						<span>Description</span>
-						<textarea bind:value={d.description} rows={3} placeholder="Module description"></textarea>
+						<RichEditor
+							content={d.description}
+							placeholder="Module description with rich formatting..."
+							onUpdate={(html) => d.description = html}
+						/>
 					</label>
 					<label>
 						<span>Level</span>
@@ -281,7 +286,19 @@
 					</label>
 					<label>
 						<span>Description</span>
-						<textarea bind:value={d.description} rows={2}></textarea>
+						<RichEditor
+							content={d.description}
+							placeholder="Exercise description with rich formatting..."
+							onUpdate={(html) => d.description = html}
+						/>
+					</label>
+					<label>
+						<span>Instructions / Content</span>
+						<RichEditor
+							content={d.content}
+							placeholder="Exercise instructions, code snippets, etc..."
+							onUpdate={(html) => d.content = html}
+						/>
 					</label>
 					<label>
 						<span>Module Slug</span>
