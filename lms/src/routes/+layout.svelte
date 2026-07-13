@@ -214,6 +214,10 @@
 				<span class="nav-icon">🏋️</span>
 				<span>{t('nav.exercises')}</span>
 			</a>
+			<a href="/projects" onclick={closeSidebar} class:active={isActive('/projects')}>
+				<span class="nav-icon">🚀</span>
+				<span>Project Studio</span>
+			</a>
 			<a href="/capstone" onclick={closeSidebar} class:active={isActive('/capstone')}>
 				<span class="nav-icon">🎓</span>
 				<span>Capstone</span>

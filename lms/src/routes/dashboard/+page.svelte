@@ -465,6 +465,16 @@
 			{/each}
 		</div>
 	</section>
+
+	<!-- Project Studio -->
+	<section class="section-card">
+		<div class="rec-header">
+			<h2>🚀 Project Studio</h2>
+			<a href="/projects" class="see-all">Lihat semua →</a>
+		</div>
+		<p class="empty-text">Belajar bikin project nyata step-by-step dengan verifikasi otomatis dan XP!</p>
+		<a href="/projects" class="dashboard-cta">Mulai Project →</a>
+	</section>
 		</div>
 	{/if}
 </div>

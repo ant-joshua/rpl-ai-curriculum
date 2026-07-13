@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-				"prebuild": "node scripts/prebuild-references.mjs && node scripts/prebuild-content.mjs && node scripts/prebuild-pdfs.mjs && node scripts/prebuild-flashcards.mjs && node scripts/prebuild-videos.mjs && node scripts/prebuild-assets.mjs && node scripts/prebuild-exercises.mjs && node scripts/prebuild-quiz.mjs",
+				"prebuild": "node scripts/prebuild-references.mjs && node scripts/prebuild-content.mjs && node scripts/prebuild-pdfs.mjs && node scripts/prebuild-flashcards.mjs && node scripts/prebuild-videos.mjs && node scripts/prebuild-assets.mjs && node scripts/prebuild-exercises.mjs && node scripts/prebuild-quiz.mjs && node scripts/prebuild-projects.mjs",
 		"build": "npm run prebuild && vite build && node scripts/patch-routes.mjs",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
