@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
 	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
+	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 
 	let { data } = $props();
@@ -85,11 +86,6 @@
 			addToast('Failed to save progress', 'error');
 		}
 	}
-
-	// Content rendering helpers
-	function isVideoType(type: string | null | undefined) {
-		return type === 'video' || type === 'embed';
-	}
 </script>
 
 <svelte:head>
@@ -134,59 +130,7 @@
 			{:else if !accessCheck.accessible}
 				<LockedLesson prerequisites={accessCheck.prerequisites} />
 			{:else if contentBlock}
-				{@const blockType = contentBlock.type}
-
-				{#if blockType === 'text'}
-					<div class="content-block markdown-content">
-						{@html contentBlock.body_html ?? contentBlock.body ?? ''}
-					</div>
-				{:else if isVideoType(blockType)}
-					<div class="content-block video-wrapper">
-						{#if contentBlock.body_html}
-							<div class="video-embed">{@html contentBlock.body_html}</div>
-						{:else if contentBlock.body}
-							<div class="video-embed">{@html contentBlock.body}</div>
-						{/if}
-						{#if contentBlock.title}
-							<p class="content-title">{contentBlock.title}</p>
-						{/if}
-					</div>
-				{:else if blockType === 'code'}
-					<div class="content-block code-wrapper">
-						{#if contentBlock.title}
-							<h3 class="content-title">{contentBlock.title}</h3>
-						{/if}
-						<pre class="code-block"><code>{contentBlock.body ?? ''}</code></pre>
-					</div>
-				{:else if blockType === 'image'}
-					<div class="content-block image-wrapper">
-						{#if contentBlock.body}
-							<img src={contentBlock.body} alt={contentBlock.title || 'Lesson image'} />
-						{/if}
-						{#if contentBlock.title}
-							<p class="content-caption">{contentBlock.title}</p>
-						{/if}
-					</div>
-				{:else if blockType === 'quiz'}
-					<div class="content-block quiz-wrapper">
-						<div class="quiz-placeholder">
-							<h3>{contentBlock.title || 'Quiz'}</h3>
-							{#if contentBlock.body_html}
-								<div class="markdown-content">{@html contentBlock.body_html}</div>
-							{/if}
-						</div>
-					</div>
-				{:else}
-					{#if contentBlock.body_html}
-						<div class="content-block markdown-content">
-							{@html contentBlock.body_html}
-						</div>
-					{:else if contentBlock.body}
-						<div class="content-block markdown-content">
-							{@html contentBlock.body}
-						</div>
-					{/if}
-				{/if}
+				<ContentRenderer block={contentBlock} />
 			{:else}
 				<div class="empty-content">
 					<p class="text-secondary">No content available for this lesson.</p>
@@ -227,7 +171,7 @@
 					</button>
 				</div>
 				<!-- Discussion panel -->
-				<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId} />
+				<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
 			{/if}
 </div>
 
@@ -333,93 +277,8 @@
 		padding: 20px 0;
 	}
 
-	/* Content blocks */
 	.lesson-body {
 		margin-bottom: 32px;
-	}
-
-	.content-block {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 24px;
-		margin-bottom: 20px;
-		line-height: 1.7;
-		font-size: 16px;
-	}
-
-	.content-title {
-		font-size: 18px;
-		font-weight: 600;
-		color: var(--text);
-		margin: 0 0 12px;
-	}
-
-	.content-caption {
-		font-size: 13px;
-		color: var(--text-secondary);
-		margin: 8px 0 0;
-		text-align: center;
-	}
-
-	/* Video */
-	.video-wrapper {
-		padding: 16px;
-	}
-
-	.video-embed {
-		position: relative;
-		width: 100%;
-		border-radius: 8px;
-		overflow: hidden;
-	}
-
-	.video-embed :global(iframe) {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		border: none;
-		border-radius: 8px;
-	}
-
-	/* Code */
-	.code-wrapper {
-		padding: 20px;
-	}
-
-	.code-block {
-		background: #0d0e17;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 16px;
-		overflow-x: auto;
-		font-size: 14px;
-		line-height: 1.6;
-		margin: 0;
-	}
-
-	.code-block code {
-		background: none;
-		padding: 0;
-		color: var(--text);
-		font-family: 'JetBrains Mono', 'Fira Code', monospace;
-	}
-
-	/* Image */
-	.image-wrapper {
-		padding: 16px;
-		text-align: center;
-	}
-
-	.image-wrapper img {
-		max-width: 100%;
-		border-radius: 8px;
-		display: block;
-		margin: 0 auto;
-	}
-
-	/* Quiz */
-	.quiz-wrapper {
-		padding: 24px;
 	}
 
 	/* Empty */
