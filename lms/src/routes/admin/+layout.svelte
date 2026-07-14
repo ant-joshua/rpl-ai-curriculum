@@ -29,6 +29,7 @@
 		{ path: '/admin/gradebook', icon: '📋', label: 'Gradebook' },
 		{ path: '/admin/prerequisites', icon: '📋', label: 'Prerequisites' },
 		{ path: '/admin/badges', icon: '🏆', label: 'Badges' },
+		{ path: '/admin/announcements', icon: '📢', label: 'Announcements' },
 	];
 </script>
 

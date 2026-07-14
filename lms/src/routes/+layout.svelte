@@ -51,11 +51,11 @@
 		{ name: 'akun', icon: '👤', label: 'Akun', links: [
 			{ href: '/my/dashboard', icon: '📊', label: 'My Dashboard' },
 			{ href: '/my/grades', icon: '📝', label: 'My Grades' },
-			{ href: '/profile', icon: '👤', label: 'Profile' },
+			{ href: '/my/profile', icon: '👤', label: 'My Profile' },
+			{ href: '/my/announcements', icon: '📢', label: 'My Announcements' },
 			{ href: '/planner', icon: '📅', label: 'Planner' },
 			{ href: '/certificate', icon: '🎓', label: 'Certificate' },
 			{ href: '/history', icon: '📜', label: 'History' },
-			{ href: '/announcements', icon: '📢', label: 'Announcements' },
 			{ href: '/export', icon: '📤', label: 'Export' },
 			{ href: '/feed', icon: '📡', label: 'RSS' },
 		]},
