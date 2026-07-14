@@ -36,10 +36,34 @@
 		prerequisites: []
 	});
 
+	// Progress state
+	let isCompleted = $state(false);
+	let isCompleting = $state(false);
+
 	$effect(() => {
 		if (!lesson) return;
 		checkAccess();
+		loadProgress();
 	});
+
+	async function loadProgress() {
+		if (!lesson || !params?.offeringId) return;
+		try {
+			const res = await fetch(`/api/my/progress?offeringId=${params.offeringId}`, {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				}
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && json.data) {
+					isCompleted = json.data.some((p: any) => p.session_id === lesson.slug);
+				}
+			}
+		} catch {
+			// progress API not available
+		}
+	}
 
 	async function checkAccess() {
 		if (!lesson) return;
@@ -67,23 +91,32 @@
 	}
 
 	async function markComplete() {
-		if (!lesson) return;
+		if (!lesson || isCompleting) return;
+		isCompleting = true;
 		try {
-			const res = await fetch(`/api/lessons/${lesson.id}/progress`, {
+			const res = await fetch('/api/my/progress', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
 				},
-				body: JSON.stringify({ completed: true })
+				body: JSON.stringify({
+					lessonSlug: lesson.slug,
+					courseOfferingId: params.offeringId,
+					completed: true,
+					timeSpent: 0
+				})
 			});
 			if (res.ok) {
+				isCompleted = true;
 				addToast('Lesson marked as complete!', 'success');
 			} else {
 				addToast('Failed to save progress', 'error');
 			}
 		} catch {
 			addToast('Failed to save progress', 'error');
+		} finally {
+			isCompleting = false;
 		}
 	}
 </script>
@@ -165,12 +198,25 @@
 		</nav>
 
 		<!-- Mark complete button -->
-				<div class="complete-section">
-					<button class="complete-btn" onclick={() => markComplete()}>
-						Mark as Complete
-					</button>
-				</div>
-				<!-- Discussion panel -->
+		<div class="complete-section">
+			<button class="complete-btn" class:done={isCompleted} class:loading={isCompleting} onclick={() => markComplete()} disabled={isCompleted || isCompleting}>
+				{#if isCompleted}
+					<span class="checkmark-icon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+					</span>
+					Selesai
+				{:else if isCompleting}
+					<span class="spinner"></span>
+					Menyimpan...
+				{:else}
+					<span class="checkmark-icon checkmark-empty">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+					</span>
+					Tandai Selesai
+				{/if}
+			</button>
+		</div>
+		<!-- Discussion panel -->
 				<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
 			{/if}
 </div>
@@ -367,6 +413,9 @@
 	}
 
 	.complete-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 		padding: 12px 32px;
 		font-size: 14px;
 		font-weight: 600;
@@ -375,16 +424,73 @@
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.3s ease;
 	}
 
-	.complete-btn:hover {
+	.complete-btn:not(:disabled):hover {
 		background: var(--accent-secondary);
 		transform: translateY(-1px);
 	}
 
 	.complete-btn:active {
 		transform: translateY(0);
+	}
+
+	.complete-btn:disabled {
+		cursor: default;
+		opacity: 0.9;
+	}
+
+	.complete-btn.done {
+		background: linear-gradient(135deg, #22c55e, #16a34a);
+		cursor: default;
+		animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.complete-btn.loading {
+		background: var(--accent-dim);
+		color: var(--accent);
+		cursor: wait;
+	}
+
+	.checkmark-icon {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.complete-btn.done .checkmark-icon {
+		animation: checkDraw 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.checkmark-empty {
+		opacity: 0.6;
+	}
+
+	/* Spinner */
+	.spinner {
+		display: inline-block;
+		width: 16px;
+		height: 16px;
+		border: 2px solid var(--accent);
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	@keyframes popIn {
+		0% { transform: scale(0.9); }
+		50% { transform: scale(1.05); }
+		100% { transform: scale(1); }
+	}
+
+	@keyframes checkDraw {
+		0% { transform: scale(0); opacity: 0; }
+		60% { transform: scale(1.2); }
+		100% { transform: scale(1); opacity: 1; }
 	}
 
 	@media (max-width: 640px) {

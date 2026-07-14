@@ -1,56 +1,44 @@
 <script lang="ts">
-	let {
-		value = 0,
-		height = 8,
-		label = ''
-	}: {
-		value?: number;
-		height?: number;
-		label?: string;
-	} = $props();
+	let { completed = 0, total = 0, showLabel = true }: { completed?: number; total?: number; showLabel?: boolean } = $props();
+
+	let pct = $derived(total > 0 ? Math.min(Math.round((completed / total) * 100), 100) : 0);
 </script>
 
-<div class="progress-wrapper">
-	{#if label}
-		<span class="progress-label">{label}</span>
-	{/if}
-	<div class="progress-track" style="height: {height}px">
-		<div
-			class="progress-fill"
-			style="width: {Math.min(value, 100)}%"
-			role="progressbar"
-			aria-valuenow={value}
-			aria-valuemin={0}
-			aria-valuemax={100}
-		></div>
+<div class="progress-wrap">
+	<div class="progress-bar">
+		<div class="progress-fill" style="width: {pct}%"></div>
 	</div>
+	{#if showLabel}
+		<span class="progress-label">{completed}/{total} selesai</span>
+	{/if}
 </div>
 
 <style>
-	.progress-wrapper {
+	.progress-wrap {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 12px;
 	}
 
-	.progress-label {
-		font-size: 12px;
-		color: var(--text-secondary);
-		font-weight: 500;
-		min-width: 40px;
-	}
-
-	.progress-track {
+	.progress-bar {
 		flex: 1;
-		background: var(--bg-secondary);
-		border-radius: 99px;
+		height: 8px;
+		background: var(--bg-secondary, #1e1e2e);
+		border-radius: 4px;
 		overflow: hidden;
 	}
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-		border-radius: 99px;
-		transition: width 0.4s ease;
+		border-radius: 4px;
+		background: linear-gradient(90deg, var(--accent, #6366f1), var(--accent-secondary, #a78bfa));
+		transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.progress-label {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text-secondary, #a1a1aa);
+		white-space: nowrap;
 	}
 </style>

@@ -54,7 +54,7 @@
 			{ href: '/my/profile', icon: '👤', label: 'My Profile' },
 			{ href: '/my/announcements', icon: '📢', label: 'My Announcements' },
 			{ href: '/planner', icon: '📅', label: 'Planner' },
-			{ href: '/certificate', icon: '🎓', label: 'Certificate' },
+			{ href: '/my/certificates', icon: '🎓', label: 'My Certificates' },
 			{ href: '/history', icon: '📜', label: 'History' },
 			{ href: '/export', icon: '📤', label: 'Export' },
 			{ href: '/feed', icon: '📡', label: 'RSS' },
