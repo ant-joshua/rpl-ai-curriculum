@@ -95,4 +95,13 @@
 	.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 	.btn:hover { opacity: 0.9; }
 	.empty-state { text-align: center; padding: 64px 16px; color: var(--text-secondary); }
+
+	@media (max-width: 640px) {
+		.learn-page { padding: 20px 12px 48px; }
+		.page-header h1 { font-size: 22px; }
+		.course-card { flex-direction: column; gap: 12px; padding: 16px; }
+		.card-icon { font-size: 40px; width: 56px; height: 56px; }
+		.card-footer { width: 100%; }
+		.btn { width: 100%; text-align: center; }
+	}
 </style>

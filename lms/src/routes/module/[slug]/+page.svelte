@@ -68,7 +68,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	});
 	let sessionReadingTime = $derived(sessionWordCount > 0 ? Math.max(1, Math.round(sessionWordCount / 200)) : null);
 
-	// Load content from static JSON
+	// Load content from D1 API first, fallback to static JSON
 	async function loadContent() {
 		mod = modules.find(m => m.slug === slug) ?? null;
 
@@ -81,8 +81,12 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		progress.setLastRead(slug);
 
 		try {
-			const res = await fetch(`/content/${mod.dirName}.json`);
-			if (!res.ok) throw new Error('Gagal memuat konten');
+			// Try D1-powered API first, fallback to static JSON
+			let res = await fetch(`/api/content/${mod.dirName}`);
+			if (!res.ok) {
+				res = await fetch(`/content/${mod.dirName}.json`);
+				if (!res.ok) throw new Error('Gagal memuat konten');
+			}
 			const json: Record<string, string> = await res.json();
 			contentCache = json;
 			loadQuizFromContent(json);

@@ -91,6 +91,7 @@
 				</div>
 
 				{#if offering.assessments.length > 0}
+					<div class="table-wrap">
 					<table class="grade-table">
 						<thead>
 							<tr>
@@ -122,9 +123,11 @@
 							{/each}
 						</tbody>
 					</table>
+					</div>
 				{/if}
 
 				{#if offering.assignments.length > 0}
+					<div class="table-wrap">
 					<table class="grade-table">
 						<thead>
 							<tr>
@@ -154,6 +157,7 @@
 							{/each}
 						</tbody>
 					</table>
+					</div>
 				{/if}
 
 				{#if offering.assessments.length === 0 && offering.assignments.length === 0}
@@ -313,8 +317,16 @@
 		font-size: 14px;
 	}
 
-	@media (max-width: 640px) {
-		.grade-table { font-size: 12px; }
+	@media (max-width: 768px) {
+		.grades-page { padding: 16px 12px; }
+		.page-header { flex-wrap: wrap; gap: 8px; }
+		h1 { font-size: 20px; }
+		.offering-card { padding: 14px; }
+		.offering-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+		.offering-summary { text-align: left; }
+		.total-pct { font-size: 24px; }
+		.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
+		.grade-table { font-size: 12px; min-width: 560px; }
 		.grade-table th, .grade-table td { padding: 6px 6px; }
 		.feedback-cell { max-width: 100px; }
 	}

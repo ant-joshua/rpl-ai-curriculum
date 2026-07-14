@@ -5,6 +5,9 @@ import { logActivity } from '$lib/server/analytics';
 // Allow admin roles — superadmin and admin have full access
 const ADMIN_ROLES = ['superadmin', 'admin'];
 
+// Instructor-accessible API paths (instructors can also access these)
+const INSTRUCTOR_API_PREFIX = '/api/instructor/';
+
 export async function handle({ event, resolve }: {
 	event: { request: Request; platform: App.Platform; locals: Record<string, any> };
 	resolve: (event: any) => Promise<Response>;
@@ -69,6 +72,35 @@ export async function handle({ event, resolve }: {
 		}
 
 		// Attach user info to locals for downstream use
+		event.locals = event.locals || {};
+		event.locals.user = user;
+		currentUser = user;
+	}
+
+	// Instructor API auth check — instructors access their own course data
+	if (path.startsWith(INSTRUCTOR_API_PREFIX)) {
+		const token = getBearerToken(event.request);
+		if (!token) {
+			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		const session = await getSession(event.platform, token);
+		if (!session) {
+			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		const db = getDB(event.platform);
+		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
+		if (!user || !['superadmin', 'admin', 'instructor'].includes(user.role)) {
+			return new Response(JSON.stringify({ success: false, error: 'Forbidden — instructor role required' }), {
+				status: 403,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
 		event.locals = event.locals || {};
 		event.locals.user = user;
 		currentUser = user;

@@ -253,4 +253,11 @@
 		padding: 3rem 1rem;
 		color: var(--text-secondary);
 	}
+
+	@media (max-width: 640px) {
+		.announcements-page { padding: 16px 12px 48px; }
+		.announcement-card { padding: 1rem; }
+		.ann-title-row h2 { font-size: 0.9rem; }
+		.ann-meta { gap: 0.5rem; flex-direction: column; }
+	}
 </style>

@@ -20,6 +20,7 @@
 
 	const navItems = [
 		{ path: '/admin', icon: '📊', label: 'Dashboard' },
+		{ path: '/admin/instructor', icon: '🧑‍🏫', label: 'Instructor' },
 		{ path: '/admin/content', icon: '📚', label: 'Content' },
 		{ path: '/admin/projects', icon: '🚀', label: 'Projects' },
 		{ path: '/admin/users', icon: '👥', label: 'Users' },

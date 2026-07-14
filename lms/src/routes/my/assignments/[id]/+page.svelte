@@ -673,4 +673,20 @@
 	.expired-icon { font-size: 48px; display: block; margin-bottom: 12px; }
 	.expired-card h3 { margin: 0 0 8px; }
 	.expired-card p { color: var(--text-secondary); font-size: 14px; margin: 0; }
+
+	@media (max-width: 640px) {
+		.assignment-page { padding: 16px 12px 48px; }
+		.header { flex-direction: column; gap: 12px; }
+		.header-left h1 { font-size: 20px; }
+		.breadcrumb { font-size: 12px; flex-wrap: wrap; }
+		.card { padding: 16px; }
+		.result-meta { flex-direction: column; gap: 6px; }
+		.grade-result { flex-wrap: wrap; }
+		.dropzone { padding: 24px 16px; }
+	}
+
+	@media (max-width: 480px) {
+		.form-actions { flex-direction: column; }
+		.btn { width: 100%; text-align: center; }
+	}
 </style>

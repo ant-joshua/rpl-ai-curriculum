@@ -483,6 +483,7 @@
 	.dashboard {
 		max-width: 960px;
 		margin: 0 auto;
+		padding: 0 12px;
 		animation: fadeIn 0.4s ease both;
 	}
 
@@ -523,7 +524,7 @@
 	/* Overview cards — glassmorphism */
 	.overview-cards {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		grid-template-columns: repeat(3, 1fr);
 		gap: 12px;
 		margin-bottom: 20px;
 	}
@@ -542,7 +543,7 @@
 		transform: translateY(-2px);
 		box-shadow: 0 4px 20px rgba(108, 92, 231, 0.1);
 	}
-	.overview-icon { font-size: 28px; }
+	.overview-icon { font-size: 28px; flex-shrink: 0; }
 	.overview-card div { display: flex; flex-direction: column; gap: 2px; }
 	.overview-value {
 		font-size: 22px;
@@ -557,42 +558,6 @@
 	.subtitle {
 		color: var(--text-secondary);
 		font-size: 13px;
-	}
-
-	.overview-cards {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 12px;
-		margin-bottom: 16px;
-	}
-
-	.overview-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 12px 16px;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-
-	.overview-icon {
-		font-size: 22px;
-	}
-
-	.overview-value {
-		display: block;
-		font-size: 20px;
-		font-weight: 700;
-		color: var(--text);
-		line-height: 1.2;
-	}
-
-	.overview-label {
-		display: block;
-		font-size: 11px;
-		color: var(--text-secondary);
-		font-weight: 500;
 	}
 
 	.continue-reading {
@@ -769,6 +734,8 @@
 				flex-direction: column;
 			}
 
+			.dashboard { padding: 0 0 24px; }
+
 			.overview-cards {
 				grid-template-columns: 1fr;
 			}
@@ -779,6 +746,16 @@
 
 			h1 {
 				font-size: 20px;
+			}
+
+			.goal-progress {
+				flex-direction: column;
+				gap: 8px;
+			}
+
+			.ann-preview-meta {
+				flex-direction: column;
+				gap: 2px;
 			}
 		}
 

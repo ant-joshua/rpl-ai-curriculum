@@ -25,12 +25,18 @@ export async function load({ params, platform }: { params: Record<string, string
 		).bind(offering.course_id).first<any>();
 	}
 
-	// Get content block if exists
+	// Get content block — by direct link or title fallback
 	let contentBlock = null;
 	if (lesson.content_block_id) {
 		contentBlock = await db.prepare(
 			'SELECT * FROM content_blocks WHERE id = ? AND visibility = ?'
 		).bind(lesson.content_block_id, 'published').first<any>();
+	}
+	if (!contentBlock) {
+		// Fallback: find by title match (for modules migrated from static JSON)
+		contentBlock = await db.prepare(
+			"SELECT * FROM content_blocks WHERE title = ? AND visibility = ? LIMIT 1"
+		).bind(lesson.title, 'published').first<any>();
 	}
 
 	// Get all lessons for navigation

@@ -284,4 +284,18 @@
 		font-weight: 600; font-size: 14px; text-decoration: none; transition: opacity 0.15s;
 	}
 	.cert-btn:hover { opacity: 0.9; }
+
+	@media (max-width: 640px) {
+		.syllabus-page { padding: 20px 12px 48px; }
+		.syllabus-header { flex-direction: column; gap: 12px; }
+		.course-icon { font-size: 48px; width: 64px; height: 64px; }
+		.course-info h1 { font-size: 20px; }
+		.week-header { padding: 12px 14px; flex-wrap: wrap; gap: 4px; }
+		.lesson-card { padding: 12px 14px; gap: 10px; }
+		.lesson-title { font-size: 13px; }
+		.lesson-meta { gap: 4px; }
+		.cert-card { padding: 24px 16px; }
+		.cert-card h3 { font-size: 17px; }
+		.cert-icon { font-size: 48px; }
+	}
 </style>

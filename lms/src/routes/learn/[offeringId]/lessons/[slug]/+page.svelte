@@ -494,6 +494,7 @@
 	}
 
 	@media (max-width: 640px) {
+		.lesson-page { padding: 16px 12px 48px; }
 		.lesson-title {
 			font-size: 22px;
 		}
@@ -509,6 +510,11 @@
 
 		.nav-btn {
 			max-width: 100%;
+		}
+
+		.complete-btn {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>
