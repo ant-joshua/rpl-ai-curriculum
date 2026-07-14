@@ -141,7 +141,7 @@
 							{#each offering.assignments as a}
 								{@const sub = offering.assignmentSubmissions?.find((s: any) => s.assignment_id === a.id)}
 								<tr>
-									<td>{a.title}</td>
+									<td><a href="/my/assignments/{a.id}" class="assign-link">{a.title}</a></td>
 									<td>{sub?.score ?? '-'}</td>
 									<td>{a.max_score ?? '-'}</td>
 									<td style="color: {gradeColor(sub?.score != null && a.max_score ? (sub.score / a.max_score * 100) : null)}">
@@ -317,5 +317,14 @@
 		.grade-table { font-size: 12px; }
 		.grade-table th, .grade-table td { padding: 6px 6px; }
 		.feedback-cell { max-width: 100px; }
+	}
+
+	.assign-link {
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.assign-link:hover {
+		text-decoration: underline;
 	}
 </style>

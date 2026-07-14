@@ -26,6 +26,7 @@
 		{ path: '/admin/analytics', icon: '📈', label: 'Analytics' },
 		{ path: '/admin/courses', icon: '📖', label: 'Courses' },
 		{ path: '/admin/question-bank', icon: '❓', label: 'Question Bank' },
+		{ path: '/admin/assignments', icon: '📝', label: 'Assignments' },
 		{ path: '/admin/gradebook', icon: '📋', label: 'Gradebook' },
 		{ path: '/admin/prerequisites', icon: '📋', label: 'Prerequisites' },
 		{ path: '/admin/badges', icon: '🏆', label: 'Badges' },

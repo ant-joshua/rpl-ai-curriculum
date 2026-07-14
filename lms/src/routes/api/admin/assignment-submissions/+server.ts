@@ -4,14 +4,19 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 	try {
 		const db = getDB(platform);
 		const assignment_id = url.searchParams.get('assignment_id');
+		const course_offering_id = url.searchParams.get('course_offering_id');
 		const user_id = url.searchParams.get('user_id');
 		let query = 'SELECT asub.*, u.display_name AS user_name FROM assignment_submissions asub LEFT JOIN users u ON u.id = asub.user_id';
 		const params: unknown[] = [];
 		const wheres: string[] = [];
 
-		if (assignment_id) {
+		if (assignment_id && assignment_id !== 'all') {
 			wheres.push('asub.assignment_id = ?');
 			params.push(assignment_id);
+		}
+		if (course_offering_id) {
+			wheres.push('asub.assignment_id IN (SELECT id FROM assignments WHERE course_offering_id = ?)');
+			params.push(course_offering_id);
 		}
 		if (user_id) {
 			wheres.push('asub.user_id = ?');

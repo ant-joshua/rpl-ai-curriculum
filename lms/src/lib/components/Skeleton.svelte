@@ -1,57 +1,54 @@
 <script lang="ts">
+	type SkeletonVariant = 'text' | 'title' | 'avatar' | 'block' | 'card' | 'circle' | 'button';
+
 	let {
-		width = '100%',
-		height = '16px',
-		borderRadius = '6px',
-		variant = 'text'
+		variant = 'text' as SkeletonVariant,
+		width,
+		height,
+		class: className = '',
+		count = 1,
+		gap = '0.5rem',
 	}: {
+		variant?: SkeletonVariant;
 		width?: string;
 		height?: string;
-		borderRadius?: string;
-		variant?: 'text' | 'card' | 'chart' | 'circle';
+		class?: string;
+		count?: number;
+		gap?: string;
 	} = $props();
+
+	const PRESETS: Record<SkeletonVariant, { width?: string; height: string; borderRadius: string }> = {
+		text: { height: '14px', borderRadius: '6px' },
+		title: { width: '70%', height: '20px', borderRadius: '6px' },
+		avatar: { width: '40px', height: '40px', borderRadius: '10px' },
+		block: { height: '100px', borderRadius: '8px' },
+		card: { height: '180px', borderRadius: '12px' },
+		circle: { width: '40px', height: '40px', borderRadius: '50%' },
+		button: { width: '100px', height: '36px', borderRadius: '8px' },
+	};
+
+	let w = $derived(width ?? PRESETS[variant].width ?? '100%');
+	let h = $derived(height ?? PRESETS[variant].height);
+	let br = $derived(PRESETS[variant].borderRadius);
 </script>
 
-<div
-	class="skeleton"
-	class:skeleton-text={variant === 'text'}
-	class:skeleton-card={variant === 'card'}
-	class:skeleton-chart={variant === 'chart'}
-	class:skeleton-circle={variant === 'circle'}
-	style={variant === 'text' || variant === 'circle' ? `width: ${width}; height: ${height}; border-radius: ${borderRadius};` : ''}
->
-	{#if variant === 'card'}
-		<div class="skeleton-card-header">
-			<div class="skeleton skeleton-text" style="width: 50px; height: 22px; border-radius: 20px;"></div>
-			<div class="skeleton skeleton-text" style="width: 20px; height: 20px; border-radius: 4px;"></div>
-		</div>
-		<div class="skeleton skeleton-text" style="width: 85%; height: 18px; margin-top: 12px;"></div>
-		<div class="skeleton skeleton-text" style="width: 65%; height: 14px; margin-top: 8px;"></div>
-		<div class="skeleton-card-footer">
-			<div class="skeleton skeleton-text" style="width: 100%; height: 6px; border-radius: 3px;"></div>
-			<div class="skeleton skeleton-text" style="width: 60px; height: 16px; border-radius: 4px; align-self: flex-end;"></div>
-		</div>
-	{:else if variant === 'chart'}
-		<div class="skeleton skeleton-text" style="width: 100%; height: 100%; border-radius: 10px;"></div>
-	{/if}
-</div>
+{#if count === 1}
+	<div class="skeleton {className}" style="width: {w}; height: {h}; border-radius: {br};"></div>
+{:else}
+	<div class="skeleton-group" style="display: flex; flex-direction: column; gap: {gap};">
+		{#each Array(count) as _}
+			<div class="skeleton {className}" style="width: {w}; height: {h}; border-radius: {br};"></div>
+		{/each}
+	</div>
+{/if}
 
 <style>
 	.skeleton {
-		background: #1e2240;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.skeleton::after {
-		content: '';
-		position: absolute;
-		inset: 0;
 		background: linear-gradient(
 			90deg,
-			transparent 0%,
-			#2a2f52 25%,
-			transparent 50%
+			var(--surface, #1c1e2e) 0%,
+			var(--hover, rgba(255,255,255,0.05)) 50%,
+			var(--surface, #1c1e2e) 100%
 		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s ease-in-out infinite;
@@ -60,82 +57,5 @@
 	@keyframes shimmer {
 		0% { background-position: 200% 0; }
 		100% { background-position: -200% 0; }
-	}
-
-	.skeleton-text {
-		border-radius: 6px;
-	}
-
-	.skeleton-circle {
-		border-radius: 50%;
-	}
-
-	/* Card variant built-in layout */
-	.skeleton-card {
-		background: #1e2240;
-		border-radius: 12px;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.skeleton-card > .skeleton::after {
-		background: none;
-		animation: none;
-	}
-
-	.skeleton-card::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			#2a2f52 25%,
-			transparent 50%
-		);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s ease-in-out infinite;
-		pointer-events: none;
-	}
-
-	.skeleton-card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.skeleton-card-footer {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		margin-top: auto;
-		padding-top: 12px;
-	}
-
-	/* Chart variant */
-	.skeleton-chart {
-		border-radius: 10px;
-		background: #1e2240;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.skeleton-chart::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(
-			90deg,
-			transparent 0%,
-			#2a2f52 25%,
-			transparent 50%
-		);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s ease-in-out infinite;
-		pointer-events: none;
 	}
 </style>

@@ -13,6 +13,7 @@
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 
@@ -20,6 +21,7 @@
 		{ name: 'belajar', icon: '📚', label: 'Belajar', links: [
 			{ href: '/', icon: '🏠', label: 'Home' },
 			{ href: '/dashboard', icon: '📊', label: 'Dashboard' },
+			{ href: '/catalog', icon: '📋', label: 'Katalog' },
 			{ href: '/path', icon: '🗺️', label: 'Path' },
 			{ href: '/progress', icon: '📈', label: 'Progress' },
 			{ href: '/search', icon: '🔍', label: 'Search' },
@@ -312,6 +314,8 @@
 <div class="toast-container">
 	<Toast />
 </div>
+
+<ConfirmDialog />
 
 <style>
 	:global(*) {
