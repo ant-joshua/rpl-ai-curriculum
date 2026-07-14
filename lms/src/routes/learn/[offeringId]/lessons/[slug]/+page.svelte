@@ -11,7 +11,7 @@
 	let lesson = $derived(data.lesson);
 	let offering = $derived(data.offering);
 	let course = $derived(data.course);
-	let contentBlock = $derived(data.contentBlock);
+	let contentBlocks = $derived<any[]>(data.contentBlocks ?? []);
 	let allLessons = $derived<any[]>(data.allLessons ?? []);
 	let params = $derived($page.params);
 
@@ -170,8 +170,12 @@
 				</div>
 			{:else if !accessCheck.accessible}
 				<LockedLesson prerequisites={accessCheck.prerequisites} />
-			{:else if contentBlock}
-				<ContentRenderer block={contentBlock} />
+			{:else if contentBlocks.length > 0}
+				{#each contentBlocks as block, i}
+					<div class="content-block-multi">
+						<ContentRenderer block={block} />
+					</div>
+				{/each}
 			{:else}
 				<div class="empty-content">
 					<p class="text-secondary">No content available for this lesson.</p>
@@ -333,6 +337,18 @@
 
 	.lesson-body {
 		margin-bottom: 32px;
+	}
+
+	/* Multi-block lesson content */
+	.content-block-multi {
+		margin-bottom: 24px;
+	}
+	.content-block-multi:last-child {
+		margin-bottom: 0;
+	}
+	.content-block-multi + .content-block-multi {
+		padding-top: 8px;
+		border-top: 1px solid var(--border);
 	}
 
 	/* Empty */

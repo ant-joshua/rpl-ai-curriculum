@@ -1,7 +1,11 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
 
-export async function GET({ params, request, platform }: {
+/**
+ * PATCH /api/threads/[threadId]
+ * Instructor-only: resolve/unresolve, pin/unpin, update title/body
+ */
+export async function PATCH({ params, request, platform }: {
 	params: { threadId: string };
 	request: Request;
 	platform: App.Platform;
@@ -19,63 +23,19 @@ export async function GET({ params, request, platform }: {
 
 		const db = getDB(platform);
 
-		const thread = await db
-			.prepare(
-				`SELECT t.*, u.display_name, u.avatar_url,
-				 (SELECT COUNT(*) FROM discussion_replies r WHERE r.thread_id = t.id) as reply_count
-				 FROM discussion_threads t
-				 LEFT JOIN users u ON u.id = t.user_id
-				 WHERE t.id = ?`
-			)
-			.bind(params.threadId)
+		// Get user with role
+		const user = await db
+			.prepare('SELECT * FROM users WHERE id = ?')
+			.bind(session.session.user_id)
 			.first<any>();
 
-		if (!thread) {
-			return jsonResponse({ success: false, error: 'Thread not found' }, 404);
+		if (!user) {
+			return jsonResponse({ success: false, error: 'User not found' }, 404);
 		}
 
-		const replies = await db
-			.prepare(
-				`SELECT r.*, u.display_name, u.avatar_url
-				 FROM discussion_replies r
-				 LEFT JOIN users u ON u.id = r.user_id
-				 WHERE r.thread_id = ?
-				 ORDER BY r.created_at ASC`
-			)
-			.bind(params.threadId)
-			.all();
+		const isInstructor = ['superadmin', 'admin', 'instructor'].includes(user.role);
 
-		return jsonResponse({
-			success: true,
-			data: {
-				thread,
-				replies: replies.results || []
-			}
-		});
-	} catch (e: unknown) {
-		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
-	}
-}
-
-export async function PUT({ params, request, platform }: {
-	params: { threadId: string };
-	request: Request;
-	platform: App.Platform;
-}): Promise<Response> {
-	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		}
-
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		}
-
-		const db = getDB(platform);
-
+		// Get the thread
 		const thread = await db
 			.prepare('SELECT * FROM discussion_threads WHERE id = ?')
 			.bind(params.threadId)
@@ -85,31 +45,66 @@ export async function PUT({ params, request, platform }: {
 			return jsonResponse({ success: false, error: 'Thread not found' }, 404);
 		}
 
-		// Only thread author or admin can edit
-		if (thread.user_id !== session.session.user_id) {
-			return jsonResponse({ success: false, error: 'Not authorized' }, 403);
+		const body = await request.json() as {
+			is_resolved?: boolean;
+			is_pinned?: boolean;
+			is_locked?: boolean;
+			title?: string;
+			body_text?: string;
+		};
+
+		// Instructors can resolve/pin/lock
+		// Thread author can edit title/body
+		const canAdmin = isInstructor;
+		const canEdit = thread.user_id === session.session.user_id || isInstructor;
+
+		const updates: string[] = [];
+		const values: any[] = [];
+
+		if (body.is_resolved !== undefined && canAdmin) {
+			updates.push('is_resolved = ?');
+			values.push(body.is_resolved ? 1 : 0);
+		}
+		if (body.is_pinned !== undefined && canAdmin) {
+			updates.push('is_pinned = ?');
+			values.push(body.is_pinned ? 1 : 0);
+		}
+		if (body.is_locked !== undefined && canAdmin) {
+			updates.push('is_locked = ?');
+			values.push(body.is_locked ? 1 : 0);
+		}
+		if (body.title !== undefined && canEdit) {
+			updates.push('title = ?');
+			values.push(body.title);
+		}
+		if (body.body_text !== undefined && canEdit) {
+			updates.push('body = ?');
+			values.push(body.body_text);
 		}
 
-		const body = await request.json() as { title?: string; body?: string };
+		if (updates.length === 0) {
+			return jsonResponse({ success: false, error: 'No valid fields to update' }, 400);
+		}
+
+		if (!canAdmin && (body.is_resolved !== undefined || body.is_pinned !== undefined || body.is_locked !== undefined)) {
+			return jsonResponse({ success: false, error: 'Only instructors can resolve, pin, or lock threads' }, 403);
+		}
+
+		if (!canEdit && body.title !== undefined && body.body_text !== undefined) {
+			return jsonResponse({ success: false, error: 'Only thread author can edit' }, 403);
+		}
+
 		const now = new Date().toISOString();
+		updates.push('updated_at = ?');
+		values.push(now);
+		values.push(params.threadId);
 
-		if (body.title !== undefined && body.body !== undefined) {
-			await db
-				.prepare('UPDATE discussion_threads SET title = ?, body = ?, updated_at = ? WHERE id = ?')
-				.bind(body.title, body.body, now, params.threadId)
-				.run();
-		} else if (body.title !== undefined) {
-			await db
-				.prepare('UPDATE discussion_threads SET title = ?, updated_at = ? WHERE id = ?')
-				.bind(body.title, now, params.threadId)
-				.run();
-		} else if (body.body !== undefined) {
-			await db
-				.prepare('UPDATE discussion_threads SET body = ?, updated_at = ? WHERE id = ?')
-				.bind(body.body, now, params.threadId)
-				.run();
-		}
+		await db
+			.prepare(`UPDATE discussion_threads SET ${updates.join(', ')} WHERE id = ?`)
+			.bind(...values)
+			.run();
 
+		// Return updated thread
 		const updated = await db
 			.prepare(
 				`SELECT t.*, u.display_name, u.avatar_url,
@@ -122,52 +117,6 @@ export async function PUT({ params, request, platform }: {
 			.first<any>();
 
 		return jsonResponse({ success: true, data: updated });
-	} catch (e: unknown) {
-		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
-	}
-}
-
-export async function DELETE({ params, request, platform }: {
-	params: { threadId: string };
-	request: Request;
-	platform: App.Platform;
-}): Promise<Response> {
-	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		}
-
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		}
-
-		const db = getDB(platform);
-
-		const thread = await db
-			.prepare('SELECT * FROM discussion_threads WHERE id = ?')
-			.bind(params.threadId)
-			.first<any>();
-
-		if (!thread) {
-			return jsonResponse({ success: false, error: 'Thread not found' }, 404);
-		}
-
-		// Only thread author or admin can delete
-		if (thread.user_id !== session.session.user_id) {
-			return jsonResponse({ success: false, error: 'Not authorized' }, 403);
-		}
-
-		// Soft delete: clear title and body, mark as locked
-		const now = new Date().toISOString();
-		await db
-			.prepare('UPDATE discussion_threads SET title = ?, body = ?, is_locked = 1, updated_at = ? WHERE id = ?')
-			.bind('[deleted]', '[deleted]', now, params.threadId)
-			.run();
-
-		return jsonResponse({ success: true, data: { id: params.threadId } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

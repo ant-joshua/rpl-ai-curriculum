@@ -5,6 +5,24 @@
  * Reads prebuilt static content JSONs + modules.ts registry,
  * generates D1 upsert SQL for content_blocks table.
  *
+ * NEW: Supports multi-block lessons by parsing `---` delimiters
+ * in session content. Each block can specify a type:
+ *
+ *   --- text ---
+ *   Regular markdown content
+ *
+ *   --- video ---
+ *   {video:https://youtube.com/watch?v=XXX}
+ *
+ *   --- quiz ---
+ *   ## Quiz
+ *   questions here
+ *
+ *   --- code ---
+ *   ```js
+ *   console.log('hello');
+ *   ```
+ *
  * Usage:
  *   node scripts/sync-content-blocks.mjs                    # prints SQL to stdout
  *   node scripts/sync-content-blocks.mjs | wrangler d1 execute rpl-ai-lms-db --remote  # execute
@@ -69,14 +87,166 @@ function generateContentBlockInsert(id, type, title, body, bodyHtml, meta, order
   ].join('\n');
 }
 
-// ── Render markdown to HTML (simplified — no marked dep in pure script) ─
-// We store raw markdown in body and leave body_html empty for now.
-// The frontend can parse markdown client-side as it does today.
-// To populate body_html, we'd need the marked library.
-function renderMarkdown(md) {
-  // Minimal rendering — just escape HTML tags for safety, store raw markdown
-  // The frontend already renders markdown client-side via parseMarkdown()
-  return md; // Keep raw markdown as body_html too for TextContent fallback
+function generateLessonContentBlockInsert(id, lessonId, contentBlockId, orderIndex, typeOverride) {
+  const typeOverrideStr = typeOverride ? escapeSql(typeOverride) : 'NULL';
+  return [
+    `INSERT OR REPLACE INTO lesson_content_blocks (id, lesson_id, content_block_id, order_index, type_override, created_at)`,
+    `VALUES (`,
+    `  ${escapeSql(id)},`,
+    `  ${escapeSql(lessonId)},`,
+    `  ${escapeSql(contentBlockId)},`,
+    `  ${orderIndex},`,
+    `  ${typeOverrideStr},`,
+    `  datetime('now')`,
+    `);`
+  ].join('\n');
+}
+
+// ── Parse multi-block content from markdown ────────────────────────────
+// Supports blocks delimited by --- type --- markers:
+//   --- text ---
+//   ...content...
+//   --- video ---
+//   ...content...
+//   --- quiz ---
+//   ...content...
+function parseMultiBlockContent(rawMarkdown, sessionTitle, sessionId, moduleSlug, dirName, lessonId) {
+  // Check if content has block delimiters
+  const blockRegex = /^---\s*(\w+)\s*---\s*$/gm;
+  const blocks = [];
+
+  // Split by block markers
+  const parts = rawMarkdown.split(/^---\s*(\w+)\s*---\s*$/m);
+
+  if (parts.length < 3) {
+    // No multi-block structure — single text block
+    return null;
+  }
+
+  // parts[0] = preamble (before first ---)
+  // parts[1] = first type
+  // parts[2] = first content
+  // parts[3] = second type
+  // parts[4] = second content
+  // etc.
+
+  let preamble = parts[0]?.trim();
+  let idx = 0;
+
+  // If there's preamble content before the first ---, treat it as text block
+  if (preamble) {
+    const blockId = `cb-${sessionId}-b${idx}`;
+    blocks.push({
+      id: blockId,
+      type: 'text',
+      title: idx === 0 ? sessionTitle : '',
+      body: preamble,
+      bodyHtml: preamble,
+      meta: { moduleSlug, dirName, sessionId, blockIndex: idx },
+      orderIndex: idx,
+      typeOverride: null
+    });
+    idx++;
+  }
+
+  for (let i = 1; i < parts.length; i += 2) {
+    const blockType = parts[i]?.trim() || 'text';
+    const blockContent = (parts[i + 1] || '').trim();
+    if (!blockContent) continue;
+
+    // Normalize block type
+    let type = blockType.toLowerCase();
+    if (['text', 'video', 'code', 'quiz', 'embed', 'image'].includes(type)) {
+      // valid
+    } else {
+      type = 'text';
+    }
+
+    const blockId = `cb-${sessionId}-b${idx}`;
+    const blockTitle = idx === 0 ? sessionTitle : '';
+
+    // For quiz blocks, store questions in meta
+    const meta = { moduleSlug, dirName, sessionId, blockIndex: idx };
+
+    if (type === 'quiz') {
+      // Extract questions from quiz markdown into meta.questions
+      const questions = parseQuizBlocks(blockContent);
+      meta.questions = questions;
+    }
+
+    // For video blocks, the body_html will be processed by the frontend
+    // Store the raw content as body
+    const body = blockContent;
+    const bodyHtml = blockContent;
+
+    blocks.push({
+      id: blockId,
+      type,
+      title: blockTitle,
+      body,
+      bodyHtml,
+      meta,
+      orderIndex: idx,
+      typeOverride: null
+    });
+    idx++;
+  }
+
+  return blocks;
+}
+
+// ── Parse quiz questions from markdown ─────────────────────────────────
+function parseQuizBlocks(content) {
+  const questions = [];
+  // Match ## Question NN or **Q:** style questions with options
+  const lines = content.split('\n');
+  let currentQuestion = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Match: ## Question 1, **Question:*, etc.
+    const qMatch = trimmed.match(/^##\s*(?:Question|Soal|Pertanyaan)\s*(\d*)\s*[:.]?\s*(.*)?$/i);
+    if (qMatch) {
+      if (currentQuestion) questions.push(currentQuestion);
+      currentQuestion = {
+        question: qMatch[2]?.trim() || '',
+        options: [],
+        correctIndex: null,
+        explanation: ''
+      };
+      continue;
+    }
+
+    // Match numbered options: 1. Option text  or - Option text or * Option text
+    if (currentQuestion) {
+      // Check for correct answer marker: **option text** or *option text*
+      const correctMatch = trimmed.match(/^[-*\d]+\.?\s*\*{1,2}(.+)\*{1,2}$/);
+      if (correctMatch) {
+        const optIdx = currentQuestion.options.length;
+        currentQuestion.options.push(correctMatch[1].trim());
+        currentQuestion.correctIndex = optIdx;
+        continue;
+      }
+
+      // Regular option: 1. Option text  or - Option text
+      const optMatch = trimmed.match(/^[-*\d]+\.?\s+(.+)$/);
+      if (optMatch && !trimmed.startsWith('#')) {
+        currentQuestion.options.push(optMatch[1].trim());
+        continue;
+      }
+
+      // Explanation
+      const expMatch = trimmed.match(/^(?:Explanation|Penjelasan|Jawaban):\s*(.+)$/i);
+      if (expMatch) {
+        currentQuestion.explanation = expMatch[1].trim();
+        continue;
+      }
+    }
+  }
+
+  if (currentQuestion) questions.push(currentQuestion);
+  return questions;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────
@@ -94,6 +264,7 @@ function main() {
 
   const lines = [];
   let totalBlocks = 0;
+  let totalLinks = 0;
 
   // Header
   lines.push('-- ============================================');
@@ -117,25 +288,62 @@ function main() {
       const session = mod.sessions[i];
       const rawMarkdown = json[session.id] || '';
 
-      const blockId = `cb-${session.id}`;
-      const meta = { moduleSlug: mod.slug, dirName: mod.dirName, sessionId: session.id };
+      // Generate a stable lesson ID from the session ID
+      const lessonId = session.id; // same as session id in modules.ts
 
-      lines.push(generateContentBlockInsert(
-        blockId,
-        'text',
-        session.title,
-        rawMarkdown,
-        rawMarkdown, // store raw markdown as body_html fallback too
-        meta,
-        i
-      ));
-      totalBlocks++;
+      // Check if session has multi-block content
+      const multiBlocks = parseMultiBlockContent(rawMarkdown, session.title, session.id, mod.slug, mod.dirName, lessonId);
+
+      if (multiBlocks && multiBlocks.length > 0) {
+        // Multi-block lesson — generate content_blocks + lesson_content_blocks links
+        for (const block of multiBlocks) {
+          lines.push('');
+          lines.push(generateContentBlockInsert(
+            block.id,
+            block.type,
+            block.title,
+            block.body,
+            block.bodyHtml,
+            block.meta,
+            block.orderIndex
+          ));
+          totalBlocks++;
+
+          // Link to lesson
+          const linkId = `lcb-${session.id}-${block.orderIndex}`;
+          lines.push(generateLessonContentBlockInsert(
+            linkId,
+            lessonId,
+            block.id,
+            block.orderIndex,
+            block.typeOverride
+          ));
+          totalLinks++;
+        }
+      } else {
+        // Single text block (legacy behavior)
+        const blockId = `cb-${session.id}`;
+        const meta = { moduleSlug: mod.slug, dirName: mod.dirName, sessionId: session.id };
+
+        lines.push('');
+        lines.push(generateContentBlockInsert(
+          blockId,
+          'text',
+          session.title,
+          rawMarkdown,
+          rawMarkdown, // store raw markdown as body_html fallback too
+          meta,
+          i
+        ));
+        totalBlocks++;
+      }
     }
 
     // Also store README if present
     if (json['README']) {
       const blockId = `cb-${mod.dirName}-README`;
       const meta = { moduleSlug: mod.slug, dirName: mod.dirName, type: 'readme' };
+      lines.push('');
       lines.push(generateContentBlockInsert(
         blockId,
         'text',
@@ -148,10 +356,11 @@ function main() {
       totalBlocks++;
     }
 
-    // Store quiz content if present
+    // Store quiz content if present (as separate content block, not linked to a specific lesson)
     if (json['quiz']) {
       const blockId = `cb-${mod.dirName}-quiz`;
       const meta = { moduleSlug: mod.slug, dirName: mod.dirName, type: 'quiz' };
+      lines.push('');
       lines.push(generateContentBlockInsert(
         blockId,
         'quiz',
@@ -166,7 +375,7 @@ function main() {
   }
 
   lines.push('');
-  lines.push(`-- Total: ${totalBlocks} content_blocks`);
+  lines.push(`-- Total: ${totalBlocks} content_blocks, ${totalLinks} lesson_content_blocks links`);
 
   const sql = lines.join('\n');
 

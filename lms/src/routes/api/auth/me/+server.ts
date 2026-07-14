@@ -1,4 +1,5 @@
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
 
 function corsHeaders() {
 	return {
@@ -39,6 +40,14 @@ export async function GET({ request, platform }: { request: Request; platform: A
 		}
 
 		const { user } = result;
+
+		// Get role from users table
+		const db = getDB(platform);
+		const userRow = await db
+			.prepare('SELECT role FROM users WHERE id = ?')
+			.bind(user.id)
+			.first<{ role: string }>();
+
 		return json({
 			success: true,
 			data: {
@@ -47,6 +56,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
 				email: user.email,
 				avatar: user.avatar,
 				provider: user.provider,
+				role: userRow?.role || 'student',
 			},
 		});
 	} catch (e: unknown) {

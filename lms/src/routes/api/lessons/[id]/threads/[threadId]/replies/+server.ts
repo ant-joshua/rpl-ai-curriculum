@@ -77,14 +77,21 @@ export async function POST({ params, request, platform }: {
 			return jsonResponse({ success: false, error: 'Thread is locked' }, 403);
 		}
 
+		// Detect instructor role
+		const user = await db
+			.prepare('SELECT role FROM users WHERE id = ?')
+			.bind(session.session.user_id)
+			.first<any>();
+		const isInstructorReply = user ? ['superadmin', 'admin', 'instructor'].includes(user.role) : false;
+
 		const id = crypto.randomUUID();
 		const now = new Date().toISOString();
 
 		await db
 			.prepare(
-				'INSERT INTO discussion_replies (id, thread_id, user_id, body, parent_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+				'INSERT INTO discussion_replies (id, thread_id, user_id, body, parent_id, is_instructor_reply, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
 			)
-			.bind(id, params.threadId, session.session.user_id, body.body, body.parent_id || null, now, now)
+			.bind(id, params.threadId, session.session.user_id, body.body, body.parent_id || null, isInstructorReply ? 1 : 0, now, now)
 			.run();
 
 		// Update thread updated_at

@@ -17,6 +17,7 @@
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@types/node": "^26.1.1",
+		"@types/prismjs": "^1.26.6",
 		"svelte": "^5.56.1",
 		"svelte-check": "^4.6.0",
 		"typescript": "^6.0.3",
@@ -42,6 +43,7 @@
 		"codemirror": "^6.0.2",
 		"highlight.js": "^11.11.1",
 		"marked": "^18.0.6",
-		"marked-highlight": "^2.2.4"
+		"marked-highlight": "^2.2.4",
+		"prismjs": "^1.30.0"
 	}
 }

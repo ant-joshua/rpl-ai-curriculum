@@ -32,6 +32,7 @@
 		{ path: '/admin/prerequisites', icon: '📋', label: 'Prerequisites' },
 		{ path: '/admin/badges', icon: '🏆', label: 'Badges' },
 		{ path: '/admin/announcements', icon: '📢', label: 'Announcements' },
+		{ path: '/admin/discussions', icon: '💬', label: 'Discussions' },
 	];
 </script>
 

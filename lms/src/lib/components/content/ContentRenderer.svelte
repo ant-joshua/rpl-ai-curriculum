@@ -4,6 +4,7 @@
 	import CodeContent from './CodeContent.svelte';
 	import EmbedContent from './EmbedContent.svelte';
 	import QuizContent from './QuizContent.svelte';
+	import PlaygroundContent from './PlaygroundContent.svelte';
 
 	let { block }: { block: any } = $props();
 
@@ -29,6 +30,8 @@
 	<EmbedContent {meta} {title} />
 {:else if blockType === 'quiz'}
 	<QuizContent contentBlock={block} />
+{:else if blockType === 'playground'}
+	<PlaygroundContent body={bodyText} language={meta?.language || 'html'} {title} />
 {:else if blockType === 'image'}
 	<div class="content-block image-wrapper">
 		{#if bodyText}

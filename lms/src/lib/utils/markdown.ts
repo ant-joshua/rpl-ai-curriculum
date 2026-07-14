@@ -24,8 +24,74 @@ marked.use({
 	breaks: true,
 });
 
+/**
+ * Parse standard markdown to HTML.
+ */
 export function parseMarkdown(content: string): string {
 	return marked.parse(content) as string;
+}
+
+/**
+ * Parse markdown with video shortcode support.
+ * Converts {video:URL} shortcodes and standalone YouTube/Vimeo URLs
+ * into responsive video embeds.
+ *
+ * Supported formats:
+ *   {video:https://youtube.com/watch?v=XXX}
+ *   {video:https://youtu.be/XXX}
+ *   {video:https://vimeo.com/123456}
+ *   https://www.youtube.com/watch?v=XXX  (standalone URL on its own line)
+ *   https://youtu.be/XXX                  (standalone URL on its own line)
+ *   https://vimeo.com/123456              (standalone URL on its own line)
+ */
+export function parseMarkdownWithVideo(content: string): string {
+	// Step 1: Convert {video:URL} shortcodes
+	let html = content.replace(
+		/\{video:\s*(https?:\/\/[^\s}]+)\s*\}/gi,
+		(_match, url: string) => {
+			return getVideoEmbedHtml(url);
+		}
+	);
+
+	// Step 2: Convert standalone YouTube/Vimeo URLs on their own line
+	html = html.replace(
+		/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|vimeo\.com\/)([^\s$]+)$/gim,
+		(_match, _id: string) => {
+			return getVideoEmbedHtml(_match.trim());
+		}
+	);
+
+	// Step 3: Parse the rest as markdown
+	return marked.parse(html) as string;
+}
+
+/**
+ * Generate responsive video embed HTML from a video URL.
+ * Supports YouTube (watch, short, embed) and Vimeo URLs.
+ */
+export function getVideoEmbedHtml(url: string): string {
+	const trimmed = url.trim();
+
+	// YouTube — various formats
+	const ytMatch = trimmed.match(
+		/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[?&]\S*)?$/
+	);
+	if (ytMatch) {
+		const videoId = ytMatch[1];
+		return `<div class="video-embed-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+	}
+
+	// Vimeo
+	const vimeoMatch = trimmed.match(
+		/^(?:https?:\/\/)?(?:www\.)?vimeo\.com\/(\d+)(?:\?\S*)?$/
+	);
+	if (vimeoMatch) {
+		const videoId = vimeoMatch[1];
+		return `<div class="video-embed-wrapper"><iframe src="https://player.vimeo.com/video/${videoId}" title="Vimeo video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+	}
+
+	// Unknown — render as a link fallback
+	return `<a href="${trimmed}" target="_blank" rel="noopener">${trimmed}</a>`;
 }
 
 // Detect if markdown content has exercise/latihan sections

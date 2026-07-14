@@ -8,6 +8,8 @@
  * Usage:
  *   CLOUDFLARE_ACCOUNT_ID=xxx node scripts/run-sync-content-blocks.mjs
  *   CLOUDFLARE_ACCOUNT_ID=xxx node scripts/run-sync-content-blocks.mjs --local   # use local D1 dev
+ *
+ * Now also generates lesson_content_blocks for multi-block lessons.
  */
 
 import { execSync } from 'child_process';
@@ -49,9 +51,100 @@ function esc(val) {
   return "'" + val.replace(/'/g, "''") + "'";
 }
 
-function genStmt(id, type, title, body, bodyHtml, meta, orderIndex) {
+function genCbStmt(id, type, title, body, bodyHtml, meta, orderIndex) {
   const metaJson = JSON.stringify(meta);
   return `INSERT OR REPLACE INTO content_blocks (id, type, title, body, body_html, meta, order_index, visibility, created_at, updated_at) VALUES (${esc(id)}, ${esc(type)}, ${esc(title)}, ${esc(body)}, ${esc(bodyHtml)}, ${esc(metaJson)}, ${orderIndex}, 'published', datetime('now'), datetime('now'));\n`;
+}
+
+function genLcbStmt(id, lessonId, contentBlockId, orderIndex, typeOverride) {
+  const to = typeOverride ? esc(typeOverride) : 'NULL';
+  return `INSERT OR REPLACE INTO lesson_content_blocks (id, lesson_id, content_block_id, order_index, type_override, created_at) VALUES (${esc(id)}, ${esc(lessonId)}, ${esc(contentBlockId)}, ${orderIndex}, ${to}, datetime('now'));\n`;
+}
+
+/**
+ * Parse multi-block content: --- type --- markers
+ */
+function parseMultiBlocks(rawMarkdown, sessionTitle, sessionId, moduleSlug, dirName, lessonId) {
+  if (!/^---\s*\w+\s*---\s*$/m.test(rawMarkdown)) return null;
+
+  const parts = rawMarkdown.split(/^---\s*(\w+)\s*---\s*$/m);
+  const blocks = [];
+  let idx = 0;
+
+  // Preamble before first ---
+  const preamble = (parts[0] || '').trim();
+  if (preamble) {
+    blocks.push({
+      id: `cb-${sessionId}-b${idx}`,
+      type: 'text',
+      title: idx === 0 ? sessionTitle : '',
+      body: preamble,
+      bodyHtml: preamble,
+      meta: { moduleSlug, dirName, sessionId, blockIndex: idx },
+      orderIndex: idx
+    });
+    idx++;
+  }
+
+  for (let i = 1; i < parts.length; i += 2) {
+    const blockType = (parts[i] || 'text').trim().toLowerCase();
+    const blockContent = (parts[i + 1] || '').trim();
+    if (!blockContent) continue;
+
+    const type = ['text', 'video', 'code', 'quiz', 'embed', 'image'].includes(blockType) ? blockType : 'text';
+    const blockId = `cb-${sessionId}-b${idx}`;
+    const meta = { moduleSlug, dirName, sessionId, blockIndex: idx };
+
+    if (type === 'quiz') {
+      meta.questions = parseQuizBlocks(blockContent);
+    }
+
+    blocks.push({
+      id: blockId,
+      type,
+      title: idx === 0 ? sessionTitle : '',
+      body: blockContent,
+      bodyHtml: blockContent,
+      meta,
+      orderIndex: idx
+    });
+    idx++;
+  }
+
+  return blocks.length > 0 ? blocks : null;
+}
+
+function parseQuizBlocks(content) {
+  const questions = [];
+  const lines = content.split('\n');
+  let current = null;
+
+  for (const line of lines) {
+    const t = line.trim();
+    const qm = t.match(/^##\s*(?:Question|Soal|Pertanyaan)\s*\d*\s*[:.]?\s*(.*)?$/i);
+    if (qm) {
+      if (current) questions.push(current);
+      current = { question: qm[2]?.trim() || '', options: [], correctIndex: null, explanation: '' };
+      continue;
+    }
+    if (current) {
+      const cm = t.match(/^[-*\d]+\.?\s*\*{1,2}(.+)\*{1,2}$/);
+      if (cm) {
+        current.options.push(cm[1].trim());
+        current.correctIndex = current.options.length - 1;
+        continue;
+      }
+      const om = t.match(/^[-*\d]+\.?\s+(.+)$/);
+      if (om && !t.startsWith('#')) {
+        current.options.push(om[1].trim());
+        continue;
+      }
+      const em = t.match(/^(?:Explanation|Penjelasan|Jawaban):\s*(.+)$/i);
+      if (em) { current.explanation = em[1].trim(); continue; }
+    }
+  }
+  if (current) questions.push(current);
+  return questions;
 }
 
 // ── Main ──
@@ -64,7 +157,6 @@ function main() {
   const modules = parseModulesTs(modulesTsPath);
   console.error(`Found ${modules.length} modules`);
 
-  // batchDir might exist from previous run — that's fine
   mkdirSync(batchDir, { recursive: true });
 
   const flag = isLocal ? '' : `--remote`;
@@ -87,19 +179,35 @@ function main() {
     for (let i = 0; i < mod.sessions.length; i++) {
       const sess = mod.sessions[i];
       const md = json[sess.id] || '';
-      sql += genStmt(`cb-${sess.id}`, 'text', sess.title, md, md, { moduleSlug: mod.slug, dirName: mod.dirName, sessionId: sess.id }, i);
-      totalStatements++;
+      const lessonId = sess.id;
+
+      // Check for multi-block
+      const multiBlocks = parseMultiBlocks(md, sess.title, sess.id, mod.slug, mod.dirName, lessonId);
+
+      if (multiBlocks && multiBlocks.length > 0) {
+        for (const block of multiBlocks) {
+          sql += genCbStmt(block.id, block.type, block.title, block.body, block.bodyHtml, block.meta, block.orderIndex);
+          totalStatements++;
+          const linkId = `lcb-${sess.id}-${block.orderIndex}`;
+          sql += genLcbStmt(linkId, lessonId, block.id, block.orderIndex, null);
+          totalStatements++;
+        }
+      } else {
+        // Single text block (legacy)
+        sql += genCbStmt(`cb-${sess.id}`, 'text', sess.title, md, md, { moduleSlug: mod.slug, dirName: mod.dirName, sessionId: sess.id }, i);
+        totalStatements++;
+      }
     }
 
     // README
     if (json['README']) {
-      sql += genStmt(`cb-${mod.dirName}-README`, 'text', `README — ${mod.title}`, json['README'], json['README'], { moduleSlug: mod.slug, dirName: mod.dirName, type: 'readme' }, -1);
+      sql += genCbStmt(`cb-${mod.dirName}-README`, 'text', `README — ${mod.title}`, json['README'], json['README'], { moduleSlug: mod.slug, dirName: mod.dirName, type: 'readme' }, -1);
       totalStatements++;
     }
 
     // quiz
     if (json['quiz']) {
-      sql += genStmt(`cb-${mod.dirName}-quiz`, 'quiz', `Quiz — ${mod.title}`, json['quiz'], json['quiz'], { moduleSlug: mod.slug, dirName: mod.dirName, type: 'quiz' }, -1);
+      sql += genCbStmt(`cb-${mod.dirName}-quiz`, 'quiz', `Quiz — ${mod.title}`, json['quiz'], json['quiz'], { moduleSlug: mod.slug, dirName: mod.dirName, type: 'quiz' }, -1);
       totalStatements++;
     }
 
@@ -115,9 +223,8 @@ function main() {
     // Execute
     try {
       const cmd = `${account} npx wrangler d1 execute rpl-ai-lms-db ${flag} --file=${batchFile}`;
-      console.error(`  Executing ${mod.dirName} (${mod.sessions.length + (json['README'] ? 1 : 0) + (json['quiz'] ? 1 : 0)} statements)...`);
+      console.error(`  Executing ${mod.dirName} (${sql.split('INSERT').length - 1} statements)...`);
       const out = execSync(cmd, { cwd: root, encoding: 'utf-8', timeout: 120000 });
-      // Check for errors in output
       if (out.includes('ERROR') || out.includes('error')) {
         const errLines = out.split('\n').filter(l => l.includes('ERROR') || l.includes('error') || l.includes('Error'));
         console.error(`  ⚠️  Errors in ${mod.dirName}:`, errLines.join('; '));

@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { addToast } from '$lib/stores/toast.svelte';
 
-	interface User {
-		id: string;
-		display_name: string | null;
-		avatar_url: string | null;
-	}
-
 	interface Thread {
 		id: string;
 		lesson_id: string;
@@ -15,6 +9,7 @@
 		body: string;
 		is_pinned: number;
 		is_locked: number;
+		is_resolved: number;
 		reply_count: number;
 		display_name: string | null;
 		avatar_url: string | null;
@@ -28,6 +23,7 @@
 		user_id: string;
 		body: string;
 		parent_id: string | null;
+		is_instructor_reply: number;
 		display_name: string | null;
 		avatar_url: string | null;
 		created_at: string;
@@ -54,6 +50,7 @@
 
 	let currentUserId = $state<string | null>(null);
 	let currentUserDisplay = $state<string | null>(null);
+	let currentUserRole = $state<string | null>(null);
 
 	function getToken(): string | null {
 		if (typeof localStorage === 'undefined') return null;
@@ -86,10 +83,15 @@
 				if (json.success && json.data) {
 					currentUserId = json.data.id;
 					currentUserDisplay = json.data.name;
+					currentUserRole = json.data.role || null;
 				}
 			}
 		} catch { /* ignore */ }
 	}
+
+	let isInstructor = $derived(
+		currentUserRole !== null && ['superadmin', 'admin', 'instructor'].includes(currentUserRole)
+	);
 
 	async function loadThreads() {
 		loading = true;
@@ -233,6 +235,28 @@
 		}
 	}
 
+	async function patchThread(threadId: string, updates: Record<string, boolean | string>) {
+		try {
+			const res = await fetch(`/api/threads/${threadId}`, {
+				method: 'PATCH',
+				headers: authHeaders(),
+				body: JSON.stringify(updates)
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && json.data) {
+					threads = threads.map(t => t.id === threadId ? json.data : t);
+					addToast('Thread updated', 'success');
+				}
+			} else {
+				const json = await res.json();
+				addToast(json.error || 'Failed to update thread', 'error');
+			}
+		} catch {
+			addToast('Failed to update thread', 'error');
+		}
+	}
+
 	function timeAgo(dateStr: string): string {
 		const now = Date.now();
 		const date = new Date(dateStr + 'Z').getTime();
@@ -301,7 +325,7 @@
 			{:else}
 				<div class="thread-list">
 					{#each threads as thread (thread.id)}
-						<div class="thread-item" class:expanded={expandedThreadId === thread.id}>
+						<div class="thread-item" class:expanded={expandedThreadId === thread.id} class:resolved={!!thread.is_resolved}>
 							<button class="thread-header" onclick={() => toggleThread(thread.id)}>
 								<div class="thread-info">
 									<div class="thread-title-row">
@@ -310,6 +334,9 @@
 										{/if}
 										{#if thread.is_locked}
 											<span class="lock-badge" title="Locked">🔒</span>
+										{/if}
+										{#if thread.is_resolved}
+											<span class="resolve-badge" title="Resolved">✅</span>
 										{/if}
 										<span class="thread-title">{thread.is_locked ? '[deleted]' : thread.title}</span>
 									</div>
@@ -331,16 +358,46 @@
 										{thread.body}
 									</div>
 
+									<!-- Instructor actions -->
+									{#if isInstructor}
+										<div class="instructor-actions">
+											<button
+												class="action-btn resolve-btn"
+												class:active={!!thread.is_resolved}
+												onclick={() => patchThread(thread.id, { is_resolved: !thread.is_resolved })}
+											>
+												{thread.is_resolved ? '✅ Resolved' : 'Mark Resolved'}
+											</button>
+											<button
+												class="action-btn pin-btn"
+												class:active={!!thread.is_pinned}
+												onclick={() => patchThread(thread.id, { is_pinned: !thread.is_pinned })}
+											>
+												{thread.is_pinned ? '📌 Pinned' : 'Pin'}
+											</button>
+											<button
+												class="action-btn lock-btn"
+												class:active={!!thread.is_locked}
+												onclick={() => patchThread(thread.id, { is_locked: !thread.is_locked })}
+											>
+												{thread.is_locked ? '🔒 Locked' : 'Lock'}
+											</button>
+										</div>
+									{/if}
+
 									<!-- Replies -->
 									<div class="replies-section">
 										{#if repliesLoading.has(thread.id)}
 											<div class="loading-small">Loading replies...</div>
 										{:else}
 											{#each replies.get(thread.id) || [] as reply (reply.id)}
-												<div class="reply-item">
+												<div class="reply-item" class:instructor-reply={!!reply.is_instructor_reply}>
 													<div class="reply-header">
 														<img class="avatar-small" src={getReplyAvatarUrl(reply)} alt="" />
 														<span class="author">{displayName(reply)}</span>
+														{#if reply.is_instructor_reply}
+															<span class="instructor-badge">Instructor</span>
+														{/if}
 														<span class="sep">·</span>
 														<span class="time">{timeAgo(reply.created_at)}</span>
 													</div>
@@ -384,7 +441,7 @@
 									{/if}
 
 									<!-- Delete button -->
-									{#if isOwnThread(thread)}
+									{#if isOwnThread(thread) || isInstructor}
 										<button class="delete-btn" onclick={() => deleteThread(thread.id)}>
 											Delete thread
 										</button>
@@ -516,6 +573,10 @@
 		border-color: var(--accent);
 	}
 
+	.thread-item.resolved {
+		border-left: 3px solid var(--success, #22c55e);
+	}
+
 	.thread-header {
 		display: flex;
 		align-items: center;
@@ -546,7 +607,7 @@
 		margin-bottom: 4px;
 	}
 
-	.pin-badge, .lock-badge {
+	.pin-badge, .lock-badge, .resolve-badge {
 		font-size: 12px;
 		flex-shrink: 0;
 	}
@@ -628,6 +689,43 @@
 		word-break: break-word;
 	}
 
+	/* Instructor actions */
+	.instructor-actions {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 12px;
+		flex-wrap: wrap;
+	}
+
+	.action-btn {
+		font-size: 11px;
+		padding: 4px 10px;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s;
+		font-weight: 500;
+	}
+
+	.action-btn:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+
+	.action-btn.active {
+		background: var(--accent-dim);
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+
+	.resolve-btn.active {
+		background: rgba(34, 197, 94, 0.12);
+		color: var(--success, #22c55e);
+		border-color: var(--success, #22c55e);
+	}
+
 	/* Replies */
 	.replies-section {
 		display: flex;
@@ -643,6 +741,11 @@
 		padding: 10px 12px;
 	}
 
+	.reply-item.instructor-reply {
+		border-left: 3px solid var(--accent);
+		background: rgba(108, 92, 231, 0.04);
+	}
+
 	.reply-header {
 		display: flex;
 		align-items: center;
@@ -650,6 +753,17 @@
 		margin-bottom: 6px;
 		font-size: 11px;
 		color: var(--text-secondary);
+	}
+
+	.instructor-badge {
+		font-size: 10px;
+		font-weight: 600;
+		padding: 1px 6px;
+		border-radius: 4px;
+		background: var(--accent-dim);
+		color: var(--accent);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
 	.reply-body {

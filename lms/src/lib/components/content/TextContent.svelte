@@ -1,12 +1,38 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { parseMarkdownWithVideo } from '$lib/utils/markdown';
+	import PrismTheme from './PrismTheme.svelte';
+	import { highlightContainer } from '$lib/utils/prism';
+
 	let { html, title }: { html?: string; title?: string } = $props();
+
+	// If html is raw markdown (contains {video:} shortcodes or markdown syntax),
+	// parse it with video support. If it's already HTML, use as-is.
+	let processedHtml = $derived(
+		html && (html.includes('{video:') || /^https?:\/\//.test(html.trim()))
+			? parseMarkdownWithVideo(html)
+			: html || ''
+	);
+
+	let contentEl = $state<HTMLDivElement | null>(null);
+
+	// After mount/render, highlight code blocks with Prism
+	$effect(() => {
+		if (!browser || !contentEl || !processedHtml) return;
+		const raf = requestAnimationFrame(() => {
+			highlightContainer(contentEl!);
+		});
+		return () => cancelAnimationFrame(raf);
+	});
 </script>
+
+<PrismTheme />
 
 {#if title}
 	<h3 class="content-title">{title}</h3>
 {/if}
-{#if html}
-	<div class="text-content markdown-content">{@html html}</div>
+{#if processedHtml}
+	<div bind:this={contentEl} class="text-content markdown-content">{@html processedHtml}</div>
 {/if}
 
 <style>
@@ -93,5 +119,19 @@
 	.text-content :global(th) {
 		background: rgba(255,255,255,0.04);
 		font-weight: 600;
+	}
+	/* Video embeds inside text content */
+	.text-content :global(.video-embed-wrapper) {
+		position: relative;
+		width: 100%;
+		border-radius: 8px;
+		overflow: hidden;
+		margin: 16px 0;
+	}
+	.text-content :global(.video-embed-wrapper iframe) {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: none;
+		border-radius: 8px;
 	}
 </style>

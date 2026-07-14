@@ -25,18 +25,41 @@ export async function load({ params, platform }: { params: Record<string, string
 		).bind(offering.course_id).first<any>();
 	}
 
-	// Get content block — by direct link or title fallback
-	let contentBlock = null;
-	if (lesson.content_block_id) {
-		contentBlock = await db.prepare(
-			'SELECT * FROM content_blocks WHERE id = ? AND visibility = ?'
-		).bind(lesson.content_block_id, 'published').first<any>();
-	}
-	if (!contentBlock) {
-		// Fallback: find by title match (for modules migrated from static JSON)
-		contentBlock = await db.prepare(
-			"SELECT * FROM content_blocks WHERE title = ? AND visibility = ? LIMIT 1"
-		).bind(lesson.title, 'published').first<any>();
+	// Get content blocks — try multi-block junction first, then single fallback
+	let contentBlocks: any[] = [];
+
+	// Check if lesson has entries in the junction table
+	const junctionBlocks = await db.prepare(
+		`SELECT cb.*, lcb.order_index, lcb.type_override
+		 FROM lesson_content_blocks lcb
+		 JOIN content_blocks cb ON cb.id = lcb.content_block_id
+		 WHERE lcb.lesson_id = ? AND cb.visibility = ?
+		 ORDER BY lcb.order_index ASC`
+	).bind(lesson.id, 'published').all<any>();
+
+	if (junctionBlocks.results && junctionBlocks.results.length > 0) {
+		contentBlocks = junctionBlocks.results.map((row: any) => ({
+			...row,
+			// Allow type_override to override the content_block's type
+			type: row.type_override || row.type
+		}));
+	} else {
+		// Fallback: single content block (legacy)
+		let contentBlock = null;
+		if (lesson.content_block_id) {
+			contentBlock = await db.prepare(
+				'SELECT * FROM content_blocks WHERE id = ? AND visibility = ?'
+			).bind(lesson.content_block_id, 'published').first<any>();
+		}
+		if (!contentBlock) {
+			// Fallback: find by title match (for modules migrated from static JSON)
+			contentBlock = await db.prepare(
+				"SELECT * FROM content_blocks WHERE title = ? AND visibility = ? LIMIT 1"
+			).bind(lesson.title, 'published').first<any>();
+		}
+		if (contentBlock) {
+			contentBlocks = [contentBlock];
+		}
 	}
 
 	// Get all lessons for navigation
@@ -48,7 +71,7 @@ export async function load({ params, platform }: { params: Record<string, string
 		lesson,
 		offering,
 		course,
-		contentBlock,
+		contentBlocks,
 		allLessons: allLessons.results || []
 	};
 }

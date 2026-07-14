@@ -4,13 +4,26 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 	try {
 		const db = getDB(platform);
 		const type = url.searchParams.get('type');
-		let query = 'SELECT * FROM content_blocks';
+		const lessonId = url.searchParams.get('lessonId');
+
+		let query: string;
 		const params: string[] = [];
-		if (type) {
-			query += ' WHERE type = ?';
+
+		if (lessonId) {
+			// GET content blocks for a specific lesson (from junction table)
+			query = `SELECT cb.*, lcb.order_index, lcb.type_override, lcb.id as lcb_id
+				FROM lesson_content_blocks lcb
+				JOIN content_blocks cb ON cb.id = lcb.content_block_id
+				WHERE lcb.lesson_id = ?
+				ORDER BY lcb.order_index ASC`;
+			params.push(lessonId);
+		} else if (type) {
+			query = 'SELECT * FROM content_blocks WHERE type = ? ORDER BY order_index ASC';
 			params.push(type);
+		} else {
+			query = 'SELECT * FROM content_blocks ORDER BY order_index ASC';
 		}
-		query += ' ORDER BY order_index ASC';
+
 		const stmt = db.prepare(query);
 		for (const p of params) stmt.bind(p);
 		const result = params.length > 0 ? await db.prepare(query).bind(...params).all() : await db.prepare(query).all();
