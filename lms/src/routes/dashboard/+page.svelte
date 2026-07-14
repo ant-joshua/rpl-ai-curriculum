@@ -9,6 +9,7 @@
 	import ModuleCard from '$lib/components/ModuleCard.svelte';
 	import ProgressChart from '$lib/components/ProgressChart.svelte';
 	import Skeleton from '$lib/components/Skeleton.svelte';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import { moduleVideos } from '$lib/stores/videos';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -234,9 +235,10 @@
 				{/each}
 			</div>
 		</section>
-	{:else}
-		<div in:fade={{ duration: 200 }}>
-	<header class="dashboard-header">
+		{:else}
+			<div in:fade={{ duration: 200 }}>
+		<Breadcrumb items={[{ label: 'Dashboard' }]} />
+		<header class="dashboard-header">
 		<div>
 			<h1>Selamat datang, {user.isLoggedIn ? user.username : 'Teman'}! 👋</h1>
 			<p class="subtitle">Lanjutkan perjalanan belajar RPL AI-mu</p>

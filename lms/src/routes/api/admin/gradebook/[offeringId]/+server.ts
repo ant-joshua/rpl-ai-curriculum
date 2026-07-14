@@ -8,12 +8,12 @@ export async function GET({ params, platform, url }: { params: { offeringId: str
 		const offering = await db.prepare('SELECT * FROM course_offerings WHERE id = ?').bind(params.offeringId).first<any>();
 		if (!offering) return jsonResponse({ success: false, error: 'Offering not found' }, 404);
 
-		// Get enrollments with user info
+		// Get active enrollments with user info
 		const { results: enrollments } = await db.prepare(
 			`SELECT e.*, u.display_name, u.email, u.username
 			 FROM enrollments e
 			 JOIN users u ON u.id = e.user_id
-			 WHERE e.course_offering_id = ? AND e.role = 'student'
+			 WHERE e.course_offering_id = ? AND e.status = 'active'
 			 ORDER BY u.display_name ASC`
 		).bind(params.offeringId).all<any>();
 
@@ -27,14 +27,40 @@ export async function GET({ params, platform, url }: { params: { offeringId: str
 			'SELECT * FROM assignments WHERE course_offering_id = ? ORDER BY created_at ASC'
 		).bind(params.offeringId).all<any>();
 
-		// Get all grades for this offering
-		const { results: grades } = await db.prepare(
-			`SELECT g.*, asub.score AS as_score, asign.score AS asign_score
-			 FROM gradebook g
-			 LEFT JOIN assessment_submissions asub ON asub.id = g.assessment_submission_id
-			 LEFT JOIN assignment_submissions asign ON asign.id = g.assignment_submission_id
-			 WHERE g.course_offering_id = ?`
+		// Get assessment submissions for all students in this offering
+		const { results: assessmentSubmissions } = await db.prepare(
+			`SELECT asub.*, u.display_name AS user_name
+			 FROM assessment_submissions asub
+			 JOIN enrollments e ON e.user_id = asub.user_id AND e.course_offering_id = ?
+			 LEFT JOIN users u ON u.id = asub.user_id
+			 WHERE e.status = 'active'
+			 ORDER BY asub.created_at`
 		).bind(params.offeringId).all<any>();
+
+		// Get assignment submissions for all students in this offering
+		const { results: assignmentSubmissions } = await db.prepare(
+			`SELECT asign.*, u.display_name AS user_name
+			 FROM assignment_submissions asign
+			 JOIN enrollments e ON e.user_id = asign.user_id AND e.course_offering_id = ?
+			 LEFT JOIN users u ON u.id = asign.user_id
+			 WHERE e.status = 'active'
+			 ORDER BY asign.created_at`
+		).bind(params.offeringId).all<any>();
+
+		// Get gradebook rows for this offering
+		const { results: grades } = await db.prepare(
+			'SELECT * FROM gradebook WHERE course_offering_id = ?'
+		).bind(params.offeringId).all<any>();
+
+		// Build per-student grade summary
+		const studentGrades: Record<string, { total_score: number; total_max: number; count: number }> = {};
+		for (const g of grades || []) {
+			if (g.score == null) continue;
+			if (!studentGrades[g.user_id]) studentGrades[g.user_id] = { total_score: 0, total_max: 0, count: 0 };
+			studentGrades[g.user_id].total_score += g.score;
+			studentGrades[g.user_id].total_max += g.max_score ?? 100;
+			studentGrades[g.user_id].count++;
+		}
 
 		return jsonResponse({
 			success: true,
@@ -43,57 +69,12 @@ export async function GET({ params, platform, url }: { params: { offeringId: str
 				enrollments: enrollments || [],
 				assessments: assessments || [],
 				assignments: assignments || [],
-				grades: grades || []
+				assessmentSubmissions: assessmentSubmissions || [],
+				assignmentSubmissions: assignmentSubmissions || [],
+				grades: grades || [],
+				studentGrades
 			}
 		});
-	} catch (e: unknown) {
-		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
-	}
-}
-
-export async function PUT({ request, params, platform }: { request: Request; params: { offeringId: string }; platform: App.Platform }): Promise<Response> {
-	try {
-		const db = getDB(platform);
-		const body = await request.json();
-
-		// Expect: { user_id, assessment_submission_id?, assignment_submission_id?, score, max_score, weight, feedback }
-		const existing = body.id ? await db.prepare('SELECT * FROM gradebook WHERE id = ?').bind(body.id).first<any>() : null;
-
-		if (existing) {
-			await db.prepare(
-				'UPDATE gradebook SET score = ?, max_score = ?, weight = ?, feedback = ?, graded_at = ?, updated_at = datetime(\'now\') WHERE id = ?'
-			).bind(
-				body.score ?? existing.score,
-				body.max_score ?? existing.max_score,
-				body.weight ?? existing.weight,
-				body.feedback ?? existing.feedback,
-				new Date().toISOString(),
-				body.id
-			).run();
-			const updated = await db.prepare('SELECT * FROM gradebook WHERE id = ?').bind(body.id).first<any>();
-			return jsonResponse({ success: true, data: updated });
-		} else {
-			const id = crypto.randomUUID();
-			await db.prepare(
-				`INSERT INTO gradebook (id, user_id, course_offering_id, assessment_submission_id, assignment_submission_id, score, max_score, weight, graded_by, graded_at, feedback, created_at, updated_at)
-				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-			).bind(
-				id,
-				body.user_id,
-				params.offeringId,
-				body.assessment_submission_id ?? null,
-				body.assignment_submission_id ?? null,
-				body.score ?? null,
-				body.max_score ?? null,
-				body.weight ?? 1.0,
-				body.graded_by ?? null,
-				new Date().toISOString(),
-				body.feedback ?? null
-			).run();
-			const created = await db.prepare('SELECT * FROM gradebook WHERE id = ?').bind(id).first<any>();
-			return jsonResponse({ success: true, data: created }, 201);
-		}
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

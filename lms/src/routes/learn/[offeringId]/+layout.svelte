@@ -1,12 +1,26 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+	import { setContext } from 'svelte';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data, children } = $props();
 
 	let offering = $derived(data.offering);
 	let course = $derived(data.course);
 	let currentPath = $derived($page.url.pathname);
+
+	// Breadcrumb tail — child pages push extra crumbs via context
+	let breadcrumbTail = $state<{ label: string; href?: string }[]>([]);
+	function setBreadcrumbTail(items: { label: string; href?: string }[]) {
+		breadcrumbTail = items;
+	}
+	setContext('breadcrumb-tail', setBreadcrumbTail);
+
+	let breadcrumbItems = $derived([
+		{ label: course?.title ?? offering?.name, href: `/learn/${offering?.id}` },
+		...breadcrumbTail,
+	]);
 
 	// Determine active tab
 	let activeTab = $derived(
@@ -23,7 +37,7 @@
 
 <div class="learn-layout">
 	<!-- Breadcrumb -->
-	<a href="/learn" class="back-link">&larr; All Courses</a>
+	<Breadcrumb items={breadcrumbItems} homeHref="/learn" homeLabel="← All Courses" />
 
 	<!-- Header -->
 	<header class="course-header">
@@ -68,20 +82,6 @@
 		margin: 0 auto;
 		padding: 24px 16px 48px;
 		animation: fadeIn 0.3s ease both;
-	}
-
-	.back-link {
-		display: inline-block;
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-secondary);
-		margin-bottom: 16px;
-		text-decoration: none;
-		transition: color 0.15s;
-	}
-
-	.back-link:hover {
-		color: var(--accent);
 	}
 
 	.course-header {

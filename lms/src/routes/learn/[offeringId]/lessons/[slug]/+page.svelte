@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { getContext } from 'svelte';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
 	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
@@ -13,6 +14,16 @@
 	let contentBlock = $derived(data.contentBlock);
 	let allLessons = $derived<any[]>(data.allLessons ?? []);
 	let params = $derived($page.params);
+
+	// Push breadcrumb tail via layout context
+	let setBreadcrumbTail = getContext<(items: { label: string; href?: string }[]) => void>('breadcrumb-tail');
+	$effect(() => {
+		if (lesson) {
+			setBreadcrumbTail([
+				{ label: lesson.title },
+			]);
+		}
+	});
 
 	// Navigation
 	let prevLesson = $derived.by(() => {
@@ -133,9 +144,6 @@
 			<a href="/learn/{params.offeringId}" class="back-link">&larr; Back to course</a>
 		</div>
 	{:else}
-		<!-- Back navigation -->
-		<a href="/learn/{params.offeringId}" class="back-link">&larr; {course?.title ?? 'Back to course'}</a>
-
 		<!-- Header -->
 		<header class="lesson-header">
 			<div class="header-top">

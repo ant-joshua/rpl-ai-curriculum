@@ -1,7 +1,14 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { getContext, onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
+
+	// Push breadcrumb tail via layout context
+	let setBreadcrumbTail = getContext<(items: { label: string; href?: string }[]) => void>('breadcrumb-tail');
+	onMount(() => {
+		setBreadcrumbTail([{ label: 'Silabus' }]);
+	});
 
 	let offering = $derived(data.offering);
 	let lessons = $derived(data.lessons);

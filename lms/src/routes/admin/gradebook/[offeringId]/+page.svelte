@@ -1,358 +1,421 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
-	let { data }: { data: any } = $props();
-
-	let enrollments = $derived<any[]>(data.enrollments || []);
-	let assessments = $derived<any[]>(data.assessments || []);
-	let assignments = $derived<any[]>(data.assignments || []);
-	let grades = $derived<any[]>(data.grades || []);
-	let assessmentSubmissions = $derived<any[]>(data.assessmentSubmissions || []);
-	let assignmentSubmissions = $derived<any[]>(data.assignmentSubmissions || []);
-
-	let editCell = $state<{ userId: string; type: 'assessment' | 'assignment'; id: string; field: string } | null>(null);
-	let editValue = $state('');
-	let saving = $state(false);
-	let saveError = $state('');
-
+	let offeringId = $state('');
+	let offering: any = $state(null);
+	let enrollments: any[] = $state([]);
+	let assessments: any[] = $state([]);
+	let assignments: any[] = $state([]);
+	let assessmentSubmissions: any[] = $state([]);
+	let assignmentSubmissions: any[] = $state([]);
+	let studentGrades: Record<string, any> = $state({});
+	let loading = $state(true);
+	let error = $state('');
 	let searchQuery = $state('');
 
-	let filteredEnrollments = $derived(
-		searchQuery
-			? enrollments.filter(e =>
-					(e.display_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-					(e.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-					(e.username || '').toLowerCase().includes(searchQuery.toLowerCase())
-			  )
-			: enrollments
-	);
+	// Inline grade editing
+	let editingCell: { userId: string; itemId: string; type: 'assessment' | 'assignment' } | null = $state(null);
+	let editValue = $state('');
+	let savingGrade = $state(false);
+	let gradeError = $state('');
 
-	function getGrade(userId: string, assmtId: string, isAssignment: boolean) {
-		const gradeKey = isAssignment ? 'assignment_submission_id' : 'assessment_submission_id';
-		return grades.find(g => g.user_id === userId && (
-			isAssignment
-				? g.assignment_submission_id && assignmentSubmissions.find(s => s.id === g.assignment_submission_id && s.assignment_id === assmtId)
-				: g.assessment_submission_id && assessmentSubmissions.find(s => s.id === g.assessment_submission_id && s.assessment_id === assmtId)
-		));
-	}
-
-	function getSubmission(userId: string, assmtId: string, isAssignment: boolean) {
-		if (isAssignment) {
-			return assignmentSubmissions.find(s => s.user_id === userId && s.assignment_id === assmtId);
+	$effect(() => {
+		if (browser) {
+			offeringId = $page.url.pathname.split('/').pop() || '';
 		}
-		return assessmentSubmissions.find(s => s.user_id === userId && s.assessment_id === assmtId);
+	});
+
+	onMount(() => {
+		if (!browser) return;
+		loadData();
+	});
+
+	async function loadData() {
+		if (!offeringId) { setTimeout(() => loadData(), 100); return; }
+		loading = true;
+		error = '';
+		try {
+			const res = await fetch(`/api/admin/gradebook/${offeringId}`);
+			const json = await res.json();
+			if (!json.success) { error = json.error || 'Failed'; return; }
+			const d = json.data;
+			offering = d.offering;
+			enrollments = d.enrollments || [];
+			assessments = d.assessments || [];
+			assignments = d.assignments || [];
+			assessmentSubmissions = d.assessmentSubmissions || [];
+			assignmentSubmissions = d.assignmentSubmissions || [];
+			studentGrades = d.studentGrades || {};
+		} catch { error = 'Network error'; }
+		finally { loading = false; }
 	}
 
-	function getSubmissionScore(userId: string, assmtId: string, isAssignment: boolean): number | null {
-		const sub = getSubmission(userId, assmtId, isAssignment);
-		if (!sub) return null;
-		// Check gradebook for manual score override
-		const grade = grades.find(g => g.user_id === userId && (
-			isAssignment
-				? g.assignment_submission_id === sub.id
-				: g.assessment_submission_id === sub.id
-		));
-		if (grade && grade.score != null) return grade.score;
-		return sub.score ?? null;
+	/** All graded items (assessments + assignments) as a single array */
+	function getGradedItems(): { id: string; title: string; type: 'assessment' | 'assignment'; maxScore: number }[] {
+		const items: { id: string; title: string; type: 'assessment' | 'assignment'; maxScore: number }[] = [];
+		for (const a of assessments) items.push({ id: a.id, title: a.title, type: 'assessment' as const, maxScore: a.passing_score ?? 100 });
+		for (const a of assignments) items.push({ id: a.id, title: a.title, type: 'assignment' as const, maxScore: a.max_score ?? 100 });
+		return items;
 	}
 
-	function getMaxScore(assmt: any, isAssignment: boolean): number {
-		if (isAssignment) return assmt.max_score ?? 100;
-		return assmt.passing_score ?? 100;
-	}
-
-	function pct(userId: string, assmt: any, isAssignment: boolean): number | null {
-		const score = getSubmissionScore(userId, assmt.id, isAssignment);
-		const max = getMaxScore(assmt, isAssignment);
-		if (score == null || max <= 0) return null;
-		return Math.round((score / max) * 100);
-	}
-
-	function gradeColor(pctVal: number | null): string {
-		if (pctVal === null) return 'var(--text-secondary)';
-		if (pctVal >= 80) return 'var(--color-green, #2ecc71)';
-		if (pctVal >= 60) return 'var(--color-yellow, #f1c40f)';
-		return 'var(--color-red, #e74c3c)';
-	}
-
-	function calcTotal(userId: string): { score: number; max: number; pct: number | null } {
-		let totalScore = 0;
-		let totalMax = 0;
-		for (const a of assessments) {
-			const s = getSubmissionScore(userId, a.id, false);
-			const m = getMaxScore(a, false);
-			const w = a.weight ?? 1;
-			if (s != null && m > 0) {
-				totalScore += s * w;
-				totalMax += m * w;
-			}
+	/** Get submission for a student + item combo */
+	function getSubmission(userId: string, itemId: string, type: 'assessment' | 'assignment'): any | null {
+		if (type === 'assessment') {
+			return assessmentSubmissions.find(s => s.user_id === userId && s.assessment_id === itemId) || null;
 		}
-		for (const a of assignments) {
-			const s = getSubmissionScore(userId, a.id, true);
-			const m = getMaxScore(a, true);
-			const w = a.weight ?? 1;
-			if (s != null && m > 0) {
-				totalScore += s * w;
-				totalMax += m * w;
-			}
-		}
-		const pctVal = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : null;
-		return { score: totalScore, max: totalMax, pct: pctVal };
+		return assignmentSubmissions.find(s => s.user_id === userId && s.assignment_id === itemId) || null;
 	}
 
-	function startEdit(userId: string, type: 'assessment' | 'assignment', id: string, field: string, currentValue: any) {
-		editCell = { userId, type, id, field };
-		editValue = currentValue != null ? String(currentValue) : '';
-		saveError = '';
+	/** Get the display score for a cell */
+	function getScore(userId: string, itemId: string, type: 'assessment' | 'assignment'): { score: number | null; max: number } {
+		const sub = getSubmission(userId, itemId, type);
+		if (sub && sub.score != null) return { score: sub.score, max: sub.max_score ?? (type === 'assessment' ? 100 : 100) };
+		return { score: null, max: type === 'assessment' ? 100 : 100 };
+	}
+
+	function getStudentGrade(userId: string): { total_score: number; total_max: number; count: number } | null {
+		return studentGrades[userId] || null;
+	}
+
+	function gradeColor(score: number | null, max: number): string {
+		if (score === null) return 'var(--text-secondary)';
+		const pct = max > 0 ? (score / max) * 100 : 0;
+		if (pct >= 80) return '#2ecc71';
+		if (pct >= 60) return '#f1c40f';
+		return '#e74c3c';
+	}
+
+	function filteredEnrollments(): any[] {
+		if (!searchQuery) return enrollments;
+		const q = searchQuery.toLowerCase();
+		return enrollments.filter(e =>
+			(e.display_name || '').toLowerCase().includes(q) ||
+			(e.email || '').toLowerCase().includes(q) ||
+			(e.username || '').toLowerCase().includes(q)
+		);
+	}
+
+	function formatDate(d: string | null): string {
+		if (!d) return '-';
+		try { return new Date(d + 'Z').toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); } catch { return d; }
+	}
+
+	function displayName(e: any): string {
+		return e.display_name || e.username || e.email || 'Unknown';
+	}
+
+	// ── Inline grading ──
+
+	function startEdit(userId: string, itemId: string, type: 'assessment' | 'assignment') {
+		const sub = getSubmission(userId, itemId, type);
+		editValue = sub?.score != null ? String(sub.score) : '';
+		editingCell = { userId, itemId, type };
+		gradeError = '';
 	}
 
 	function cancelEdit() {
-		editCell = null;
+		editingCell = null;
 		editValue = '';
+		gradeError = '';
 	}
 
-	async function saveEdit() {
-		if (!editCell) return;
-		saving = true;
-		saveError = '';
-		try {
-			const { userId, type, id, field } = editCell;
-			const isAssignment = type === 'assignment';
-			let sub = getSubmission(userId, id, isAssignment);
-			const assmt = isAssignment ? assignments.find(a => a.id === id) : assessments.find(a => a.id === id);
-			const maxScore = getMaxScore(assmt, isAssignment);
+	async function saveInlineGrade() {
+		if (!editingCell) return;
+		savingGrade = true;
+		gradeError = '';
+		const score = parseFloat(editValue);
+		if (isNaN(score) || score < 0) {
+			gradeError = 'Nilai tidak valid';
+			savingGrade = false;
+			return;
+		}
 
-			// Upsert submission if needed
-			if (!sub) {
-				const res = await fetch(`/api/admin/${isAssignment ? 'assignment-submissions' : 'assessment-submissions'}`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						[isAssignment ? 'assignment_id' : 'assessment_id']: id,
-						user_id: userId,
-						status: 'graded',
-						score: field === 'score' ? parseFloat(editValue) : null,
-						max_score: maxScore,
-					}),
-				});
-				const json = await res.json();
-				if (!json.success) { saveError = json.error || 'Failed to save'; return; }
-				// Reload page
-				window.location.reload();
-				return;
+		const sub = getSubmission(editingCell.userId, editingCell.itemId, editingCell.type);
+		const endpoint = editingCell.type === 'assessment'
+			? `/api/admin/assessment-submissions/${sub?.id || '__new__'}`
+			: `/api/admin/assignment-submissions/${sub?.id || '__new__'}`;
+
+		try {
+			const method = sub?.id ? 'PUT' : 'POST';
+			const body: any = {
+				score,
+				status: 'graded',
+				graded_by: localStorage.getItem('lms-user-id') || null,
+				graded_at: new Date().toISOString(),
+			};
+			if (editingCell.type === 'assessment') {
+				body.assessment_id = editingCell.itemId;
+				body.user_id = editingCell.userId;
+			} else {
+				body.assignment_id = editingCell.itemId;
+				body.user_id = editingCell.userId;
 			}
 
-			// Update submission score
-			const updateBody: any = {};
-			if (field === 'score') updateBody.score = parseFloat(editValue);
-			const res = await fetch(`/api/admin/${isAssignment ? 'assignment-submissions' : 'assessment-submissions'}/${sub.id}`, {
-				method: 'PUT',
+			const res = await fetch(endpoint, {
+				method,
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(updateBody),
+				body: JSON.stringify(body),
 			});
 			const json = await res.json();
-			if (!json.success) { saveError = json.error || 'Failed to save'; return; }
-
-			cancelEdit();
-			// Reload to refresh data
-			window.location.reload();
-		} catch {
-			saveError = 'Network error';
-		} finally {
-			saving = false;
-		}
+			if (json.success) {
+				await loadData(); // refresh
+				cancelEdit();
+			} else {
+				gradeError = json.error || 'Gagal menyimpan';
+			}
+		} catch { gradeError = 'Network error'; }
+		finally { savingGrade = false; }
 	}
 
-	function exportCSV() {
-		let csv = 'Student';
-		for (const a of assessments) csv += `,${a.title} (%)`;
-		for (const a of assignments) csv += `,${a.title} (%)`;
-		csv += ',Total (%)';
+	// ── CSV Export ──
 
-		csv += '\n';
-		for (const e of filteredEnrollments) {
-			csv += `"${e.display_name || e.username || e.email}"`;
-			for (const a of assessments) {
-				const p = pct(e.user_id, a, false);
-				csv += `,${p != null ? p : ''}`;
+	function exportCSV() {
+		const items = getGradedItems();
+		if (items.length === 0) return;
+
+		// Header row
+		let csv = 'Nama,Email,Username';
+		for (const item of items) {
+			csv += `,"${item.title} (${item.maxScore})"`;
+		}
+		csv += ',Total Score,Total Max,Percentage\n';
+
+		// Data rows
+		for (const e of enrollments) {
+			const row: string[] = [
+				`"${displayName(e)}"`,
+				`"${e.email || ''}"`,
+				`"${e.username || ''}"`,
+			];
+			let studentTotal = 0;
+			let studentMax = 0;
+			for (const item of items) {
+				const sc = getScore(e.user_id, item.id, item.type);
+				row.push(sc.score != null ? String(sc.score) : '');
+				if (sc.score != null) { studentTotal += sc.score; studentMax += sc.max; }
+				else studentMax += sc.max;
 			}
-			for (const a of assignments) {
-				const p = pct(e.user_id, a, true);
-				csv += `,${p != null ? p : ''}`;
-			}
-			const total = calcTotal(e.user_id);
-			csv += `,${total.pct != null ? total.pct : ''}`;
-			csv += '\n';
+			const pct = studentMax > 0 ? Math.round((studentTotal / studentMax) * 100) : 0;
+			row.push(String(studentTotal), String(studentMax), `${pct}%`);
+			csv += row.join(',') + '\n';
 		}
 
+		// Trigger download
 		const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = `gradebook-${data.offering?.code || 'export'}.csv`;
+		a.download = `gradebook-${offering?.code || offeringId}-${new Date().toISOString().slice(0, 10)}.csv`;
 		a.click();
 		URL.revokeObjectURL(url);
 	}
 </script>
 
 <svelte:head>
-	<title>Gradebook — {data.offering?.name || 'Gradebook'} — RPL AI Curriculum</title>
+	<title>Gradebook — {offering?.name || 'Loading'} — RPL AI Curriculum</title>
 </svelte:head>
 
-<div class="gradebook-page">
-	<div class="header">
-		<div>
-			<h1>Gradebook</h1>
-			<p class="offering-name">{data.offering?.name} ({data.offering?.code})</p>
-		</div>
-		<div class="header-actions">
-			<input
-				type="text"
-				class="search-input"
-				placeholder="Search student..."
-				bind:value={searchQuery}
-			/>
-			<button class="btn btn--export" onclick={exportCSV}>Export CSV</button>
-			<a href="/admin" class="btn btn--back">← Back</a>
-		</div>
-	</div>
-
-	{#if filteredEnrollments.length === 0}
-		<div class="empty">No students enrolled in this offering.</div>
+<div class="gradebook-detail">
+	{#if loading}
+		<div class="loading">Memuat gradebook...</div>
+	{:else if error}
+		<div class="error">{error}</div>
 	{:else}
-		<div class="table-wrapper">
-			<table class="gradebook-table">
-				<thead>
-					<tr>
-						<th class="sticky">Student</th>
-						{#each assessments as a}
-							<th class="rotate" title="{a.title}">{a.title}</th>
-						{/each}
-						{#each assignments as a}
-							<th class="rotate" title="{a.title}">{a.title}</th>
-						{/each}
-						<th class="rotate total-header">Total</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredEnrollments as e}
-						<tr>
-							<td class="sticky student-cell">
-								<span class="student-name">{e.display_name || e.username || e.email}</span>
-								<span class="student-email">{e.email}</span>
-							</td>
-							{#each assessments as a}
-								{@const p = pct(e.user_id, a, false)}
-								{@const score = getSubmissionScore(e.user_id, a.id, false)}
-								<td
-									class="score-cell"
-									style="color: {gradeColor(p)}"
-									onclick={() => startEdit(e.user_id, 'assessment', a.id, 'score', score)}
-									role="button"
-									tabindex="0"
-									onkeydown={(ev) => ev.key === 'Enter' && startEdit(e.user_id, 'assessment', a.id, 'score', score)}
-								>
-									{#if editCell && editCell.userId === e.user_id && editCell.type === 'assessment' && editCell.id === a.id}
-										<div class="inline-edit">
-											<input
-												type="number"
-												step="0.5"
-												bind:value={editValue}
-												onclick={(ev) => ev.stopPropagation()}
-												onkeydown={(ev) => { if (ev.key === 'Enter') saveEdit(); if (ev.key === 'Escape') cancelEdit(); }}
-												autofocus
-											/>
-											<div class="inline-edit-actions">
-												<button class="btn btn--sm btn--save" onclick={(ev) => { ev.stopPropagation(); saveEdit(); }} disabled={saving}>✓</button>
-												<button class="btn btn--sm btn--cancel" onclick={(ev) => { ev.stopPropagation(); cancelEdit(); }}>✕</button>
-											</div>
-											{#if saveError}<span class="save-error">{saveError}</span>{/if}
-										</div>
-									{:else}
-										{p !== null ? p + '%' : '-'}
-									{/if}
-								</td>
-							{/each}
-							{#each assignments as a}
-								{@const p = pct(e.user_id, a, true)}
-								{@const score = getSubmissionScore(e.user_id, a.id, true)}
-								<td
-									class="score-cell"
-									style="color: {gradeColor(p)}"
-									onclick={() => startEdit(e.user_id, 'assignment', a.id, 'score', score)}
-									role="button"
-									tabindex="0"
-									onkeydown={(ev) => ev.key === 'Enter' && startEdit(e.user_id, 'assignment', a.id, 'score', score)}
-								>
-									{#if editCell && editCell.userId === e.user_id && editCell.type === 'assignment' && editCell.id === a.id}
-										<div class="inline-edit">
-											<input
-												type="number"
-												step="0.5"
-												bind:value={editValue}
-												onclick={(ev) => ev.stopPropagation()}
-												onkeydown={(ev) => { if (ev.key === 'Enter') saveEdit(); if (ev.key === 'Escape') cancelEdit(); }}
-												autofocus
-											/>
-											<div class="inline-edit-actions">
-												<button class="btn btn--sm btn--save" onclick={(ev) => { ev.stopPropagation(); saveEdit(); }} disabled={saving}>✓</button>
-												<button class="btn btn--sm btn--cancel" onclick={(ev) => { ev.stopPropagation(); cancelEdit(); }}>✕</button>
-											</div>
-											{#if saveError}<span class="save-error">{saveError}</span>{/if}
-										</div>
-									{:else}
-										{p !== null ? p + '%' : '-'}
-									{/if}
-								</td>
-							{/each}
-							<td class="total-cell" style="color: {gradeColor(calcTotal(e.user_id).pct)}">
-								{calcTotal(e.user_id).pct !== null ? calcTotal(e.user_id).pct + '%' : '-'}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+		<!-- Header -->
+		<div class="page-header">
+			<div>
+				<div class="breadcrumb">
+					<a href="/admin/gradebook">← Gradebook</a>
+				</div>
+				<h1>{offering?.name}</h1>
+				<p class="offering-meta">
+					{#if offering?.code}<span>{offering.code}</span>{/if}
+					<span>{enrollments.length} mahasiswa</span>
+					<span>{assessments.length} assessment, {assignments.length} assignment</span>
+					<span class="status-badge status--{offering?.status}">{offering?.status}</span>
+				</p>
+			</div>
+			<div class="header-actions">
+				<input
+					type="text"
+					class="search-input"
+					placeholder="Cari mahasiswa..."
+					bind:value={searchQuery}
+				/>
+				<button class="btn btn--csv" onclick={exportCSV} disabled={getGradedItems().length === 0}>
+					⬇ CSV
+				</button>
+			</div>
 		</div>
-	{/if}
 
-	{#if saveError}
-		<div class="error-toast">{saveError}</div>
+		{@const items = getGradedItems()}
+		{@const students = filteredEnrollments()}
+
+		{#if items.length === 0}
+			<div class="empty-state">Belum ada assessment atau assignment di offering ini.</div>
+		{:else if students.length === 0}
+			<div class="empty-state">Tidak ada mahasiswa yang cocok.</div>
+		{:else}
+			<div class="table-wrapper">
+				<table class="gradebook-table">
+					<thead>
+						<tr>
+							<th class="sticky-col name-col">Mahasiswa</th>
+							{#each items as item}
+								<th class="item-col" title="{item.title} (max: {item.maxScore})">
+									<div class="item-header">
+										<span class="item-type">{item.type === 'assessment' ? '📝' : '📋'}</span>
+										<span class="item-title">{item.title}</span>
+										<span class="item-max">/{item.maxScore}</span>
+									</div>
+								</th>
+							{/each}
+							<th class="total-col">Total</th>
+							<th class="pct-col">%</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each students as e}
+							{@const grade = getStudentGrade(e.user_id)}
+							<tr>
+								<td class="sticky-col name-col">
+									<div class="student-info">
+										<span class="student-name">{displayName(e)}</span>
+										<span class="student-email">{e.email || ''}</span>
+									</div>
+								</td>
+								{#each items as item}
+									{@const sc = getScore(e.user_id, item.id, item.type)}
+									{@const isEditing = editingCell?.userId === e.user_id && editingCell?.itemId === item.id && editingCell?.type === item.type}
+									<td
+										class="score-cell"
+										style="color: {gradeColor(sc.score, sc.max)}"
+										class:cell--editing={isEditing}
+										class:cell--empty={sc.score === null}
+										class:cell--scored={sc.score !== null}
+									>
+										{#if isEditing}
+											<!-- svelte-ignore a11y_autofocus -->
+											<input
+												type="number"
+												step="0.5"
+												min="0"
+												bind:value={editValue}
+												class="inline-score-input"
+												autofocus
+												onkeydown={(ev) => {
+													if (ev.key === 'Enter') saveInlineGrade();
+													if (ev.key === 'Escape') cancelEdit();
+												}}
+												onblur={() => { if (!savingGrade) cancelEdit(); }}
+											/>
+										{:else}
+											<!-- svelte-ignore a11y_click_events_have_key_events -->
+											<!-- svelte-ignore a11y_no_static_element_interactions -->
+											<span
+												class="score-value"
+												onclick={() => startEdit(e.user_id, item.id, item.type)}
+												title="Klik untuk edit nilai"
+												role="button"
+												tabindex="-1"
+											>
+												{sc.score != null ? sc.score : '-'}
+											</span>
+										{/if}
+									</td>
+								{/each}
+								<td class="total-col">
+									{#if grade}
+										<span class="total-score">{grade.total_score.toFixed(1)}</span>
+										<span class="total-sep">/</span>
+										<span class="total-max">{grade.total_max.toFixed(1)}</span>
+									{:else}
+										<span class="total-na">-</span>
+									{/if}
+								</td>
+								<td class="pct-col" style="color: {grade ? gradeColor(grade.total_score, grade.total_max) : 'var(--text-secondary)'}">
+									{#if grade && grade.total_max > 0}
+										{Math.round((grade.total_score / grade.total_max) * 100)}%
+									{:else}
+										-
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Grade error toast -->
+			{#if gradeError}
+				<div class="grade-error-toast">{gradeError}</div>
+			{/if}
+		{/if}
 	{/if}
 </div>
 
 <style>
-	.gradebook-page {
-		padding: 0;
+	.gradebook-detail {
+		max-width: 1200px;
 	}
 
-	.header {
+	.loading, .error {
+		padding: 60px 20px;
+		text-align: center;
+		color: var(--text-secondary);
+	}
+	.error { color: #e74c3c; }
+
+	.page-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: 20px;
-		flex-wrap: wrap;
-		gap: 12px;
+		margin-bottom: 24px;
+		gap: 16px;
 	}
-
-	.header h1 {
+	.breadcrumb {
+		font-size: 13px;
+		margin-bottom: 8px;
+	}
+	.breadcrumb a {
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.breadcrumb a:hover { text-decoration: underline; }
+	.page-header h1 {
+		margin: 0 0 4px;
 		font-size: 24px;
-		margin: 0 0 4px 0;
 	}
-
-	.offering-name {
-		margin: 0;
+	.offering-meta {
+		font-size: 13px;
 		color: var(--text-secondary);
-		font-size: 14px;
+		margin: 0;
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	.status--active { background: #2ecc7133; color: #2ecc71; }
+	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
+	.status--archived { background: #95a5a633; color: #95a5a6; }
+	.status--completed { background: #3498db33; color: #3498db; }
+	.status-badge {
+		display: inline-block;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 600;
 	}
 
 	.header-actions {
+		flex-shrink: 0;
 		display: flex;
-		align-items: center;
 		gap: 8px;
-		flex-wrap: wrap;
+		align-items: center;
 	}
-
 	.search-input {
 		padding: 8px 12px;
 		border: 1px solid var(--border);
@@ -360,36 +423,48 @@
 		background: var(--bg);
 		color: var(--text);
 		font-size: 14px;
-		width: 200px;
+		width: 220px;
+		font-family: inherit;
 	}
-
-	.btn {
+	.search-input:focus {
+		border-color: var(--accent);
+		outline: none;
+	}
+	.btn--csv {
 		padding: 8px 16px;
 		border: 1px solid var(--border);
 		border-radius: 8px;
-		font-size: 14px;
-		cursor: pointer;
 		background: var(--surface);
 		color: var(--text);
-		text-decoration: none;
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.15s ease;
+	}
+	.btn--csv:hover:not(:disabled) {
+		border-color: var(--accent);
+		background: var(--accent-dim);
+		color: var(--accent);
+	}
+	.btn--csv:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
-	.btn:hover { background: var(--hover); }
-	.btn--export { background: var(--accent); color: white; border-color: var(--accent); }
-	.btn--sm { padding: 4px 8px; font-size: 12px; min-width: 24px; justify-content: center; }
-	.btn--save { background: #2ecc71; color: white; border-color: #2ecc71; }
-	.btn--cancel { background: #e74c3c; color: white; border-color: #e74c3c; }
-	.btn--back { color: var(--text-secondary); }
-	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+	.empty-state {
+		padding: 40px 20px;
+		text-align: center;
+		color: var(--text-secondary);
+		font-size: 14px;
+	}
 
 	.table-wrapper {
 		overflow-x: auto;
 		border: 1px solid var(--border);
 		border-radius: 12px;
 		background: var(--surface);
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.gradebook-table {
@@ -400,122 +475,160 @@
 	}
 
 	.gradebook-table th {
-		padding: 10px 12px;
+		text-align: left;
+		padding: 10px 8px;
 		border-bottom: 2px solid var(--border);
-		background: var(--surface);
+		color: var(--text-secondary);
 		font-weight: 600;
 		font-size: 11px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: var(--text-secondary);
 		white-space: nowrap;
-		text-align: center;
-	}
-
-	.gradebook-table th.rotate {
-		writing-mode: vertical-lr;
-		transform: rotate(180deg);
-		height: 80px;
-		vertical-align: bottom;
-		padding: 12px 6px;
-	}
-
-	.gradebook-table th.total-header {
-		color: var(--accent);
-	}
-
-	.gradebook-table td {
-		padding: 8px 10px;
-		border-bottom: 1px solid var(--border);
-		vertical-align: middle;
-		text-align: center;
-	}
-
-	.sticky {
-		position: sticky;
-		left: 0;
-		z-index: 1;
 		background: var(--surface);
-		text-align: left;
-		min-width: 150px;
 	}
-
-	.student-cell {
+	.gradebook-table th.item-col {
+		min-width: 100px;
+		max-width: 160px;
+	}
+	.item-header {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
+	.item-type { font-size: 14px; }
+	.item-title {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 120px;
+	}
+	.item-max {
+		font-size: 10px;
+		font-weight: 400;
+		color: var(--text-secondary);
+	}
 
+	.gradebook-table td {
+		padding: 8px;
+		border-bottom: 1px solid var(--border);
+		vertical-align: middle;
+	}
+
+	.sticky-col {
+		position: sticky;
+		left: 0;
+		background: var(--surface);
+		z-index: 2;
+	}
+	.name-col {
+		min-width: 180px;
+		max-width: 220px;
+	}
+	.student-info {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
 	.student-name {
 		font-weight: 600;
 		font-size: 13px;
 	}
-
 	.student-email {
 		font-size: 11px;
 		color: var(--text-secondary);
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.score-cell {
-		cursor: pointer;
+		text-align: center;
 		font-weight: 600;
-		transition: background 0.1s;
-		min-width: 60px;
+		font-size: 13px;
+		position: relative;
+		cursor: pointer;
+		transition: background 0.1s ease;
+		min-width: 64px;
 	}
-
-	.score-cell:hover {
+	.score-cell:hover:not(.cell--editing) {
 		background: var(--hover);
 	}
-
-	.total-cell {
-		font-weight: 700;
-		font-size: 15px;
+	.cell--empty {
+		color: var(--text-secondary) !important;
+		opacity: 0.5;
+	}
+	.cell--empty:hover {
+		opacity: 1;
+	}
+	.score-value {
+		display: inline-block;
+		min-width: 32px;
+		padding: 4px 6px;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+	.score-value:hover {
+		background: var(--bg-secondary);
 	}
 
-	.inline-edit {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	.inline-edit input {
-		width: 60px;
+	.inline-score-input {
+		width: 56px;
 		padding: 4px 6px;
 		border: 2px solid var(--accent);
-		border-radius: 4px;
+		border-radius: 6px;
 		background: var(--bg);
 		color: var(--text);
 		font-size: 13px;
+		font-weight: 600;
 		text-align: center;
+		font-family: inherit;
+		outline: none;
 	}
 
-	.inline-edit-actions {
-		display: flex;
-		gap: 2px;
-	}
-
-	.save-error {
-		font-size: 11px;
-		color: #e74c3c;
-		margin-left: 4px;
-	}
-
-	.empty {
-		padding: 60px 20px;
+	.total-col {
 		text-align: center;
-		color: var(--text-secondary);
+		font-size: 12px;
+		padding: 8px 10px;
+		white-space: nowrap;
+	}
+	.total-score { font-weight: 700; }
+	.total-sep { color: var(--text-secondary); margin: 0 2px; }
+	.total-max { color: var(--text-secondary); }
+	.total-na { color: var(--text-secondary); }
+
+	.pct-col {
+		text-align: center;
+		font-weight: 700;
+		font-size: 14px;
+		padding: 8px 10px;
 	}
 
-	.error-toast {
+	.grade-error-toast {
 		position: fixed;
-		bottom: 20px;
-		right: 20px;
+		bottom: 24px;
+		right: 24px;
 		background: #e74c3c;
-		color: white;
+		color: #fff;
 		padding: 12px 20px;
 		border-radius: 8px;
 		font-size: 14px;
+		font-weight: 500;
 		z-index: 100;
 		box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+		animation: fadeIn 0.2s ease;
+	}
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translateY(8px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.page-header { flex-direction: column; gap: 12px; }
+		.header-actions { width: 100%; }
+		.search-input { flex: 1; }
+		.gradebook-table { font-size: 12px; }
+		.name-col { min-width: 140px; }
+		.student-email { display: none; }
+		.item-title { max-width: 80px; }
 	}
 </style>

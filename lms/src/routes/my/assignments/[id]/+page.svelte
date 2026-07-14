@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { api } from '$lib/utils/api';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -186,14 +187,11 @@
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}
-		<!-- Breadcrumb -->
-		<div class="breadcrumb">
-			<a href="/my/dashboard">Dashboard</a>
-			<span>/</span>
-			<a href="/my/grades">Grades</a>
-			<span>/</span>
-			<span class="current">{assignment.title}</span>
-		</div>
+				<!-- Breadcrumb -->
+				<Breadcrumb items={[
+					{ label: 'Grades', href: '/my/grades' },
+					{ label: assignment?.title ?? 'Assignment' },
+				]} />
 
 		<!-- Header -->
 		<div class="header">
@@ -395,18 +393,6 @@
 		color: var(--text-secondary);
 	}
 	.error { color: #e74c3c; }
-
-	.breadcrumb {
-		font-size: 13px;
-		margin-bottom: 16px;
-		display: flex;
-		gap: 8px;
-		align-items: center;
-		color: var(--text-secondary);
-	}
-	.breadcrumb a { color: var(--accent); text-decoration: none; }
-	.breadcrumb a:hover { text-decoration: underline; }
-	.breadcrumb .current { color: var(--text); font-weight: 500; }
 
 	.header {
 		display: flex;
@@ -678,7 +664,6 @@
 		.assignment-page { padding: 16px 12px 48px; }
 		.header { flex-direction: column; gap: 12px; }
 		.header-left h1 { font-size: 20px; }
-		.breadcrumb { font-size: 12px; flex-wrap: wrap; }
 		.card { padding: 16px; }
 		.result-meta { flex-direction: column; gap: 6px; }
 		.grade-result { flex-wrap: wrap; }
