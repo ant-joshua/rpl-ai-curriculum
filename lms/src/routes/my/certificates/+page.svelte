@@ -2,6 +2,7 @@
 	let { data }: { data: import('./$types').PageData } = $props();
 
 	let certificates = $state(data.certificates || []);
+	let progressItems = $state(data.progressItems || []);
 	let error = $state(data.error || null);
 	let loading = $state(!data.certificates && !data.error);
 
@@ -66,30 +67,65 @@
 			<p class="error-text">{error}</p>
 			<button onclick={loadCerts} class="retry-btn">Coba Lagi</button>
 		</div>
-	{:else if certificates.length === 0}
-		<div class="empty-state">
-			<div class="empty-icon">📜</div>
-			<h2>Belum Ada Sertifikat</h2>
-			<p>Selesaikan semua pelajaran dalam suatu kursus untuk mendapatkan sertifikat kelulusan.</p>
-			<a href="/learn" class="browse-link">Jelajahi Kursus</a>
-		</div>
 	{:else}
-		<div class="cert-list">
-			{#each certificates as cert (cert.id)}
-				<a href="/certificate/{cert.id}" class="cert-card">
-					<div class="cert-card-icon">{cert.course_icon || '📜'}</div>
-					<div class="cert-card-info">
-						<h3 class="cert-card-title">{cert.course_title}</h3>
-						<p class="cert-card-offering">{cert.offering_name}</p>
-						<div class="cert-card-meta">
-							<span class="cert-card-number">{cert.certificate_number}</span>
-							<span class="cert-card-date">{formatDate(cert.issued_at)}</span>
-						</div>
-					</div>
-					<div class="cert-card-arrow">&rarr;</div>
-				</a>
-			{/each}
-		</div>
+		<!-- In-progress offerings -->
+		{#if progressItems.length > 0}
+			<section class="in-progress-section">
+				<h2 class="section-title">📊 Dalam Progres</h2>
+				<div class="progress-list">
+					{#each progressItems as item (item.offeringId)}
+						<a href="/learn/{item.offeringId}" class="progress-card">
+							<div class="progress-card-icon">{item.courseIcon}</div>
+							<div class="progress-card-info">
+								<h3 class="progress-card-title">{item.courseTitle}</h3>
+								<p class="progress-card-offering">{item.offeringName}</p>
+								<div class="progress-bar-wrapper">
+									<div class="progress-bar-bg">
+										<div class="progress-bar-fill" style="width: {item.percentage}%"></div>
+									</div>
+									<span class="progress-text">{item.percentage}%</span>
+								</div>
+								<p class="progress-hint">
+									{item.completedLessons} dari {item.totalLessons} pelajaran selesai
+									— selesaikan semua untuk mendapatkan sertifikat
+								</p>
+							</div>
+							<div class="progress-card-arrow">&rarr;</div>
+						</a>
+					{/each}
+				</div>
+			</section>
+		{/if}
+
+		<!-- Earned certificates -->
+		<section class="certs-section">
+			<h2 class="section-title">🏆 Sertifikat Diperoleh</h2>
+			{#if certificates.length === 0}
+				<div class="empty-state">
+					<div class="empty-icon">📜</div>
+					<h2>Belum Ada Sertifikat</h2>
+					<p>Selesaikan semua pelajaran dalam suatu kursus untuk mendapatkan sertifikat kelulusan.</p>
+					<a href="/learn" class="browse-link">Jelajahi Kursus</a>
+				</div>
+			{:else}
+				<div class="cert-list">
+					{#each certificates as cert (cert.id)}
+						<a href="/certificate/{cert.id}" class="cert-card">
+							<div class="cert-card-icon">{cert.course_icon || '📜'}</div>
+							<div class="cert-card-info">
+								<h3 class="cert-card-title">{cert.course_title}</h3>
+								<p class="cert-card-offering">{cert.offering_name}</p>
+								<div class="cert-card-meta">
+									<span class="cert-card-number">{cert.certificate_number}</span>
+									<span class="cert-card-date">{formatDate(cert.issued_at)}</span>
+								</div>
+							</div>
+							<div class="cert-card-arrow">&rarr;</div>
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</section>
 	{/if}
 </div>
 
@@ -160,9 +196,125 @@
 		opacity: 0.9;
 	}
 
+	.section-title {
+		font-size: 18px;
+		font-weight: 600;
+		margin: 0 0 12px;
+	}
+
+	/* In-progress section */
+	.in-progress-section {
+		margin-bottom: 36px;
+	}
+
+	.progress-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.progress-card {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 16px 20px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+
+	.progress-card:hover {
+		border-color: var(--accent);
+		background: var(--surface-hover);
+		transform: translateX(4px);
+	}
+
+	.progress-card-icon {
+		font-size: 40px;
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.progress-card-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.progress-card-title {
+		font-size: 16px;
+		font-weight: 600;
+		color: var(--text);
+		margin: 0 0 2px;
+	}
+
+	.progress-card-offering {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin: 0 0 10px;
+	}
+
+	.progress-bar-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 6px;
+	}
+
+	.progress-bar-bg {
+		flex: 1;
+		height: 8px;
+		background: var(--border);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.progress-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--accent), var(--accent-secondary, var(--accent)));
+		border-radius: 4px;
+		transition: width 0.4s ease;
+	}
+
+	.progress-text {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent);
+		flex-shrink: 0;
+		min-width: 36px;
+		text-align: right;
+	}
+
+	.progress-hint {
+		font-size: 12px;
+		color: var(--text-secondary);
+		margin: 0;
+		line-height: 1.4;
+	}
+
+	.progress-card-arrow {
+		font-size: 20px;
+		color: var(--text-secondary);
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.progress-card:hover .progress-card-arrow {
+		color: var(--accent);
+	}
+
+	/* Certificates section */
+	.certs-section {
+		margin-bottom: 36px;
+	}
+
 	.empty-state {
 		text-align: center;
-		padding: 60px 20px;
+		padding: 40px 20px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
 	}
 
 	.empty-icon {
@@ -171,17 +323,17 @@
 	}
 
 	.empty-state h2 {
-		font-size: 24px;
+		font-size: 20px;
 		font-weight: 700;
 		margin: 0 0 8px;
 	}
 
 	.empty-state p {
 		color: var(--text-secondary);
-		font-size: 15px;
+		font-size: 14px;
 		line-height: 1.6;
 		max-width: 400px;
-		margin: 0 auto 24px;
+		margin: 0 auto 20px;
 	}
 
 	.browse-link {

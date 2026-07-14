@@ -51,10 +51,23 @@
 	let isCompleted = $state(false);
 	let isCompleting = $state(false);
 
+	// Bookmark state
+	let isBookmarked = $state(false);
+	let isBookmarking = $state(false);
+
+	// Notes state
+	let noteContent = $state('');
+	let isSavingNote = $state(false);
+	let isLoadingNote = $state(false);
+	let noteId = $state<string | null>(null);
+	let noteSaved = $state(false);
+
 	$effect(() => {
 		if (!lesson) return;
 		checkAccess();
 		loadProgress();
+		loadBookmark();
+		loadNote();
 	});
 
 	async function loadProgress() {
@@ -121,6 +134,32 @@
 			if (res.ok) {
 				isCompleted = true;
 				addToast('Lesson marked as complete!', 'success');
+
+				// Check if all lessons done → auto-issue certificate
+				const summaryRes = await fetch(`/api/my/progress-summary?offeringId=${params.offeringId}`, {
+					headers: {
+						'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+					}
+				});
+				if (summaryRes.ok) {
+					const summary = await summaryRes.json();
+					if (summary.success && summary.data.isComplete) {
+						const certRes = await fetch('/api/certificates/auto-issue', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+							},
+							body: JSON.stringify({ offeringId: params.offeringId })
+						});
+						if (certRes.ok) {
+							const certJson = await certRes.json();
+							if (certJson.success && certJson.data.newlyIssued) {
+								addToast('🎉 Selamat! Kamu lulus course ini. Certificate sudah diterbitkan!', 'success');
+							}
+						}
+					}
+				}
 			} else {
 				addToast('Failed to save progress', 'error');
 			}
@@ -128,6 +167,107 @@
 			addToast('Failed to save progress', 'error');
 		} finally {
 			isCompleting = false;
+		}
+	}
+
+	// ---- Bookmarks ----
+	async function loadBookmark() {
+		if (!lesson) return;
+		try {
+			const res = await fetch(`/api/my/bookmarks?offeringId=${params.offeringId}`, {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				}
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && json.data) {
+					isBookmarked = json.data.some((b: any) => b.lesson_id === lesson.id);
+				}
+			}
+		} catch { /* ignore */ }
+	}
+
+	async function toggleBookmark() {
+		if (!lesson || isBookmarking) return;
+		isBookmarking = true;
+		try {
+			const res = await fetch('/api/my/bookmarks', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				},
+				body: JSON.stringify({
+					lessonId: lesson.id,
+					moduleSlug: params.offeringId,
+					sessionId: lesson.slug
+				})
+			});
+			if (res.ok) {
+				const json = await res.json();
+				isBookmarked = json.data?.bookmarked ?? !isBookmarked;
+				addToast(isBookmarked ? 'Lesson bookmarked' : 'Bookmark removed', 'success');
+			}
+		} catch {
+			addToast('Failed to toggle bookmark', 'error');
+		} finally {
+			isBookmarking = false;
+		}
+	}
+
+	// ---- Notes ----
+	async function loadNote() {
+		if (!lesson) return;
+		isLoadingNote = true;
+		try {
+			const res = await fetch(`/api/my/notes?lessonId=${lesson.id}`, {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				}
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && json.data) {
+					noteContent = json.data.content || '';
+					noteId = json.data.id || null;
+				}
+			}
+		} catch { /* ignore */ }
+		finally { isLoadingNote = false; }
+	}
+
+	async function saveNote() {
+		if (!lesson || isSavingNote) return;
+		isSavingNote = true;
+		noteSaved = false;
+		try {
+			const res = await fetch('/api/my/notes', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				},
+				body: JSON.stringify({
+					lessonId: lesson.id,
+					content: noteContent,
+					moduleSlug: params.offeringId,
+					sessionId: lesson.slug
+				})
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.data?.id) noteId = json.data.id;
+				noteSaved = true;
+				addToast('Note saved!', 'success');
+				setTimeout(() => { noteSaved = false; }, 2000);
+			} else {
+				addToast('Failed to save note', 'error');
+			}
+		} catch {
+			addToast('Failed to save note', 'error');
+		} finally {
+			isSavingNote = false;
 		}
 	}
 </script>
@@ -148,13 +288,22 @@
 		<header class="lesson-header">
 			<div class="header-top">
 				<h1 class="lesson-title">{lesson.title}</h1>
-				<div class="badge-group">
-					{#if lesson.duration_minutes}
-						<span class="badge badge-duration">{lesson.duration_minutes} min</span>
-					{/if}
-					<span class="badge badge-status" class:published={lesson.status === 'published'} class:draft={lesson.status === 'draft'}>
-						{lesson.status}
-					</span>
+				<div class="header-actions">
+					<button class="bookmark-btn" class:bookmarked={isBookmarked} onclick={() => toggleBookmark()} disabled={isBookmarking} title={isBookmarked ? 'Remove bookmark' : 'Bookmark this lesson'}>
+						{#if isBookmarked}
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+						{:else}
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+						{/if}
+					</button>
+					<div class="badge-group">
+						{#if lesson.duration_minutes}
+							<span class="badge badge-duration">{lesson.duration_minutes} min</span>
+						{/if}
+						<span class="badge badge-status" class:published={lesson.status === 'published'} class:draft={lesson.status === 'draft'}>
+							{lesson.status}
+						</span>
+					</div>
 				</div>
 			</div>
 			{#if offering}
@@ -179,6 +328,41 @@
 			{:else}
 				<div class="empty-content">
 					<p class="text-secondary">No content available for this lesson.</p>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Notes section -->
+		<div class="notes-section">
+			<h3 class="notes-title">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+				Personal Notes
+			</h3>
+			{#if isLoadingNote}
+				<div class="notes-loading">
+					<span class="spinner"></span> Loading notes...
+				</div>
+			{:else}
+				<textarea
+					class="notes-textarea"
+					class:saved={noteSaved}
+					bind:value={noteContent}
+					placeholder="Write your personal notes for this lesson..."
+					rows="5"
+				></textarea>
+				<div class="notes-actions">
+					<button class="save-note-btn" class:loading={isSavingNote} onclick={() => saveNote()} disabled={isSavingNote}>
+						{#if isSavingNote}
+							<span class="spinner"></span>
+							Saving...
+						{:else if noteSaved}
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+							Saved
+						{:else}
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+							Save Notes
+						{/if}
+					</button>
 				</div>
 			{/if}
 		</div>
@@ -229,8 +413,8 @@
 			</button>
 		</div>
 		<!-- Discussion panel -->
-				<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
-			{/if}
+		<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
+	{/if}
 </div>
 
 <style>
@@ -293,6 +477,13 @@
 		line-height: 1.3;
 	}
 
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
 	.badge-group {
 		display: flex;
 		align-items: center;
@@ -328,6 +519,128 @@
 		font-size: 14px;
 		color: var(--text-secondary);
 		margin: 6px 0 0;
+	}
+
+	/* Bookmark button */
+	.bookmark-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 38px;
+		height: 38px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: var(--surface);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		padding: 0;
+	}
+
+	.bookmark-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+		background: var(--accent-dim);
+	}
+
+	.bookmark-btn.bookmarked {
+		color: #f59e0b;
+		border-color: #f59e0b;
+		background: rgba(245, 158, 11, 0.1);
+	}
+
+	.bookmark-btn:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	/* Notes section */
+	.notes-section {
+		margin: 32px 0;
+		padding: 20px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+	}
+
+	.notes-title {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 16px;
+		font-weight: 600;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+
+	.notes-loading {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-secondary);
+		padding: 8px 0;
+	}
+
+	.notes-textarea {
+		width: 100%;
+		padding: 12px;
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--text);
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		resize: vertical;
+		min-height: 100px;
+		font-family: inherit;
+		transition: border-color 0.15s ease;
+		box-sizing: border-box;
+	}
+
+	.notes-textarea:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.notes-textarea.saved {
+		border-color: #22c55e;
+	}
+
+	.notes-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 10px;
+	}
+
+	.save-note-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 18px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #fff;
+		background: var(--accent);
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.save-note-btn:hover:not(:disabled) {
+		background: var(--accent-secondary);
+	}
+
+	.save-note-btn:disabled {
+		opacity: 0.7;
+		cursor: default;
+	}
+
+	.save-note-btn.loading {
+		background: var(--accent-dim);
+		color: var(--accent);
 	}
 
 	/* Loading */
