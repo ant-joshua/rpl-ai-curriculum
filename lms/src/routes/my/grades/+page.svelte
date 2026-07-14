@@ -56,7 +56,10 @@
 </svelte:head>
 
 <div class="grades-page">
-	<h1>My Grades</h1>
+	<div class="page-header">
+		<a href="/my/dashboard" class="back-link">← Dashboard</a>
+		<h1>My Grades</h1>
+	</div>
 
 	{#if loading}
 		<div class="loading">Loading grades...</div>
@@ -171,6 +174,34 @@
 	h1 {
 		font-size: 24px;
 		margin-bottom: 24px;
+	}
+
+	.page-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 24px;
+	}
+
+	.page-header h1 {
+		margin-bottom: 0;
+	}
+
+	.back-link {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent);
+		text-decoration: none;
+		padding: 4px 10px;
+		border-radius: 6px;
+		background: var(--accent-dim);
+		transition: all 0.15s ease;
+		flex-shrink: 0;
+	}
+
+	.back-link:hover {
+		background: var(--accent);
+		color: #fff;
 	}
 
 	.loading, .error, .empty {

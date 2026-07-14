@@ -49,6 +49,8 @@
 			{ href: '/mini-projects', icon: '🔨', label: 'Mini Projects' },
 		]},
 		{ name: 'akun', icon: '👤', label: 'Akun', links: [
+			{ href: '/my/dashboard', icon: '📊', label: 'My Dashboard' },
+			{ href: '/my/grades', icon: '📝', label: 'My Grades' },
 			{ href: '/profile', icon: '👤', label: 'Profile' },
 			{ href: '/planner', icon: '📅', label: 'Planner' },
 			{ href: '/certificate', icon: '🎓', label: 'Certificate' },

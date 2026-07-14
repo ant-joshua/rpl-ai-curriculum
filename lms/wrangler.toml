@@ -12,3 +12,6 @@ database_id = "505dca85-f77a-4d00-a3ae-ce0ce2d91e9a"
 [[r2_buckets]]
 binding = "ASSETS_BUCKET"
 bucket_name = "rpl-ai-lms-assets"
+
+# AI Tutor — set via `npx wrangler secret put AI_API_KEY`
+# vars = { AI_API_KEY = "" }

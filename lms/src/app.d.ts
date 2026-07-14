@@ -33,6 +33,7 @@ declare global {
 				env: {
 					DB: D1Database;
 					ASSETS_BUCKET: R2Bucket;
+					AI_API_KEY?: string;
 				};
 			}
 	}
