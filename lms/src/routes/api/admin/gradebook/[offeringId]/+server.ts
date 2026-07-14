@@ -52,14 +52,20 @@ export async function GET({ params, platform, url }: { params: { offeringId: str
 			'SELECT * FROM gradebook WHERE course_offering_id = ?'
 		).bind(params.offeringId).all<any>();
 
-		// Build per-student grade summary
-		const studentGrades: Record<string, { total_score: number; total_max: number; count: number }> = {};
+		// Build per-student grade summary — now includes percentage + letter_grade from summary rows
+		const studentGrades: Record<string, { total_score: number; total_max: number; count: number; percentage: number | null; letter_grade: string | null }> = {};
 		for (const g of grades || []) {
 			if (g.score == null) continue;
-			if (!studentGrades[g.user_id]) studentGrades[g.user_id] = { total_score: 0, total_max: 0, count: 0 };
-			studentGrades[g.user_id].total_score += g.score;
-			studentGrades[g.user_id].total_max += g.max_score ?? 100;
-			studentGrades[g.user_id].count++;
+			if (!studentGrades[g.user_id]) studentGrades[g.user_id] = { total_score: 0, total_max: 0, count: 0, percentage: null, letter_grade: null };
+			// Summary row (assessment_submission_id is null AND assignment_submission_id is null)
+			if (!g.assessment_submission_id && !g.assignment_submission_id) {
+				if (g.percentage != null) studentGrades[g.user_id].percentage = g.percentage;
+				if (g.letter_grade) studentGrades[g.user_id].letter_grade = g.letter_grade;
+			} else {
+				studentGrades[g.user_id].total_score += g.score;
+				studentGrades[g.user_id].total_max += g.max_score ?? 100;
+				studentGrades[g.user_id].count++;
+			}
 		}
 
 		return jsonResponse({

@@ -31,6 +31,7 @@
 		{ path: '/admin/gradebook', icon: '📋', label: 'Gradebook' },
 		{ path: '/admin/prerequisites', icon: '📋', label: 'Prerequisites' },
 		{ path: '/admin/badges', icon: '🏆', label: 'Badges' },
+		{ path: '/admin/enrollments', icon: '📋', label: 'Bulk Enroll' },
 		{ path: '/admin/announcements', icon: '📢', label: 'Announcements' },
 		{ path: '/admin/discussions', icon: '💬', label: 'Discussions' },
 	];
