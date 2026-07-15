@@ -129,6 +129,14 @@
 		}
 	});
 
+	// Register service worker for PWA offline support
+	$effect(() => {
+		if (!browser) return;
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js');
+		}
+	});
+
 	$effect(() => {
 		if (!browser) return;
 
@@ -189,7 +197,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="manifest" href="/manifest.json" />
-	<meta name="theme-color" content="#6c5ce7" />
+	<meta name="theme-color" content="#0f1011" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<link rel="alternate" type="application/rss+xml" title="RPL AI Curriculum RSS" href="/feed.xml" />

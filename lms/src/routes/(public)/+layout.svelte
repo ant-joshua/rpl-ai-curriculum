@@ -9,7 +9,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="manifest" href="/manifest.json" />
-	<meta name="theme-color" content="#6c5ce7" />
+	<meta name="theme-color" content="#0f1011" />
 </svelte:head>
 
 <div class="layout">

@@ -1,11 +1,11 @@
 {
   "name": "RPL AI LMS",
   "short_name": "RPL AI",
-  "description": "LMS Belajar Pengembangan Software Berbasis AI",
+  "description": "LMS Belajar Pengembangan Software Berbasis AI — 57 modul, flashcards, AI tutor, coding exercises.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f0f13",
-  "theme_color": "#6c5ce7",
+  "background_color": "#08090a",
+  "theme_color": "#0f1011",
   "icons": [
     {
       "src": "/icons/favicon.svg",

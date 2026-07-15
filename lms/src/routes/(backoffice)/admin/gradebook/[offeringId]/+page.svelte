@@ -372,6 +372,30 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
+
+	function exportPDF() {
+		const token = localStorage.getItem('lms-auth-token');
+		const url = `/api/admin/gradebook/${offeringId}/export`;
+		if (token) {
+			fetch(url, {
+				headers: { 'Authorization': `Bearer ${token}` },
+			})
+			.then(res => {
+				if (!res.ok) throw new Error('Export failed');
+				return res.blob();
+			})
+			.then(blob => {
+				const blobUrl = URL.createObjectURL(blob);
+				window.open(blobUrl, '_blank');
+				setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+			})
+			.catch(err => {
+				gradeError = `Export error: ${err.message}`;
+			});
+		} else {
+			window.open(url, '_blank');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -407,6 +431,9 @@
 				/>
 				<Button onclick={exportCSV} disabled={getGradedItems().length === 0} variant="secondary" size="sm">
 					⬇ CSV
+				</Button>
+				<Button onclick={exportPDF} disabled={getGradedItems().length === 0} variant="primary" size="sm">
+					📄 Export PDF
 				</Button>
 			</div>
 		</div>
