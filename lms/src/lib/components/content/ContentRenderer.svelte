@@ -24,53 +24,70 @@
 {#if blockType === 'text'}
 	<TextContent html={bodyHtml} {title} />
 {:else if blockType === 'video'}
-	<VideoContent {meta} {title} />
+	<div class="content-block">
+		<VideoContent {meta} {title} />
+	</div>
 {:else if blockType === 'code'}
-	<CodeContent {meta} body={bodyText} {title} />
+	<div class="content-block">
+		<CodeContent {meta} body={bodyText} {title} />
+	</div>
 {:else if blockType === 'embed'}
-	<EmbedContent {meta} {title} />
+	<div class="content-block">
+		<EmbedContent {meta} {title} />
+	</div>
 {:else if blockType === 'quiz'}
-	<QuizContent contentBlock={block} />
+	<div class="content-block content-block-quiz">
+		<QuizContent contentBlock={block} />
+	</div>
 {:else if blockType === 'playground'}
-	<PlaygroundContent body={bodyText} language={meta?.language || 'html'} {title} />
+	<div class="content-block">
+		<PlaygroundContent body={bodyText} language={meta?.language || 'html'} {title} />
+	</div>
 {:else if blockType === 'image'}
-	<div class="content-block image-wrapper">
+	<figure class="image-block">
 		{#if bodyText}
 			<img src={bodyText} alt={title || 'Lesson image'} />
 		{/if}
 		{#if title}
-			<p class="content-caption">{title}</p>
+			<figcaption class="image-caption">{title}</figcaption>
 		{/if}
-	</div>
+	</figure>
 {:else if blockType === 'math'}
-	<MathContent content={bodyText} displayMode={meta?.displayMode ?? false} />
+	<div class="content-block">
+		<MathContent content={bodyText} displayMode={meta?.displayMode ?? false} />
+	</div>
 {:else}
 	<TextContent html={bodyHtml} {title} />
 {/if}
 
 <style>
 	.content-block {
-		background: var(--surface);
-		border: 1px solid var(--border);
+		margin-bottom: 24px;
+	}
+
+	.content-block-quiz {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: 12px;
 		padding: 24px;
-		margin-bottom: 20px;
-		line-height: 1.7;
-		font-size: 16px;
 	}
-	.image-wrapper {
-		padding: 16px;
+
+	.image-block {
+		margin: 20px 0;
 		text-align: center;
 	}
-	.image-wrapper img {
+
+	.image-block img {
 		max-width: 100%;
 		border-radius: 8px;
 		display: block;
 		margin: 0 auto;
+		border: 1px solid rgba(255, 255, 255, 0.04);
 	}
-	.content-caption {
+
+	.image-caption {
 		font-size: 13px;
-		color: var(--text-secondary);
+		color: #62666d;
 		margin: 8px 0 0;
 		text-align: center;
 	}

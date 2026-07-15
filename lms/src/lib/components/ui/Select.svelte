@@ -5,6 +5,7 @@
 	}
 
 	let {
+		label = '',
 		options = [] as SelectOption[],
 		value = $bindable(''),
 		placeholder = '',
@@ -13,6 +14,7 @@
 		onchange,
 		...rest
 	}: {
+		label?: string;
 		options?: SelectOption[];
 		value?: string;
 		placeholder?: string;
@@ -23,25 +25,40 @@
 	} = $props();
 </script>
 
-<select
-	class="select-field {className}"
-	{disabled}
-	{value}
-	onchange={onchange}
-	{...rest}
->
-	{#if placeholder}
-		<option value="" disabled>{placeholder}</option>
+<div class="inline-flex flex-col gap-1.5">
+	{#if label}
+		<label class="select-label" for="select-{label.replace(/\s/g, '-').toLowerCase()}">{label}</label>
 	{/if}
-	{#each options as opt}
-		<option
-			value={opt.value}
-			selected={opt.value === value}
-		>{opt.label}</option>
-	{/each}
-</select>
+	<select
+		class="select-field {className}"
+		{disabled}
+		{value}
+		onchange={onchange}
+		id="select-{label.replace(/\s/g, '-').toLowerCase()}"
+		{...rest}
+	>
+		{#if placeholder}
+			<option value="" disabled>{placeholder}</option>
+		{/if}
+		{#each options as opt}
+			<option
+				value={opt.value}
+				selected={opt.value === value}
+			>{opt.label}</option>
+		{/each}
+	</select>
+</div>
 
 <style>
+	.select-label {
+		font-size: 12px;
+		color: #8a8f98;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 4px;
+		font-weight: 500;
+	}
+
 	.select-field {
 		display: block;
 		width: 100%;
@@ -61,6 +78,7 @@
 		background-position: right 0.5rem center;
 		background-size: 1rem;
 		cursor: pointer;
+		box-sizing: border-box;
 	}
 	.select-field:focus {
 		outline: none;

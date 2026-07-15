@@ -34,7 +34,7 @@
 	<h3 class="content-title">{title}</h3>
 {/if}
 {#if processedHtml}
-	<div bind:this={contentEl} class="text-content markdown-content">{@html processedHtml}</div>
+	<div bind:this={contentEl} class="text-content prose">{@html processedHtml}</div>
 {/if}
 
 <style>
@@ -44,96 +44,216 @@
 		color: var(--text);
 		margin: 0 0 12px;
 	}
-	.text-content {
-		line-height: 1.7;
+
+	/* Prose-like typography container */
+	.prose {
+		line-height: 1.75;
 		font-size: 16px;
+		color: #e2e4e7;
 	}
-	.text-content :global(p) {
-		margin: 0 0 12px;
+
+	/* Paragraphs */
+	.prose :global(p) {
+		margin: 0 0 16px;
 	}
-	.text-content :global(p:last-child) {
+	.prose :global(p:last-child) {
 		margin-bottom: 0;
 	}
-	.text-content :global(code) {
-		background: var(--bg-code, rgba(255,255,255,0.06));
+
+	/* Headings */
+	.prose :global(h2) {
+		font-size: 22px;
+		font-weight: 700;
+		margin: 32px 0 12px;
+		color: #f7f8f8;
+		letter-spacing: -0.01em;
+	}
+	.prose :global(h3) {
+		font-size: 18px;
+		font-weight: 600;
+		margin: 28px 0 8px;
+		color: #f7f8f8;
+	}
+	.prose :global(h4) {
+		font-size: 16px;
+		font-weight: 600;
+		margin: 24px 0 8px;
+		color: #f7f8f8;
+	}
+
+	/* Inline code */
+	.prose :global(code) {
+		background: rgba(255, 255, 255, 0.06);
 		padding: 2px 6px;
 		border-radius: 4px;
-		font-size: 0.9em;
+		font-size: 0.875em;
+		font-family: var(--font-mono, 'JetBrains Mono', monospace);
+		color: #e2e4e7;
+		border: 1px solid rgba(255, 255, 255, 0.04);
 	}
-	.text-content :global(pre) {
+
+	/* Code blocks — dark bg with syntax highlight */
+	.prose :global(pre) {
 		background: #0d0e17;
-		border: 1px solid var(--border);
+		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: 8px;
-		padding: 16px;
+		padding: 20px;
 		overflow-x: auto;
-		margin: 12px 0;
+		margin: 20px 0;
+		position: relative;
 	}
-	.text-content :global(pre code) {
+	.prose :global(pre code) {
 		background: none;
 		padding: 0;
+		border: none;
+		font-size: 13px;
+		line-height: 1.6;
+		color: #d0d6e0;
 	}
-	.text-content :global(img) {
+
+	/* Inline code inside pre (already handled above — keep specificity) */
+	.prose :global(pre code) {
+		background: none;
+		padding: 0;
+		border: none;
+	}
+
+	/* Links */
+	.prose :global(a) {
+		color: #5e6ad2;
+		text-decoration: none;
+		border-bottom: 1px solid rgba(94, 106, 210, 0.3);
+		transition: border-color 0.15s;
+	}
+	.prose :global(a:hover) {
+		color: #7170ff;
+		border-bottom-color: #7170ff;
+	}
+
+	/* Images */
+	.prose :global(img) {
 		max-width: 100%;
 		border-radius: 8px;
-		margin: 12px 0;
+		margin: 20px auto;
+		display: block;
+		border: 1px solid rgba(255, 255, 255, 0.04);
 	}
-	.text-content :global(a) {
-		color: var(--accent);
-		text-decoration: none;
-	}
-	.text-content :global(a:hover) {
-		text-decoration: underline;
-	}
-	.text-content :global(blockquote) {
-		border-left: 3px solid var(--accent);
-		margin: 12px 0;
-		padding: 8px 16px;
-		background: rgba(255,255,255,0.03);
+
+	/* Blockquotes */
+	.prose :global(blockquote) {
+		border-left: 3px solid #5e6ad2;
+		margin: 20px 0;
+		padding: 12px 20px;
+		background: rgba(94, 106, 210, 0.04);
 		border-radius: 0 8px 8px 0;
+		color: #a0a5b0;
+		font-style: italic;
 	}
-	.text-content :global(ul), .text-content :global(ol) {
-		padding-left: 24px;
-		margin: 8px 0;
-	}
-	.text-content :global(li) {
+	.prose :global(blockquote p) {
 		margin: 4px 0;
 	}
-	.text-content :global(h2) {
-		font-size: 20px;
-		margin: 24px 0 12px;
-		color: var(--text);
-	}
-	.text-content :global(h3) {
-		font-size: 17px;
-		margin: 20px 0 8px;
-		color: var(--text);
-	}
-	.text-content :global(table) {
-		width: 100%;
-		border-collapse: collapse;
+
+	/* Lists */
+	.prose :global(ul), .prose :global(ol) {
+		padding-left: 24px;
 		margin: 12px 0;
 	}
-	.text-content :global(th), .text-content :global(td) {
-		border: 1px solid var(--border);
-		padding: 8px 12px;
+	.prose :global(li) {
+		margin: 6px 0;
+	}
+	.prose :global(li > ul), .prose :global(li > ol) {
+		margin: 4px 0;
+	}
+
+	/* Horizontal rule */
+	.prose :global(hr) {
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		margin: 32px 0;
+	}
+
+	/* Tables */
+	.prose :global(table) {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+		font-size: 14px;
+	}
+	.prose :global(th), .prose :global(td) {
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		padding: 10px 14px;
 		text-align: left;
 	}
-	.text-content :global(th) {
-		background: rgba(255,255,255,0.04);
+	.prose :global(th) {
+		background: rgba(255, 255, 255, 0.04);
 		font-weight: 600;
+		color: #f7f8f8;
 	}
-	/* Video embeds inside text content */
-	.text-content :global(.video-embed-wrapper) {
+	.prose :global(td) {
+		color: #d0d6e0;
+	}
+	.prose :global(tr:nth-child(even) td) {
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	/* Video embeds */
+	.prose :global(.video-embed-wrapper) {
 		position: relative;
 		width: 100%;
 		border-radius: 8px;
 		overflow: hidden;
-		margin: 16px 0;
-	}
-	.text-content :global(.video-embed-wrapper iframe) {
-		width: 100%;
+		margin: 20px 0;
 		aspect-ratio: 16 / 9;
+		background: #000;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+	.prose :global(.video-embed-wrapper iframe) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
 		border: none;
-		border-radius: 8px;
+	}
+
+	/* Captions (used by image blocks in ContentRenderer) */
+	.prose :global(figcaption),
+	.prose :global(.image-caption) {
+		font-size: 13px;
+		color: #62666d;
+		text-align: center;
+		margin-top: 4px;
+	}
+
+	/* Emphasis */
+	.prose :global(strong) {
+		color: #f7f8f8;
+		font-weight: 600;
+	}
+	.prose :global(em) {
+		font-style: italic;
+	}
+
+	/* Abbreviations */
+	.prose :global(abbr) {
+		border-bottom: 1px dotted #62666d;
+		cursor: help;
+	}
+
+	@media (max-width: 640px) {
+		.prose {
+			font-size: 15px;
+			line-height: 1.65;
+		}
+		.prose :global(h2) {
+			font-size: 19px;
+		}
+		.prose :global(h3) {
+			font-size: 16px;
+		}
+		.prose :global(pre) {
+			padding: 14px;
+			margin: 16px -12px;
+			border-radius: 6px;
+		}
 	}
 </style>

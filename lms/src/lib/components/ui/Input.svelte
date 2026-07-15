@@ -1,6 +1,7 @@
 <script lang="ts">
 	let {
 		type = 'text',
+		label = '',
 		placeholder = '',
 		value = $bindable(''),
 		error,
@@ -9,6 +10,7 @@
 		...rest
 	}: {
 		type?: string;
+		label?: string;
 		placeholder?: string;
 		value?: string;
 		error?: string;
@@ -19,6 +21,9 @@
 </script>
 
 <div class="inline-flex flex-col gap-1.5">
+	{#if label}
+		<label class="input-label" for="input-{label.replace(/\\s/g, '-').toLowerCase()}">{label}</label>
+	{/if}
 	<input
 		{type}
 		{placeholder}
@@ -26,6 +31,7 @@
 		{disabled}
 		class="input-field {className}"
 		class:input-error={!!error}
+		id="input-{label.replace(/\\s/g, '-').toLowerCase()}"
 		{...rest}
 	/>
 	{#if error}
@@ -34,6 +40,15 @@
 </div>
 
 <style>
+	.input-label {
+		font-size: 12px;
+		color: #8a8f98;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 4px;
+		font-weight: 500;
+	}
+
 	.input-field {
 		display: block;
 		width: 100%;
@@ -47,10 +62,10 @@
 		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 		font-family: var(--font-sans);
 		font-feature-settings: 'cv01', 'ss03';
+		box-sizing: border-box;
 	}
 	.input-field::placeholder {
-		color: #8a8f98;
-		opacity: 0.7;
+		color: #62666d;
 	}
 	.input-field:focus {
 		outline: none;

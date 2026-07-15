@@ -4,8 +4,14 @@
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
 	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
+	import LessonSidebar from '$lib/components/lesson/LessonSidebar.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Badge, Button, Textarea, Skeleton } from '$lib/components/ui';
+	import Badge from '$lib/components/ui/Badge.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
+	import ProgressBar from '$lib/components/ui/ProgressBar.svelte';
+	import Skeleton from '$lib/components/ui/Skeleton.svelte';
+	import Textarea from '$lib/components/ui/Textarea.svelte';
+	import Icon from '$lib/components/ui/Icon.svelte';
 
 	let { data } = $props();
 
@@ -41,6 +47,12 @@
 		return null;
 	});
 
+	// Lesson position
+	let lessonIndex = $derived(
+		lesson ? allLessons.findIndex((l: any) => l.id === lesson.id) + 1 : 0
+	);
+	let totalLessons = $derived(allLessons.length);
+
 	// Prerequisite access check
 	let accessCheck = $state<{ loading: boolean; accessible: boolean; prerequisites: any[] }>({
 		loading: true,
@@ -63,6 +75,13 @@
 	let noteId = $state<string | null>(null);
 	let noteSaved = $state(false);
 
+	// Sidebar mobile state
+	let sidebarMobileOpen = $state(false);
+
+	// Scroll tracking for auto-progress
+	let contentAreaEl = $state<HTMLDivElement | null>(null);
+	let hasReached80Pct = $state(false);
+
 	$effect(() => {
 		if (!lesson) return;
 		checkAccess();
@@ -70,6 +89,56 @@
 		loadBookmark();
 		loadNote();
 	});
+
+	// Keyboard navigation
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+		if (e.key === 'ArrowLeft' && prevLesson) {
+			e.preventDefault();
+			navigateTo(prevLesson.slug);
+		} else if (e.key === 'ArrowRight' && nextLesson) {
+			e.preventDefault();
+			navigateTo(nextLesson.slug);
+		} else if (e.key === 'm' && !e.metaKey && !e.ctrlKey) {
+			e.preventDefault();
+			sidebarMobileOpen = !sidebarMobileOpen;
+		}
+	}
+
+	function navigateTo(slug: string) {
+		window.location.href = `/learn/${params.offeringId}/lessons/${slug}`;
+	}
+
+	// Scroll tracking
+	function handleScroll() {
+		if (!contentAreaEl || isCompleted || hasReached80Pct) return;
+		const { scrollTop, scrollHeight, clientHeight } = contentAreaEl;
+		const scrollPct = scrollHeight > clientHeight ? (scrollTop + clientHeight) / scrollHeight : 1;
+		if (scrollPct >= 0.8) {
+			hasReached80Pct = true;
+			autoMarkProgress();
+		}
+	}
+
+	async function autoMarkProgress() {
+		if (!lesson || isCompleted) return;
+		try {
+			await fetch('/api/my/progress', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				},
+				body: JSON.stringify({
+					lessonSlug: lesson.slug,
+					courseOfferingId: params.offeringId,
+					completed: false,
+					status: 'in_progress',
+					timeSpent: 0
+				})
+			});
+		} catch { /* silent */ }
+	}
 
 	async function loadProgress() {
 		if (!lesson || !params?.offeringId) return;
@@ -82,7 +151,7 @@
 			if (res.ok) {
 				const json = await res.json();
 				if (json.success && json.data) {
-					isCompleted = json.data.some((p: any) => p.session_id === lesson.slug);
+					isCompleted = json.data.some((p: any) => p.session_id === lesson.slug && (p.completed || p.status === 'completed'));
 				}
 			}
 		} catch {
@@ -295,29 +364,69 @@
 	}
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 <svelte:head>
 	<title>{lesson?.title ?? 'Lesson'} — {course?.title ?? 'RPL AI Curriculum'}</title>
 </svelte:head>
 
-<div class="lesson-page">
-	{#if !lesson || data.status === 404}
-		<div class="error-state">
-			<h2>Lesson not found</h2>
-			<p class="text-secondary">This lesson may have been removed or is not yet published.</p>
-			<a href="/learn/{params.offeringId}" class="back-link">&larr; Back to course</a>
-		</div>
-	{:else}
-		<!-- Header -->
-		<header class="lesson-header">
-			<div class="header-top">
-				<h1 class="lesson-title">{lesson.title}</h1>
+{#if !lesson || data.status === 404}
+	<div class="error-state">
+		<h2>Lesson not found</h2>
+		<p class="text-secondary">This lesson may have been removed or is not yet published.</p>
+		<a href="/learn/{params.offeringId}" class="back-link">&larr; Back to course</a>
+	</div>
+{:else}
+	<div class="lesson-layout">
+		<!-- Sidebar -->
+		<LessonSidebar
+			lessons={allLessons}
+			currentLessonId={lesson.id}
+			progress={[]}
+			offeringId={params.offeringId}
+			bind:mobileOpen={sidebarMobileOpen}
+		/>
+
+		<!-- Main content area -->
+		<div class="lesson-content" bind:this={contentAreaEl} onscroll={handleScroll}>
+			<!-- Mobile sidebar toggle -->
+			<div class="mobile-topbar">
+				<button class="mobile-menu-btn" onclick={() => (sidebarMobileOpen = !sidebarMobileOpen)} aria-label="Toggle sidebar">
+					<Icon name="menu" size={20} />
+				</button>
+				<span class="mobile-title">{lesson.title}</span>
+			</div>
+
+			<!-- Breadcrumb -->
+			<nav class="lesson-breadcrumb">
+				<a href="/learn/{params.offeringId}" class="bc-link">{offering?.name || course?.title}</a>
+				<span class="bc-sep">/</span>
+				<span class="bc-current">{lesson.title}</span>
+			</nav>
+
+			<!-- Progress bar -->
+			<div class="progress-section">
+				<span class="progress-label">Lesson {lessonIndex} of {totalLessons}</span>
+				<ProgressBar value={lessonIndex} max={totalLessons} height={4} />
+			</div>
+
+			<!-- Header -->
+			<header class="lesson-header">
+				<div class="header-content">
+					<h1 class="lesson-title">{lesson.title}</h1>
+					{#if offering}
+						<p class="offering-name">{offering.name}</p>
+					{/if}
+				</div>
 				<div class="header-actions">
-					<button class="bookmark-btn" class:bookmarked={isBookmarked} onclick={() => toggleBookmark()} disabled={isBookmarking} title={isBookmarked ? 'Remove bookmark' : 'Bookmark this lesson'}>
-						{#if isBookmarked}
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-						{:else}
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-						{/if}
+					<button
+						class="bookmark-btn"
+						class:bookmarked={isBookmarked}
+						onclick={() => toggleBookmark()}
+						disabled={isBookmarking}
+						title={isBookmarked ? 'Remove bookmark' : 'Bookmark this lesson'}
+					>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
 					</button>
 					<div class="badge-group">
 						{#if lesson.duration_minutes}
@@ -330,130 +439,120 @@
 						</Badge>
 					</div>
 				</div>
-			</div>
-			{#if offering}
-				<p class="offering-name">{offering.name}</p>
-			{/if}
-		</header>
+			</header>
 
-		<!-- Content area -->
-		<div class="lesson-body">
-			{#if accessCheck.loading}
-				<div class="loading-state">
-					<Skeleton variant="block" height="200px" />
-				</div>
-			{:else if !accessCheck.accessible}
-				<LockedLesson prerequisites={accessCheck.prerequisites} />
-			{:else if contentBlocks.length > 0}
-				{#each contentBlocks as block, i}
-					<div class="content-block-multi">
-						<ContentRenderer block={block} />
+			<!-- Content area -->
+			<div class="lesson-body">
+				{#if accessCheck.loading}
+					<div class="loading-state">
+						<Skeleton variant="block" height="200px" />
 					</div>
-				{/each}
-			{:else}
-				<div class="empty-content">
-					<p class="text-secondary">No content available for this lesson.</p>
-				</div>
-			{/if}
-		</div>
-
-		<!-- Notes section -->
-		<div class="notes-section">
-			<h3 class="notes-title">
-				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-				Personal Notes
-			</h3>
-			{#if isLoadingNote}
-				<div class="notes-loading">
-					<span class="spinner"></span> Loading notes...
-				</div>
-			{:else}
-				<Textarea
-					bind:value={noteContent}
-					placeholder="Write your personal notes for this lesson..."
-					rows={5}
-					class={noteSaved ? 'saved' : ''}
-				/>
-				<div class="notes-actions">
-					<Button onclick={() => saveNote()} disabled={isSavingNote} loading={isSavingNote}>
-						{#if !isSavingNote && noteSaved}
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-							Saved
-						{:else if !isSavingNote}
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-							Save Notes
-						{/if}
-					</Button>
-				</div>
-			{/if}
-		</div>
-
-		<!-- Navigation footer -->
-		<nav class="lesson-nav">
-			<div class="nav-item">
-				{#if prevLesson}
-					<a href="/learn/{params.offeringId}/lessons/{prevLesson.slug}" class="nav-btn nav-prev">
-						<span class="nav-arrow">&larr;</span>
-						<span class="nav-label">
-							<span class="nav-dir">Previous</span>
-							<span class="nav-title">{prevLesson.title}</span>
-						</span>
-					</a>
-				{/if}
-			</div>
-			<div class="nav-item nav-right">
-				{#if nextLesson}
-					<a href="/learn/{params.offeringId}/lessons/{nextLesson.slug}" class="nav-btn nav-next">
-						<span class="nav-label">
-							<span class="nav-dir">Next</span>
-							<span class="nav-title">{nextLesson.title}</span>
-						</span>
-						<span class="nav-arrow">&rarr;</span>
-					</a>
-				{/if}
-			</div>
-		</nav>
-
-		<!-- Mark complete button -->
-		<div class="complete-section">
-			<Button
-				onclick={() => markComplete()}
-				disabled={isCompleted || isCompleting}
-				loading={isCompleting}
-				variant="primary"
-				class={['', isCompleted ? 'done' : '', isCompleting ? 'loading' : ''].filter(Boolean).join(' ')}
-			>
-				{#if isCompleted}
-					<span class="checkmark-icon">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-					</span>
-					Selesai
-				{:else if isCompleting}
-					Menyimpan...
+				{:else if !accessCheck.accessible}
+					<LockedLesson prerequisites={accessCheck.prerequisites} />
+				{:else if contentBlocks.length > 0}
+					{#each contentBlocks as block, i}
+						<div class="content-block">
+							<ContentRenderer block={block} />
+						</div>
+					{/each}
 				{:else}
-					<span class="checkmark-icon checkmark-empty">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-					</span>
-					Tandai Selesai
+					<div class="empty-content">
+						<p class="text-secondary">No content available for this lesson.</p>
+					</div>
 				{/if}
-			</Button>
+			</div>
+
+			<!-- Mark complete button -->
+			<div class="complete-section">
+				<Button
+					onclick={() => markComplete()}
+					disabled={isCompleted || isCompleting}
+					loading={isCompleting}
+					variant={isCompleted ? 'secondary' : 'primary'}
+				>
+					{#if isCompleted}
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+						Completed
+					{:else}
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+						Mark as Complete
+					{/if}
+				</Button>
+			</div>
+
+			<!-- Navigation footer -->
+			<nav class="lesson-nav">
+				<div class="nav-item">
+					{#if prevLesson}
+						<a href="/learn/{params.offeringId}/lessons/{prevLesson.slug}" class="nav-btn nav-prev">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+							<span class="nav-label">
+								<span class="nav-dir">Previous</span>
+								<span class="nav-title">{prevLesson.title}</span>
+							</span>
+						</a>
+					{:else}
+						<div></div>
+					{/if}
+				</div>
+				<div class="nav-item nav-right">
+					{#if nextLesson}
+						<a href="/learn/{params.offeringId}/lessons/{nextLesson.slug}" class="nav-btn nav-next">
+							<span class="nav-label">
+								<span class="nav-dir">Next</span>
+								<span class="nav-title">{nextLesson.title}</span>
+							</span>
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+						</a>
+					{:else}
+						<div></div>
+					{/if}
+				</div>
+			</nav>
+
+			<!-- Notes section -->
+			<div class="notes-section">
+				<h3 class="notes-title">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+					Personal Notes
+				</h3>
+				{#if isLoadingNote}
+					<div class="notes-loading">
+						<span class="spinner"></span> Loading notes...
+					</div>
+				{:else}
+					<Textarea
+						bind:value={noteContent}
+						placeholder="Write your personal notes for this lesson..."
+						rows={5}
+						class={noteSaved ? 'saved' : ''}
+					/>
+					<div class="notes-actions">
+						<Button onclick={() => saveNote()} disabled={isSavingNote} loading={isSavingNote} variant="ghost">
+							{#if !isSavingNote && noteSaved}
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+								Saved
+							{:else if !isSavingNote}
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+								Save Notes
+							{/if}
+						</Button>
+					</div>
+				{/if}
+			</div>
+
+			<!-- Discussion panel -->
+			<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
 		</div>
-		<!-- Discussion panel -->
-		<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
-	.lesson-page {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 24px 16px 48px;
-		animation: fadeIn 0.3s ease both;
-	}
-
 	.error-state {
 		text-align: center;
 		padding: 60px 20px;
+		max-width: 800px;
+		margin: 0 auto;
 	}
 
 	.error-state h2 {
@@ -482,17 +581,133 @@
 		color: var(--accent);
 	}
 
-	/* Header */
-	.lesson-header {
-		margin-bottom: 28px;
+	/* === Two-column layout === */
+	.lesson-layout {
+		display: flex;
+		min-height: calc(100vh - 60px);
+		animation: fadeIn 0.3s ease both;
 	}
 
-	.header-top {
+	.lesson-content {
+		flex: 1;
+		max-width: 800px;
+		padding: 32px 48px 64px;
+		margin: 0 auto;
+		overflow-y: auto;
+	}
+
+	/* Mobile top bar */
+	.mobile-topbar {
+		display: none;
+		align-items: center;
+		gap: 12px;
+		padding: 0 0 16px;
+		border-bottom: 1px solid rgba(255,255,255,0.06);
+		margin-bottom: 20px;
+	}
+
+	.mobile-menu-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		border: 1px solid rgba(255,255,255,0.08);
+		background: transparent;
+		color: #8a8f98;
+		cursor: pointer;
+		transition: all 0.15s;
+		flex-shrink: 0;
+	}
+	.mobile-menu-btn:hover {
+		background: rgba(255,255,255,0.04);
+		color: #f7f8f8;
+	}
+
+	.mobile-title {
+		font-size: 15px;
+		font-weight: 600;
+		color: #f7f8f8;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* Breadcrumb */
+	.lesson-breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 12px;
+		font-size: 12px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.bc-link {
+		color: #62666d;
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.bc-link:hover {
+		color: #8a8f98;
+	}
+
+	.bc-sep {
+		color: #62666d;
+		opacity: 0.5;
+	}
+
+	.bc-current {
+		color: #8a8f98;
+	}
+
+	/* Progress section */
+	.progress-section {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 24px;
+	}
+
+	.progress-label {
+		font-size: 12px;
+		font-weight: 510;
+		color: #8a8f98;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.progress-section :global(.ui-progress) {
+		flex: 1;
+	}
+
+	.progress-section :global(.ui-progress-track) {
+		background: rgba(255, 255, 255, 0.06);
+		height: 4px !important;
+		border-radius: 2px;
+	}
+
+	.progress-section :global(.ui-progress-fill) {
+		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		border-radius: 2px;
+		transition: width 0.5s ease;
+	}
+
+	/* Header */
+	.lesson-header {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
 		gap: 16px;
-		flex-wrap: wrap;
+		margin-bottom: 28px;
+	}
+
+	.header-content {
+		flex: 1;
+		min-width: 0;
 	}
 
 	.lesson-title {
@@ -501,6 +716,12 @@
 		color: var(--text);
 		margin: 0;
 		line-height: 1.3;
+	}
+
+	.offering-name {
+		font-size: 14px;
+		color: var(--text-secondary);
+		margin: 6px 0 0;
 	}
 
 	.header-actions {
@@ -515,12 +736,6 @@
 		align-items: center;
 		gap: 8px;
 		flex-shrink: 0;
-	}
-
-	.offering-name {
-		font-size: 14px;
-		color: var(--text-secondary);
-		margin: 6px 0 0;
 	}
 
 	/* Bookmark button */
@@ -545,15 +760,121 @@
 		background: var(--accent-dim);
 	}
 
-	.bookmark-btn.bookmarked {
-		color: #f59e0b;
-		border-color: #f59e0b;
-		background: rgba(245, 158, 11, 0.1);
-	}
-
 	.bookmark-btn:disabled {
 		opacity: 0.5;
 		cursor: default;
+	}
+
+	/* Loading */
+	.loading-state {
+		padding: 20px 0;
+	}
+
+	.lesson-body {
+		margin-bottom: 32px;
+	}
+
+	.content-block {
+		margin-bottom: 24px;
+	}
+	.content-block:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Empty */
+	.empty-content {
+		text-align: center;
+		padding: 40px 20px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+	}
+
+	/* Complete section */
+	.complete-section {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 28px;
+	}
+
+	.complete-section :global(.btn) {
+		gap: 8px;
+		padding: 10px 24px;
+		font-weight: 600;
+	}
+
+	/* Navigation */
+	.lesson-nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 32px;
+	}
+
+	.nav-item {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.nav-right {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.nav-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 16px;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 6px;
+		text-decoration: none;
+		color: #8a8f98;
+		transition: all 0.15s ease;
+		font-size: 13px;
+		font-weight: 500;
+		max-width: 320px;
+		background: transparent;
+	}
+
+	.nav-btn:hover {
+		background: rgba(255, 255, 255, 0.04);
+		border-color: rgba(255, 255, 255, 0.12);
+		color: #f7f8f8;
+	}
+
+	.nav-btn svg {
+		flex-shrink: 0;
+		color: #7170ff;
+	}
+
+	.nav-btn.nav-next {
+		text-align: right;
+	}
+
+	.nav-label {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	.nav-dir {
+		font-size: 11px;
+		font-weight: 600;
+		color: #62666d;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.nav-title {
+		font-size: 14px;
+		font-weight: 510;
+		color: var(--text);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	/* Notes section */
@@ -590,121 +911,6 @@
 		margin-top: 10px;
 	}
 
-	/* Loading */
-	.loading-state {
-		padding: 20px 0;
-	}
-
-	.lesson-body {
-		margin-bottom: 32px;
-	}
-
-	/* Multi-block lesson content */
-	.content-block-multi {
-		margin-bottom: 24px;
-	}
-	.content-block-multi:last-child {
-		margin-bottom: 0;
-	}
-	.content-block-multi + .content-block-multi {
-		padding-top: 8px;
-		border-top: 1px solid var(--border);
-	}
-
-	/* Empty */
-	.empty-content {
-		text-align: center;
-		padding: 40px 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-	}
-
-	/* Navigation */
-	.lesson-nav {
-		display: flex;
-		justify-content: space-between;
-		gap: 16px;
-		margin-bottom: 24px;
-	}
-
-	.nav-item {
-		flex: 1;
-	}
-
-	.nav-right {
-		display: flex;
-		justify-content: flex-end;
-	}
-
-	.nav-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 12px;
-		padding: 14px 18px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.15s ease;
-		max-width: 320px;
-	}
-
-	.nav-btn:hover {
-		background: var(--surface-hover);
-		border-color: var(--accent);
-	}
-
-	.nav-btn.nav-next {
-		text-align: right;
-	}
-
-	.nav-arrow {
-		font-size: 18px;
-		color: var(--accent);
-		flex-shrink: 0;
-	}
-
-	.nav-label {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		min-width: 0;
-	}
-
-	.nav-dir {
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
-	.nav-title {
-		font-size: 14px;
-		font-weight: 500;
-		color: var(--text);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	/* Mark complete */
-	.complete-section {
-		display: flex;
-		justify-content: center;
-		padding-top: 8px;
-	}
-
-	.checkmark-icon {
-		display: inline-flex;
-		align-items: center;
-	}
-
-	.checkmark-empty {
-		opacity: 0.6;
-	}
-
 	/* Spinner */
 	.spinner {
 		display: inline-block;
@@ -725,15 +931,27 @@
 		to { opacity: 1; }
 	}
 
-	@media (max-width: 640px) {
-		.lesson-page { padding: 16px 12px 48px; }
-		.lesson-title {
-			font-size: 22px;
+	/* Mobile */
+	@media (max-width: 768px) {
+		.lesson-content {
+			padding: 16px 16px 48px;
 		}
 
-		.header-top {
+		.mobile-topbar {
+			display: flex;
+		}
+
+		.lesson-breadcrumb {
+			display: none;
+		}
+
+		.lesson-header {
 			flex-direction: column;
 			gap: 10px;
+		}
+
+		.lesson-title {
+			font-size: 22px;
 		}
 
 		.lesson-nav {
@@ -742,6 +960,7 @@
 
 		.nav-btn {
 			max-width: 100%;
+			width: 100%;
 		}
 
 		.complete-section :global(.btn) {

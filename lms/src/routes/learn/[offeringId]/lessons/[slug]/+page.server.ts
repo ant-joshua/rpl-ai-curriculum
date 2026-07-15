@@ -1,77 +1,61 @@
 import { getDB } from '$lib/server/d1';
+import { error } from '@sveltejs/kit';
 
 export async function load({ params, platform }: { params: Record<string, string>; platform: App.Platform }) {
-	const db = getDB(platform);
-
-	// Find lesson by slug and offering
-	const lesson = await db.prepare(
-		'SELECT * FROM lessons WHERE slug = ? AND course_offering_id = ? AND status = ?'
-	).bind(params.slug, params.offeringId, 'published').first<any>();
-
-	if (!lesson) {
-		return { status: 404, error: new Error('Lesson not found') };
+	// platform can be undefined in some CF Pages contexts
+	if (!platform) {
+		throw error(500, 'Platform context not available');
 	}
 
-	// Get course offering info
-	const offering = await db.prepare(
-		'SELECT * FROM course_offerings WHERE id = ?'
-	).bind(params.offeringId).first<any>();
+	try {
+		const db = getDB(platform);
+		const offeringId = params.offeringId;
+		const slug = params.slug;
 
-	// Get course info
-	let course = null;
-	if (offering) {
-		course = await db.prepare(
-			'SELECT * FROM courses WHERE id = ?'
-		).bind(offering.course_id).first<any>();
+		// Load offering
+		const offering = await db.prepare('SELECT * FROM course_offerings WHERE id = ?')
+			.bind(offeringId).first<any>();
+
+		if (!offering) throw error(404, 'Course offering not found');
+
+		// Load course
+		const course = await db.prepare('SELECT * FROM courses WHERE id = ?')
+			.bind(offering.course_id).first<any>();
+
+		// Find lesson by slug
+		const lesson = await db.prepare(
+			'SELECT * FROM lessons WHERE slug = ? AND course_offering_id = ? AND status = ?'
+		).bind(slug, offeringId, 'published').first<any>();
+
+		if (!lesson) throw error(404, 'Lesson not found');
+
+		// Get content blocks
+		let contentBlocks: any[] = [];
+		const junction = await db.prepare(
+			`SELECT cb.*, lcb.order_index, lcb.type_override
+			 FROM lesson_content_blocks lcb
+			 JOIN content_blocks cb ON cb.id = lcb.content_block_id
+			 WHERE lcb.lesson_id = ? AND cb.visibility = ?
+			 ORDER BY lcb.order_index ASC`
+		).bind(lesson.id, 'published').all<any>();
+
+		if (junction.results?.length) {
+			contentBlocks = junction.results.map((r: any) => ({ ...r, type: r.type_override || r.type }));
+		} else if (lesson.content_block_id) {
+			const cb = await db.prepare('SELECT * FROM content_blocks WHERE id = ? AND visibility = ?')
+				.bind(lesson.content_block_id, 'published').first<any>();
+			if (cb) contentBlocks = [cb];
+		}
+
+		// All lessons for navigation
+		const all = await db.prepare(
+			'SELECT id, title, slug, order_index, duration_minutes FROM lessons WHERE course_offering_id = ? AND status = ? ORDER BY order_index ASC'
+		).bind(offeringId, 'published').all();
+
+		return { lesson, offering, course, contentBlocks, allLessons: all.results || [] };
+	} catch (e: unknown) {
+		if (e && typeof e === 'object' && 'status' in e) throw e;
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		throw error(500, 'Failed to load lesson: ' + msg);
 	}
-
-	// Get content blocks — try multi-block junction first, then single fallback
-	let contentBlocks: any[] = [];
-
-	// Check if lesson has entries in the junction table
-	const junctionBlocks = await db.prepare(
-		`SELECT cb.*, lcb.order_index, lcb.type_override
-		 FROM lesson_content_blocks lcb
-		 JOIN content_blocks cb ON cb.id = lcb.content_block_id
-		 WHERE lcb.lesson_id = ? AND cb.visibility = ?
-		 ORDER BY lcb.order_index ASC`
-	).bind(lesson.id, 'published').all<any>();
-
-	if (junctionBlocks.results && junctionBlocks.results.length > 0) {
-		contentBlocks = junctionBlocks.results.map((row: any) => ({
-			...row,
-			// Allow type_override to override the content_block's type
-			type: row.type_override || row.type
-		}));
-	} else {
-		// Fallback: single content block (legacy)
-		let contentBlock = null;
-		if (lesson.content_block_id) {
-			contentBlock = await db.prepare(
-				'SELECT * FROM content_blocks WHERE id = ? AND visibility = ?'
-			).bind(lesson.content_block_id, 'published').first<any>();
-		}
-		if (!contentBlock) {
-			// Fallback: find by title match (for modules migrated from static JSON)
-			contentBlock = await db.prepare(
-				"SELECT * FROM content_blocks WHERE title = ? AND visibility = ? LIMIT 1"
-			).bind(lesson.title, 'published').first<any>();
-		}
-		if (contentBlock) {
-			contentBlocks = [contentBlock];
-		}
-	}
-
-	// Get all lessons for navigation
-	const allLessons = await db.prepare(
-		'SELECT id, title, slug, order_index, duration_minutes FROM lessons WHERE course_offering_id = ? AND status = ? ORDER BY order_index ASC'
-	).bind(params.offeringId, 'published').all();
-
-	return {
-		lesson,
-		offering,
-		course,
-		contentBlocks,
-		allLessons: allLessons.results || []
-	};
 }

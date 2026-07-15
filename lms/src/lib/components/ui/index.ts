@@ -26,5 +26,6 @@ export { default as ProgressBar } from './ProgressBar.svelte';
 export { default as SearchInput } from './SearchInput.svelte';
 export { default as Separator } from './Separator.svelte';
 export { default as Skeleton } from './Skeleton.svelte';
+export { default as SkeletonCard } from './SkeletonCard.svelte';
 export { default as Toggle } from './Toggle.svelte';
 export { default as ToggleGroup } from './ToggleGroup.svelte';

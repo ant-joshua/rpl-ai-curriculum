@@ -27,9 +27,11 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			        co.enrollment_start, co.enrollment_end, co.max_students,
 			        c.id AS course_id, c.title AS course_title, c.slug AS course_slug,
 			        c.description, c.short_description, c.icon AS course_icon,
-			        c.level, c.category
+			        c.level, c.category,
+			        u.display_name AS instructor_name
 			 FROM course_offerings co
 			 JOIN courses c ON c.id = co.course_id
+			 LEFT JOIN users u ON u.id = co.instructor_id
 			 WHERE co.status = 'active'
 			 ORDER BY co.name ASC`
 		)
@@ -82,6 +84,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		icon: o.course_icon || '📚',
 		level: o.level,
 		category: o.category,
+		instructorName: o.instructor_name || null,
 		startDate: o.start_date,
 		endDate: o.end_date,
 		enrolledCount: enrollmentCounts.get(o.id) || 0,

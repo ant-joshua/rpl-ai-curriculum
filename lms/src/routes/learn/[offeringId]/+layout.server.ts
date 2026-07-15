@@ -15,12 +15,12 @@ export async function load({ params, request, platform, url }: {
 	// Auth check
 	const token = getBearerToken(request) || url.searchParams.get('token');
 	if (!token) {
-		throw redirect(302, `/auth/login?redirect=/learn/${params.offeringId}`);
+		throw redirect(302, `/login?redirect=/learn/${params.offeringId}`);
 	}
 
 	const session = await getSession(platform, token);
 	if (!session) {
-		throw redirect(302, `/auth/login?redirect=/learn/${params.offeringId}`);
+		throw redirect(302, `/login?redirect=/learn/${params.offeringId}`);
 	}
 
 	const db = getDB(platform);

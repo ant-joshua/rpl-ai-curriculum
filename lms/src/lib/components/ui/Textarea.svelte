@@ -1,5 +1,6 @@
 <script lang="ts">
 	let {
+		label = '',
 		placeholder = '',
 		value = $bindable(''),
 		error,
@@ -8,6 +9,7 @@
 		class: className = '',
 		...rest
 	}: {
+		label?: string;
 		placeholder?: string;
 		value?: string;
 		error?: string;
@@ -19,6 +21,9 @@
 </script>
 
 <div class="inline-flex flex-col gap-1.5 w-full">
+	{#if label}
+		<label class="textarea-label" for="textarea-{label.replace(/\s/g, '-').toLowerCase()}">{label}</label>
+	{/if}
 	<textarea
 		{placeholder}
 		bind:value
@@ -26,6 +31,7 @@
 		{rows}
 		class="textarea-field {className}"
 		class:textarea-error={!!error}
+		id="textarea-{label.replace(/\s/g, '-').toLowerCase()}"
 		{...rest}
 	></textarea>
 	{#if error}
@@ -34,6 +40,15 @@
 </div>
 
 <style>
+	.textarea-label {
+		font-size: 12px;
+		color: #8a8f98;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 4px;
+		font-weight: 500;
+	}
+
 	.textarea-field {
 		display: block;
 		width: 100%;
@@ -48,10 +63,10 @@
 		font-family: var(--font-sans);
 		font-feature-settings: 'cv01', 'ss03';
 		resize: vertical;
+		box-sizing: border-box;
 	}
 	.textarea-field::placeholder {
-		color: #8a8f98;
-		opacity: 0.7;
+		color: #62666d;
 	}
 	.textarea-field:focus {
 		outline: none;

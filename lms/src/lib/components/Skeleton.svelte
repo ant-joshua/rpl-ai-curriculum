@@ -33,9 +33,9 @@
 </script>
 
 {#if count === 1}
-	<div class="skeleton {className}" style="width: {w}; height: {h}; border-radius: {br};"></div>
+	<div class="skeleton {className}" style="width: {w}; height: {h}; border-radius: {br};" role="status" aria-label="Loading"></div>
 {:else}
-	<div class="skeleton-group" style="display: flex; flex-direction: column; gap: {gap};">
+	<div class="skeleton-group" style="display: flex; flex-direction: column; gap: {gap};" role="status" aria-label="Loading">
 		{#each Array(count) as _}
 			<div class="skeleton {className}" style="width: {w}; height: {h}; border-radius: {br};"></div>
 		{/each}
@@ -46,9 +46,9 @@
 	.skeleton {
 		background: linear-gradient(
 			90deg,
-			var(--surface, #1c1e2e) 0%,
-			var(--hover, rgba(255,255,255,0.05)) 50%,
-			var(--surface, #1c1e2e) 100%
+			rgba(255,255,255,0.02) 25%,
+			rgba(255,255,255,0.06) 50%,
+			rgba(255,255,255,0.02) 75%
 		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s ease-in-out infinite;
