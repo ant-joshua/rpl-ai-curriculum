@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { api } from '$lib/utils/api';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button, Card, Avatar } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -144,19 +145,15 @@
 	</header>
 
 	<!-- Profile Card -->
-	<div class="profile-card">
+	<Card padding="lg">
 		<div class="profile-main">
 			<div class="avatar-section">
-				{#if avatarUrl && !avatarError}
-					<img
-						src={avatarUrl}
-						alt="Avatar"
-						class="avatar-img"
-						onerror={handleAvatarError}
-					/>
-				{:else}
-					<div class="avatar-fallback">{initial(displayName)}</div>
-				{/if}
+				<Avatar
+					src={avatarUrl && !avatarError ? avatarUrl : undefined}
+					initials={initial(displayName)}
+					alt={displayName}
+					size="xl"
+				/>
 				<button class="edit-avatar-btn" onclick={startEditAvatar} disabled={saving}>
 					{avatarUrl ? '🖼️ Ganti' : '➕ Tambah Foto'}
 				</button>
@@ -168,16 +165,14 @@
 						<input
 							type="text"
 							bind:value={editNameValue}
-							class="edit-input"
 							placeholder="Masukkan nama tampilan"
-							onkeydown={(e) => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') cancelEditName(); }}
-							autofocus
+							class="edit-input"
 						/>
 						<div class="edit-actions">
-							<button class="btn btn-primary" onclick={saveName} disabled={saving}>
+							<Button onclick={saveName} disabled={saving}>
 								{saving ? 'Menyimpan...' : 'Simpan'}
-							</button>
-							<button class="btn btn-ghost" onclick={cancelEditName}>Batal</button>
+							</Button>
+							<Button variant="ghost" onclick={cancelEditName}>Batal</Button>
 						</div>
 					</div>
 				{:else}
@@ -208,15 +203,14 @@
 					<input
 						type="text"
 						bind:value={editAvatarValue}
-						class="edit-input"
 						placeholder="https://example.com/avatar.jpg"
-						onkeydown={(e) => { if (e.key === 'Enter') saveAvatar(); if (e.key === 'Escape') cancelEditAvatar(); }}
+						class="edit-input"
 					/>
 					<div class="edit-actions">
-						<button class="btn btn-primary" onclick={saveAvatar} disabled={saving}>
+						<Button onclick={saveAvatar} disabled={saving}>
 							{saving ? 'Menyimpan...' : 'Simpan'}
-						</button>
-						<button class="btn btn-ghost" onclick={cancelEditAvatar}>Batal</button>
+						</Button>
+						<Button variant="ghost" onclick={cancelEditAvatar}>Batal</Button>
 					</div>
 				</div>
 				{#if editAvatarValue && !avatarError}
@@ -232,7 +226,7 @@
 				{/if}
 			</div>
 		{/if}
-	</div>
+	</Card>
 
 	<!-- Stats Banner -->
 	<div class="stats-banner">
@@ -298,15 +292,6 @@
 		color: #fff;
 	}
 
-	/* Profile Card */
-	.profile-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 28px;
-		margin-bottom: 20px;
-	}
-
 	.profile-main {
 		display: flex;
 		gap: 24px;
@@ -319,24 +304,6 @@
 		align-items: center;
 		gap: 10px;
 		flex-shrink: 0;
-	}
-
-	.avatar-img,
-	.avatar-fallback {
-		width: 96px;
-		height: 96px;
-		border-radius: 50%;
-		object-fit: cover;
-	}
-
-	.avatar-fallback {
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-		color: #fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 36px;
-		font-weight: 700;
 	}
 
 	.edit-avatar-btn {
@@ -438,63 +405,9 @@
 		margin-bottom: 16px;
 	}
 
-	.edit-input {
-		width: 100%;
-		padding: 10px 14px;
-		font-size: 16px;
-		font-family: inherit;
-		background: var(--bg);
-		border: 1px solid var(--accent);
-		border-radius: 10px;
-		color: var(--text);
-		outline: none;
-		transition: all 0.15s ease;
-		box-sizing: border-box;
-	}
-
-	.edit-input:focus {
-		box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
-	}
-
 	.edit-actions {
 		display: flex;
 		gap: 8px;
-	}
-
-	.btn {
-		padding: 8px 18px;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 600;
-		font-family: inherit;
-		cursor: pointer;
-		border: none;
-		transition: all 0.15s ease;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: #fff;
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		background: var(--accent-secondary);
-		transform: translateY(-1px);
-	}
-
-	.btn-primary:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.btn-ghost {
-		background: transparent;
-		color: var(--text-secondary);
-	}
-
-	.btn-ghost:hover {
-		background: var(--hover);
-		color: var(--text);
 	}
 
 	/* Avatar edit section */
@@ -546,6 +459,7 @@
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 12px;
+		margin-top: 20px;
 	}
 
 	.stat-item {
@@ -608,10 +522,6 @@
 
 		.stats-banner {
 			grid-template-columns: 1fr;
-		}
-
-		.profile-card {
-			padding: 20px;
 		}
 	}
 </style>

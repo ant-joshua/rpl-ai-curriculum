@@ -6,7 +6,7 @@
 
 	let {
 		options = [] as SelectOption[],
-		value = '',
+		value = $bindable(''),
 		placeholder = '',
 		disabled = false,
 		class: className = '',
@@ -26,6 +26,8 @@
 <select
 	class="select-field {className}"
 	{disabled}
+	{value}
+	onchange={onchange}
 	{...rest}
 >
 	{#if placeholder}

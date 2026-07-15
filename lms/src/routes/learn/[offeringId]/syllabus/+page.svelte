@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { getContext, onMount } from 'svelte';
+	import { Badge, Card, CardContent, ProgressBar } from '$lib/components/ui';
 
 	let { data }: { data: PageData } = $props();
 
@@ -59,13 +60,13 @@
 			<p class="course-desc">{offering.courseDescription || ''}</p>
 			<div class="meta-row">
 				{#if offering.category}
-					<span class="meta-badge">{offering.category}</span>
+					<Badge variant="default">{offering.category}</Badge>
 				{/if}
 				{#if offering.level}
-					<span class="meta-badge">{offering.level}</span>
+					<Badge variant="default">{offering.level}</Badge>
 				{/if}
-				<span class="meta-badge">{durationStr}</span>
-				<span class="meta-badge">{lessons.length} pelajaran</span>
+				<Badge variant="default">{durationStr}</Badge>
+				<Badge variant="default">{lessons.length} pelajaran</Badge>
 			</div>
 		</div>
 	</div>
@@ -76,9 +77,7 @@
 			<span class="progress-label">Progress Belajar</span>
 			<span class="progress-pct">{progress.percentage}%</span>
 		</div>
-		<div class="progress-track">
-			<div class="progress-fill" style="width: {progress.percentage}%"></div>
-		</div>
+		<ProgressBar value={progress.completed} max={progress.total} showLabel={false} height={8} />
 		<p class="progress-sub">{progress.completed}/{progress.total} selesai</p>
 	</div>
 
@@ -138,12 +137,14 @@
 	<!-- Certificate CTA -->
 	{#if progress.percentage === 100}
 		<div class="cert-section">
-			<div class="cert-card">
-				<div class="cert-icon">🎓</div>
-				<h3>Selamat! Kamu telah menyelesaikan semua pelajaran</h3>
-				<p>Ambil sertifikat kelulusan sebagai bukti penyelesaian kursus ini.</p>
-				<a href="/my/certificates" class="cert-btn">Ambil Sertifikat</a>
-			</div>
+			<Card class="cert-card">
+				<CardContent>
+					<div class="cert-icon">🎓</div>
+					<h3>Selamat! Kamu telah menyelesaikan semua pelajaran</h3>
+					<p>Ambil sertifikat kelulusan sebagai bukti penyelesaian kursus ini.</p>
+					<a href="/my/certificates" class="cert-btn">Ambil Sertifikat</a>
+				</CardContent>
+			</Card>
 		</div>
 	{/if}
 </div>
@@ -185,14 +186,6 @@
 		line-height: 1.5;
 	}
 	.meta-row { display: flex; flex-wrap: wrap; gap: 8px; }
-	.meta-badge {
-		font-size: 12px;
-		padding: 4px 10px;
-		border-radius: 99px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-	}
 	.progress-section {
 		background: var(--surface);
 		border: 1px solid var(--border);
@@ -208,18 +201,6 @@
 	}
 	.progress-label { font-weight: 600; color: var(--text-primary); font-size: 14px; }
 	.progress-pct { font-weight: 700; color: var(--accent); font-size: 18px; }
-	.progress-track {
-		height: 8px;
-		background: var(--bg-primary);
-		border-radius: 99px;
-		overflow: hidden;
-	}
-	.progress-fill {
-		height: 100%;
-		background: linear-gradient(90deg, var(--accent), #6ee7b7);
-		border-radius: 99px;
-		transition: width 0.5s ease;
-	}
 	.progress-sub { font-size: 12px; color: var(--text-secondary); margin: 8px 0 0; }
 	.weekly-section { display: flex; flex-direction: column; gap: 24px; }
 	.week-card {
@@ -280,11 +261,14 @@
 	.cert-card {
 		background: linear-gradient(135deg, var(--surface), color-mix(in srgb, #f59e0b 10%, var(--surface)));
 		border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
-		border-radius: 16px; padding: 32px; text-align: center;
+		text-align: center;
+	}
+	.cert-card :global(.card-content) {
+		padding: 32px;
 	}
 	.cert-icon { font-size: 64px; margin-bottom: 12px; }
-	.cert-card h3 { margin: 0 0 8px; color: var(--text-primary); font-size: 20px; }
-	.cert-card p { color: var(--text-secondary); margin: 0 0 20px; }
+	:global(.cert-card) h3 { margin: 0 0 8px; color: var(--text-primary); font-size: 20px; }
+	:global(.cert-card) p { color: var(--text-secondary); margin: 0 0 20px; }
 	.cert-btn {
 		display: inline-block; padding: 12px 32px; border-radius: 99px;
 		background: var(--accent); color: #fff;
@@ -301,8 +285,8 @@
 		.lesson-card { padding: 12px 14px; gap: 10px; }
 		.lesson-title { font-size: 13px; }
 		.lesson-meta { gap: 4px; }
-		.cert-card { padding: 24px 16px; }
-		.cert-card h3 { font-size: 17px; }
+		.cert-card :global(.card-content) { padding: 24px 16px; }
+		:global(.cert-card) h3 { font-size: 17px; }
 		.cert-icon { font-size: 48px; }
 	}
 </style>

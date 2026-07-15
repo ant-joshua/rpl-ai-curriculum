@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Button, Card, EmptyState, ProgressBar } from '$lib/components/ui';
+
 	let { data }: { data: import('./$types').PageData } = $props();
 
 	let certificates = $state(data.certificates || []);
@@ -65,7 +67,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-text">{error}</p>
-			<button onclick={loadCerts} class="retry-btn">Coba Lagi</button>
+			<Button onclick={loadCerts}>Coba Lagi</Button>
 		</div>
 	{:else}
 		<!-- In-progress offerings -->
@@ -80,10 +82,7 @@
 								<h3 class="progress-card-title">{item.courseTitle}</h3>
 								<p class="progress-card-offering">{item.offeringName}</p>
 								<div class="progress-bar-wrapper">
-									<div class="progress-bar-bg">
-										<div class="progress-bar-fill" style="width: {item.percentage}%"></div>
-									</div>
-									<span class="progress-text">{item.percentage}%</span>
+									<ProgressBar value={item.percentage} showLabel={false} />
 								</div>
 								<p class="progress-hint">
 									{item.completedLessons} dari {item.totalLessons} pelajaran selesai
@@ -101,12 +100,13 @@
 		<section class="certs-section">
 			<h2 class="section-title">🏆 Sertifikat Diperoleh</h2>
 			{#if certificates.length === 0}
-				<div class="empty-state">
-					<div class="empty-icon">📜</div>
-					<h2>Belum Ada Sertifikat</h2>
-					<p>Selesaikan semua pelajaran dalam suatu kursus untuk mendapatkan sertifikat kelulusan.</p>
+				<EmptyState
+					icon="📜"
+					title="Belum Ada Sertifikat"
+					description="Selesaikan semua pelajaran dalam suatu kursus untuk mendapatkan sertifikat kelulusan."
+				>
 					<a href="/learn" class="browse-link">Jelajahi Kursus</a>
-				</div>
+				</EmptyState>
 			{:else}
 				<div class="cert-list">
 					{#each certificates as cert (cert.id)}
@@ -182,20 +182,6 @@
 		margin-bottom: 16px;
 	}
 
-	.retry-btn {
-		padding: 10px 24px;
-		border-radius: 8px;
-		border: none;
-		background: var(--accent);
-		color: #fff;
-		font-weight: 600;
-		cursor: pointer;
-	}
-
-	.retry-btn:hover {
-		opacity: 0.9;
-	}
-
 	.section-title {
 		font-size: 18px;
 		font-weight: 600;
@@ -256,34 +242,7 @@
 	}
 
 	.progress-bar-wrapper {
-		display: flex;
-		align-items: center;
-		gap: 10px;
 		margin-bottom: 6px;
-	}
-
-	.progress-bar-bg {
-		flex: 1;
-		height: 8px;
-		background: var(--border);
-		border-radius: 4px;
-		overflow: hidden;
-	}
-
-	.progress-bar-fill {
-		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary, var(--accent)));
-		border-radius: 4px;
-		transition: width 0.4s ease;
-	}
-
-	.progress-text {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--accent);
-		flex-shrink: 0;
-		min-width: 36px;
-		text-align: right;
 	}
 
 	.progress-hint {
@@ -307,33 +266,6 @@
 	/* Certificates section */
 	.certs-section {
 		margin-bottom: 36px;
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 40px 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-	}
-
-	.empty-icon {
-		font-size: 64px;
-		margin-bottom: 16px;
-	}
-
-	.empty-state h2 {
-		font-size: 20px;
-		font-weight: 700;
-		margin: 0 0 8px;
-	}
-
-	.empty-state p {
-		color: var(--text-secondary);
-		font-size: 14px;
-		line-height: 1.6;
-		max-width: 400px;
-		margin: 0 auto 20px;
 	}
 
 	.browse-link {

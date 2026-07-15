@@ -5,6 +5,7 @@
 	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Badge, Button, Textarea, Skeleton } from '$lib/components/ui';
 
 	let { data } = $props();
 
@@ -298,11 +299,13 @@
 					</button>
 					<div class="badge-group">
 						{#if lesson.duration_minutes}
-							<span class="badge badge-duration">{lesson.duration_minutes} min</span>
+							<Badge variant="primary">{lesson.duration_minutes} min</Badge>
 						{/if}
-						<span class="badge badge-status" class:published={lesson.status === 'published'} class:draft={lesson.status === 'draft'}>
+						<Badge
+							variant={lesson.status === 'published' ? 'success' : lesson.status === 'draft' ? 'warning' : 'default'}
+						>
 							{lesson.status}
-						</span>
+						</Badge>
 					</div>
 				</div>
 			</div>
@@ -315,7 +318,7 @@
 		<div class="lesson-body">
 			{#if accessCheck.loading}
 				<div class="loading-state">
-					<div class="skeleton-block" style="height: 200px;"></div>
+					<Skeleton variant="block" height="200px" />
 				</div>
 			{:else if !accessCheck.accessible}
 				<LockedLesson prerequisites={accessCheck.prerequisites} />
@@ -343,26 +346,22 @@
 					<span class="spinner"></span> Loading notes...
 				</div>
 			{:else}
-				<textarea
-					class="notes-textarea"
-					class:saved={noteSaved}
+				<Textarea
 					bind:value={noteContent}
 					placeholder="Write your personal notes for this lesson..."
-					rows="5"
-				></textarea>
+					rows={5}
+					class={noteSaved ? 'saved' : ''}
+				/>
 				<div class="notes-actions">
-					<button class="save-note-btn" class:loading={isSavingNote} onclick={() => saveNote()} disabled={isSavingNote}>
-						{#if isSavingNote}
-							<span class="spinner"></span>
-							Saving...
-						{:else if noteSaved}
+					<Button onclick={() => saveNote()} disabled={isSavingNote} loading={isSavingNote}>
+						{#if !isSavingNote && noteSaved}
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
 							Saved
-						{:else}
+						{:else if !isSavingNote}
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
 							Save Notes
 						{/if}
-					</button>
+					</Button>
 				</div>
 			{/if}
 		</div>
@@ -395,14 +394,19 @@
 
 		<!-- Mark complete button -->
 		<div class="complete-section">
-			<button class="complete-btn" class:done={isCompleted} class:loading={isCompleting} onclick={() => markComplete()} disabled={isCompleted || isCompleting}>
+			<Button
+				onclick={() => markComplete()}
+				disabled={isCompleted || isCompleting}
+				loading={isCompleting}
+				variant="primary"
+				class={['', isCompleted ? 'done' : '', isCompleting ? 'loading' : ''].filter(Boolean).join(' ')}
+			>
 				{#if isCompleted}
 					<span class="checkmark-icon">
 						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
 					</span>
 					Selesai
 				{:else if isCompleting}
-					<span class="spinner"></span>
 					Menyimpan...
 				{:else}
 					<span class="checkmark-icon checkmark-empty">
@@ -410,7 +414,7 @@
 					</span>
 					Tandai Selesai
 				{/if}
-			</button>
+			</Button>
 		</div>
 		<!-- Discussion panel -->
 		<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
@@ -491,30 +495,6 @@
 		flex-shrink: 0;
 	}
 
-	.badge {
-		font-size: 11px;
-		font-weight: 600;
-		padding: 4px 10px;
-		border-radius: 6px;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-
-	.badge-duration {
-		background: var(--accent-dim);
-		color: var(--accent);
-	}
-
-	.badge-status.published {
-		background: rgba(34, 197, 94, 0.12);
-		color: var(--success);
-	}
-
-	.badge-status.draft {
-		background: rgba(245, 158, 11, 0.12);
-		color: var(--warning);
-	}
-
 	.offering-name {
 		font-size: 14px;
 		color: var(--text-secondary);
@@ -582,65 +562,10 @@
 		padding: 8px 0;
 	}
 
-	.notes-textarea {
-		width: 100%;
-		padding: 12px;
-		font-size: 14px;
-		line-height: 1.6;
-		color: var(--text);
-		background: var(--bg);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		resize: vertical;
-		min-height: 100px;
-		font-family: inherit;
-		transition: border-color 0.15s ease;
-		box-sizing: border-box;
-	}
-
-	.notes-textarea:focus {
-		outline: none;
-		border-color: var(--accent);
-		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-	}
-
-	.notes-textarea.saved {
-		border-color: #22c55e;
-	}
-
 	.notes-actions {
 		display: flex;
 		justify-content: flex-end;
 		margin-top: 10px;
-	}
-
-	.save-note-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 8px 18px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #fff;
-		background: var(--accent);
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.save-note-btn:hover:not(:disabled) {
-		background: var(--accent-secondary);
-	}
-
-	.save-note-btn:disabled {
-		opacity: 0.7;
-		cursor: default;
-	}
-
-	.save-note-btn.loading {
-		background: var(--accent-dim);
-		color: var(--accent);
 	}
 
 	/* Loading */
@@ -749,54 +674,9 @@
 		padding-top: 8px;
 	}
 
-	.complete-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 32px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #fff;
-		background: var(--accent);
-		border: none;
-		border-radius: 10px;
-		cursor: pointer;
-		transition: all 0.3s ease;
-	}
-
-	.complete-btn:not(:disabled):hover {
-		background: var(--accent-secondary);
-		transform: translateY(-1px);
-	}
-
-	.complete-btn:active {
-		transform: translateY(0);
-	}
-
-	.complete-btn:disabled {
-		cursor: default;
-		opacity: 0.9;
-	}
-
-	.complete-btn.done {
-		background: linear-gradient(135deg, #22c55e, #16a34a);
-		cursor: default;
-		animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-	}
-
-	.complete-btn.loading {
-		background: var(--accent-dim);
-		color: var(--accent);
-		cursor: wait;
-	}
-
 	.checkmark-icon {
 		display: inline-flex;
 		align-items: center;
-	}
-
-	.complete-btn.done .checkmark-icon {
-		animation: checkDraw 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 
 	.checkmark-empty {
@@ -818,16 +698,9 @@
 		to { transform: rotate(360deg); }
 	}
 
-	@keyframes popIn {
-		0% { transform: scale(0.9); }
-		50% { transform: scale(1.05); }
-		100% { transform: scale(1); }
-	}
-
-	@keyframes checkDraw {
-		0% { transform: scale(0); opacity: 0; }
-		60% { transform: scale(1.2); }
-		100% { transform: scale(1); opacity: 1; }
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
 	}
 
 	@media (max-width: 640px) {
@@ -849,7 +722,7 @@
 			max-width: 100%;
 		}
 
-		.complete-btn {
+		.complete-section :global(.btn) {
 			width: 100%;
 			justify-content: center;
 		}

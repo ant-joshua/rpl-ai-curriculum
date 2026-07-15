@@ -1,11 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { Badge, Card, Button, EmptyState } from '$lib/components/ui';
 
 	let { data } = $props();
 	let bookmarks = $derived(data.bookmarks ?? []);
 
 	function offeringLink(bookmark: any): string {
 		return `/learn/${bookmark.offering_id}/lessons/${bookmark.lesson_slug}`;
+	}
+
+	function durationBadge(minutes: number): string {
+		if (minutes < 60) return `${minutes} min`;
+		const h = Math.floor(minutes / 60);
+		const m = minutes % 60;
+		return m > 0 ? `${h}j ${m}m` : `${h}j`;
 	}
 </script>
 
@@ -20,14 +28,13 @@
 	</header>
 
 	{#if bookmarks.length === 0}
-		<div class="empty-state">
-			<div class="empty-icon">
-				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-			</div>
-			<h3>No bookmarks yet</h3>
-			<p class="text-secondary">Bookmark lessons while learning to find them easily later.</p>
-			<a href="/learn" class="browse-link">Browse courses</a>
-		</div>
+		<EmptyState
+			icon="🔖"
+			title="No bookmarks yet"
+			description="Bookmark lessons while learning to find them easily later."
+		>
+			<Button href="/learn">Browse courses</Button>
+		</EmptyState>
 	{:else}
 		<div class="bookmarks-list">
 			{#each bookmarks as bookmark (bookmark.id)}
@@ -43,7 +50,7 @@
 							<span class="offering-label">{bookmark.offering_name}</span>
 							{#if bookmark.duration_minutes}
 								<span class="sep">&middot;</span>
-								<span class="duration-label">{bookmark.duration_minutes} min</span>
+								<Badge variant="default">{durationBadge(bookmark.duration_minutes)}</Badge>
 							{/if}
 						</div>
 					</div>
@@ -78,52 +85,6 @@
 		color: var(--text-secondary);
 		font-size: 14px;
 		margin: 0;
-	}
-
-	/* Empty state */
-	.empty-state {
-		text-align: center;
-		padding: 60px 20px;
-	}
-
-	.empty-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 64px;
-		height: 64px;
-		border-radius: 16px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-		margin-bottom: 16px;
-	}
-
-	.empty-state h3 {
-		font-size: 18px;
-		font-weight: 600;
-		color: var(--text);
-		margin: 0 0 6px;
-	}
-
-	.empty-state .text-secondary {
-		margin-bottom: 20px;
-	}
-
-	.browse-link {
-		display: inline-block;
-		padding: 10px 24px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #fff;
-		background: var(--accent);
-		border-radius: 10px;
-		text-decoration: none;
-		transition: background 0.15s;
-	}
-
-	.browse-link:hover {
-		background: var(--accent-secondary);
 	}
 
 	/* Bookmarks list */

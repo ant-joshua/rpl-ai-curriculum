@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { api } from '$lib/utils/api';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Button, Card, Badge } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -28,12 +29,12 @@
 	let isSubmitting = $derived(submitting || uploading);
 
 	let statusBadge = $derived.by(() => {
-		if (!submission) return { text: 'Belum Dikumpulkan', cls: 'status--pending' };
+		if (!submission) return { text: 'Belum Dikumpulkan', variant: 'default' as const };
 		switch (submission.status) {
-			case 'submitted': return { text: 'Dikumpulkan', cls: 'status--submitted' };
-			case 'graded': return { text: 'Dinilai', cls: 'status--graded' };
-			case 'returned': return { text: 'Dikembalikan', cls: 'status--returned' };
-			default: return { text: 'Draft', cls: 'status--draft' };
+			case 'submitted': return { text: 'Dikumpulkan', variant: 'info' as const };
+			case 'graded': return { text: 'Dinilai', variant: 'success' as const };
+			case 'returned': return { text: 'Dikembalikan', variant: 'warning' as const };
+			default: return { text: 'Draft', variant: 'default' as const };
 		}
 	});
 
@@ -154,7 +155,6 @@
 	}
 
 	function unixStyleFilename(url: string): string {
-		// Extract filename from URL like /api/upload/assignments/uuid.ext
 		const parts = url.split('/');
 		return parts[parts.length - 1] || url;
 	}
@@ -187,20 +187,20 @@
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}
-				<!-- Breadcrumb -->
-				<Breadcrumb items={[
-					{ label: 'Grades', href: '/my/grades' },
-					{ label: assignment?.title ?? 'Assignment' },
-				]} />
+		<!-- Breadcrumb -->
+		<Breadcrumb items={[
+			{ label: 'Grades', href: '/my/grades' },
+			{ label: assignment?.title ?? 'Assignment' },
+		]} />
 
 		<!-- Header -->
 		<div class="header">
 			<div class="header-left">
 				<h1>{assignment.title}</h1>
 				<div class="meta-row">
-					<span class="meta-badge">{assignment.offering_name}</span>
-					<span class="meta-badge">{submissionTypeLabel}</span>
-					<span class="meta-badge">{assignment.max_score} poin</span>
+					<Badge variant="outline">{assignment.offering_name}</Badge>
+					<Badge variant="outline">{submissionTypeLabel}</Badge>
+					<Badge variant="outline">{assignment.max_score} poin</Badge>
 				</div>
 				<p class="due-date">📅 Batas: {dueLabel}</p>
 				{#if isLate}
@@ -208,24 +208,24 @@
 				{/if}
 			</div>
 			<div class="header-right">
-				<span class="status-badge {formattedStatus.cls}">{formattedStatus.text}</span>
+				<Badge variant={formattedStatus.variant}>{formattedStatus.text}</Badge>
 			</div>
 		</div>
 
 		<!-- Description -->
 		{#if assignment.description}
-			<div class="card description-card">
-				<h3>Deskripsi</h3>
+			<Card padding="lg">
+				<h3 class="section-heading">Deskripsi</h3>
 				<div class="description">{assignment.description}</div>
-			</div>
+			</Card>
 		{/if}
 
 		<!-- Submission Result -->
 		{#if submitted || (submission && submission.status !== 'draft')}
-			<div class="card result-card">
+			<Card padding="lg">
 				<div class="result-header">
 					<span class="result-icon">✅</span>
-					<h3>Submission Berhasil</h3>
+					<h3 class="section-heading" style="margin:0">Submission Berhasil</h3>
 				</div>
 
 				{#if submissionText}
@@ -271,13 +271,13 @@
 						</div>
 					{/if}
 				{/if}
-			</div>
+			</Card>
 		{/if}
 
 		<!-- Submit Form (show if not yet submitted) -->
 		{#if canSubmit && (!submission || submission.status === 'draft')}
-			<div class="card submit-card">
-				<h3>Kumpulkan Tugas</h3>
+			<Card padding="lg">
+				<h3 class="section-heading">Kumpulkan Tugas</h3>
 
 				<!-- File upload type -->
 				{#if assignment.submission_type === 'file'}
@@ -361,21 +361,19 @@
 				{/if}
 
 				<div class="form-actions">
-					<button
-						class="btn btn--submit"
-						onclick={handleSubmit}
-						disabled={isSubmitting}
-					>
+					<Button onclick={handleSubmit} disabled={isSubmitting}>
 						{uploading ? 'Mengupload...' : submitting ? 'Mengumpulkan...' : 'Kumpulkan Tugas'}
-					</button>
+					</Button>
 				</div>
-			</div>
+			</Card>
 		{:else if !canSubmit && !submission}
-			<div class="card expired-card">
-				<span class="expired-icon">🔒</span>
-				<h3>Batas Waktu Habis</h3>
-				<p>Tidak bisa mengumpulkan tugas karena batas waktu telah lewat.</p>
-			</div>
+			<Card padding="lg">
+				<div class="expired-card">
+					<span class="expired-icon">🔒</span>
+					<h3 class="section-heading" style="text-align:center; margin-bottom:8px">Batas Waktu Habis</h3>
+					<p>Tidak bisa mengumpulkan tugas karena batas waktu telah lewat.</p>
+				</div>
+			</Card>
 		{/if}
 	{/if}
 </div>
@@ -406,14 +404,6 @@
 		font-size: 24px;
 	}
 	.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-	.meta-badge {
-		font-size: 12px;
-		padding: 4px 10px;
-		border-radius: 99px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		color: var(--text-secondary);
-	}
 	.due-date {
 		margin: 0;
 		font-size: 13px;
@@ -429,31 +419,11 @@
 		font-weight: 600;
 	}
 
-	.status-badge {
-		display: inline-block;
-		padding: 6px 14px;
-		border-radius: 99px;
-		font-size: 12px;
-		font-weight: 600;
-		flex-shrink: 0;
-	}
-	.status--graded { background: #2ecc7133; color: #2ecc71; }
-	.status--submitted { background: #3498db33; color: #3498db; }
-	.status--returned { background: #f39c1233; color: #f39c12; }
-	.status--pending, .status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-
-	.card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 24px;
-		margin-bottom: 20px;
-	}
-
-	.description-card h3, .submit-card h3, .result-card h3 {
+	.section-heading {
 		margin: 0 0 12px;
 		font-size: 16px;
 	}
+
 	.description {
 		font-size: 14px;
 		line-height: 1.6;
@@ -469,7 +439,6 @@
 		margin-bottom: 16px;
 	}
 	.result-icon { font-size: 24px; }
-	.result-header h3 { margin: 0; }
 	.result-section {
 		margin-bottom: 16px;
 	}
@@ -635,36 +604,14 @@
 
 	.form-actions { display: flex; gap: 8px; }
 
-	.btn {
-		padding: 10px 24px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		border: none;
-		font-family: inherit;
-		transition: all 0.15s;
-	}
-	.btn--submit {
-		background: var(--accent);
-		color: #fff;
-	}
-	.btn--submit:hover { opacity: 0.9; }
-	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-	.expired-card {
-		text-align: center;
-		padding: 40px;
-	}
-	.expired-icon { font-size: 48px; display: block; margin-bottom: 12px; }
-	.expired-card h3 { margin: 0 0 8px; }
+	.expired-card { text-align: center; }
+	.expired-icon { font-size: 48px; display: block; margin-bottom: 12px; text-align: center; }
 	.expired-card p { color: var(--text-secondary); font-size: 14px; margin: 0; }
 
 	@media (max-width: 640px) {
 		.assignment-page { padding: 16px 12px 48px; }
 		.header { flex-direction: column; gap: 12px; }
 		.header-left h1 { font-size: 20px; }
-		.card { padding: 16px; }
 		.result-meta { flex-direction: column; gap: 6px; }
 		.grade-result { flex-wrap: wrap; }
 		.dropzone { padding: 24px 16px; }
@@ -672,6 +619,5 @@
 
 	@media (max-width: 480px) {
 		.form-actions { flex-direction: column; }
-		.btn { width: 100%; text-align: center; }
 	}
 </style>

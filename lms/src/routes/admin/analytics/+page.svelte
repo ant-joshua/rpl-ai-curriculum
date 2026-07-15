@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button, Card, CardContent, Alert } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -75,7 +76,7 @@
 <div class="analytics-page">
 	<div class="header-row">
 		<h1>📈 Analytics</h1>
-		<button onclick={loadAll} class="btn btn-sm">🔄 Refresh</button>
+		<Button size="sm" onclick={loadAll}>🔄 Refresh</Button>
 	</div>
 
 	<!-- Tabs -->
@@ -95,169 +96,192 @@
 	{#if loading}
 		<div class="loading">Loading analytics...</div>
 	{:else if error}
-		<div class="error-state"><p>{error}</p><button onclick={loadAll} class="btn">Retry</button></div>
+		<div class="error-state">
+			<Alert variant="danger">{error}</Alert>
+			<Button onclick={loadAll}>Retry</Button>
+		</div>
 	{:else}
 
 		<!-- === OVERVIEW TAB === -->
 		{#if activeTab === 'overview'}
 			<div class="stats-grid">
-				<div class="stat-card">
-					<span class="stat-icon">👥</span>
-					<span class="stat-value">{overview?.totalUsers ?? 0}</span>
-					<span class="stat-label">Total Users</span>
-				</div>
-				<div class="stat-card">
-					<span class="stat-icon">📋</span>
-					<span class="stat-value">{overview?.activeEnrollments ?? 0}</span>
-					<span class="stat-label">Active Enrollments</span>
-				</div>
-				<div class="stat-card">
-					<span class="stat-icon">📚</span>
-					<span class="stat-value">{overview?.totalCourses ?? 0}</span>
-					<span class="stat-label">Total Courses</span>
-				</div>
-				<div class="stat-card">
-					<span class="stat-icon">📖</span>
-					<span class="stat-value">{overview?.totalLessons ?? 0}</span>
-					<span class="stat-label">Published Lessons</span>
-				</div>
-				<div class="stat-card">
-					<span class="stat-icon">⏳</span>
-					<span class="stat-value">{overview?.pendingGrades ?? 0}</span>
-					<span class="stat-label">Pending Grades</span>
-				</div>
-				<div class="stat-card">
-					<span class="stat-icon">🆕</span>
-					<span class="stat-value">{overview?.newUsers ?? 0}</span>
-					<span class="stat-label">New Users (7d)</span>
-				</div>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">👥</span>
+						<span class="stat-value">{overview?.totalUsers ?? 0}</span>
+						<span class="stat-label">Total Users</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📋</span>
+						<span class="stat-value">{overview?.activeEnrollments ?? 0}</span>
+						<span class="stat-label">Active Enrollments</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📚</span>
+						<span class="stat-value">{overview?.totalCourses ?? 0}</span>
+						<span class="stat-label">Total Courses</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📖</span>
+						<span class="stat-value">{overview?.totalLessons ?? 0}</span>
+						<span class="stat-label">Published Lessons</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">⏳</span>
+						<span class="stat-value">{overview?.pendingGrades ?? 0}</span>
+						<span class="stat-label">Pending Grades</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">🆕</span>
+						<span class="stat-value">{overview?.newUsers ?? 0}</span>
+						<span class="stat-label">New Users (7d)</span>
+					</CardContent>
+				</Card>
 			</div>
 
-			<div class="section-card">
-				<h2>Recent Activity</h2>
-				{#if overview?.recentActivity?.length}
-					<div class="activity-feed">
-						{#each overview.recentActivity.slice(0, 10) as act}
-							<div class="activity-item">
-								<span class="act-avatar">
-									{act.avatar_url
-										? `<img src="${act.avatar_url}" alt="" class="act-img" />`
-										: '👤'}
-								</span>
-								<div class="act-body">
-									<span class="act-user">{act.display_name || act.email || act.user_id?.slice(0, 12)}</span>
-									<span class="act-action">{act.action}</span>
-									{#if act.entity_type}
-										<span class="act-entity">on {act.entity_type} {act.entity_id?.slice(0, 12)}</span>
-									{/if}
+			<Card class="section-card">
+				<CardContent>
+					<h2>Recent Activity</h2>
+					{#if overview?.recentActivity?.length}
+						<div class="activity-feed">
+							{#each overview.recentActivity.slice(0, 10) as act}
+								<div class="activity-item">
+									<span class="act-avatar">
+										{act.avatar_url
+											? `<img src="${act.avatar_url}" alt="" class="act-img" />`
+											: '👤'}
+									</span>
+									<div class="act-body">
+										<span class="act-user">{act.display_name || act.email || act.user_id?.slice(0, 12)}</span>
+										<span class="act-action">{act.action}</span>
+										{#if act.entity_type}
+											<span class="act-entity">on {act.entity_type} {act.entity_id?.slice(0, 12)}</span>
+										{/if}
+									</div>
+									<span class="act-time">{timeAgo(act.created_at)}</span>
 								</div>
-								<span class="act-time">{timeAgo(act.created_at)}</span>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<p class="empty">No recent activity</p>
-				{/if}
-			</div>
+							{/each}
+						</div>
+					{:else}
+						<p class="empty">No recent activity</p>
+					{/if}
+				</CardContent>
+			</Card>
 
 		<!-- === ENROLLMENTS TAB === -->
 		{:else if activeTab === 'enrollments'}
-			<div class="section-card">
-				<h2>Enrollment Trend — Last 30 Days</h2>
-				{#if enrollments.length > 0}
-					{@const maxVal = Math.max(...enrollments.map((e: any) => e.count), 1)}
-					{@const chartW = 700}
-					{@const chartH = 250}
-					{@const barW = Math.max(8, Math.min(20, (chartW - 40) / enrollments.length))}
-					{@const gap = 2}
-					<div class="svg-chart-wrap">
-						<svg viewBox="0 0 {chartW} {chartH + 40}" class="bar-svg">
-							<!-- Y axis labels -->
-							<text x="10" y="15" class="chart-label">{maxVal}</text>
-							<text x="10" y={chartH / 2 + 5} class="chart-label">{Math.round(maxVal / 2)}</text>
-							<text x="10" y={chartH + 5} class="chart-label">0</text>
-							<!-- Bars -->
-							{#each enrollments as item, i}
-								{@const barH = (item.count / maxVal) * chartH}
-								{@const x = 35 + i * (barW + gap)}
-								{@const y = chartH - barH}
-								<rect
-									x={x} y={y}
-									width={barW} height={barH}
-									rx="2" ry="2"
-									class="bar-rect"
-								>
-									<title>{item.date}: {item.count} enrollments</title>
-								</rect>
-								<!-- Date label every 5th bar -->
-								{#if i % 5 === 0}
-									<text x={x + barW / 2} y={chartH + 16} text-anchor="middle" class="chart-label-x">
-										{item.date?.slice(5)}
-									</text>
-								{/if}
-							{/each}
-						</svg>
-					</div>
-				{:else}
-					<p class="empty">No enrollment data yet</p>
-				{/if}
-			</div>
+			<Card class="section-card">
+				<CardContent>
+					<h2>Enrollment Trend — Last 30 Days</h2>
+					{#if enrollments.length > 0}
+						{@const maxVal = Math.max(...enrollments.map((e: any) => e.count), 1)}
+						{@const chartW = 700}
+						{@const chartH = 250}
+						{@const barW = Math.max(8, Math.min(20, (chartW - 40) / enrollments.length))}
+						{@const gap = 2}
+						<div class="svg-chart-wrap">
+							<svg viewBox="0 0 {chartW} {chartH + 40}" class="bar-svg">
+								<!-- Y axis labels -->
+								<text x="10" y="15" class="chart-label">{maxVal}</text>
+								<text x="10" y={chartH / 2 + 5} class="chart-label">{Math.round(maxVal / 2)}</text>
+								<text x="10" y={chartH + 5} class="chart-label">0</text>
+								<!-- Bars -->
+								{#each enrollments as item, i}
+									{@const barH = (item.count / maxVal) * chartH}
+									{@const x = 35 + i * (barW + gap)}
+									{@const y = chartH - barH}
+									<rect
+										x={x} y={y}
+										width={barW} height={barH}
+										rx="2" ry="2"
+										class="bar-rect"
+									>
+										<title>{item.date}: {item.count} enrollments</title>
+									</rect>
+									<!-- Date label every 5th bar -->
+									{#if i % 5 === 0}
+										<text x={x + barW / 2} y={chartH + 16} text-anchor="middle" class="chart-label-x">
+											{item.date?.slice(5)}
+										</text>
+									{/if}
+								{/each}
+							</svg>
+						</div>
+					{:else}
+						<p class="empty">No enrollment data yet</p>
+					{/if}
+				</CardContent>
+			</Card>
 
 		<!-- === COMPLETION TAB === -->
 		{:else if activeTab === 'completion'}
-			<div class="section-card">
-				<h2>Lesson Completion Rates per Offering</h2>
-				{#if completion.length > 0}
-					{@const maxRate = Math.max(...completion.map((c: any) => c.completion_rate), 0.01)}
-					<div class="completion-list">
-						{#each completion as item}
-							{@const pct = (item.completion_rate / maxRate) * 100}
-							{@const pctDisplay = (item.completion_rate * 100).toFixed(1)}
-							<div class="comp-row">
-								<div class="comp-info">
-									<span class="comp-name">{item.offering_name}</span>
-									<span class="comp-students">{item.active_students} students</span>
+			<Card class="section-card">
+				<CardContent>
+					<h2>Lesson Completion Rates per Offering</h2>
+					{#if completion.length > 0}
+						{@const maxRate = Math.max(...completion.map((c: any) => c.completion_rate), 0.01)}
+						<div class="completion-list">
+							{#each completion as item}
+								{@const pct = (item.completion_rate / maxRate) * 100}
+								{@const pctDisplay = (item.completion_rate * 100).toFixed(1)}
+								<div class="comp-row">
+									<div class="comp-info">
+										<span class="comp-name">{item.offering_name}</span>
+										<span class="comp-students">{item.active_students} students</span>
+									</div>
+									<div class="comp-bar-track">
+										<div
+											class="comp-bar-fill"
+											style="width: {pct}%"
+											style:background={item.completion_rate >= 0.7 ? 'var(--accent)' : item.completion_rate >= 0.4 ? '#f59e0b' : '#ef4444'}
+										></div>
+									</div>
+									<span class="comp-pct">{pctDisplay}%</span>
 								</div>
-								<div class="comp-bar-track">
-									<div
-										class="comp-bar-fill"
-										style="width: {pct}%"
-										style:background={item.completion_rate >= 0.7 ? 'var(--accent)' : item.completion_rate >= 0.4 ? '#f59e0b' : '#ef4444'}
-									></div>
-								</div>
-								<span class="comp-pct">{pctDisplay}%</span>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<p class="empty">No completion data yet</p>
-				{/if}
-			</div>
+							{/each}
+						</div>
+					{:else}
+						<p class="empty">No completion data yet</p>
+					{/if}
+				</CardContent>
+			</Card>
 
 		<!-- === ACTIVITY TAB === -->
 		{:else if activeTab === 'activity'}
-			<div class="section-card">
-				<h2>Activity Log</h2>
-				{#if overview?.recentActivity?.length}
-					<div class="activity-feed activity-feed--full">
-						{#each overview.recentActivity as act}
-							<div class="activity-item">
-								<span class="act-avatar">{actionIcon(act.action)}</span>
-								<div class="act-body">
-									<span class="act-user">{act.display_name || act.email || act.user_id?.slice(0, 12)}</span>
-									<span class="act-action">{act.action}</span>
-									{#if act.entity_type}
-										<span class="act-entity">· {act.entity_type} {act.entity_id?.slice(0, 8)}</span>
-									{/if}
+			<Card class="section-card">
+				<CardContent>
+					<h2>Activity Log</h2>
+					{#if overview?.recentActivity?.length}
+						<div class="activity-feed activity-feed--full">
+							{#each overview.recentActivity as act}
+								<div class="activity-item">
+									<span class="act-avatar">{actionIcon(act.action)}</span>
+									<div class="act-body">
+										<span class="act-user">{act.display_name || act.email || act.user_id?.slice(0, 12)}</span>
+										<span class="act-action">{act.action}</span>
+										{#if act.entity_type}
+											<span class="act-entity">· {act.entity_type} {act.entity_id?.slice(0, 8)}</span>
+										{/if}
+									</div>
+									<span class="act-time">{timeAgo(act.created_at)}</span>
 								</div>
-								<span class="act-time">{timeAgo(act.created_at)}</span>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<p class="empty">No activity logged yet</p>
-				{/if}
-			</div>
+							{/each}
+						</div>
+					{:else}
+						<p class="empty">No activity logged yet</p>
+					{/if}
+				</CardContent>
+			</Card>
 		{/if}
 	{/if}
 </div>
@@ -266,7 +290,8 @@
 	.analytics-page { max-width: 1100px; }
 	h1 { font-size: 26px; font-weight: 700; }
 	h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
-	.loading, .error-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
+	.error-state { text-align: center; padding: 60px; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 16px; }
 	.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
 	/* Tabs */
@@ -306,29 +331,20 @@
 		gap: 14px;
 		margin-bottom: 28px;
 	}
-	.stat-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 18px;
-		text-align: center;
+	:global(.stat-card) { text-align: center; }
+	:global(.stat-card) :global(.card-content) {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 2px;
+		padding: 18px;
 	}
 	.stat-icon { font-size: 24px; }
 	.stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
 	.stat-label { font-size: 11px; color: var(--text-secondary); }
 
 	/* Section card */
-	.section-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 18px;
-		margin-bottom: 20px;
-	}
+	:global(.section-card) { margin-bottom: 20px; }
 
 	/* SVG bar chart */
 	.svg-chart-wrap {
@@ -386,14 +402,6 @@
 	.act-time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
 
 	.empty { color: var(--text-secondary); font-size: 13px; text-align: center; padding: 30px; }
-
-	.btn {
-		display: inline-block; padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--bg-secondary);
-		color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer;
-	}
-	.btn-sm { padding: 5px 10px; font-size: 12px; }
-	.btn:hover { opacity: 0.85; }
 
 	@media (max-width: 768px) {
 		.stats-grid { grid-template-columns: repeat(2, 1fr); }

@@ -2,7 +2,7 @@
 	let {
 		type = 'text',
 		placeholder = '',
-		value = '',
+		value = $bindable(''),
 		error,
 		disabled = false,
 		class: className = '',

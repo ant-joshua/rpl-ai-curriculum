@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { Button, Badge, Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Modal, Input, Textarea, EmptyState, Loading } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let course: any = $state(null);
@@ -212,12 +213,11 @@
 </svelte:head>
 
 {#if loading}
-	<div class="loading">Loading course data...</div>
+	<Loading />
 {:else if error}
-	<div class="error-state">
-		<p class="error-msg">{error}</p>
-		<button class="btn" onclick={loadCourseDetail}>Retry</button>
-	</div>
+	<EmptyState icon="⚠️" title="Error" description={error}>
+		<Button onclick={loadCourseDetail}>Retry</Button>
+	</EmptyState>
 {:else if course}
 	<div class="course-page">
 		<!-- Breadcrumb + Header -->
@@ -231,11 +231,11 @@
 				<div class="header-meta">
 					<span class="meta-label">{course.course_title || ''}</span>
 					{#if course.code}<span class="meta-label meta-code">{course.code}</span>{/if}
-					<span class="status-badge {statusClass(course.status)}">{course.status}</span>
+					<Badge variant={course.status === 'active' ? 'success' : course.status === 'completed' ? 'info' : course.status === 'archived' ? 'default' : 'warning'}>{course.status}</Badge>
 				</div>
 			</div>
 			<div class="header-right">
-				<button class="btn btn--refresh" onclick={loadCourseDetail}>🔄 Refresh</button>
+				<Button variant="secondary" size="sm" onclick={loadCourseDetail}>🔄 Refresh</Button>
 			</div>
 		</div>
 
@@ -262,7 +262,7 @@
 						<h3>Course Details</h3>
 						<div class="info-row"><span>Course</span><span>{course.course_title}</span></div>
 						<div class="info-row"><span>Code</span><span>{course.code || '-'}</span></div>
-						<div class="info-row"><span>Status</span><span class="status-badge {statusClass(course.status)}">{course.status}</span></div>
+						<div class="info-row"><span>Status</span><Badge variant={course.status === 'active' ? 'success' : course.status === 'completed' ? 'info' : course.status === 'archived' ? 'default' : 'warning'}>{course.status}</Badge></div>
 						<div class="info-row"><span>Start Date</span><span>{course.start_date ? formatDate(course.start_date) : '-'}</span></div>
 						<div class="info-row"><span>End Date</span><span>{course.end_date ? formatDate(course.end_date) : '-'}</span></div>
 					</div>
@@ -284,7 +284,7 @@
 								<div class="lesson-row">
 									<span class="lesson-order">{i + 1}.</span>
 									<span class="lesson-title">{l.title}</span>
-									<span class="status-badge {statusClass(l.status)}">{l.status}</span>
+									<Badge variant={l.status === 'active' ? 'success' : l.status === 'completed' ? 'info' : l.status === 'archived' ? 'default' : 'warning'}>{l.status}</Badge>
 								</div>
 							{/each}
 						</div>
@@ -297,7 +297,7 @@
 		{#if activeTab === 'assignments'}
 			<div class="tab-content">
 				{#if assignments.length === 0}
-					<div class="empty-state">No assignments yet for this course.</div>
+					<EmptyState title="No Assignments" description="No assignments yet for this course." />
 				{:else}
 					<div class="assignments-list">
 						{#each assignments as a}
@@ -320,47 +320,45 @@
 								{#if subs.length === 0}
 									<div class="no-subs">No submissions yet.</div>
 								{:else}
-									<div class="table-wrap">
-										<table class="subs-table">
-											<thead>
-												<tr>
-													<th>Student</th>
-													<th>Status</th>
-													<th>Submitted</th>
-													<th>Score</th>
-													<th>Feedback</th>
-													<th>Action</th>
-												</tr>
-											</thead>
-											<tbody>
-												{#each subs as sub}
-													<tr class:row--late={isLate(sub, a.due_date)}>
-														<td class="student-name">{sub.user_name || '-'}</td>
-														<td>
-															<span class="mini-badge {subStatusClass(sub.status)}">{sub.status}</span>
-															{#if isLate(sub, a.due_date)}
-																<span class="late-tag">LATE</span>
-															{/if}
-														</td>
-														<td class="date-cell">{formatDate(sub.submitted_at)}</td>
-														<td class="score-cell">
-															{#if sub.score != null}
-																{sub.score}<span class="max-score">/{a.max_score}</span>
-															{:else}
-																<span class="score-na">-</span>
-															{/if}
-														</td>
-														<td class="feedback-cell">{sub.feedback ? sub.feedback.slice(0, 30) + (sub.feedback.length > 30 ? '…' : '') : '-'}</td>
-														<td class="action-cell">
-															<button class="btn btn--small" onclick={() => openGradeModal(sub, a.max_score)}>
-																{sub.score != null ? 'Edit' : 'Grade'}
-															</button>
-														</td>
-													</tr>
-												{/each}
-											</tbody>
-										</table>
-									</div>
+									<Table>
+										<TableHeader>
+											<TableRow>
+												<TableHead>Student</TableHead>
+												<TableHead>Status</TableHead>
+												<TableHead>Submitted</TableHead>
+												<TableHead>Score</TableHead>
+												<TableHead>Feedback</TableHead>
+												<TableHead>Action</TableHead>
+											</TableRow>
+										</TableHeader>
+										<TableBody>
+											{#each subs as sub}
+												<TableRow class={isLate(sub, a.due_date) ? 'row--late' : ''}>
+													<TableCell class="student-name">{sub.user_name || '-'}</TableCell>
+													<TableCell>
+														<Badge variant={sub.status === 'graded' ? 'success' : sub.status === 'submitted' ? 'info' : sub.status === 'returned' ? 'warning' : 'default'}>{sub.status}</Badge>
+														{#if isLate(sub, a.due_date)}
+															<span class="late-tag">LATE</span>
+														{/if}
+													</TableCell>
+													<TableCell class="date-cell">{formatDate(sub.submitted_at)}</TableCell>
+													<TableCell class="score-cell">
+														{#if sub.score != null}
+															{sub.score}<span class="max-score">/{a.max_score}</span>
+														{:else}
+															<span class="score-na">-</span>
+														{/if}
+													</TableCell>
+													<TableCell class="feedback-cell">{sub.feedback ? sub.feedback.slice(0, 30) + (sub.feedback.length > 30 ? '…' : '') : '-'}</TableCell>
+													<TableCell class="action-cell">
+														<Button size="sm" onclick={() => openGradeModal(sub, a.max_score)}>
+															{sub.score != null ? 'Edit' : 'Grade'}
+														</Button>
+													</TableCell>
+												</TableRow>
+											{/each}
+										</TableBody>
+									</Table>
 								{/if}
 							</div>
 						{/each}
@@ -373,12 +371,7 @@
 		{#if activeTab === 'roster'}
 			<div class="tab-content">
 				<div class="roster-toolbar">
-					<input
-						type="text"
-						class="search-input"
-						placeholder="Search students..."
-						bind:value={searchQuery}
-					/>
+					<Input type="text" placeholder="Search students..." bind:value={searchQuery} />
 					<span class="roster-count">{enrollments.length} enrolled</span>
 				</div>
 
@@ -387,49 +380,47 @@
 				{/if}
 
 				{#if enrollments.length === 0}
-					<div class="empty-state">No students enrolled yet.</div>
+					<EmptyState title="No Students" description="No students enrolled yet." />
 				{:else}
 					{@const filtered = filteredEnrollments()}
 					{#if filtered.length === 0}
-						<div class="empty-state">No students match your search.</div>
+						<EmptyState title="No Results" description="No students match your search." />
 					{:else}
-						<div class="table-wrap">
-							<table class="roster-table">
-								<thead>
-									<tr>
-										<th>Name</th>
-										<th>Email</th>
-										<th>Status</th>
-										<th>Enrolled</th>
-										<th>Actions</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each filtered as e}
-										<tr>
-											<td class="student-name">
-												{e.display_name || e.username || '-'}
-											</td>
-											<td>{e.email || '-'}</td>
-											<td>
-												<span class="mini-badge {enrollmentStatusClass(e.status)}">{e.status}</span>
-											</td>
-											<td class="date-cell">{formatDate(e.enrolled_at)}</td>
-											<td class="action-cell">
-												{#if e.status === 'active'}
-													<button class="btn btn--small btn--warn" onclick={() => dropStudent(e.id)} disabled={savingEnrollment}>
-														Drop
-													</button>
-												{/if}
-												<button class="btn btn--small btn--danger" onclick={() => unenrollStudent(e.id)} disabled={savingEnrollment}>
-													Remove
-												</button>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Name</TableHead>
+									<TableHead>Email</TableHead>
+									<TableHead>Status</TableHead>
+									<TableHead>Enrolled</TableHead>
+									<TableHead>Actions</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{#each filtered as e}
+									<TableRow>
+										<TableCell class="student-name">
+											{e.display_name || e.username || '-'}
+										</TableCell>
+										<TableCell>{e.email || '-'}</TableCell>
+										<TableCell>
+											<Badge variant={e.status === 'active' ? 'success' : e.status === 'completed' ? 'info' : e.status === 'dropped' ? 'default' : 'warning'}>{e.status}</Badge>
+										</TableCell>
+										<TableCell class="date-cell">{formatDate(e.enrolled_at)}</TableCell>
+										<TableCell class="action-cell">
+											{#if e.status === 'active'}
+												<Button size="sm" variant="outline" onclick={() => dropStudent(e.id)} disabled={savingEnrollment}>
+													Drop
+												</Button>
+											{/if}
+											<Button size="sm" variant="danger" onclick={() => unenrollStudent(e.id)} disabled={savingEnrollment}>
+												Remove
+											</Button>
+										</TableCell>
+									</TableRow>
+								{/each}
+							</TableBody>
+						</Table>
 					{/if}
 				{/if}
 			</div>
@@ -439,75 +430,56 @@
 
 <!-- Grade Modal -->
 {#if showGradeModal && gradingSub}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={closeGradeModal} role="dialog" tabindex="-1">
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
-			<div class="modal-header">
-				<h2>Grade Submission</h2>
-				<button class="modal-close" onclick={closeGradeModal}>✕</button>
-			</div>
-
-			<div class="modal-body">
-				<div class="modal-student">
-					<strong>{gradingSub.user_name || 'Unknown'}</strong>
-				</div>
-
-				{#if gradingSub.submission_text}
-					<div class="modal-section">
-						<label>Submission Text</label>
-						<pre class="modal-text">{gradingSub.submission_text}</pre>
-					</div>
-				{/if}
-
-				{#if gradingSub.file_urls}
-					{@const urls = JSON.parse(gradingSub.file_urls) as string[]}
-					{#if urls.length > 0}
-						<div class="modal-section">
-							<label>Files ({urls.length})</label>
-							<div class="modal-files">
-								{#each urls as url}
-									<a href={url} target="_blank" class="file-link" rel="noreferrer">📎 {url.split('/').pop()}</a>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				{/if}
-
-				<div class="modal-section">
-					<label for="grade-score">Score</label>
-					<input id="grade-score" type="number" step="0.5" min="0" bind:value={gradeScore} class="score-input" />
-				</div>
-
-				<div class="modal-section">
-					<label for="grade-feedback">Feedback (optional)</label>
-					<textarea id="grade-feedback" bind:value={gradeFeedback} rows="4" placeholder="Comments for the student..." class="feedback-input"></textarea>
-				</div>
-
-				{#if gradeError}
-					<div class="grade-error">{gradeError}</div>
-				{/if}
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn" onclick={closeGradeModal}>Cancel</button>
-				<button class="btn btn--primary" onclick={saveGrade} disabled={savingGrade}>
-					{savingGrade ? 'Saving...' : 'Save Grade'}
-				</button>
-			</div>
+	<Modal open={showGradeModal} title="Grade Submission" onclose={closeGradeModal}>
+		<div class="modal-student">
+			<strong>{gradingSub.user_name || 'Unknown'}</strong>
 		</div>
-	</div>
+
+		{#if gradingSub.submission_text}
+			<div class="modal-section">
+				<label>Submission Text</label>
+				<pre class="modal-text">{gradingSub.submission_text}</pre>
+			</div>
+		{/if}
+
+		{#if gradingSub.file_urls}
+			{@const urls = JSON.parse(gradingSub.file_urls) as string[]}
+			{#if urls.length > 0}
+				<div class="modal-section">
+					<label>Files ({urls.length})</label>
+					<div class="modal-files">
+						{#each urls as url}
+							<a href={url} target="_blank" class="file-link" rel="noreferrer">📎 {url.split('/').pop()}</a>
+						{/each}
+					</div>
+				</div>
+			{/if}
+		{/if}
+
+		<div class="modal-section">
+			<label for="grade-score">Score</label>
+			<Input id="grade-score" type="number" step="0.5" min="0" bind:value={gradeScore} />
+		</div>
+
+		<div class="modal-section">
+			<label for="grade-feedback">Feedback (optional)</label>
+			<Textarea id="grade-feedback" bind:value={gradeFeedback} rows={4} placeholder="Comments for the student..." />
+		</div>
+
+		{#if gradeError}
+			<div class="grade-error">{gradeError}</div>
+		{/if}
+
+		{#snippet footer()}
+			<Button variant="secondary" onclick={closeGradeModal}>Cancel</Button>
+			<Button onclick={saveGrade} disabled={savingGrade}>
+				{savingGrade ? 'Saving...' : 'Save Grade'}
+			</Button>
+		{/snippet}
+	</Modal>
 {/if}
 
 <style>
-	.loading, .error-state, .empty-state {
-		padding: 60px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-	}
-	.error-msg { color: #e74c3c; margin-bottom: 12px; }
-
 	.course-page { max-width: 1100px; }
 
 	.breadcrumb { font-size: 13px; margin-bottom: 12px; }
@@ -525,29 +497,6 @@
 	.header-meta { display: flex; gap: 10px; align-items: center; font-size: 13px; flex-wrap: wrap; }
 	.meta-label { color: var(--text-secondary); }
 	.meta-code { font-family: monospace; }
-
-	.status-badge {
-		font-size: 11px;
-		padding: 2px 10px;
-		border-radius: 20px;
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-	.status--active { background: #2ecc7133; color: #2ecc71; }
-	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #95a5a633; color: #95a5a6; }
-	.status--completed { background: #3498db33; color: #3498db; }
-	.mini-badge {
-		font-size: 11px;
-		padding: 1px 8px;
-		border-radius: 10px;
-		font-weight: 500;
-	}
-	.bg--graded { background: #2ecc7133; color: #2ecc71; }
-	.bg--submitted { background: #3498db33; color: #3498db; }
-	.bg--returned { background: #f39c1233; color: #f39c12; }
-	.bg--draft { background: var(--bg-secondary); color: var(--text-secondary); }
 
 	.quick-stats {
 		display: flex;
@@ -655,20 +604,6 @@
 	.grade-progress { font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; }
 	.no-subs { padding: 20px; text-align: center; color: var(--text-secondary); font-size: 13px; }
 
-	.table-wrap { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	th {
-		text-align: left;
-		padding: 8px 10px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		border-bottom: 1px solid var(--border);
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-	td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
 	.row--late { background: rgba(231, 76, 60, 0.04); }
 	.student-name { font-weight: 500; }
 	.date-cell { white-space: nowrap; color: var(--text-secondary); font-size: 12px; }
@@ -696,17 +631,6 @@
 		margin-bottom: 16px;
 		gap: 12px;
 	}
-	.search-input {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--bg);
-		color: var(--text);
-		font-size: 14px;
-		width: 240px;
-		font-family: inherit;
-	}
-	.search-input:focus { border-color: var(--accent); outline: none; }
 	.roster-count { font-size: 13px; color: var(--text-secondary); }
 
 	.action-msg {
@@ -718,66 +642,6 @@
 		margin-bottom: 12px;
 	}
 
-	.roster-table td { vertical-align: middle; }
-
-	/* Buttons */
-	.btn {
-		display: inline-block;
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-		color: var(--text);
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		font-family: inherit;
-		transition: opacity 0.15s;
-	}
-	.btn:hover { opacity: 0.85; }
-	.btn:disabled { opacity: 0.4; cursor: default; }
-	.btn--small { padding: 4px 10px; font-size: 12px; }
-	.btn--primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-	.btn--warn { background: #f39c1233; color: #f39c12; border-color: #f39c1244; }
-	.btn--danger { background: #e74c3c33; color: #e74c3c; border-color: #e74c3c44; }
-	.btn--refresh { padding: 6px 14px; font-size: 12px; }
-
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		top: 0; left: 0; right: 0; bottom: 0;
-		background: rgba(0,0,0,0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
-	}
-	.modal-content {
-		background: var(--surface);
-		border-radius: 12px;
-		width: 100%;
-		max-width: 540px;
-		max-height: 80vh;
-		overflow-y: auto;
-	}
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 20px;
-		border-bottom: 1px solid var(--border);
-	}
-	.modal-header h2 { margin: 0; font-size: 18px; }
-	.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-secondary); padding: 0; }
-	.modal-body { padding: 16px 20px; }
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 10px;
-		padding: 16px 20px;
-		border-top: 1px solid var(--border);
-	}
 	.modal-student { margin-bottom: 12px; font-size: 15px; }
 	.modal-section { margin-bottom: 16px; }
 	.modal-section label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
@@ -793,28 +657,6 @@
 	.modal-files { display: flex; flex-direction: column; gap: 4px; }
 	.file-link { font-size: 13px; color: var(--accent); text-decoration: none; }
 	.file-link:hover { text-decoration: underline; }
-	.score-input {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--bg);
-		color: var(--text);
-		font-size: 16px;
-		width: 120px;
-		font-family: inherit;
-	}
-	.feedback-input {
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--bg);
-		color: var(--text);
-		font-size: 14px;
-		width: 100%;
-		font-family: inherit;
-		box-sizing: border-box;
-		resize: vertical;
-	}
 	.grade-error { color: #e74c3c; font-size: 13px; padding: 8px; background: #e74c3c15; border-radius: 8px; }
 
 	@media (max-width: 768px) {

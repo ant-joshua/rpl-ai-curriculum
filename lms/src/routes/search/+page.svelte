@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
+	import { Card, EmptyState, SearchInput } from '$lib/components/ui';
 
 	interface SearchResultItem {
 		type: 'lesson' | 'course' | 'offering';
@@ -59,14 +60,18 @@
 		debounceTimer = setTimeout(() => doSearch(query), 300);
 	}
 
+	function handleClear() {
+		query = '';
+		results = [];
+		total = 0;
+		hasSearched = false;
+		inputEl?.focus();
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && query) {
 			e.preventDefault();
-			query = '';
-			results = [];
-			total = 0;
-			hasSearched = false;
-			inputEl?.focus();
+			handleClear();
 		}
 		if (e.key === 'Enter' && query.trim().length >= 2) {
 			e.preventDefault();
@@ -135,32 +140,11 @@
 	<p class="search-subtitle">Temukan kursus, pelajaran, dan materi dalam kurikulum</p>
 
 	<div class="search-input-wrapper">
-		<span class="search-icon-inside">🔍</span>
-		<input
-			bind:this={inputEl}
-			type="text"
-			class="search-input"
+		<SearchInput
+			bind:value={query}
 			placeholder="Cari kursus, pelajaran, materi..."
-			value={query}
 			oninput={handleInput}
-			onkeydown={handleKeydown}
-			aria-label="Cari"
 		/>
-		{#if query}
-			<button
-				class="search-clear"
-				onclick={() => {
-					query = '';
-					results = [];
-					total = 0;
-					hasSearched = false;
-					inputEl?.focus();
-				}}
-				aria-label="Hapus pencarian"
-			>
-				&times;
-			</button>
-		{/if}
 	</div>
 
 	<div class="search-results">
@@ -185,17 +169,17 @@
 				{/each}
 			</div>
 		{:else if hasSearched}
-			<div class="search-state" in:fade>
-				<span class="empty-icon">😕</span>
-				<p>Tidak ditemukan hasil untuk "{query}"</p>
-				<p class="empty-hint">Coba kata kunci lain, minimal 2 karakter</p>
-			</div>
+			<EmptyState
+				icon="😕"
+				title="Tidak ditemukan hasil"
+				description="Coba kata kunci lain, minimal 2 karakter"
+			/>
 		{:else}
-			<div class="search-state" in:fade>
-				<span class="empty-icon">🔍</span>
-				<p>Cari materi pembelajaran...</p>
-				<p class="empty-hint">Ketik minimal 2 karakter untuk mencari</p>
-			</div>
+			<EmptyState
+				icon="🔍"
+				title="Cari materi pembelajaran..."
+				description="Ketik minimal 2 karakter untuk mencari"
+			/>
 		{/if}
 	</div>
 </div>
@@ -221,62 +205,7 @@
 	}
 
 	.search-input-wrapper {
-		position: relative;
 		margin-bottom: 20px;
-	}
-
-	.search-icon-inside {
-		position: absolute;
-		left: 14px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 16px;
-		opacity: 0.5;
-		pointer-events: none;
-		z-index: 1;
-	}
-
-	.search-input {
-		width: 100%;
-		padding: 14px 44px 14px 44px;
-		font-size: 16px;
-		font-family: inherit;
-		border: 2px solid var(--border);
-		border-radius: 12px;
-		background: var(--surface);
-		color: var(--text);
-		outline: none;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
-	}
-
-	.search-input:focus {
-		border-color: var(--accent);
-		box-shadow: 0 0 0 3px var(--accent-dim);
-	}
-
-	.search-input::placeholder {
-		color: var(--text-secondary);
-		opacity: 0.7;
-	}
-
-	.search-clear {
-		position: absolute;
-		right: 12px;
-		top: 50%;
-		transform: translateY(-50%);
-		background: none;
-		border: none;
-		font-size: 22px;
-		color: var(--text-secondary);
-		cursor: pointer;
-		padding: 4px 8px;
-		border-radius: 6px;
-		line-height: 1;
-	}
-
-	.search-clear:hover {
-		background: var(--hover);
-		color: var(--text);
 	}
 
 	.search-results {
@@ -345,6 +274,31 @@
 		line-clamp: 2;
 	}
 
+	.search-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		text-align: center;
+		color: var(--text-secondary);
+		gap: 8px;
+	}
+
+	.spinner {
+		width: 32px;
+		height: 32px;
+		border: 3px solid var(--border);
+		border-top-color: var(--accent);
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+		margin-bottom: 12px;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
 	.badge {
 		font-size: 11px;
 		font-weight: 600;
@@ -376,41 +330,6 @@
 	:global(.dark) .badge-offering {
 		background: rgba(230, 81, 0, 0.2);
 		color: #ffb74d;
-	}
-
-	.search-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-		gap: 8px;
-	}
-
-	.empty-icon {
-		font-size: 48px;
-		margin-bottom: 8px;
-	}
-
-	.empty-hint {
-		font-size: 13px;
-		color: var(--muted);
-	}
-
-	.spinner {
-		width: 32px;
-		height: 32px;
-		border: 3px solid var(--border);
-		border-top-color: var(--accent);
-		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
-		margin-bottom: 12px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
 	}
 
 	@keyframes stagger-in {

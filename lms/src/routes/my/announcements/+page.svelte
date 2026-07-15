@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { Badge, Card } from '$lib/components/ui';
 
 	interface Announcement {
 		id: string;
@@ -29,11 +30,11 @@
 			: data.announcements
 	);
 
-	function priorityConfig(p: string) {
-		if (p === 'urgent') return { cls: 'badge-urgent', label: '🔴 Urgent' };
-		if (p === 'high') return { cls: 'badge-high', label: '🔥 Penting' };
-		if (p === 'low') return { cls: 'badge-low', label: 'ℹ️ Info' };
-		return { cls: 'badge-normal', label: '📌 Normal' };
+	function priorityBadge(p: string) {
+		if (p === 'urgent') return { variant: 'danger' as const, label: '🔴 Urgent' };
+		if (p === 'high') return { variant: 'warning' as const, label: '🔥 Penting' };
+		if (p === 'low') return { variant: 'default' as const, label: 'ℹ️ Info' };
+		return { variant: 'primary' as const, label: '📌 Normal' };
 	}
 
 	function formatDate(d: string) {
@@ -83,7 +84,7 @@
 					<div class="ann-header">
 						<div class="ann-title-row">
 							<h2>{ann.title}</h2>
-							<span class="priority-badge {priorityConfig(ann.priority).cls}">{priorityConfig(ann.priority).label}</span>
+							<Badge variant={priorityBadge(ann.priority).variant}>{priorityBadge(ann.priority).label}</Badge>
 							{#if ann.isNew}
 								<span class="new-badge">Baru</span>
 							{/if}
@@ -193,19 +194,6 @@
 		margin: 0;
 		font-weight: 600;
 	}
-
-	.priority-badge {
-		font-size: 0.65rem;
-		font-weight: 600;
-		padding: 0.1rem 0.4rem;
-		border-radius: 10px;
-		white-space: nowrap;
-	}
-
-	.badge-urgent { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-	.badge-high { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-	.badge-normal { background: var(--accent-dim); color: var(--accent); }
-	.badge-low { background: var(--surface-hover); color: var(--text-secondary); }
 
 	.new-badge {
 		font-size: 0.6rem;

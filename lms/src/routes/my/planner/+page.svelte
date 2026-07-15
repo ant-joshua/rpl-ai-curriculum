@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
+  import { Button, Card, EmptyState } from '$lib/components/ui';
 
   let { data }: { data: import('./$types').PageData } = $props();
 
@@ -252,7 +253,7 @@
     </section>
 
     <!-- Setup / Edit Plan -->
-    <section class="section-card">
+    <Card padding="lg">
       <div class="section-card-header">
         <h2>⚙️ Atur Target</h2>
         <button class="toggle-btn" onclick={() => showSetup = !showSetup}>
@@ -292,16 +293,16 @@
             </p>
           {/if}
 
-          <button class="btn-primary" onclick={savePlan} disabled={saving}>
+          <Button onclick={savePlan} disabled={saving}>
             {saving ? 'Menyimpan...' : plan ? 'Perbarui Rencana' : 'Simpan Rencana'}
-          </button>
+          </Button>
         </div>
       {/if}
-    </section>
+    </Card>
 
     <!-- Weekly Calendar Chart -->
     {#if weeks.length > 0}
-      <section class="section-card">
+      <Card padding="lg">
         <div class="section-card-header">
           <h2>📈 Progres Mingguan</h2>
         </div>
@@ -366,19 +367,19 @@
             {/if}
           {/each}
         </div>
-      </section>
+      </Card>
     {:else if plan}
-      <section class="section-card">
+      <Card padding="lg">
         <div class="section-card-header">
           <h2>📈 Progres Mingguan</h2>
         </div>
         <p class="empty-note">Data mingguan belum tersedia — pastikan course memiliki tanggal mulai dan akhir.</p>
-      </section>
+      </Card>
     {/if}
 
     <!-- Recommendations -->
     {#if recommendations}
-      <section class="section-card">
+      <Card padding="lg">
         <div class="section-card-header">
           <h2>💡 Rekomendasi</h2>
         </div>
@@ -424,11 +425,11 @@
             </div>
           {/if}
         </div>
-      </section>
+      </Card>
     {/if}
 
     <!-- Reminder Settings -->
-    <section class="section-card">
+    <Card padding="lg">
       <div class="section-card-header">
         <h2>🔔 Pengingat</h2>
       </div>
@@ -462,21 +463,21 @@
           </div>
         {/if}
 
-        <button class="btn-primary btn-sm" onclick={saveReminder} disabled={saving || !plan}>
+        <Button onclick={saveReminder} disabled={saving || !plan}>
           {saving ? 'Menyimpan...' : 'Simpan Pengingat'}
-        </button>
+        </Button>
         {#if !plan}
           <p class="form-hint">Buat rencana belajar dulu sebelum mengatur pengingat.</p>
         {/if}
       </div>
-    </section>
+    </Card>
 
   {:else if !loading && selectedOfferingId}
-    <div class="empty-state">
-      <div class="empty-icon">📭</div>
-      <h3>Data tidak tersedia</h3>
-      <p>Course tidak ditemukan. Pastikan kamu terdaftar di course ini.</p>
-    </div>
+    <EmptyState
+      icon="📭"
+      title="Data tidak tersedia"
+      description="Course tidak ditemukan. Pastikan kamu terdaftar di course ini."
+    />
   {/if}
 </div>
 
@@ -574,15 +575,6 @@
 
   @keyframes spin {
     to { transform: rotate(360deg); }
-  }
-
-  /* Section cards */
-  .section-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 16px;
   }
 
   .section-card-header {
@@ -718,39 +710,6 @@
     font-size: 12px;
     color: var(--text-secondary);
     opacity: 0.8;
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 24px;
-    background: var(--gradient-primary);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
-    align-self: flex-start;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(108, 92, 231, 0.3);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .btn-sm {
-    padding: 8px 18px;
-    font-size: 13px;
   }
 
   /* Weekly chart */
@@ -999,31 +958,6 @@
 
   .toggle-switch.active .toggle-knob {
     transform: translateX(20px);
-  }
-
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-  }
-
-  .empty-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
-
-  .empty-state h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-  }
-
-  .empty-state p {
-    font-size: 14px;
-    color: var(--text-secondary);
   }
 
   .empty-note {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button, Badge, Card, Loading, EmptyState } from '$lib/components/ui';
 
 	let courses: any[] = $state([]);
 	let loading = $state(true);
@@ -26,23 +27,8 @@
 		}
 	}
 
-	function statusClass(status: string): string {
-		const map: Record<string, string> = {
-			active: 'status--active',
-			draft: 'status--draft',
-			archived: 'status--archived',
-			completed: 'status--completed',
-		};
-		return map[status] || 'status--draft';
-	}
-
-	function totalSubmissions(c: any): number {
-		return (c.submissions_count || 0);
-	}
-
-	function pendingGrading(c: any): number {
-		return (c.ungraded_count || 0);
-	}
+	const totalStudents = $derived(courses.reduce((s, c) => s + (c.student_count || 0), 0));
+	const totalAssignments = $derived(courses.reduce((s, c) => s + (c.assignment_count || 0), 0));
 </script>
 
 <svelte:head>
@@ -55,49 +41,57 @@
 			<h1>🧑‍🏫 Instructor Dashboard</h1>
 			<p class="subtitle">Manage your courses, grade assignments, and view student progress.</p>
 		</div>
-		<button class="btn btn--refresh" onclick={loadCourses}>🔄 Refresh</button>
+		<Button variant="secondary" onclick={loadCourses}>🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
-		<div class="loading">Loading your courses...</div>
+		<Loading />
 	{:else if error}
-		<div class="error-state">
-			<p class="error-msg">{error}</p>
-			<button class="btn" onclick={loadCourses}>Retry</button>
-		</div>
+		<EmptyState title="Error" description={error}>
+			<Button onclick={loadCourses}>Retry</Button>
+		</EmptyState>
 	{:else}
 		<!-- Stats overview -->
 		<div class="stats-row">
-			<div class="stat-card">
-				<span class="stat-icon">📚</span>
-				<span class="stat-value">{courses.length}</span>
-				<span class="stat-label">Active Courses</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">👥</span>
-				<span class="stat-value">{courses.reduce((s, c) => s + (c.student_count || 0), 0)}</span>
-				<span class="stat-label">Total Students</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📝</span>
-				<span class="stat-value">{courses.reduce((s, c) => s + (c.assignment_count || 0), 0)}</span>
-				<span class="stat-label">Assignments</span>
-			</div>
+			<Card>
+				<div class="stat-inner">
+					<span class="stat-icon">📚</span>
+					<span class="stat-value">{courses.length}</span>
+					<span class="stat-label">Active Courses</span>
+				</div>
+			</Card>
+			<Card>
+				<div class="stat-inner">
+					<span class="stat-icon">👥</span>
+					<span class="stat-value">{totalStudents}</span>
+					<span class="stat-label">Total Students</span>
+				</div>
+			</Card>
+			<Card>
+				<div class="stat-inner">
+					<span class="stat-icon">📝</span>
+					<span class="stat-value">{totalAssignments}</span>
+					<span class="stat-label">Assignments</span>
+				</div>
+			</Card>
 		</div>
 
 		<!-- Course list -->
 		{#if courses.length === 0}
-			<div class="empty-state">
-				<p>You are not assigned as an instructor for any courses yet.</p>
+			<EmptyState
+				icon="📚"
+				title="No Courses Yet"
+				description="You are not assigned as an instructor for any courses yet."
+			>
 				<p class="empty-hint">Contact an administrator to assign you to a course offering.</p>
-			</div>
+			</EmptyState>
 		{:else}
 			<div class="course-grid">
 				{#each courses as c}
 					<a href="/admin/instructor/courses/{c.id}" class="course-card">
 						<div class="card-top">
 							<span class="card-icon">{c.course_icon || '📚'}</span>
-							<span class="status-badge {statusClass(c.status)}">{c.status}</span>
+							<Badge variant={c.status === 'active' ? 'success' : c.status === 'completed' ? 'info' : c.status === 'archived' ? 'default' : 'warning'}>{c.status}</Badge>
 						</div>
 						<h3 class="card-title">{c.name}</h3>
 						<p class="card-course">{c.course_title || ''}</p>
@@ -138,12 +132,6 @@
 		margin: 0;
 	}
 
-	.loading, .error-state, .empty-state {
-		padding: 60px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-	}
-	.error-msg { color: #e74c3c; margin-bottom: 12px; }
 	.empty-hint { font-size: 13px; margin-top: 8px; }
 
 	.stats-row {
@@ -152,11 +140,7 @@
 		gap: 14px;
 		margin-bottom: 28px;
 	}
-	.stat-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 20px;
+	.stat-inner {
 		text-align: center;
 		display: flex;
 		flex-direction: column;
@@ -196,18 +180,6 @@
 		align-items: center;
 	}
 	.card-icon { font-size: 32px; }
-	.status-badge {
-		font-size: 11px;
-		padding: 2px 10px;
-		border-radius: 20px;
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-	.status--active { background: #2ecc7133; color: #2ecc71; }
-	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #95a5a633; color: #95a5a6; }
-	.status--completed { background: #3498db33; color: #3498db; }
 
 	.card-title {
 		margin: 0;
@@ -243,20 +215,6 @@
 		font-weight: 600;
 		color: var(--accent);
 	}
-
-	.btn {
-		display: inline-block;
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-		color: var(--text);
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		font-family: inherit;
-	}
-	.btn:hover { opacity: 0.85; }
 
 	@media (max-width: 768px) {
 		.course-grid { grid-template-columns: 1fr; }

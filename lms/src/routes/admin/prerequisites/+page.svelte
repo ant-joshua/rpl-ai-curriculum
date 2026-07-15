@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
+	import { Alert, Button, Select, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '$lib/components/ui';
 
 	interface Offering {
 		id: string;
@@ -49,6 +50,15 @@
 		const lesson = data.lessons.find((l: Lesson) => l.id === id);
 		return lesson ? lesson.title : id;
 	}
+
+	let offeringOptions = $derived([
+		{ value: '', label: 'All Offerings' },
+		...data.offerings.map((o: Offering) => ({ value: o.id, label: `${o.name} (${o.code})` }))
+	]);
+
+	let lessonOptions = $derived(
+		filteredLessons.map((l: Lesson) => ({ value: l.id, label: `${l.order_index}. ${l.title}` }))
+	);
 
 	async function addPrerequisite() {
 		error = '';
@@ -115,22 +125,21 @@
 	<h1>📋 Prerequisites</h1>
 
 	{#if error}
-		<div class="alert alert-error">{error}</div>
+		<Alert variant="danger">{error}</Alert>
 	{/if}
 	{#if success}
-		<div class="alert alert-success">{success}</div>
+		<Alert variant="success">{success}</Alert>
 	{/if}
 
 	<!-- Offering Selector -->
 	<div class="filter-bar">
-		<label>
+		<label class="filter-label">
 			<span>Course Offering</span>
-			<select bind:value={selectedOfferingId}>
-				<option value="">All Offerings</option>
-				{#each data.offerings as offering (offering.id)}
-					<option value={offering.id}>{offering.name} ({offering.code})</option>
-				{/each}
-			</select>
+			<Select
+				options={offeringOptions}
+				value={selectedOfferingId}
+				onchange={(e: Event) => selectedOfferingId = (e.target as HTMLSelectElement).value}
+			/>
 		</label>
 	</div>
 
@@ -141,30 +150,24 @@
 			<div class="form-group">
 				<label>
 					<span>Prerequisite Lesson (must be completed first)</span>
-					<select bind:value={prerequisiteLessonId}>
-						<option value="">Select lesson...</option>
-						{#each filteredLessons as lesson (lesson.id)}
-							<option value={lesson.id}>
-								{lesson.order_index}. {lesson.title}
-							</option>
-						{/each}
-					</select>
+					<Select
+						options={[{ value: '', label: 'Select lesson...' }, ...lessonOptions]}
+						value={prerequisiteLessonId}
+						onchange={(e: Event) => prerequisiteLessonId = (e.target as HTMLSelectElement).value}
+					/>
 				</label>
 			</div>
 			<div class="form-group">
 				<label>
 					<span>Dependent Lesson (requires prerequisite)</span>
-					<select bind:value={dependentLessonId}>
-						<option value="">Select lesson...</option>
-						{#each filteredLessons as lesson (lesson.id)}
-							<option value={lesson.id}>
-								{lesson.order_index}. {lesson.title}
-							</option>
-						{/each}
-					</select>
+					<Select
+						options={[{ value: '', label: 'Select lesson...' }, ...lessonOptions]}
+						value={dependentLessonId}
+						onchange={(e: Event) => dependentLessonId = (e.target as HTMLSelectElement).value}
+					/>
 				</label>
 			</div>
-			<button onclick={addPrerequisite} class="btn-primary">➕ Add</button>
+			<Button onclick={addPrerequisite}>➕ Add</Button>
 		</div>
 	</div>
 
@@ -174,33 +177,30 @@
 		{#if filteredPrereqs.length === 0}
 			<p class="empty-state">No prerequisites defined yet.</p>
 		{:else}
-			<table class="prereqs-table">
-				<thead>
-					<tr>
-						<th>Prerequisite Lesson</th>
-						<th></th>
-						<th>Dependent Lesson</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Prerequisite Lesson</TableHead>
+						<TableHead></TableHead>
+						<TableHead>Dependent Lesson</TableHead>
+						<TableHead>Actions</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{#each filteredPrereqs as prereq (prereq.id)}
-						<tr>
-							<td>{prereq.prereq_title || getLessonTitle(prereq.prerequisite_id)}</td>
-							<td class="arrow">→</td>
-							<td>{prereq.dependent_title || getLessonTitle(prereq.dependent_id)}</td>
-							<td>
-								<button
-									class="btn-danger"
-									onclick={() => removePrerequisite(prereq.id)}
-								>
+						<TableRow>
+							<TableCell>{prereq.prereq_title || getLessonTitle(prereq.prerequisite_id)}</TableCell>
+							<TableCell class="arrow">→</TableCell>
+							<TableCell>{prereq.dependent_title || getLessonTitle(prereq.dependent_id)}</TableCell>
+							<TableCell>
+								<Button variant="danger" size="sm" onclick={() => removePrerequisite(prereq.id)}>
 									🗑️ Remove
-								</button>
-							</td>
-						</tr>
+								</Button>
+							</TableCell>
+						</TableRow>
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		{/if}
 	</div>
 </div>
@@ -224,28 +224,17 @@
 		color: var(--text);
 	}
 
-	.alert {
-		padding: 12px 16px;
-		border-radius: 8px;
-		margin-bottom: 16px;
-		font-size: 14px;
-	}
-	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-	}
-	.alert-success {
-		background: rgba(34, 197, 94, 0.1);
-		color: #22c55e;
-		border: 1px solid rgba(34, 197, 94, 0.3);
-	}
-
 	.filter-bar {
 		margin-bottom: 24px;
 	}
-	.filter-bar select {
-		width: 100%;
+
+	.filter-label {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--text-secondary);
 		max-width: 400px;
 	}
 
@@ -274,9 +263,6 @@
 		font-weight: 500;
 		color: var(--text-secondary);
 	}
-	.form-group select {
-		width: 100%;
-	}
 
 	.prereqs-table-wrapper {
 		background: var(--surface);
@@ -285,25 +271,7 @@
 		padding: 20px;
 	}
 
-	.prereqs-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 14px;
-	}
-	.prereqs-table th,
-	.prereqs-table td {
-		padding: 10px 12px;
-		text-align: left;
-		border-bottom: 1px solid var(--border);
-	}
-	.prereqs-table th {
-		font-weight: 600;
-		color: var(--text-secondary);
-		font-size: 12px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-	.arrow {
+	:global(.arrow) {
 		text-align: center;
 		font-size: 18px;
 		color: var(--text-secondary);
@@ -315,33 +283,5 @@
 		font-size: 14px;
 		padding: 20px 0;
 		text-align: center;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: white;
-		border: none;
-		padding: 10px 20px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		white-space: nowrap;
-	}
-	.btn-primary:hover {
-		opacity: 0.9;
-	}
-
-	.btn-danger {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		padding: 6px 12px;
-		border-radius: 6px;
-		font-size: 13px;
-		cursor: pointer;
-	}
-	.btn-danger:hover {
-		background: rgba(239, 68, 68, 0.2);
 	}
 </style>

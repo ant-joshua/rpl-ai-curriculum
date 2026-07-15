@@ -1,7 +1,7 @@
 <script lang="ts">
 	let {
 		placeholder = '',
-		value = '',
+		value = $bindable(''),
 		error,
 		disabled = false,
 		rows = 3,
