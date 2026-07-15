@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 	import type { PageData } from './$types';
+	import Icon from '$lib/components/ui/Icon.svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: PageData } = $props();
 
@@ -13,15 +14,15 @@
 	}
 
 	const navItems = [
-		{ path: '/admin', icon: '📊', label: 'Dashboard' },
-		{ path: '/admin/users', icon: '👥', label: 'Users' },
-		{ path: '/admin/content', icon: '📚', label: 'Content' },
-		{ path: '/admin/curriculum', icon: '📋', label: 'Curriculum' },
-		{ path: '/admin/gradebook', icon: '📝', label: 'Gradebook' },
-		{ path: '/admin/enrollments', icon: '📋', label: 'Enrollments' },
-		{ path: '/admin/discussions', icon: '💬', label: 'Discussions' },
-		{ path: '/admin/announcements', icon: '📢', label: 'Announcements' },
-		{ path: '/admin/gamification', icon: '🏆', label: 'Gamification' },
+		{ path: '/admin', icon: 'home', label: 'Dashboard' },
+		{ path: '/admin/users', icon: 'users', label: 'Users' },
+		{ path: '/admin/content', icon: 'book', label: 'Content' },
+		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum' },
+		{ path: '/admin/gradebook', icon: 'file-text', label: 'Gradebook' },
+		{ path: '/admin/enrollments', icon: 'user-plus', label: 'Enrollments' },
+		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions' },
+		{ path: '/admin/announcements', icon: 'megaphone', label: 'Announcements' },
+		{ path: '/admin/gamification', icon: 'award', label: 'Gamification' },
 	];
 </script>
 
@@ -31,9 +32,7 @@
 
 <div class="admin-layout">
 	<button class="sidebar-toggle" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle sidebar menu">
-		<span class="hamburger-line"></span>
-		<span class="hamburger-line"></span>
-		<span class="hamburger-line"></span>
+		<Icon name="menu" size={20} />
 	</button>
 
 	{#if sidebarOpen}
@@ -45,24 +44,35 @@
 	<aside class="sidebar" class:sidebar--open={sidebarOpen}>
 		<div class="sidebar-header">
 			<a href="/admin" class="logo">
-				<span class="logo-icon">⚙️</span>
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-svg">
+					<circle cx="12" cy="12" r="3"/>
+					<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+				</svg>
 				<span class="logo-text">Admin Panel</span>
 			</a>
 		</div>
 		<nav class="sidebar-nav">
+			<span class="nav-section-label">Management</span>
 			{#each navItems as item}
 				<a
 					href={item.path}
+					class="nav-item"
 					class:active={isActive(item.path)}
 					onclick={() => sidebarOpen = false}
 				>
-					<span class="nav-icon">{item.icon}</span>
-					<span>{item.label}</span>
+					<Icon name={item.icon} size={18} />
+					<span class="nav-item-label">{item.label}</span>
+					{#if isActive(item.path)}
+						<span class="nav-active-indicator"></span>
+					{/if}
 				</a>
 			{/each}
 		</nav>
 		<div class="sidebar-footer">
-			<a href="/" class="back-link">← Back to Site</a>
+			<a href="/" class="back-link">
+				<Icon name="chevron-left" size={14} />
+				<span>Back to Site</span>
+			</a>
 		</div>
 	</aside>
 
@@ -87,20 +97,17 @@
 		top: 12px;
 		left: 12px;
 		z-index: 100;
-		background: #0f1011;
+		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 6px;
-		padding: 8px;
+		padding: 10px;
 		cursor: pointer;
-		flex-direction: column;
-		gap: 4px;
+		color: #d0d6e0;
+		transition: all 0.15s ease;
 	}
-	.hamburger-line {
-		width: 20px;
-		height: 2px;
-		background: #d0d6e0;
-		border-radius: 1px;
-		display: block;
+	.sidebar-toggle:hover {
+		background: rgba(255, 255, 255, 0.06);
+		color: #f7f8f8;
 	}
 	.overlay { display: none; }
 
@@ -129,9 +136,10 @@
 		font-weight: 590;
 		color: #f7f8f8 !important;
 		text-decoration: none !important;
+		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.24px;
 	}
-	.logo-icon { font-size: 22px; }
+	.logo-svg { color: #7170ff; flex-shrink: 0; }
 	.logo-text {
 		background: linear-gradient(135deg, #5e6ad2, #7170ff);
 		-webkit-background-clip: text;
@@ -141,44 +149,73 @@
 
 	.sidebar-nav {
 		flex: 1;
-		padding: 12px 8px;
+		padding: 8px 8px;
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 1px;
 	}
-	.sidebar-nav a {
+
+	.nav-section-label {
+		font-size: 10px;
+		font-weight: 510;
+		color: #62666d;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 8px 12px 4px;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.nav-item {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 		padding: 10px 12px;
 		border-radius: 6px;
 		color: #8a8f98;
-		font-size: 14px;
+		font-size: 13.5px;
 		font-weight: 510;
 		transition: all 0.15s ease;
 		text-decoration: none !important;
+		font-feature-settings: 'cv01', 'ss03';
+		position: relative;
 	}
-	.sidebar-nav a:hover {
+	.nav-item:hover {
 		background: rgba(255, 255, 255, 0.04);
 		color: #f7f8f8;
 	}
-	.sidebar-nav a.active {
+	.nav-item.active {
 		background: rgba(94, 106, 210, 0.12);
 		color: #7170ff;
 	}
-	.nav-icon { font-size: 18px; width: 24px; text-align: center; }
+	.nav-item-label { flex: 1; }
+
+	.nav-active-indicator {
+		width: 3px;
+		height: 16px;
+		background: #7170ff;
+		border-radius: 2px;
+		box-shadow: 0 0 8px rgba(113, 112, 255, 0.4);
+		position: absolute;
+		right: -8px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
 
 	.sidebar-footer {
 		padding: 12px 8px;
 		border-top: 1px solid rgba(255, 255, 255, 0.05);
 	}
 	.back-link {
-		display: block;
+		display: flex;
+		align-items: center;
+		gap: 6px;
 		padding: 8px 12px;
 		color: #8a8f98;
 		font-size: 13px;
 		text-decoration: none !important;
 		border-radius: 6px;
+		font-feature-settings: 'cv01', 'ss03';
+		transition: all 0.15s ease;
 	}
 	.back-link:hover {
 		background: rgba(255, 255, 255, 0.04);
@@ -212,7 +249,7 @@
 			left: 0;
 			z-index: 99;
 			transform: translateX(-100%);
-			transition: transform 0.2s ease;
+			transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 		}
 		.sidebar.sidebar--open {
 			transform: translateX(0);
@@ -221,7 +258,9 @@
 			display: block;
 			position: fixed;
 			inset: 0;
-			background: rgba(0,0,0,0.4);
+			background: rgba(0,0,0,0.5);
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
 			z-index: 98;
 		}
 		.main-content {

@@ -16,52 +16,44 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import NotificationBell from '$lib/components/NotificationBell.svelte';
+	import Icon from '$lib/components/ui/Icon.svelte';
 
 	const navSections = [
-		{ name: 'belajar', icon: '📚', label: 'Belajar', links: [
-			{ href: '/', icon: '🏠', label: 'Home' },
-			{ href: '/dashboard', icon: '📊', label: 'Dashboard' },
-			{ href: '/catalog', icon: '📋', label: 'Katalog' },
-			{ href: '/path', icon: '🗺️', label: 'Path' },
-			{ href: '/progress', icon: '📈', label: 'Progress' },
-			{ href: '/search', icon: '🔍', label: 'Search' },
-		]},
-		{ name: 'tools', icon: '🛠️', label: 'Tools', links: [
-			{ href: '/tutor', icon: '🤖', label: 'AI Tutor' },
-			{ href: '/flashcards', icon: '🃏', label: 'Flashcards' },
-			{ href: '/exercises', icon: '🏋️', label: 'Exercises' },
-			{ href: '/projects', icon: '🚀', label: 'Project Studio' },
-			{ href: '/quiz', icon: '📝', label: 'Quiz' },
-			{ href: '/capstone', icon: '🎓', label: 'Capstone' },
-		]},
-		{ name: 'social', icon: '👥', label: 'Social', links: [
-			{ href: '/groups', icon: '👥', label: 'Groups' },
-			{ href: '/mentorship', icon: '🎯', label: 'Mentorship' },
-			{ href: '/reviews', icon: '🔍', label: 'Peer Review' },
-			{ href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
-			{ href: '/badges', icon: '🏆', label: 'Badges' },
-		]},
-		{ name: 'referensi', icon: '📖', label: 'Referensi', links: [
-			{ href: '/videos', icon: '🎬', label: 'Videos' },
-			{ href: '/resources', icon: '📥', label: 'PDF' },
-			{ href: '/cheatsheets', icon: '📝', label: 'Cheatsheets' },
-			{ href: '/glossary', icon: '📖', label: 'Glossary' },
-			{ href: '/case-studies', icon: '📋', label: 'Case Studies' },
-			{ href: '/slides/list', icon: '🖥️', label: 'Slides' },
-			{ href: '/mini-projects', icon: '🔨', label: 'Mini Projects' },
-		]},
-		{ name: 'akun', icon: '👤', label: 'Akun', links: [
-			{ href: '/my/dashboard', icon: '📊', label: 'My Dashboard' },
-			{ href: '/my/grades', icon: '📝', label: 'My Grades' },
-			{ href: '/my/profile', icon: '👤', label: 'My Profile' },
-			{ href: '/my/announcements', icon: '📢', label: 'My Announcements' },
-			{ href: '/my/planner', icon: '📅', label: 'Planner' },
-			{ href: '/my/certificates', icon: '🎓', label: 'My Certificates' },
-			{ href: '/history', icon: '📜', label: 'History' },
-			{ href: '/export', icon: '📤', label: 'Export' },
-			{ href: '/feed', icon: '📡', label: 'RSS' },
-		]},
+		{
+			name: 'Main Nav',
+			links: [
+				{ href: '/', icon: 'home', label: 'Dashboard' },
+				{ href: '/catalog', icon: 'book', label: 'My Courses' },
+				{ href: '/planner', icon: 'calendar', label: 'Calendar' },
+				{ href: '/announcements', icon: 'message-square', label: 'Messages' },
+			]
+		},
+		{
+			name: 'Learning',
+			links: [
+				{ href: '/catalog', icon: 'compass', label: 'Catalog' },
+				{ href: '/path', icon: 'map-pin', label: 'Path' },
+				{ href: '/progress', icon: 'trending-up', label: 'Progress' },
+			]
+		},
+		{
+			name: 'Tools',
+			links: [
+				{ href: '/tutor', icon: 'robot', label: 'AI Tutor' },
+				{ href: '/flashcards', icon: 'layers', label: 'Flashcards' },
+				{ href: '/exercises', icon: 'dumbbell', label: 'Exercises' },
+				{ href: '/projects', icon: 'rocket', label: 'Project Studio' },
+			]
+		},
+		{
+			name: 'Account',
+			links: [
+				{ href: '/my/profile', icon: 'user', label: 'Profile' },
+				{ href: '/my/grades', icon: 'file-text', label: 'Grades' },
+				{ href: '/my/certificates', icon: 'award', label: 'Certificates' },
+				{ href: '/my/settings', icon: 'settings', label: 'Settings' },
+			]
+		},
 	] as const;
 
 	let { children } = $props();
@@ -71,14 +63,6 @@
 	let showBackToTop = $state(false);
 	let dismissedOffline = $state(false);
 	let showShortcuts = $state(false);
-	let sidebarSection = $state<Record<string, boolean>>({});
-
-	function toggleSection(name: string) {
-		sidebarSection[name] = !sidebarSection[name];
-	}
-	function sectionOpen(name: string) {
-		return sidebarSection[name] !== false;
-	}
 
 	function closeSidebar() {
 		sidebarOpen = false;
@@ -106,9 +90,7 @@
 			try {
 				const oauthUser = JSON.parse(decodeURIComponent(userJson));
 				auth.setSession(token, oauthUser);
-				// Clean URL and redirect to dashboard
 				window.history.replaceState({}, '', '/');
-				// Also set legacy user store for backward compat
 				if (oauthUser.name) {
 					user.username = oauthUser.name;
 				}
@@ -204,12 +186,12 @@
 	<link rel="alternate" type="application/feed+json" title="RPL AI Curriculum JSON Feed" href="/feed.json" />
 </svelte:head>
 
-<button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigasi">
-	<span class="hamburger-line"></span>
-	<span class="hamburger-line"></span>
-	<span class="hamburger-line"></span>
+<!-- Mobile hamburger -->
+<button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigation">
+	<Icon name="menu" size={20} />
 </button>
 
+<!-- Sidebar overlay (mobile) -->
 {#if sidebarOpen}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -218,17 +200,21 @@
 
 <div class="layout-body">
 	<aside class="sidebar" class:sidebar--open={sidebarOpen}>
+		<!-- Logo + Search -->
 		<div class="sidebar-header">
 			<a href="/" class="sidebar-logo" onclick={closeSidebar}>
-				<span class="logo-icon">📘</span>
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-svg">
+					<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+					<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+				</svg>
 				<span class="logo-text">RPL AI</span>
 			</a>
 			<div class="sidebar-search">
-				<span class="sidebar-search-icon">🔍</span>
+				<Icon name="search" size={14} class="sidebar-search-icon" />
 				<input
 					type="text"
 					class="sidebar-search-input"
-					placeholder="Cari..."
+					placeholder="Search..."
 					onkeydown={(e) => {
 						if (e.key === 'Enter') {
 							const target = e.target as HTMLInputElement;
@@ -239,58 +225,97 @@
 							}
 						}
 					}}
-					aria-label="Cari"
+					aria-label="Search"
 				/>
+				<span class="search-hint">⌘K</span>
 			</div>
 		</div>
 
+		<!-- Navigation sections -->
 		<nav class="sidebar-nav">
 			{#each navSections as section}
-				<button class="section-toggle" onclick={() => toggleSection(section.name)}>
-					<span class="section-toggle-icon">{section.icon}</span>
-					<span class="section-toggle-label">{section.label}</span>
-					<span class="section-toggle-arrow" class:rotated={sidebarSection[section.name] !== false}>▾</span>
-				</button>
-				{#if sidebarSection[section.name] !== false}
+				<div class="nav-section">
+					<span class="nav-section-label">{section.name}</span>
 					{#each section.links as link}
-						<a href={link.href} onclick={closeSidebar} class:active={isActive(link.href)}>
-							<span class="nav-icon">{link.icon}</span>
-							<span class="nav-label">{link.label}</span>
+						<a
+							href={link.href}
+							onclick={closeSidebar}
+							class="nav-item"
+							class:active={isActive(link.href)}
+						>
+							<Icon name={link.icon} size={18} />
+							<span class="nav-item-label">{link.label}</span>
+							{#if isActive(link.href)}
+								<span class="nav-active-indicator"></span>
+							{/if}
 						</a>
 					{/each}
-				{/if}
+				</div>
 			{/each}
 		</nav>
 
+		<!-- Footer -->
 		<div class="sidebar-footer">
+			<!-- XP bar -->
 			{#if browser}
 				{@const lvl = gamification.getLevelProgress()}
 				<div class="sidebar-xp">
-					<div class="xp-header">
-						<span class="xp-level">Level {lvl.level}</span>
-						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext} XP</span>
-					</div>
-					<div class="xp-bar">
+					<div class="xp-bar-track">
 						<div class="xp-bar-fill" style="width: {(lvl.level > 1 ? (lvl.currentXp / (lvl.currentXp + lvl.xpToNext)) : (lvl.currentXp / 100)) * 100}%"></div>
 					</div>
+					<div class="xp-row">
+						<span class="xp-level-badge">Lv.{lvl.level}</span>
+						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext} XP</span>
+					</div>
 				</div>
 			{/if}
-			{#if !user.isLoggedIn}
-				<a href="/login" class="login-btn" onclick={closeSidebar}>🔑 Login / Daftar</a>
+
+			<!-- User section -->
+			{#if auth.isLoggedIn && auth.authUser}
+				<div class="user-section">
+					<div class="user-avatar">
+						{#if auth.authUser.avatar}
+							<img src={auth.authUser.avatar} alt={auth.authUser.name} class="user-avatar-img" />
+						{:else}
+							<span class="user-avatar-text">{(auth.authUser.name || 'U')[0].toUpperCase()}</span>
+						{/if}
+					</div>
+					<div class="user-info">
+						<span class="user-name">{auth.authUser.name || 'User'}</span>
+						<span class="user-xp">{gamification.xp} XP</span>
+					</div>
+				</div>
+			{:else if user.isLoggedIn}
+				<div class="user-section">
+					<div class="user-avatar">
+						<span class="user-avatar-text">{(user.username || 'U')[0].toUpperCase()}</span>
+					</div>
+					<div class="user-info">
+						<span class="user-name">{user.username || 'User'}</span>
+						<span class="user-xp">{gamification.xp} XP</span>
+					</div>
+				</div>
 			{:else}
-				<div class="sidebar-user-section">
-					<NotificationBell />
-				</div>
-				<button onclick={() => { user.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="logout-btn">🔓 Logout</button>
+				<a href="/login" class="login-btn" onclick={closeSidebar}>
+					<Icon name="user-plus" size={16} />
+					<span>Login / Register</span>
+				</a>
 			{/if}
-			<button onclick={() => { toggleLang(); closeSidebar(); }} class="theme-btn">
-				<span class="nav-icon">🌐</span>
-				<span>{getLang() === 'id' ? 'Indonesia' : 'English'}</span>
-			</button>
-			<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="theme-btn">
-				<span class="nav-icon">{themeStore.theme === 'dark' ? '🌙' : '☀️'}</span>
-				<span>{themeStore.theme === 'dark' ? 'Gelap' : 'Terang'}</span>
-			</button>
+
+			<!-- Action buttons: lang, theme, logout -->
+			<div class="sidebar-actions">
+				<button onclick={() => { toggleLang(); closeSidebar(); }} class="sidebar-action-btn" title={getLang() === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}>
+					<Icon name="globe" size={16} />
+				</button>
+				<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="sidebar-action-btn" title={themeStore.theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+					<Icon name={themeStore.theme === 'dark' ? 'sun' : 'moon'} size={16} />
+				</button>
+				{#if auth.isLoggedIn || user.isLoggedIn}
+					<button onclick={() => { auth.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="sidebar-action-btn sidebar-action-btn--danger" title="Logout">
+						<Icon name="log-out" size={16} />
+					</button>
+				{/if}
+			</div>
 		</div>
 	</aside>
 
@@ -305,13 +330,18 @@
 
 {#if offline && !dismissedOffline}
 	<div class="offline-badge" transition:fly={{ y: 20, duration: 300 }}>
-		<span>🔴 Luring</span>
-		<button class="offline-dismiss" onclick={() => dismissedOffline = true}>✕</button>
+		<span class="offline-dot"></span>
+		<span>Offline</span>
+		<button class="offline-dismiss" onclick={() => dismissedOffline = true}>
+			<Icon name="x" size={12} />
+		</button>
 	</div>
 {/if}
 
 {#if showBackToTop}
-	<button class="back-to-top" onclick={scrollToTop} aria-label="Kembali ke atas">↑</button>
+	<button class="back-to-top" onclick={scrollToTop} aria-label="Back to top">
+		<Icon name="chevron-left" size={18} style="transform: rotate(90deg);" />
+	</button>
 {/if}
 
 <PWAInstallPrompt />
@@ -333,6 +363,7 @@
 		box-sizing: border-box;
 	}
 
+	/* ===== Hamburger (mobile only) ===== */
 	.hamburger {
 		display: none;
 		position: fixed;
@@ -342,28 +373,28 @@
 		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 6px;
-		padding: 8px;
+		padding: 10px;
 		cursor: pointer;
-		flex-direction: column;
-		gap: 4px;
+		color: #d0d6e0;
+		transition: all 0.15s ease;
+	}
+	.hamburger:hover {
+		background: rgba(255, 255, 255, 0.06);
+		color: #f7f8f8;
 	}
 
-	.hamburger-line {
-		width: 20px;
-		height: 2px;
-		background: #d0d6e0;
-		border-radius: 1px;
-	}
-
+	/* ===== Overlay ===== */
 	.sidebar-overlay {
 		display: none;
 	}
 
+	/* ===== Layout Body ===== */
 	.layout-body {
 		display: flex;
 		min-height: 100vh;
 	}
 
+	/* ===== Sidebar ===== */
 	.sidebar {
 		width: 240px;
 		min-width: 240px;
@@ -375,10 +406,12 @@
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
+		z-index: 50;
 	}
 
+	/* ===== Sidebar Header ===== */
 	.sidebar-header {
-		padding: 20px 16px;
+		padding: 20px 14px 12px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	}
 
@@ -392,10 +425,12 @@
 		text-decoration: none !important;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.24px;
+		margin-bottom: 14px;
 	}
 
-	.logo-icon {
-		font-size: 22px;
+	.logo-svg {
+		color: #7170ff;
+		flex-shrink: 0;
 	}
 
 	.logo-text {
@@ -405,223 +440,9 @@
 		background-clip: text;
 	}
 
-	.sidebar-nav {
-		flex: 1;
-		padding: 8px 6px;
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-	}
-
-	.sidebar-nav a {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 8px 10px;
-		border-radius: 6px;
-		color: #8a8f98;
-		font-size: 14px;
-		font-weight: 510;
-		transition: all 0.15s ease;
-		text-decoration: none !important;
-		font-feature-settings: 'cv01', 'ss03';
-	}
-
-	.sidebar-nav a:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
-	}
-
-	.sidebar-nav a.active {
-		background: rgba(94, 106, 210, 0.12);
-		color: #7170ff;
-	}
-
-	.sidebar-separator {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.05);
-		margin: 6px 10px;
-	}
-
-	.section-toggle {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 6px 10px;
-		border-radius: 6px;
-		border: none;
-		background: transparent;
-		color: #62666d;
-		font-size: 11px;
-		font-weight: 510;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		width: 100%;
-		margin-top: 2px;
-		font-feature-settings: 'cv01', 'ss03';
-	}
-	.section-toggle:hover { background: rgba(255, 255, 255, 0.04); color: #d0d6e0; }
-	.section-toggle-icon { font-size: 13px; width: 20px; text-align: center; }
-	.section-toggle-label { flex: 1; text-align: left; }
-	.section-toggle-arrow {
-		font-size: 10px;
-		transition: transform 0.2s ease;
-		color: #62666d;
-	}
-	.section-toggle-arrow.rotated { transform: rotate(180deg); }
-
-	.sidebar-group-label {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 12px 4px;
-		font-size: 11px;
-		font-weight: 510;
-		color: #62666d;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.nav-icon {
-		font-size: 18px;
-		width: 24px;
-		text-align: center;
-	}
-
-	.sidebar-footer {
-		padding: 12px 8px;
-		border-top: 1px solid var(--border);
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.user-info {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 12px;
-	}
-
-	.user-avatar {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-		color: #fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-		font-weight: 600;
-	}
-
-	.user-name {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text);
-	}
-
-	.theme-btn {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 8px 10px;
-		border-radius: 6px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: transparent;
-		color: #8a8f98;
-		font-size: 13px;
-		font-weight: 510;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		width: 100%;
-		font-feature-settings: 'cv01', 'ss03';
-	}
-
-	.theme-btn:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
-	}
-
-	.logout-btn, .login-btn {
-		display: block;
-		text-align: center;
-		padding: 8px 10px;
-		border-radius: 6px;
-		font-size: 13px;
-		font-weight: 510;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		text-decoration: none !important;
-		font-feature-settings: 'cv01', 'ss03';
-	}
-
-	.sidebar-xp {
-		padding: 8px 10px;
-		margin-bottom: 4px;
-	}
-
-	.xp-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 4px;
-	}
-
-	.xp-level {
-		font-size: 12px;
-		font-weight: 590;
-		color: #7170ff;
-	}
-
-	.xp-amount {
-		font-size: 11px;
-		color: #8a8f98;
-	}
-
-	.xp-bar {
-		height: 4px;
-		background: rgba(255, 255, 255, 0.06);
-		border-radius: 2px;
-		overflow: hidden;
-	}
-
-	.xp-bar-fill {
-		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #7170ff);
-		border-radius: 2px;
-		transition: width 0.3s ease;
-	}
-
-	.logout-btn {
-		background: transparent;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		color: #8a8f98;
-	}
-
-	.logout-btn:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #ef4444;
-		border-color: rgba(239, 68, 68, 0.2);
-	}
-
-	.login-btn {
-		background: #5e6ad2;
-		color: #ffffff;
-		border: none;
-	}
-
-	.login-btn:hover {
-		background: #7170ff;
-	}
-
-	/* Sidebar search */
+	/* Search */
 	.sidebar-search {
 		position: relative;
-		margin-top: 10px;
 	}
 
 	.sidebar-search-icon {
@@ -629,14 +450,14 @@
 		left: 10px;
 		top: 50%;
 		transform: translateY(-50%);
-		font-size: 13px;
-		opacity: 0.5;
+		color: #8a8f98;
 		pointer-events: none;
+		opacity: 0.6;
 	}
 
 	.sidebar-search-input {
 		width: 100%;
-		padding: 7px 10px 7px 30px;
+		padding: 7px 10px 7px 32px;
 		font-size: 13px;
 		font-family: inherit;
 		border: 1px solid rgba(255, 255, 255, 0.06);
@@ -658,6 +479,254 @@
 		opacity: 0.6;
 	}
 
+	.search-hint {
+		position: absolute;
+		right: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 10px;
+		color: #62666d;
+		background: rgba(255, 255, 255, 0.04);
+		padding: 2px 6px;
+		border-radius: 4px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		pointer-events: none;
+		line-height: 1.4;
+	}
+
+	/* ===== Navigation ===== */
+	.sidebar-nav {
+		flex: 1;
+		padding: 6px 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		overflow-y: auto;
+	}
+
+	.nav-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+
+	.nav-section-label {
+		font-size: 10px;
+		font-weight: 510;
+		color: #62666d;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 8px 12px 4px;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.nav-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px 12px;
+		border-radius: 6px;
+		color: #8a8f98;
+		font-size: 13.5px;
+		font-weight: 510;
+		transition: all 0.15s ease;
+		text-decoration: none !important;
+		font-feature-settings: 'cv01', 'ss03';
+		position: relative;
+	}
+
+	.nav-item:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: #f7f8f8;
+	}
+
+	.nav-item.active {
+		background: rgba(94, 106, 210, 0.12);
+		color: #7170ff;
+	}
+
+	.nav-item-label {
+		flex: 1;
+	}
+
+	.nav-active-indicator {
+		width: 3px;
+		height: 16px;
+		background: #7170ff;
+		border-radius: 2px;
+		box-shadow: 0 0 8px rgba(113, 112, 255, 0.4);
+		position: absolute;
+		right: -8px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	/* ===== Sidebar Footer ===== */
+	.sidebar-footer {
+		padding: 8px;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	/* XP bar */
+	.sidebar-xp {
+		padding: 6px 8px;
+	}
+
+	.xp-bar-track {
+		height: 4px;
+		background: rgba(255, 255, 255, 0.06);
+		border-radius: 2px;
+		overflow: hidden;
+		margin-bottom: 6px;
+	}
+
+	.xp-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #5e6ad2, #7170ff);
+		border-radius: 2px;
+		transition: width 0.3s ease;
+	}
+
+	.xp-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.xp-level-badge {
+		font-size: 11px;
+		font-weight: 590;
+		color: #7170ff;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.xp-amount {
+		font-size: 10px;
+		color: #8a8f98;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	/* User section */
+	.user-section {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px 10px;
+		border-radius: 6px;
+		transition: background 0.15s ease;
+	}
+
+	.user-section:hover {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.user-avatar {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		font-weight: 600;
+		flex-shrink: 0;
+		overflow: hidden;
+		border: 2px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.user-avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.user-avatar-text {
+		line-height: 1;
+	}
+
+	.user-info {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+
+	.user-name {
+		font-size: 13px;
+		font-weight: 510;
+		color: #f7f8f8;
+		font-feature-settings: 'cv01', 'ss03';
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.user-xp {
+		font-size: 11px;
+		color: #8a8f98;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	/* Login button (when not authenticated) */
+	.login-btn {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 8px 10px;
+		border-radius: 6px;
+		font-size: 13px;
+		font-weight: 510;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		text-decoration: none !important;
+		font-feature-settings: 'cv01', 'ss03';
+		color: #8a8f98;
+	}
+
+	.login-btn:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: #f7f8f8;
+	}
+
+	/* Action buttons row */
+	.sidebar-actions {
+		display: flex;
+		gap: 4px;
+		padding: 4px 4px 0;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.sidebar-action-btn {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 7px;
+		border-radius: 6px;
+		border: none;
+		background: transparent;
+		color: #8a8f98;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.sidebar-action-btn:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: #f7f8f8;
+	}
+
+	.sidebar-action-btn--danger:hover {
+		color: #ef4444;
+		background: rgba(239, 68, 68, 0.1);
+	}
+
+	/* ===== Main Content ===== */
 	.main-content {
 		flex: 1;
 		min-width: 0;
@@ -665,6 +734,7 @@
 		max-width: 100%;
 	}
 
+	/* ===== Offline Badge ===== */
 	.offline-badge {
 		position: fixed;
 		bottom: 16px;
@@ -681,49 +751,58 @@
 		font-weight: 510;
 		color: #f7f8f8;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.offline-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #ef4444;
 	}
 
 	.offline-dismiss {
 		background: none;
 		border: none;
-		color: var(--text-secondary, #888);
+		color: #8a8f98;
 		cursor: pointer;
-		font-size: 14px;
-		padding: 0 2px;
+		padding: 2px;
 		line-height: 1;
+		display: flex;
+		align-items: center;
 	}
 
 	.offline-dismiss:hover {
-		color: var(--text, #e0e0e0);
+		color: #f7f8f8;
 	}
 
+	/* ===== Back to Top ===== */
 	.back-to-top {
 		position: fixed;
 		bottom: 16px;
 		right: 16px;
 		z-index: 9999;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
+		width: 36px;
+		height: 36px;
+		border-radius: 6px;
 		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
+		color: #8a8f98;
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		font-size: 20px;
-		font-weight: 590;
-		line-height: 1;
 		cursor: pointer;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 		transition: all 0.15s ease;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.back-to-top:hover {
 		background: rgba(255, 255, 255, 0.08);
+		color: #f7f8f8;
 		transform: translateY(-2px);
 	}
 
+	/* ===== Toast Container ===== */
 	.toast-container {
 		position: fixed;
 		bottom: 20px;
@@ -738,6 +817,7 @@
 		pointer-events: auto;
 	}
 
+	/* ===== Mobile Responsive ===== */
 	@media (max-width: 768px) {
 		.hamburger {
 			display: flex;
@@ -754,9 +834,9 @@
 			height: 100vh;
 			width: 260px;
 			transform: translateX(-100%);
-			transition: transform 0.3s ease;
+			transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 			z-index: 200;
-			box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+			box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 		}
 
 		.sidebar.sidebar--open {
@@ -767,7 +847,7 @@
 			display: block;
 			position: fixed;
 			inset: 0;
-			background: rgba(0,0,0,0.5);
+			background: rgba(0, 0, 0, 0.5);
 			backdrop-filter: blur(4px);
 			-webkit-backdrop-filter: blur(4px);
 			z-index: 150;
@@ -779,5 +859,40 @@
 			width: 100%;
 			max-width: 100%;
 		}
+	}
+
+	/* ===== Tablet: compact sidebar ===== */
+	@media (min-width: 769px) and (max-width: 1024px) {
+		.sidebar {
+			width: 68px;
+			min-width: 68px;
+		}
+
+		.sidebar-logo {
+			justify-content: center;
+			padding: 0;
+			margin-bottom: 12px;
+		}
+		.logo-text { display: none; }
+
+		.sidebar-search { display: none; }
+		.search-hint { display: none; }
+
+		.nav-section-label { display: none; }
+
+		.nav-item {
+			justify-content: center;
+			padding: 10px;
+		}
+		.nav-item-label { display: none; }
+		.nav-active-indicator { display: none; }
+
+		.sidebar-xp { display: none; }
+
+		.user-info { display: none; }
+		.user-section { justify-content: center; }
+
+		.login-btn span { display: none; }
+		.login-btn { justify-content: center; }
 	}
 </style>
