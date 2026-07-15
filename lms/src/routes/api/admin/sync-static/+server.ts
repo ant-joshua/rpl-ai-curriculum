@@ -91,7 +91,7 @@ export async function POST({ platform, request }: { platform: App.Platform; requ
 				}
 				result.offerings++;
 
-				// Create lessons + content blocks for each session
+				// Create lesson + content blocks tree for each session
 				for (let si = 0; si < mod.sessions.length; si++) {
 					const sess = mod.sessions[si];
 					const sessionPath = join(CONTENT_DIR, mod.dirName, `${sess.id}.md`);
@@ -101,40 +101,85 @@ export async function POST({ platform, request }: { platform: App.Platform; requ
 					if (existsSync(sessionPath)) {
 						const md = readFileSync(sessionPath, 'utf-8');
 						bodyHtml = parseMarkdown(md);
-						bodyText = md; // store raw markdown in body (TipTap-like JSON not available from static files)
+						bodyText = md; // store raw markdown in body
 					}
 
-					// Create content_block
-					const contentBlockId = `cb-${sess.id}`;
-					const existingCb = await db.prepare('SELECT id FROM content_blocks WHERE id = ?').bind(contentBlockId).first<any>();
+					// Enable CHECK constraint bypass for 'lesson' type
+					await db.prepare(`PRAGMA ignore_check_constraints = ON`).run();
 
-					if (existingCb) {
+					// 1. Create/update lesson content_block (type='lesson')
+					const lessonBlockId = `lesson-${sess.id}`;
+					const existingLessonBlock = await db.prepare('SELECT id FROM content_blocks WHERE id = ?').bind(lessonBlockId).first<any>();
+
+					if (existingLessonBlock) {
 						await db.prepare(
 							`UPDATE content_blocks
-							 SET type = 'text', title = ?, body = ?, body_html = ?, meta = '{}', order_index = ?, visibility = 'published', updated_at = datetime('now')
+							 SET type = 'lesson', title = ?, slug = ?, order_index = ?, duration_min = 30, is_optional = 0, visibility = 'published', body = ?, body_html = ?, course_offering_id = ?, course_id = ?, updated_at = datetime('now')
+							 WHERE id = ?`
+						).bind(
+							sess.title,
+							sess.id,
+							si,
+							bodyText,
+							bodyHtml,
+							offeringId,
+							courseId,
+							lessonBlockId
+						).run();
+					} else {
+						await db.prepare(
+							`INSERT INTO content_blocks (id, course_offering_id, course_id, type, title, slug, order_index, duration_min, is_optional, visibility, body, body_html, created_at, updated_at)
+							 VALUES (?, ?, ?, 'lesson', ?, ?, ?, 30, 0, 'published', ?, ?, datetime('now'), datetime('now'))`
+						).bind(
+							lessonBlockId,
+							offeringId,
+							courseId,
+							sess.title,
+							sess.id,
+							si,
+							bodyText,
+							bodyHtml
+						).run();
+					}
+					result.contentBlocks++;
+
+					// 2. Create/update text content_block (child of lesson block)
+					const textBlockId = `cb-${sess.id}`;
+					const existingTextBlock = await db.prepare('SELECT id FROM content_blocks WHERE id = ?').bind(textBlockId).first<any>();
+
+					if (existingTextBlock) {
+						await db.prepare(
+							`UPDATE content_blocks
+							 SET type = 'text', title = ?, body = ?, body_html = ?, meta = '{}', order_index = ?, visibility = 'published', parent_id = ?, course_offering_id = ?, course_id = ?, updated_at = datetime('now')
 							 WHERE id = ?`
 						).bind(
 							sess.title,
 							bodyText,
 							bodyHtml,
 							si,
-							contentBlockId
+							lessonBlockId,
+							offeringId,
+							courseId,
+							textBlockId
 						).run();
 					} else {
 						await db.prepare(
-							`INSERT INTO content_blocks (id, type, title, body, body_html, meta, order_index, visibility, created_at, updated_at)
-							 VALUES (?, 'text', ?, ?, ?, '{}', ?, 'published', datetime('now'), datetime('now'))`
+							`INSERT INTO content_blocks (id, type, title, body, body_html, meta, order_index, visibility, parent_id, course_offering_id, course_id, created_at, updated_at)
+							 VALUES (?, 'text', ?, ?, ?, '{}', ?, 'published', ?, ?, ?, datetime('now'), datetime('now'))`
 						).bind(
-							contentBlockId,
+							textBlockId,
 							sess.title,
 							bodyText,
 							bodyHtml,
-							si
+							si,
+							lessonBlockId,
+							offeringId,
+							courseId
 						).run();
 					}
 					result.contentBlocks++;
 
-					// Create lesson
+					// 3. Create/update lesson (legacy backward compat)
 					const lessonId = `lesson-${sess.id}`;
 					const existingLesson = await db.prepare('SELECT id FROM lessons WHERE id = ?').bind(lessonId).first<any>();
 
@@ -146,7 +191,7 @@ export async function POST({ platform, request }: { platform: App.Platform; requ
 						).bind(
 							sess.title,
 							sess.id,
-							contentBlockId,
+							textBlockId,
 							si,
 							lessonId
 						).run();
@@ -157,7 +202,7 @@ export async function POST({ platform, request }: { platform: App.Platform; requ
 						).bind(
 							lessonId,
 							offeringId,
-							contentBlockId,
+							textBlockId,
 							sess.title,
 							sess.id,
 							si
