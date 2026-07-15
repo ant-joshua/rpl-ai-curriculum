@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
@@ -13,8 +13,9 @@
 	let attemptsRemaining = $state(0);
 	let attemptsUsed = $state(0);
 
-	// Timer
+	// Timer — uses server-provided startedAt for drift-free countdown
 	let timeLimitMinutes = $state(0);
+	let startedAt = $state<string | null>(null);  // ISO string from server
 	let secondsRemaining = $state(0);
 	let timerInterval: ReturnType<typeof setInterval> | null = $state(null);
 	let timeExpired = $state(false);
@@ -31,6 +32,7 @@
 
 	// Results
 	let resultData: any = $state(null);
+	let submitError = $state('');
 
 	let assessmentId = $state('');
 
@@ -44,6 +46,19 @@
 		if (!browser) return;
 		loadAssessment();
 	});
+
+	onDestroy(() => {
+		if (timerInterval) clearInterval(timerInterval);
+	});
+
+	/** Recalculate seconds remaining from startedAt + timeLimitMinutes */
+	function recalcRemaining(): number {
+		if (!startedAt || !timeLimitMinutes) return 0;
+		const startedMs = new Date(startedAt).getTime();
+		const elapsed = (Date.now() - startedMs) / 1000;
+		const limit = timeLimitMinutes * 60;
+		return Math.max(0, limit - Math.floor(elapsed));
+	}
 
 	async function loadAssessment() {
 		loading = true;
@@ -74,10 +89,11 @@
 				if (!answers[q.id]) answers[q.id] = '';
 			}
 
-			// Timer
+			// Timer — use server-originated startedAt for drift-free countdown
 			if (assessment.time_limit_minutes) {
 				timeLimitMinutes = assessment.time_limit_minutes;
-				secondsRemaining = assessment.time_limit_minutes * 60;
+				startedAt = d.startedAt || new Date().toISOString();
+				secondsRemaining = recalcRemaining();
 				startTimer();
 			}
 
@@ -90,15 +106,18 @@
 
 	function startTimer() {
 		if (timerInterval) clearInterval(timerInterval);
+		// Tick every 500ms for responsive display, recalculate from startedAt
 		timerInterval = setInterval(() => {
-			secondsRemaining--;
-			if (secondsRemaining <= 0) {
+			const remaining = recalcRemaining();
+			secondsRemaining = remaining;
+
+			if (remaining <= 0) {
 				secondsRemaining = 0;
 				timeExpired = true;
 				if (timerInterval) clearInterval(timerInterval);
 				handleSubmit();
 			}
-		}, 1000);
+		}, 500);
 	}
 
 	function formatTime(secs: number): string {
@@ -148,14 +167,15 @@
 		if (submitting) return;
 		submitting = true;
 		confirmSubmit = false;
+		submitError = '';
 
 		const ansArray = questions.map(q => ({
 			questionId: q.id,
 			answer: answers[q.id] || '',
 		}));
 
-		const timeSpent = assessment.time_limit_minutes
-			? (assessment.time_limit_minutes * 60) - secondsRemaining
+		const timeSpent = timeLimitMinutes
+			? (timeLimitMinutes * 60) - secondsRemaining
 			: 0;
 
 		try {
@@ -164,7 +184,7 @@
 				body: JSON.stringify({ answers: ansArray, timeSpent }),
 			});
 			if (!res.success) {
-				error = res.error || 'Submission failed';
+				submitError = res.error || 'Submission failed';
 				submitting = false;
 				return;
 			}
@@ -172,7 +192,7 @@
 			submitted = true;
 			if (timerInterval) clearInterval(timerInterval);
 		} catch {
-			error = 'Network error';
+			submitError = 'Network error';
 			submitting = false;
 		}
 	}
@@ -185,8 +205,11 @@
 		resultData = null;
 		confirmSubmit = false;
 		error = '';
-		secondsRemaining = assessment.time_limit_minutes ? assessment.time_limit_minutes * 60 : 0;
-		if (assessment.time_limit_minutes) startTimer();
+		submitError = '';
+		// Reset timer with fresh server call
+		startedAt = null;
+		timeExpired = false;
+		loadAssessment();
 	}
 
 	function getOptionLabel(idx: number): string {
@@ -230,6 +253,9 @@
 						{resultData.passed ? '✓ PASSED' : '✗ FAILED'}
 						<span class="passing-info">(passing: {resultData.passingScore}%)</span>
 					</div>
+					{#if resultData.timeExpired}
+						<div class="time-expired-notice">⏰ Time expired — auto-submitted</div>
+					{/if}
 				</div>
 
 				{#if resultData.showResults}
@@ -351,6 +377,12 @@
 
 			<!-- Question Display -->
 			<div class="question-display">
+				{#if submitError}
+					<div class="submit-error-banner">
+						⚠️ {submitError}
+					</div>
+				{/if}
+
 				{#if question}
 					<div class="question-progress">
 						Question {currentQuestionIndex + 1} of {questions.length}
@@ -560,6 +592,18 @@
 	.quiz-body {
 		display: flex;
 		gap: 24px;
+	}
+
+	/* Error banner */
+	.submit-error-banner {
+		background: #e74c3c15;
+		border: 1px solid #e74c3c;
+		color: #e74c3c;
+		padding: 10px 16px;
+		border-radius: 8px;
+		margin-bottom: 12px;
+		font-size: 14px;
+		font-weight: 500;
 	}
 
 	/* Question Nav Sidebar */
@@ -910,6 +954,19 @@
 		justify-content: flex-end;
 	}
 
+	/* Time expired notice on result screen */
+	.time-expired-notice {
+		margin-top: 12px;
+		padding: 8px 16px;
+		background: #e74c3c15;
+		border: 1px solid #e74c3c;
+		border-radius: 8px;
+		color: #e74c3c;
+		font-size: 14px;
+		font-weight: 600;
+		display: inline-block;
+	}
+
 	/* ===== Result Screen ===== */
 	.result-screen {
 		max-width: 800px;
@@ -1001,13 +1058,13 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		margin-bottom: 10px;
+		margin-bottom: 8px;
 	}
 
 	.result-q-num {
 		font-weight: 700;
-		font-size: 13px;
-		color: var(--text-secondary);
+		font-size: 14px;
+		color: var(--text);
 	}
 
 	.result-q-status {
@@ -1020,60 +1077,49 @@
 
 	.result-q-points {
 		margin-left: auto;
-		font-size: 12px;
+		font-size: 13px;
 		color: var(--text-secondary);
 		font-weight: 500;
 	}
 
 	.result-q-text {
 		font-size: 14px;
-		margin-bottom: 10px;
-		color: var(--text);
-		line-height: 1.5;
+		margin-bottom: 8px;
+		color: var(--text-secondary);
 	}
 
 	.result-answer-compare {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 4px;
+		margin-bottom: 8px;
+	}
+
+	.result-user-answer, .result-correct-answer, .result-answer-correct {
+		display: flex;
+		gap: 8px;
+		font-size: 13px;
 	}
 
 	.label {
-		font-size: 11px;
 		font-weight: 600;
 		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		display: block;
-		margin-bottom: 2px;
+		flex-shrink: 0;
 	}
 
-	.value {
-		font-size: 14px;
-		padding: 4px 10px;
-		border-radius: 4px;
-		display: inline-block;
-	}
-
-	.value.correct {
-		background: #2ecc7115;
-		color: #2ecc71;
-	}
-
-	.value.wrong {
-		background: #e74c3c15;
-		color: #e74c3c;
-	}
+	.value.wrong { color: #e74c3c; }
+	.value.correct { color: #2ecc71; }
 
 	.result-explanation {
-		margin-top: 10px;
-		padding-top: 10px;
+		margin-top: 8px;
+		padding-top: 8px;
 		border-top: 1px solid var(--border);
+		font-size: 13px;
+		color: var(--text-secondary);
 	}
 
 	.result-explanation p {
-		font-size: 13px;
-		color: var(--text-secondary);
+		margin-top: 4px;
 		line-height: 1.5;
 	}
 
@@ -1081,81 +1127,6 @@
 		display: flex;
 		gap: 12px;
 		justify-content: center;
-		margin-top: 32px;
-	}
-
-	.result-actions .btn {
-		min-width: 160px;
-		justify-content: center;
-	}
-
-	/* Responsive */
-	@media (max-width: 768px) {
-		.quiz-body {
-			flex-direction: column;
-		}
-
-		.question-nav {
-			width: 100%;
-			min-width: unset;
-			position: static;
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			gap: 12px;
-		}
-
-		.nav-stats {
-			flex: 1;
-			margin-bottom: 0;
-			padding-bottom: 0;
-			border-bottom: none;
-		}
-
-		.nav-questions {
-			flex: 2;
-			grid-template-columns: repeat(6, 1fr);
-		}
-
-		.quiz-header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.score-circle {
-			width: 130px;
-			height: 130px;
-		}
-
-		.score-pct {
-			font-size: 28px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.quiz-player {
-			padding: 16px 10px;
-		}
-
-		.question-card {
-			padding: 16px;
-		}
-
-		.question-text {
-			font-size: 15px;
-		}
-
-		.nav-questions {
-			grid-template-columns: repeat(5, 1fr);
-		}
-
-		.result-actions {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.result-actions .btn {
-			width: 100%;
-		}
+		margin-top: 24px;
 	}
 </style>

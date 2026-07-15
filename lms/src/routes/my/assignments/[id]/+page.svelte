@@ -28,6 +28,39 @@
 
 	let isSubmitting = $derived(submitting || uploading);
 
+	// Code execution state
+	let running = $state(false);
+	let runResult: any = $state(null);
+	let runError = $state('');
+
+	async function handleRun() {
+		if (!submissionText.trim()) return;
+		running = true;
+		runError = '';
+		runResult = null;
+		try {
+			const res = await fetch('/api/code/execute', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					language: assignment?.language || 'python',
+					version: assignment?.language_version || '*',
+					code: submissionText
+				})
+			});
+			const json = await res.json();
+			if (!json.success) {
+				runError = json.error || 'Execution failed';
+			} else {
+				runResult = json.data;
+			}
+		} catch (e: any) {
+			runError = e.message || 'Network error';
+		} finally {
+			running = false;
+		}
+	}
+
 	let statusBadge = $derived.by(() => {
 		if (!submission) return { text: 'Belum Dikumpulkan', variant: 'default' as const };
 		switch (submission.status) {
@@ -356,6 +389,40 @@
 					</div>
 				{/if}
 
+				<!-- Code execution for code-type assignments -->
+				{#if assignment.submission_type === 'code'}
+					<div class="code-actions">
+						<Button onclick={handleRun} disabled={running || !submissionText.trim()} variant="secondary">
+							{running ? 'Menjalankan...' : '▶️ Jalankan Kode'}
+						</Button>
+					</div>
+
+					{#if runError}
+						<div class="run-error">
+							<strong>Error:</strong> {runError}
+						</div>
+					{/if}
+
+					{#if runResult}
+						<div class="run-output">
+							<div class="run-output-header">
+								<span>Output</span>
+								<Badge variant={runResult.run?.code === 0 ? 'success' : 'danger'}>
+									Exit code: {runResult.run?.code ?? 'N/A'}
+								</Badge>
+							</div>
+							<pre class="run-stdout">{runResult.run?.stdout || '(empty)'}</pre>
+							{#if runResult.run?.stderr}
+								<div class="run-stderr-label">stderr:</div>
+								<pre class="run-stderr">{runResult.run.stderr}</pre>
+							{/if}
+							<div class="run-meta">
+								CPU: {runResult.run?.cpu_time ?? 0}ms &middot; Memory: {Math.round((runResult.run?.memory ?? 0) / 1024)}KB
+							</div>
+						</div>
+					{/if}
+				{/if}
+
 				{#if submitError}
 					<div class="submit-error">{submitError}</div>
 				{/if}
@@ -620,4 +687,14 @@
 	@media (max-width: 480px) {
 		.form-actions { flex-direction: column; }
 	}
+
+	/* Code execution */
+	.code-actions { margin-top: 12px; }
+	.run-error { margin-top: 8px; padding: 10px 14px; background: #e74c3c22; color: #e74c3c; border-radius: 8px; font-size: 13px; }
+	.run-output { margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+	.run-output-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 13px; }
+	.run-stdout, .run-stderr { padding: 12px; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; background: var(--bg); }
+	.run-stderr { background: #e74c3c08; }
+	.run-stderr-label { padding: 8px 12px 0; font-size: 12px; font-weight: 600; color: #e74c3c; }
+	.run-meta { padding: 6px 12px; font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--border); background: var(--surface); }
 </style>
