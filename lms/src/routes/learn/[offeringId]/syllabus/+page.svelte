@@ -5,13 +5,13 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Push breadcrumb tail via layout context
 	let setBreadcrumbTail = getContext<(items: { label: string; href?: string }[]) => void>('breadcrumb-tail');
 	onMount(() => {
 		setBreadcrumbTail([{ label: 'Silabus' }]);
 	});
 
 	let offering = $derived(data.offering);
+	let tree = $derived(data.tree);
 	let lessons = $derived(data.lessons);
 	let weeklyLessons = $derived(data.weeklyLessons);
 	let progress = $derived(data.progress);
@@ -83,55 +83,108 @@
 
 	<!-- Weekly Lessons -->
 	<div class="weekly-section">
-		{#each weeklyLessons as week}
-			<div class="week-card">
-				<div class="week-header">
-					<h3>Minggu {week.week}</h3>
-					<span class="week-count">{week.lessons.filter((l: any) => l.isCompleted).length}/{week.lessons.length} selesai</span>
-				</div>
-				<div class="lesson-list">
-					{#each week.lessons as lesson, i}
-						<a
-							href="/learn/{offering.id}/lessons/{lesson.slug}"
-							class="lesson-card"
-							class:completed={lesson.isCompleted}
-							class:locked={lesson.isLocked}
-							tabindex={lesson.isLocked ? -1 : 0}
-						>
-							<div class="lesson-status">
-								{#if lesson.isCompleted}
-									<span class="checkmark">✅</span>
-								{:else if lesson.isLocked}
-									<span class="lock-icon">🔒</span>
-								{:else}
-									<span class="index-num">{i + 1}</span>
+		{#if tree.length > 0}
+			{#each tree as node}
+				{#if node.type === 'section'}
+					<div class="week-card">
+						<div class="week-header">
+							<h3>{node.title}</h3>
+							{#if node.subtitle}<span class="week-count">{node.subtitle}</span>{/if}
+						</div>
+						<div class="lesson-list">
+							{#each node.children as child}
+								{#if child.type === 'lesson'}
+									<a
+										href="/learn/{offering.id}/lessons/{child.slug}"
+										class="lesson-card"
+										class:completed={child.isCompleted}
+										class:locked={child.isLocked}
+										tabindex={child.isLocked ? -1 : 0}
+									>
+										<div class="lesson-status">
+											{#if child.isCompleted}
+												<span class="checkmark">✅</span>
+											{:else if child.isLocked}
+												<span class="lock-icon">🔒</span>
+											{:else}
+												<span class="index-num">{node.children.filter((c: any) => c.type === 'lesson').indexOf(child) + 1}</span>
+											{/if}
+										</div>
+										<div class="lesson-body">
+											<div class="lesson-title">{child.title}</div>
+											<div class="lesson-meta">
+												{#if child.duration_min}
+													<span class="duration-badge">⏱ {child.duration_min}m</span>
+												{/if}
+												{#if child.is_optional}
+													<span class="optional-badge">⚡ Tambahan</span>
+												{/if}
+											</div>
+											{#if child.isLocked && child.lockedReason}
+												<p class="lock-reason">{child.lockedReason}</p>
+											{/if}
+										</div>
+										{#if !child.isLocked && !child.isCompleted}
+											<div class="lesson-arrow">→</div>
+										{/if}
+									</a>
 								{/if}
-							</div>
-							<div class="lesson-body">
-								<div class="lesson-title">{lesson.title}</div>
-								<div class="lesson-meta">
-									<span class={typeBadgeClass(lesson.contentType)}>
-										{contentTypeIcon[lesson.contentType] || '📄'} {contentTypeLabel[lesson.contentType] || 'Teks'}
-									</span>
-									{#if lesson.durationMinutes}
-										<span class="duration-badge">⏱ {lesson.durationMinutes}m</span>
-									{/if}
-									{#if lesson.isOptional}
-										<span class="optional-badge">⚡ Tambahan</span>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			{/each}
+		{:else}
+			{#each weeklyLessons as week}
+				<div class="week-card">
+					<div class="week-header">
+						<h3>Minggu {week.week}</h3>
+						<span class="week-count">{week.lessons.filter((l: any) => l.isCompleted).length}/{week.lessons.length} selesai</span>
+					</div>
+					<div class="lesson-list">
+						{#each week.lessons as lesson, i}
+							<a
+								href="/learn/{offering.id}/lessons/{lesson.slug}"
+								class="lesson-card"
+								class:completed={lesson.isCompleted}
+								class:locked={lesson.isLocked}
+								tabindex={lesson.isLocked ? -1 : 0}
+							>
+								<div class="lesson-status">
+									{#if lesson.isCompleted}
+										<span class="checkmark">✅</span>
+									{:else if lesson.isLocked}
+										<span class="lock-icon">🔒</span>
+									{:else}
+										<span class="index-num">{i + 1}</span>
 									{/if}
 								</div>
-								{#if lesson.isLocked && lesson.lockedReason}
-									<p class="lock-reason">{lesson.lockedReason}</p>
+								<div class="lesson-body">
+									<div class="lesson-title">{lesson.title}</div>
+									<div class="lesson-meta">
+										<span class={typeBadgeClass(lesson.contentType)}>
+											{contentTypeIcon[lesson.contentType] || '📄'} {contentTypeLabel[lesson.contentType] || 'Teks'}
+										</span>
+										{#if lesson.durationMinutes}
+											<span class="duration-badge">⏱ {lesson.durationMinutes}m</span>
+										{/if}
+										{#if lesson.isOptional}
+											<span class="optional-badge">⚡ Tambahan</span>
+										{/if}
+									</div>
+									{#if lesson.isLocked && lesson.lockedReason}
+										<p class="lock-reason">{lesson.lockedReason}</p>
+									{/if}
+								</div>
+								{#if !lesson.isLocked && !lesson.isCompleted}
+									<div class="lesson-arrow">→</div>
 								{/if}
-							</div>
-							{#if !lesson.isLocked && !lesson.isCompleted}
-								<div class="lesson-arrow">→</div>
-							{/if}
-						</a>
-					{/each}
+							</a>
+						{/each}
+					</div>
 				</div>
-			</div>
-		{/each}
+			{/each}
+		{/if}
 	</div>
 
 	<!-- Certificate CTA -->

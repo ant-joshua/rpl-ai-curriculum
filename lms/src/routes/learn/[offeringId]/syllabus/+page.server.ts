@@ -4,10 +4,10 @@ import { error, redirect } from '@sveltejs/kit';
 
 export async function load({ params, platform, request }: { params: { offeringId: string }; platform: App.Platform; request: Request }) {
 	const token = getBearerToken(request);
-	if (!token) throw redirect(307, '/auth/login?redirect=/learn/' + params.offeringId + '/syllabus');
+	if (!token) throw redirect(307, '/login?redirect=/learn/' + params.offeringId + '/syllabus');
 
 	const session = await getSession(platform, token);
-	if (!session) throw redirect(307, '/auth/login?redirect=/learn/' + params.offeringId + '/syllabus');
+	if (!session) throw redirect(307, '/login?redirect=/learn/' + params.offeringId + '/syllabus');
 
 	const db = getDB(platform);
 
@@ -25,18 +25,31 @@ export async function load({ params, platform, request }: { params: { offeringId
 
 	if (!offering) throw error(404, 'Course offering not found');
 
-	// Fetch all published lessons ordered
-	const { results: lessons } = await db
+	// Fetch content_blocks tree for this offering
+	const { results: treeBlocks } = await db
 		.prepare(
-			`SELECT l.id, l.title, l.slug, l.order_index, l.duration_minutes, l.is_optional,
-			        l.unlock_days, l.status, cb.type AS content_type
-			 FROM lessons l
-			 LEFT JOIN content_blocks cb ON cb.id = l.content_block_id
-			 WHERE l.course_offering_id = ? AND l.status = 'published'
-			 ORDER BY l.order_index ASC`
+			`SELECT id, type, title, subtitle, slug, parent_id, order_index,
+			        duration_min, is_optional, unlock_days, visibility, weight, due_date,
+			        source_id
+			 FROM content_blocks
+			 WHERE course_offering_id = ?
+			 ORDER BY order_index ASC`
 		)
 		.bind(params.offeringId)
 		.all<any>();
+
+	// Build tree from flat list
+	function buildTree(blocks: any[], parentId: string | null = null): any[] {
+		return blocks
+			.filter((b: any) => b.parent_id === parentId)
+			.sort((a: any, b: any) => a.order_index - b.order_index)
+			.map((b: any) => ({
+				...b,
+				children: buildTree(blocks, b.id)
+			}));
+	}
+
+	const tree = buildTree(treeBlocks || []);
 
 	// Fetch completed lessons for this user
 	const { results: completed } = await db
@@ -61,7 +74,6 @@ export async function load({ params, platform, request }: { params: { offeringId
 		.bind(params.offeringId)
 		.all<{ prerequisite_id: string; dependent_id: string }>();
 
-	// Build prerequisite map: dependent_id -> [prerequisite_ids]
 	const prereqMap = new Map<string, string[]>();
 	for (const p of prereqs || []) {
 		const list = prereqMap.get(p.dependent_id) || [];
@@ -75,56 +87,70 @@ export async function load({ params, platform, request }: { params: { offeringId
 		? Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24))
 		: 999;
 
-	// Build lesson data with lock info
-	const lessonsWithStatus = (lessons || []).map((l: any) => {
-		const lessonPrereqs = prereqMap.get(l.id) || [];
-		// Map prereq IDs to their slugs for the frontend
-		// Just check if any prereq is not completed
-		let isLocked = false;
-		let lockedReason = '';
+	// Annotate tree with completion/lock status
+	function annotateTree(nodes: any[]): any[] {
+		return nodes.map((n: any) => {
+			const isLesson = n.type === 'lesson';
+			const isCompleted = isLesson ? completedSlugs.has(n.slug) : false;
 
-		if (l.unlock_days && daysSinceStart < l.unlock_days) {
-			isLocked = true;
-			lockedReason = `Terbuka pada hari ke-${l.unlock_days} (${Math.ceil(l.unlock_days - daysSinceStart)} hari lagi)`;
+			let isLocked = false;
+			let lockedReason = '';
+
+			if (isLesson && n.unlock_days && daysSinceStart < n.unlock_days) {
+				isLocked = true;
+				lockedReason = `Terbuka pada hari ke-${n.unlock_days} (${Math.ceil(n.unlock_days - daysSinceStart)} hari lagi)`;
+			}
+
+			// Check prereqs (by slug via progress tracking)
+			// Skip complex check for now — lesson IDs vs slugs mismatch
+
+			return {
+				...n,
+				isCompleted,
+				isLocked,
+				lockedReason,
+				children: annotateTree(n.children || [])
+			};
+		});
+	}
+
+	const annotatedTree = annotateTree(tree);
+
+	// Flatten lessons for CSV export / linear list (backward compat)
+	function flattenLessons(nodes: any[]): any[] {
+		let result: any[] = [];
+		for (const n of nodes) {
+			if (n.type === 'lesson') {
+				result.push({
+					id: n.id,
+					title: n.title,
+					slug: n.slug,
+					orderIndex: n.order_index,
+					durationMinutes: n.duration_min || 30,
+					isOptional: n.is_optional === 1,
+					contentType: 'text',
+					isCompleted: n.isCompleted,
+					isLocked: n.isLocked,
+					lockedReason: n.lockedReason,
+					sectionTitle: null as string | null
+				});
+			}
+			result = result.concat(flattenLessons(n.children || []));
 		}
+		return result;
+	}
 
-		if (!isLocked && lessonPrereqs.length > 0) {
-			// Check if all prereqs are completed (by checking if they exist in completedSlugs)
-			// We need to map prereq IDs to slugs — do a quick query
-			isLocked = true; // Will be refined below
-			lockedReason = 'Selesaikan prasyarat terlebih dahulu';
-		}
+	const lessons = flattenLessons(annotatedTree);
 
-		// Simpler: check by slug since progress uses session_id (slug)
-		// Actually prereq IDs are lesson IDs, not slugs. Skip complex check for now.
-		if (!isLocked && lessonPrereqs.length > 0) {
-			isLocked = false; // Overly permissive — refine later
-			lockedReason = '';
-		}
-
-		return {
-			id: l.id,
-			title: l.title,
-			slug: l.slug,
-			orderIndex: l.order_index,
-			durationMinutes: l.duration_minutes || 30,
-			isOptional: l.is_optional === 1,
-			contentType: l.content_type || 'text',
-			isCompleted: completedSlugs.has(l.slug),
-			isLocked,
-			lockedReason
-		};
-	});
-
-	const completedCount = lessonsWithStatus.filter((l: any) => l.isCompleted).length;
-	const totalCount = lessonsWithStatus.length;
+	const completedCount = lessons.filter((l: any) => l.isCompleted).length;
+	const totalCount = lessons.length;
 	const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
 	// Group into weeks (~4 lessons per week)
 	const weeklyLessons: { week: number; lessons: any[] }[] = [];
 	let currentWeek: any[] = [];
 	let weekNum = 1;
-	for (const l of lessonsWithStatus) {
+	for (const l of lessons) {
 		currentWeek.push(l);
 		if (currentWeek.length >= 4) {
 			weeklyLessons.push({ week: weekNum++, lessons: [...currentWeek] });
@@ -147,7 +173,8 @@ export async function load({ params, platform, request }: { params: { offeringId
 			level: offering.level,
 			status: offering.status
 		},
-		lessons: lessonsWithStatus,
+		tree: annotatedTree,
+		lessons,
 		weeklyLessons,
 		progress: { completed: completedCount, total: totalCount, percentage: progress },
 		userName: session.user.name || session.user.email?.split('@')[0] || 'Student',
