@@ -432,9 +432,12 @@
 				<Button onclick={exportCSV} disabled={getGradedItems().length === 0} variant="secondary" size="sm">
 					⬇ CSV
 				</Button>
-				<Button onclick={exportPDF} disabled={getGradedItems().length === 0} variant="primary" size="sm">
+				<Button onclick={exportPDF} disabled={getGradedItems().length === 0} variant="secondary" size="sm">
 					📄 Export PDF
 				</Button>
+				<a href="/admin/gradebook/{offeringId}/rapor" class="rapor-button">
+					<Button variant="primary" size="sm">📊 Rapor</Button>
+				</a>
 			</div>
 		</div>
 
