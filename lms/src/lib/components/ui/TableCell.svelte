@@ -22,10 +22,10 @@
 		vertical-align: middle;
 	}
 	:global(.table-header) .table-cell {
-		font-weight: 600;
-		color: var(--muted-foreground);
+		font-weight: 510;
+		color: #8a8f98;
 		font-size: 0.8125rem;
 		text-transform: uppercase;
-		letter-spacing: 0.03em;
+		letter-spacing: 0.04em;
 	}
 </style>

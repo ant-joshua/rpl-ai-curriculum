@@ -3,6 +3,7 @@
 	import { parseMarkdownWithVideo } from '$lib/utils/markdown';
 	import PrismTheme from './PrismTheme.svelte';
 	import { highlightContainer } from '$lib/utils/prism';
+	import { findAndRenderMath } from '$lib/utils/math';
 
 	let { html, title }: { html?: string; title?: string } = $props();
 
@@ -16,11 +17,12 @@
 
 	let contentEl = $state<HTMLDivElement | null>(null);
 
-	// After mount/render, highlight code blocks with Prism
+	// After mount/render, highlight code blocks with Prism and render math
 	$effect(() => {
 		if (!browser || !contentEl || !processedHtml) return;
 		const raf = requestAnimationFrame(() => {
 			highlightContainer(contentEl!);
+			findAndRenderMath(contentEl!);
 		});
 		return () => cancelAnimationFrame(raf);
 	});

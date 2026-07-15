@@ -5,6 +5,7 @@
 	import EmbedContent from './EmbedContent.svelte';
 	import QuizContent from './QuizContent.svelte';
 	import PlaygroundContent from './PlaygroundContent.svelte';
+	import MathContent from './MathContent.svelte';
 
 	let { block }: { block: any } = $props();
 
@@ -41,6 +42,8 @@
 			<p class="content-caption">{title}</p>
 		{/if}
 	</div>
+{:else if blockType === 'math'}
+	<MathContent content={bodyText} displayMode={meta?.displayMode ?? false} />
 {:else}
 	<TextContent html={bodyHtml} {title} />
 {/if}

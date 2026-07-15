@@ -20,12 +20,14 @@
 	.table-head {
 		padding: 0.75rem 1rem;
 		text-align: left;
-		font-weight: 600;
-		color: var(--muted-foreground);
+		font-weight: 510;
+		color: #8a8f98;
 		font-size: 0.8125rem;
 		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		border-bottom: 1px solid var(--border);
+		letter-spacing: 0.04em;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 		white-space: nowrap;
+		font-feature-settings: 'cv01', 'ss03';
+		background: rgba(255, 255, 255, 0.01);
 	}
 </style>

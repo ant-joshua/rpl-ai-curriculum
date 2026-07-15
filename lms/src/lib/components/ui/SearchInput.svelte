@@ -47,36 +47,38 @@
 	.ui-search-icon {
 		position: absolute;
 		left: 12px;
-		color: var(--text-tertiary, #666);
+		color: #8a8f98;
 		pointer-events: none;
 		flex-shrink: 0;
 	}
 	.ui-search-input {
 		width: 100%;
 		padding: 9px 32px 9px 38px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		background: var(--surface);
-		color: var(--text-primary, var(--text));
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.02);
+		color: #f7f8f8;
 		font-size: 14px;
-		font-family: inherit;
+		font-family: var(--font-sans);
+		font-feature-settings: 'cv01', 'ss03';
 		outline: none;
 		box-sizing: border-box;
 		transition: border-color 0.15s;
 	}
 	.ui-search-input:focus {
-		border-color: var(--accent);
+		border-color: #5e6ad2;
+		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
 	}
 	.ui-search-input::placeholder {
-		color: var(--text-secondary);
-		opacity: 0.7;
+		color: #8a8f98;
+		opacity: 0.6;
 	}
 	.ui-search-clear {
 		position: absolute;
 		right: 6px;
 		background: none;
 		border: none;
-		color: var(--text-secondary);
+		color: #8a8f98;
 		cursor: pointer;
 		font-size: 14px;
 		padding: 4px;
@@ -85,6 +87,6 @@
 		transition: color 0.15s;
 	}
 	.ui-search-clear:hover {
-		color: var(--text);
+		color: #f7f8f8;
 	}
 </style>

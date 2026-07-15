@@ -12,12 +12,14 @@
 	} = $props();
 </script>
 
-<p class="text-sm {className}" {...rest}>
+<p class="card-description {className}" {...rest}>
 	{@render children?.()}
 </p>
 
 <style>
-	p {
-		color: var(--muted-foreground);
+	.card-description {
+		font-size: 0.875rem;
+		color: #8a8f98;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 </style>

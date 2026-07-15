@@ -38,20 +38,20 @@
 	}
 	.ui-progress-track {
 		flex: 1;
-		background: var(--border);
+		background: rgba(255, 255, 255, 0.06);
 		border-radius: 3px;
 		overflow: hidden;
 	}
 	.ui-progress-fill {
 		height: 100%;
-		background: var(--gradient-primary);
+		background: linear-gradient(135deg, #5e6ad2, #7170ff);
 		border-radius: 3px;
 		transition: width 0.4s ease;
 	}
 	.ui-progress-label {
 		font-size: 12px;
-		font-weight: 600;
-		color: var(--text-secondary);
+		font-weight: 510;
+		color: #8a8f98;
 		min-width: 32px;
 		text-align: right;
 	}

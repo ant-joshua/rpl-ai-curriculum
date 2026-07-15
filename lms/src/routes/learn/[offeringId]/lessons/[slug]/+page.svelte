@@ -136,6 +136,28 @@
 				isCompleted = true;
 				addToast('Lesson marked as complete!', 'success');
 
+				// Award XP for lesson completion
+				fetch('/api/gamification/award', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+					},
+					body: JSON.stringify({
+						reason: 'lesson_complete',
+						reference_type: 'lesson',
+						reference_id: lesson.id
+					})
+				}).then(r => {
+					if (r.ok) {
+						r.json().then(j => {
+							if (j.success && j.data) {
+								addToast(`+${j.data.xpAwarded} XP! Level ${j.data.level}`, 'success');
+							}
+						});
+					}
+				}).catch(() => {});
+
 				// Check if all lessons done → auto-issue certificate
 				const summaryRes = await fetch(`/api/my/progress-summary?offeringId=${params.offeringId}`, {
 					headers: {

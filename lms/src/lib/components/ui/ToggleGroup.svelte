@@ -31,18 +31,19 @@
 	.ui-toggle-group {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px;
-		background: var(--surface);
-		border: 1px solid var(--border);
+		gap: 0;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 8px;
 		padding: 3px;
 	}
 	.ui-toggle-btn {
 		padding: 6px 14px;
 		font-size: 12px;
-		font-weight: 500;
-		font-family: inherit;
-		color: var(--text-secondary);
+		font-weight: 510;
+		font-family: var(--font-sans);
+		font-feature-settings: 'cv01', 'ss03';
+		color: #8a8f98;
 		background: none;
 		border: none;
 		border-radius: 6px;
@@ -51,10 +52,10 @@
 		white-space: nowrap;
 	}
 	.ui-toggle-btn:hover {
-		color: var(--text);
+		color: #f7f8f8;
 	}
 	.ui-toggle-btn.active {
-		background: var(--accent);
-		color: #fff;
+		background: #5e6ad2;
+		color: #ffffff;
 	}
 </style>

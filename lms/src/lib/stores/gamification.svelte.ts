@@ -231,9 +231,9 @@ function createGamificationStore() {
 		// Sync to D1
 		if (browser) {
 			try {
-				await api('/api/xp', {
+				await api('/api/gamification/award', {
 					method: 'POST',
-					body: JSON.stringify({ xp: amount }),
+					body: JSON.stringify({ reason: 'lesson_complete', amount }),
 				});
 			} catch {
 				// offline — queued locally
@@ -343,17 +343,10 @@ function createGamificationStore() {
 	async function fetchFromApi(): Promise<void> {
 		if (!browser) return;
 		try {
-			const res = await api<{ xp: number; level: number; badges: string[] }>('/api/xp');
+			const res = await api<{ totalXp: number; level: number; streak: { current: number; longest: number } }>('/api/gamification/my-stats');
 			if (res.success && res.data) {
-				xp = res.data.xp;
+				xp = res.data.totalXp;
 				recalcLevel();
-				const badgeIds: string[] = res.data.badges || [];
-				unlockedBadges = predefinedBadges
-					.filter((b) => badgeIds.includes(b.id))
-					.map((b) => ({
-						...b,
-						unlockedAt: new Date().toISOString(),
-					}));
 				saveToStorage();
 			}
 		} catch {
@@ -433,10 +426,10 @@ export function afterSessionComplete(moduleSlug: string, sessionId: string): voi
 
 	// Sync to API (fire-and-forget)
 	try {
-		fetch('/api/xp', {
+		fetch('/api/gamification/award', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ xp: XP_PER_SESSION, badge_ids: newlyUnlocked }),
+			body: JSON.stringify({ reason: 'lesson_complete', reference_type: 'lesson', reference_id: sessionId }),
 		});
 	} catch {
 		// offline — queued locally

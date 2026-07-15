@@ -12,6 +12,16 @@
 	} = $props();
 </script>
 
-<div class="flex items-center gap-2 pt-2 {className}" {...rest}>
+<div class="card-footer {className}" {...rest}>
 	{@render children?.()}
 </div>
+
+<style>
+	.card-footer {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding-top: 12px;
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+</style>

@@ -18,10 +18,13 @@
 
 <style>
 	.table-row {
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 		transition: background-color 0.15s ease;
 	}
 	.table-row:hover {
-		background: var(--hover);
+		background: rgba(255, 255, 255, 0.02);
+	}
+	.table-row:last-child {
+		border-bottom: none;
 	}
 </style>

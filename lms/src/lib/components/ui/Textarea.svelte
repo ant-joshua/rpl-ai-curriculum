@@ -40,36 +40,37 @@
 		padding: 0.5rem 0.75rem;
 		font-size: 0.875rem;
 		line-height: 1.5;
-		color: var(--foreground);
-		background: var(--background);
-		border: 1px solid var(--input);
-		border-radius: calc(var(--radius) - 0.125rem);
+		color: #f7f8f8;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 6px;
 		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 		font-family: var(--font-sans);
+		font-feature-settings: 'cv01', 'ss03';
 		resize: vertical;
 	}
 	.textarea-field::placeholder {
-		color: var(--muted-foreground);
+		color: #8a8f98;
 		opacity: 0.7;
 	}
 	.textarea-field:focus {
 		outline: none;
-		border-color: var(--ring);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 25%, transparent);
+		border-color: #5e6ad2;
+		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
 	}
 	.textarea-field:disabled {
-		opacity: 0.5;
+		opacity: 0.4;
 		cursor: not-allowed;
 	}
 	.textarea-error {
-		border-color: var(--destructive);
+		border-color: #ef4444;
 	}
 	.textarea-error:focus {
-		border-color: var(--destructive);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--destructive) 25%, transparent);
+		border-color: #ef4444;
+		box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
 	}
 	.textarea-error-text {
 		font-size: 0.75rem;
-		color: var(--destructive);
+		color: #ef4444;
 	}
 </style>

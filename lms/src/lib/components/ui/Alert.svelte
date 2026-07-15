@@ -56,38 +56,39 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 12px 14px;
-		border-radius: 10px;
+		border-radius: 8px;
 		border: 1px solid;
 		transition: opacity 0.2s ease;
 		font-size: 14px;
 		line-height: 1.5;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.alert-info {
-		background: rgba(59, 130, 246, 0.08);
-		border-color: rgba(59, 130, 246, 0.2);
-		color: var(--text, #e8eaf0);
+		background: rgba(94, 106, 210, 0.08);
+		border-color: rgba(94, 106, 210, 0.2);
+		color: #f7f8f8;
 	}
-	.alert-info .alert-icon { color: #3b82f6; }
+	.alert-info .alert-icon { color: #5e6ad2; }
 
 	.alert-success {
-		background: rgba(34, 197, 94, 0.08);
-		border-color: rgba(34, 197, 94, 0.2);
-		color: var(--text, #e8eaf0);
+		background: rgba(16, 185, 129, 0.08);
+		border-color: rgba(16, 185, 129, 0.2);
+		color: #f7f8f8;
 	}
-	.alert-success .alert-icon { color: #22c55e; }
+	.alert-success .alert-icon { color: #10b981; }
 
 	.alert-warning {
 		background: rgba(245, 158, 11, 0.08);
 		border-color: rgba(245, 158, 11, 0.2);
-		color: var(--text, #e8eaf0);
+		color: #f7f8f8;
 	}
 	.alert-warning .alert-icon { color: #f59e0b; }
 
 	.alert-danger {
 		background: rgba(239, 68, 68, 0.08);
 		border-color: rgba(239, 68, 68, 0.2);
-		color: var(--text, #e8eaf0);
+		color: #f7f8f8;
 	}
 	.alert-danger .alert-icon { color: #ef4444; }
 
@@ -115,7 +116,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: var(--text-secondary, #a1a1aa);
+		color: #8a8f98;
 		padding: 2px;
 		border-radius: 4px;
 		transition: all 0.12s ease;
@@ -127,7 +128,7 @@
 
 	.alert-close:hover {
 		opacity: 1;
-		color: var(--text, #e8eaf0);
-		background: rgba(255, 255, 255, 0.05);
+		color: #f7f8f8;
+		background: rgba(255, 255, 255, 0.04);
 	}
 </style>

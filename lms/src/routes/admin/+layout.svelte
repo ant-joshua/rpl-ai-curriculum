@@ -35,6 +35,7 @@
 		{ path: '/admin/enrollments', icon: '📋', label: 'Bulk Enroll' },
 		{ path: '/admin/announcements', icon: '📢', label: 'Announcements' },
 		{ path: '/admin/discussions', icon: '💬', label: 'Discussions' },
+		{ path: '/admin/gamification', icon: '🏆', label: 'Gamification' },
 	];
 </script>
 
