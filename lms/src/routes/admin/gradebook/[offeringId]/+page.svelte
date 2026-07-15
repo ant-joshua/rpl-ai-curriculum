@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { Button, Card, Badge, Input, Loading, EmptyState, ProgressBar } from '$lib/components/ui/index.js';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -379,7 +380,7 @@
 
 <div class="gradebook-detail">
 	{#if loading}
-		<div class="loading">Memuat gradebook...</div>
+		<Loading message="Memuat gradebook..." />
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}
@@ -394,7 +395,7 @@
 					{#if offering?.code}<span>{offering.code}</span>{/if}
 					<span>{enrollments.length} mahasiswa</span>
 					<span>{assessments.length} assessment, {assignments.length} assignment</span>
-					<span class="status-badge status--{offering?.status}">{offering?.status}</span>
+					<Badge variant={offering?.status === 'active' ? 'success' : offering?.status === 'draft' ? 'warning' : offering?.status === 'completed' ? 'primary' : 'default'}>{offering?.status}</Badge>
 				</p>
 			</div>
 			<div class="header-actions">
@@ -404,24 +405,25 @@
 					placeholder="Cari mahasiswa..."
 					bind:value={searchQuery}
 				/>
-				<button class="btn btn--csv" onclick={exportCSV} disabled={getGradedItems().length === 0}>
+				<Button onclick={exportCSV} disabled={getGradedItems().length === 0} variant="secondary" size="sm">
 					⬇ CSV
-				</button>
+				</Button>
 			</div>
 		</div>
 
 		<!-- Weight Config Section -->
-		<div class="weight-config-section">
+		<Card padding="md">
 			<div class="weight-config-header">
 				<h3>⚖️ Grade Weight Configuration</h3>
 				<div class="weight-actions">
-					<button
-						class="btn btn--recalc"
+					<Button
 						onclick={recalculateGrades}
 						disabled={recalculating || weightCategories().length === 0}
+						variant="secondary"
+						size="sm"
 					>
 						{recalculating ? '⏳ Recalculating...' : '🔄 Recalculate All Grades'}
-					</button>
+					</Button>
 				</div>
 			</div>
 
@@ -455,7 +457,7 @@
 					{/if}
 				</div>
 			</div>
-		</div>
+		</Card>
 
 		<!-- Recalculate Result Banner -->
 		{#if recalculateResult}
@@ -470,9 +472,9 @@
 		{@const students = filteredEnrollments()}
 
 		{#if items.length === 0}
-			<div class="empty-state">Belum ada assessment atau assignment di offering ini.</div>
+			<EmptyState icon="📋" message="Belum ada assessment atau assignment di offering ini." />
 		{:else if students.length === 0}
-			<div class="empty-state">Tidak ada mahasiswa yang cocok.</div>
+			<EmptyState icon="🔍" message="Tidak ada mahasiswa yang cocok." />
 		{:else}
 			<div class="table-wrapper">
 				<table class="gradebook-table">
@@ -635,11 +637,6 @@
 		max-width: 1200px;
 	}
 
-	.loading, .error {
-		padding: 60px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-	}
 	.error { color: #e74c3c; }
 
 	.page-header {
@@ -672,17 +669,6 @@
 		align-items: center;
 		flex-wrap: wrap;
 	}
-	.status--active { background: #2ecc7133; color: #2ecc71; }
-	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #95a5a633; color: #95a5a6; }
-	.status--completed { background: #3498db33; color: #3498db; }
-	.status-badge {
-		display: inline-block;
-		padding: 2px 8px;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 600;
-	}
 
 	.header-actions {
 		flex-shrink: 0;
@@ -704,36 +690,8 @@
 		border-color: var(--accent);
 		outline: none;
 	}
-	.btn {
-		padding: 8px 16px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
-		color: var(--text);
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		font-family: inherit;
-		transition: all 0.15s ease;
-	}
-	.btn:hover:not(:disabled) {
-		border-color: var(--accent);
-		background: var(--accent-dim);
-		color: var(--accent);
-	}
-	.btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
 
 	/* ── Weight Config ── */
-	.weight-config-section {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 16px 20px;
-		margin-bottom: 20px;
-	}
 	.weight-config-header {
 		display: flex;
 		justify-content: space-between;
@@ -747,14 +705,6 @@
 	.weight-actions {
 		display: flex;
 		gap: 8px;
-	}
-	.btn--recalc {
-		background: #2ecc7133;
-		border-color: #2ecc71;
-		color: #2ecc71;
-	}
-	.btn--recalc:hover:not(:disabled) {
-		background: #2ecc7144;
 	}
 	.weight-config-body {
 		display: flex;
@@ -838,13 +788,6 @@
 		margin-bottom: 16px;
 		font-size: 14px;
 		font-weight: 500;
-	}
-
-	.empty-state {
-		padding: 40px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-		font-size: 14px;
 	}
 
 	.table-wrapper {
@@ -1149,7 +1092,6 @@
 		.name-col { min-width: 140px; }
 		.student-email { display: none; }
 		.item-title { max-width: 80px; }
-		.weight-config-section { padding: 12px; }
 		.weight-categories { flex-direction: column; }
 	}
 </style>

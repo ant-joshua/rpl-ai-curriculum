@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import Skeleton from '$lib/components/Skeleton.svelte';
+	import { Button, SearchInput, Badge, EmptyState } from '$lib/components/ui/index.js';
 
 	let { data }: { data: PageData } = $props();
 
@@ -97,6 +98,11 @@
 	function categoryEmoji(cat: string): string {
 		return CATEGORY_EMOJI[cat] || '📚';
 	}
+
+	function clearFilters() {
+		selectedCategory = 'All';
+		searchQuery = '';
+	}
 </script>
 
 <svelte:head>
@@ -109,16 +115,7 @@
 		<p class="subtitle">Explore our courses. Enroll to start learning.</p>
 
 		<!-- Search -->
-		<div class="search-bar">
-			<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-			</svg>
-			<input
-				type="search"
-				placeholder="Search courses by title or description..."
-				bind:value={searchQuery}
-			/>
-		</div>
+		<SearchInput bind:value={searchQuery} placeholder="Search courses by title or description..." />
 
 		<!-- Category filters -->
 		{#if !loading}
@@ -150,10 +147,9 @@
 			</div>
 		</div>
 	{:else if filtered().length === 0}
-		<div class="empty-state">
-			<p>No courses match your filters.</p>
-			<button class="btn" onclick={() => { selectedCategory = 'All'; searchQuery = ''; }}>Clear filters</button>
-		</div>
+		<EmptyState icon="🔍" message="No courses match your filters.">
+			<Button variant="secondary" onclick={clearFilters}>Clear filters</Button>
+		</EmptyState>
 	{:else}
 		<!-- Featured section -->
 		{#if featured.length > 0}
@@ -167,8 +163,8 @@
 							</div>
 							<div class="featured-body">
 								<div class="featured-badges">
-									<span class="badge category-badge">{categoryEmoji(offering.category)} {offering.category}</span>
-									<span class="badge level-badge">{offering.level}</span>
+									<Badge variant="accent">{categoryEmoji(offering.category)} {offering.category}</Badge>
+									<Badge variant="info">{offering.level}</Badge>
 								</div>
 								<h3>{offering.courseTitle}</h3>
 								<p class="featured-desc">{offering.shortDescription || offering.courseDescription}</p>
@@ -179,9 +175,9 @@
 							</div>
 							<div class="featured-action">
 								{#if offering.isEnrolled}
-									<a href="/learn/{offering.id}/syllabus" class="btn primary">Continue Learning</a>
+									<Button href="/learn/{offering.id}/syllabus" variant="primary">Continue Learning</Button>
 								{:else}
-									<button onclick={() => enroll(offering.id)} class="btn primary">Enroll Now</button>
+									<Button onclick={() => enroll(offering.id)} variant="primary">Enroll Now</Button>
 								{/if}
 							</div>
 						</div>
@@ -205,9 +201,9 @@
 								<p class="offering-name">{offering.name}</p>
 								<p class="desc">{offering.shortDescription || offering.courseDescription}</p>
 								<div class="meta-row">
-									<span class="badge category-badge">{categoryEmoji(offering.category)} {offering.category}</span>
-									<span class="badge level-badge">{offering.level}</span>
-									<span class="badge">{offering.status}</span>
+									<Badge variant="accent">{categoryEmoji(offering.category)} {offering.category}</Badge>
+									<Badge variant="info">{offering.level}</Badge>
+									<Badge>{offering.status}</Badge>
 								</div>
 								<div class="card-meta">
 									<span>👨‍🏫 {offering.instructorName}</span>
@@ -216,10 +212,10 @@
 							</div>
 							<div class="card-footer">
 								{#if offering.isEnrolled}
-									<a href="/learn/{offering.id}/syllabus" class="btn primary">Lihat Silabus</a>
-									<a href="/learn/{offering.id}" class="btn">Lanjut Belajar</a>
+									<Button href="/learn/{offering.id}/syllabus" variant="primary">Lihat Silabus</Button>
+									<Button href="/learn/{offering.id}" variant="secondary">Lanjut Belajar</Button>
 								{:else}
-									<button onclick={() => enroll(offering.id)} class="btn primary">Enroll</button>
+									<Button onclick={() => enroll(offering.id)} variant="primary">Enroll</Button>
 								{/if}
 							</div>
 						</div>
@@ -244,7 +240,7 @@
 	.page-header h1 {
 		margin: 0 0 4px;
 		font-size: 28px;
-		color: var(--text-primary);
+		color: var(--text-primary, var(--text));
 	}
 
 	.subtitle {
@@ -253,47 +249,12 @@
 		margin: 0 0 20px;
 	}
 
-	/* Search */
-	.search-bar {
-		position: relative;
-		margin-bottom: 16px;
-	}
-
-	.search-icon {
-		position: absolute;
-		left: 14px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: var(--text-tertiary, #666);
-		pointer-events: none;
-	}
-
-	.search-bar input {
-		width: 100%;
-		padding: 12px 14px 12px 44px;
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		background: var(--surface);
-		color: var(--text-primary);
-		font-size: 14px;
-		outline: none;
-		box-sizing: border-box;
-		transition: border-color 0.15s;
-	}
-
-	.search-bar input:focus {
-		border-color: var(--accent);
-	}
-
-	.search-bar input::placeholder {
-		color: var(--text-tertiary, #888);
-	}
-
 	/* Category filters */
 	.category-filters {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
+		margin-top: 12px;
 	}
 
 	.filter-chip {
@@ -307,6 +268,7 @@
 		cursor: pointer;
 		transition: all 0.15s;
 		white-space: nowrap;
+		font-family: inherit;
 	}
 
 	.filter-chip:hover {
@@ -324,7 +286,7 @@
 	.section-title {
 		margin: 0 0 16px;
 		font-size: 20px;
-		color: var(--text-primary);
+		color: var(--text-primary, var(--text));
 	}
 
 	.featured-section {
@@ -369,7 +331,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--bg-primary);
+		background: var(--bg-primary, var(--bg));
 		border-radius: 16px;
 	}
 
@@ -387,7 +349,7 @@
 	.featured-body h3 {
 		margin: 0 0 8px;
 		font-size: 20px;
-		color: var(--text-primary);
+		color: var(--text-primary, var(--text));
 	}
 
 	.featured-desc {
@@ -447,7 +409,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--bg-primary);
+		background: var(--bg-primary, var(--bg));
 		border-radius: 12px;
 	}
 
@@ -459,7 +421,7 @@
 	.card-body h3 {
 		margin: 0 0 3px;
 		font-size: 16px;
-		color: var(--text-primary);
+		color: var(--text-primary, var(--text));
 	}
 
 	.offering-name {
@@ -487,24 +449,6 @@
 		margin-bottom: 8px;
 	}
 
-	.badge {
-		font-size: 11px;
-		padding: 3px 8px;
-		border-radius: 99px;
-		background: var(--bg-primary);
-		color: var(--text-secondary);
-	}
-
-	.category-badge {
-		background: color-mix(in srgb, var(--accent) 12%, var(--bg-primary));
-		color: var(--accent);
-	}
-
-	.level-badge {
-		background: color-mix(in srgb, #4f8cff 12%, var(--bg-primary));
-		color: #4f8cff;
-	}
-
 	.card-meta {
 		display: flex;
 		gap: 12px;
@@ -517,42 +461,6 @@
 		flex-direction: column;
 		gap: 8px;
 		flex-shrink: 0;
-	}
-
-	.btn {
-		display: inline-block;
-		padding: 10px 20px;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 600;
-		text-decoration: none;
-		text-align: center;
-		border: 1px solid var(--border);
-		color: var(--text-primary);
-		background: var(--bg-primary);
-		cursor: pointer;
-		transition: opacity 0.15s;
-		white-space: nowrap;
-	}
-
-	.btn.primary {
-		background: var(--accent);
-		color: #fff;
-		border-color: var(--accent);
-	}
-
-	.btn:hover {
-		opacity: 0.9;
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 64px 16px;
-		color: var(--text-secondary);
-	}
-
-	.empty-state .btn {
-		margin-top: 12px;
 	}
 
 	/* Skeleton section */
@@ -580,11 +488,6 @@
 			width: 100%;
 		}
 
-		.featured-action .btn {
-			width: 100%;
-			text-align: center;
-		}
-
 		.course-card {
 			flex-direction: column;
 			gap: 12px;
@@ -599,11 +502,6 @@
 
 		.card-footer {
 			width: 100%;
-		}
-
-		.btn {
-			width: 100%;
-			text-align: center;
 		}
 	}
 </style>

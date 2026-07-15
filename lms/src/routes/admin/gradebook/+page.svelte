@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button, Card, Badge, Loading, EmptyState } from '$lib/components/ui/index.js';
 
 	let offerings: any[] = $state([]);
 	let loading = $state(true);
@@ -35,11 +36,11 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat offerings...</div>
+		<Loading message="Memuat offerings..." />
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else if offerings.length === 0}
-		<div class="empty">Belum ada course offering.</div>
+		<EmptyState icon="📋" message="Belum ada course offering." />
 	{:else}
 		<div class="offering-list">
 			{#each offerings as o}
@@ -48,7 +49,9 @@
 					<div class="card-info">
 						<h3>{o.name}</h3>
 						<span class="card-code">{o.code || 'No code'}</span>
-						<span class="card-status status--{o.status}">{o.status}</span>
+						<Badge variant={o.status === 'active' ? 'success' : o.status === 'draft' ? 'warning' : o.status === 'completed' ? 'primary' : 'default'}>
+							{o.status}
+						</Badge>
 					</div>
 					<div class="card-meta">
 						<span class="card-count">Lihat Gradebook →</span>
@@ -77,12 +80,11 @@
 		margin: 0;
 	}
 
-	.loading, .error, .empty {
+	.error {
 		padding: 40px 20px;
 		text-align: center;
-		color: var(--text-secondary);
+		color: var(--color-red, #e74c3c);
 	}
-	.error { color: var(--color-red, #e74c3c); }
 
 	.offering-list {
 		display: flex;
@@ -112,7 +114,7 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 4px;
 	}
 	.card-info h3 {
 		margin: 0;
@@ -128,17 +130,4 @@
 		color: var(--accent);
 		font-weight: 600;
 	}
-	.card-status {
-		display: inline-block;
-		align-self: flex-start;
-		padding: 2px 8px;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 600;
-		margin-top: 4px;
-	}
-	.status--active { background: #2ecc7133; color: #2ecc71; }
-	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #95a5a633; color: #95a5a6; }
-	.status--completed { background: #3498db33; color: #3498db; }
 </style>

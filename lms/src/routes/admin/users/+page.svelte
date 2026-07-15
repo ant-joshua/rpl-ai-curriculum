@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button, Card, Input, Badge, Table, Modal, SearchInput, Loading, EmptyState } from '$lib/components/ui/index.js';
 
 	let users: any[] = $state([]);
 	let loading = $state(true);
@@ -90,7 +91,6 @@
 			});
 			const json = await res.json();
 			if (json.success) {
-				// Update local state
 				const idx = users.findIndex(u => u.id === editUser.id);
 				if (idx !== -1) users[idx] = json.data;
 				closeEdit();
@@ -146,74 +146,75 @@
 <div class="users-page">
 	<div class="header-row">
 		<h1>👥 User Management</h1>
-		<button onclick={loadUsers} class="btn btn-sm">🔄 Refresh</button>
+		<Button onclick={loadUsers} variant="secondary" size="sm">🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
-		<div class="loading">Loading users...</div>
+		<Loading message="Loading users..." />
 	{:else if error}
-		<div class="error-state"><p>{error}</p><button onclick={loadUsers} class="btn">Retry</button></div>
+		<div class="error-state">
+			<p>{error}</p>
+			<Button onclick={loadUsers} variant="secondary">Retry</Button>
+		</div>
 	{:else}
 		<div class="toolbar">
-			<input type="text" bind:value={searchQuery} placeholder="Search by username or ID..." class="search-input" />
+			<SearchInput bind:value={searchQuery} placeholder="Search by username or ID..." />
 			<div class="sort-group">
 				<span class="sort-label">Sort:</span>
-				<button class="sort-btn" class:active={sortBy === 'xp'} onclick={() => sortBy = 'xp'}>XP</button>
-				<button class="sort-btn" class:active={sortBy === 'level'} onclick={() => sortBy = 'level'}>Level</button>
-				<button class="sort-btn" class:active={sortBy === 'sessions'} onclick={() => sortBy = 'sessions'}>Sessions</button>
-				<button class="sort-btn" class:active={sortBy === 'username'} onclick={() => sortBy = 'username'}>Name</button>
+				<Button
+					variant={sortBy === 'xp' ? 'primary' : 'secondary'}
+					size="sm"
+					onclick={() => sortBy = 'xp'}
+				>XP</Button>
+				<Button
+					variant={sortBy === 'level' ? 'primary' : 'secondary'}
+					size="sm"
+					onclick={() => sortBy = 'level'}
+				>Level</Button>
+				<Button
+					variant={sortBy === 'sessions' ? 'primary' : 'secondary'}
+					size="sm"
+					onclick={() => sortBy = 'sessions'}
+				>Sessions</Button>
+				<Button
+					variant={sortBy === 'username' ? 'primary' : 'secondary'}
+					size="sm"
+					onclick={() => sortBy = 'username'}
+				>Name</Button>
 			</div>
-			<span class="user-count">{filtered.length} users</span>
+			<Badge variant="default">{filtered.length} users</Badge>
 		</div>
 
-		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Username</th>
-						<th>User ID</th>
-						<th>Level</th>
-						<th>XP</th>
-						<th>Sessions Done</th>
-						<th>Projects Done</th>
-						<th>Role</th>
-						<th>Email</th>
-						<th>Status</th>
-						<th>Joined</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filtered as u}
-						<tr onclick={() => openEdit(u)} class="clickable-row">
-							<td class="username-cell">
-								<span class="avatar">{u.username?.charAt(0)?.toUpperCase() || '?'}</span>
-								{u.username || 'anonymous'}
-								{#if u.display_name && u.display_name !== u.username}
-									<span class="display-name">({u.display_name})</span>
-								{/if}
-							</td>
-							<td class="mono">{u.id?.slice(0, 12)}...</td>
-							<td><span class="level-badge">Lv.{u.level || 1}</span></td>
-							<td class="xp-cell">{Number(u.xp || 0).toLocaleString()} XP</td>
-							<td>{u.completed_sessions || 0}</td>
-							<td>{u.completed_projects || 0}</td>
-							<td>
-								<span class="role-badge" style="background: {roleColors[u.role] || roleColors['student']}20; color: {roleColors[u.role] || roleColors['student']}; border: 1px solid {roleColors[u.role] || roleColors['student']}40;">
-									{u.role || 'student'}
-								</span>
-							</td>
-							<td class="mono">{u.email || '-'}</td>
-							<td>
-								<span class="status-dot" class:active={u.is_active !== false}></span>
-							</td>
-							<td>{new Date(u.created_at).toLocaleDateString()}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-		{#if filtered.length === 0}
-			<p class="empty">No users found.</p>
+		<Table headers={['Username', 'User ID', 'Level', 'XP', 'Sessions Done', 'Projects Done', 'Role', 'Email', 'Status', 'Joined']}>
+			{#each filtered as u}
+				<tr onclick={() => openEdit(u)} class="clickable-row">
+					<td class="username-cell">
+						<span class="avatar">{u.username?.charAt(0)?.toUpperCase() || '?'}</span>
+						{u.username || 'anonymous'}
+						{#if u.display_name && u.display_name !== u.username}
+							<span class="display-name">({u.display_name})</span>
+						{/if}
+					</td>
+					<td class="mono">{u.id?.slice(0, 12)}...</td>
+					<td><Badge variant="primary">Lv.{u.level || 1}</Badge></td>
+					<td class="xp-cell">{Number(u.xp || 0).toLocaleString()} XP</td>
+					<td>{u.completed_sessions || 0}</td>
+					<td>{u.completed_projects || 0}</td>
+					<td>
+						<span class="role-badge" style="background: {roleColors[u.role] || roleColors['student']}20; color: {roleColors[u.role] || roleColors['student']}; border: 1px solid {roleColors[u.role] || roleColors['student']}40;">
+							{u.role || 'student'}
+						</span>
+					</td>
+					<td class="mono">{u.email || '-'}</td>
+					<td>
+						<span class="status-dot" class:active={u.is_active !== false}></span>
+					</td>
+					<td>{new Date(u.created_at).toLocaleDateString()}</td>
+				</tr>
+			{/each}
+		</Table>
+		{#if filtered.length === 0 && !loading}
+			<EmptyState message="No users found." />
 		{/if}
 
 		<!-- Bulk user creation -->
@@ -222,9 +223,9 @@
 			<p class="bulk-hint">Paste email addresses (one per line or comma-separated) to create user accounts.</p>
 			<textarea bind:value={bulkEmails} placeholder="user1@example.com&#10;user2@example.com" rows={4} class="bulk-textarea"></textarea>
 			<div class="bulk-actions">
-				<button onclick={bulkCreateUsers} disabled={bulkSaving} class="btn">
+				<Button onclick={bulkCreateUsers} disabled={bulkSaving} variant="secondary">
 					{bulkSaving ? 'Creating...' : 'Create Users'}
-				</button>
+				</Button>
 				{#if bulkResult}
 					<span class="bulk-result">{bulkResult}</span>
 				{/if}
@@ -234,63 +235,48 @@
 </div>
 
 <!-- Edit User Modal -->
-{#if editUser}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={closeEdit} role="dialog" tabindex="-1" onkeydown={(e) => e.key === 'Escape' && closeEdit()}>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
-			<div class="modal-header">
-				<h2>✏️ Edit User</h2>
-				<button onclick={closeEdit} class="modal-close">&times;</button>
-			</div>
-			<div class="modal-body">
-				<div class="field">
-					<label for="edit-username">Username</label>
-					<input id="edit-username" type="text" value={editUser.username} disabled class="input-disabled" />
-				</div>
-				<div class="field">
-					<label for="edit-display-name">Display Name</label>
-					<input id="edit-display-name" type="text" bind:value={editDisplayName} placeholder="Display name" class="input" />
-				</div>
-				<div class="field">
-					<label for="edit-email">Email</label>
-					<input id="edit-email" type="email" bind:value={editEmail} placeholder="Email address" class="input" />
-				</div>
-				<div class="field">
-					<label for="edit-role">Role</label>
-					<select id="edit-role" bind:value={editRole} class="input">
-						{#each VALID_ROLES as role}
-							<option value={role}>{role}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="field field-checkbox">
-					<label>
-						<input type="checkbox" bind:checked={editIsActive} />
-						<span>Active</span>
-					</label>
-				</div>
-				{#if saveError}
-					<div class="save-error">{saveError}</div>
-				{/if}
-			</div>
-			<div class="modal-footer">
-				<button onclick={closeEdit} class="btn btn-cancel">Cancel</button>
-				<button onclick={saveUser} disabled={saving} class="btn btn-primary">
-					{saving ? 'Saving...' : 'Save Changes'}
-				</button>
-			</div>
-		</div>
+<Modal title="✏️ Edit User" open={!!editUser} onclose={closeEdit}>
+	<div class="field">
+		<label for="edit-username">Username</label>
+		<input id="edit-username" type="text" value={editUser?.username || ''} disabled class="input-disabled" />
 	</div>
-{/if}
+	<div class="field">
+		<label for="edit-display-name">Display Name</label>
+		<input id="edit-display-name" type="text" bind:value={editDisplayName} placeholder="Display name" class="input" />
+	</div>
+	<div class="field">
+		<label for="edit-email">Email</label>
+		<input id="edit-email" type="email" bind:value={editEmail} placeholder="Email address" class="input" />
+	</div>
+	<div class="field">
+		<label for="edit-role">Role</label>
+		<select id="edit-role" bind:value={editRole} class="input">
+			{#each VALID_ROLES as role}
+				<option value={role}>{role}</option>
+			{/each}
+		</select>
+	</div>
+	<div class="field field-checkbox">
+		<label>
+			<input type="checkbox" bind:checked={editIsActive} />
+			<span>Active</span>
+		</label>
+	</div>
+	{#if saveError}
+		<div class="save-error">{saveError}</div>
+	{/if}
+	{#snippet footer()}
+		<Button onclick={closeEdit} variant="secondary">Cancel</Button>
+		<Button onclick={saveUser} disabled={saving} variant="primary">
+			{saving ? 'Saving...' : 'Save Changes'}
+		</Button>
+	{/snippet}
+</Modal>
 
 <style>
 	.users-page { max-width: 1200px; }
 	h1 { font-size: 26px; font-weight: 700; }
-	.loading, .error-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+	.error-state { text-align: center; padding: 60px; color: var(--text-secondary); }
 
 	.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
@@ -301,37 +287,11 @@
 		margin-bottom: 16px;
 		flex-wrap: wrap;
 	}
-	.search-input {
-		flex: 1;
-		min-width: 200px;
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
-		color: var(--text);
-		font-size: 13px;
-	}
 	.sort-group { display: flex; gap: 4px; align-items: center; }
-	.sort-label { font-size: 12px; color: var(--text-secondary); }
-	.sort-btn {
-		padding: 5px 10px;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: var(--bg-secondary);
-		color: var(--text-secondary);
-		font-size: 12px;
-		cursor: pointer;
-	}
-	.sort-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-	.user-count { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+	.sort-label { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
 
-	.table-wrap { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	th { text-align: left; padding: 10px 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-	td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover td { background: var(--hover); }
 	.clickable-row { cursor: pointer; }
+	.clickable-row:hover td { background: var(--hover); }
 	.mono { font-family: monospace; font-size: 12px; }
 	.username-cell { display: flex; align-items: center; gap: 8px; font-weight: 500; }
 	.display-name { color: var(--text-secondary); font-size: 12px; font-weight: 400; }
@@ -341,7 +301,6 @@
 		display: flex; align-items: center; justify-content: center;
 		font-size: 12px; font-weight: 700;
 	}
-	.level-badge { padding: 2px 8px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px; font-weight: 600; }
 	.xp-cell { font-weight: 600; color: var(--accent); }
 
 	.role-badge {
@@ -365,17 +324,6 @@
 		background: var(--color-green, #2ecc71);
 		box-shadow: 0 0 6px var(--color-green, #2ecc71);
 	}
-
-	.empty { color: var(--text-secondary); text-align: center; padding: 40px; }
-
-	.btn {
-		display: inline-block; padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--bg-secondary);
-		color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer;
-	}
-	.btn-sm { padding: 5px 10px; font-size: 12px; }
-	.btn:hover { opacity: 0.85; }
-	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 	/* Bulk section */
 	.bulk-section {
@@ -407,48 +355,7 @@
 	}
 	.bulk-result { font-size: 13px; font-weight: 500; }
 
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0,0,0,0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
-	}
-	.modal {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		width: 100%;
-		max-width: 480px;
-		box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-	}
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 20px;
-		border-bottom: 1px solid var(--border);
-	}
-	.modal-header h2 { font-size: 18px; margin: 0; }
-	.modal-close {
-		background: none;
-		border: none;
-		font-size: 24px;
-		color: var(--text-secondary);
-		cursor: pointer;
-		padding: 0;
-		line-height: 1;
-	}
-	.modal-body {
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
+	/* Modal fields */
 	.field { display: flex; flex-direction: column; gap: 4px; }
 	.field label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
 	.field-checkbox label {
@@ -488,23 +395,5 @@
 		color: var(--color-red, #e74c3c);
 		border-radius: 8px;
 		font-size: 13px;
-	}
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 8px;
-		padding: 16px 20px;
-		border-top: 1px solid var(--border);
-	}
-	.btn-cancel { background: var(--bg-secondary); }
-	.btn-primary {
-		background: var(--accent);
-		color: #fff;
-		border-color: var(--accent);
-	}
-
-	@media (max-width: 768px) {
-		.toolbar { flex-direction: column; align-items: stretch; }
-		.user-count { margin-left: 0; }
 	}
 </style>

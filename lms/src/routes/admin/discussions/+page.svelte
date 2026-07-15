@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button, Badge, SearchInput, Loading, EmptyState } from '$lib/components/ui/index.js';
 
 	interface Discussion {
 		id: string;
@@ -123,6 +124,11 @@
 	function truncate(str: string, len: number): string {
 		return str.length > len ? str.slice(0, len) + '...' : str;
 	}
+
+	function clearSearch() {
+		searchQuery = '';
+		loadDiscussions();
+	}
 </script>
 
 <svelte:head>
@@ -138,47 +144,42 @@
 	<!-- Filters -->
 	<div class="filters">
 		<div class="filter-group">
-			<button
-				class="filter-btn"
-				class:active={statusFilter === 'open'}
+			<Button
+				variant={statusFilter === 'open' ? 'primary' : 'ghost'}
+				size="sm"
 				onclick={() => { statusFilter = 'open'; loadDiscussions(); }}
-			>Open</button>
-			<button
-				class="filter-btn"
-				class:active={statusFilter === 'resolved'}
+			>Open</Button>
+			<Button
+				variant={statusFilter === 'resolved' ? 'primary' : 'ghost'}
+				size="sm"
 				onclick={() => { statusFilter = 'resolved'; loadDiscussions(); }}
-			>Resolved</button>
-			<button
-				class="filter-btn"
-				class:active={statusFilter === 'all'}
+			>Resolved</Button>
+			<Button
+				variant={statusFilter === 'all' ? 'primary' : 'ghost'}
+				size="sm"
 				onclick={() => { statusFilter = 'all'; loadDiscussions(); }}
-			>All</button>
+			>All</Button>
 		</div>
 		<div class="search-group">
-			<input
-				class="search-input"
-				placeholder="Search discussions..."
-				bind:value={searchQuery}
-				onkeydown={(e) => { if (e.key === 'Enter') loadDiscussions(); }}
-			/>
-			<button class="btn btn-sm" onclick={loadDiscussions}>Search</button>
-			<button class="btn btn-sm btn-secondary" onclick={() => { searchQuery = ''; loadDiscussions(); }}>Clear</button>
+			<SearchInput bind:value={searchQuery} placeholder="Search discussions..." class="search-input" />
+			<Button onclick={loadDiscussions} variant="secondary" size="sm">Search</Button>
+			<Button onclick={clearSearch} variant="ghost" size="sm">Clear</Button>
 		</div>
 	</div>
 
 	<!-- List -->
 	<div class="discussion-list">
 		{#if loading}
-			<div class="loading">Loading discussions...</div>
+			<Loading message="Loading discussions..." />
 		{:else if discussions.length === 0}
-			<div class="empty-state">No discussions found.</div>
+			<EmptyState icon="💬" message="No discussions found." />
 		{:else}
 			{#each discussions as discussion (discussion.id)}
 				<div class="discussion-item" class:resolved={!!discussion.is_resolved} class:pinned={!!discussion.is_pinned}>
 					<div class="discussion-main">
 						<div class="disc-title-row">
-							{#if discussion.is_pinned}<span class="pin-badge" title="Pinned">📌</span>{/if}
-							{#if discussion.is_resolved}<span class="resolve-badge" title="Resolved">✅</span>{/if}
+							{#if discussion.is_pinned}<Badge variant="accent">📌 Pinned</Badge>{/if}
+							{#if discussion.is_resolved}<Badge variant="success">✅ Resolved</Badge>{/if}
 							<a href="/learn/{discussion.lesson_id}/lessons/{discussion.lesson_id}" class="disc-title">{discussion.title}</a>
 						</div>
 						<div class="disc-meta">
@@ -197,20 +198,20 @@
 						</div>
 					</div>
 					<div class="discussion-actions">
-						<button
-							class="action-btn"
-							class:active={!!discussion.is_resolved}
+						<Button
+							variant={discussion.is_resolved ? 'primary' : 'ghost'}
+							size="sm"
 							onclick={() => toggleResolve(discussion.id, !discussion.is_resolved)}
 						>
 							{discussion.is_resolved ? '✅ Resolved' : 'Resolve'}
-						</button>
-						<button
-							class="action-btn"
-							class:active={!!discussion.is_pinned}
+						</Button>
+						<Button
+							variant={discussion.is_pinned ? 'primary' : 'ghost'}
+							size="sm"
 							onclick={() => togglePin(discussion.id, !discussion.is_pinned)}
 						>
 							{discussion.is_pinned ? '📌 Pinned' : 'Pin'}
-						</button>
+						</Button>
 					</div>
 				</div>
 			{/each}
@@ -258,47 +259,10 @@
 		padding: 3px;
 	}
 
-	.filter-btn {
-		padding: 6px 14px;
-		font-size: 12px;
-		font-weight: 500;
-		color: var(--text-secondary);
-		background: none;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.filter-btn:hover {
-		color: var(--text);
-	}
-
-	.filter-btn.active {
-		background: var(--accent);
-		color: #fff;
-	}
-
 	.search-group {
 		display: flex;
 		gap: 6px;
 		align-items: center;
-	}
-
-	.search-input {
-		padding: 7px 12px;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: var(--surface);
-		color: var(--text);
-		font-size: 13px;
-		font-family: inherit;
-		width: 220px;
-	}
-
-	.search-input:focus {
-		outline: none;
-		border-color: var(--accent);
 	}
 
 	/* List */
@@ -342,11 +306,7 @@
 		align-items: center;
 		gap: 6px;
 		margin-bottom: 6px;
-	}
-
-	.pin-badge, .resolve-badge {
-		font-size: 14px;
-		flex-shrink: 0;
+		flex-wrap: wrap;
 	}
 
 	.disc-title {
@@ -390,63 +350,5 @@
 		flex-direction: column;
 		gap: 6px;
 		flex-shrink: 0;
-	}
-
-	.action-btn {
-		font-size: 11px;
-		padding: 4px 10px;
-		border-radius: 6px;
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.15s;
-		white-space: nowrap;
-	}
-
-	.action-btn:hover {
-		border-color: var(--accent);
-		color: var(--text);
-	}
-
-	.action-btn.active {
-		background: var(--accent-dim);
-		color: var(--accent);
-		border-color: var(--accent);
-	}
-
-	.loading, .empty-state {
-		text-align: center;
-		padding: 48px 16px;
-		color: var(--text-secondary);
-		font-size: 14px;
-	}
-
-	/* shared btn */
-	.btn {
-		padding: 6px 14px;
-		font-size: 12px;
-		font-weight: 500;
-		color: var(--text);
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-
-	.btn-sm {
-		padding: 4px 12px;
-		font-size: 12px;
-	}
-
-	.btn-secondary {
-		background: none;
-		color: var(--text-secondary);
 	}
 </style>
