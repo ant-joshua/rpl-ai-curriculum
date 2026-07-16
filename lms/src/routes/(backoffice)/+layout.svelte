@@ -11,38 +11,44 @@
 	let tenants = $state<any[]>([]);
 	let tenantLoading = $state(true);
 
+	const userRole = $derived(data?.role || '');
+
+	type NavItem = { path: string; icon: string; label: string; roles: string[] };
+
+	const allNavItems: NavItem[] = [
+		{ path: '/admin', icon: 'home', label: 'Dashboard', roles: ['superadmin','admin','instructor','ta'] },
+		{ path: '/admin/tenants', icon: 'layers', label: 'Tenants', roles: ['superadmin','admin'] },
+		{ path: '/admin/users', icon: 'users', label: 'Users', roles: ['superadmin','admin'] },
+		{ path: '/admin/content', icon: 'book', label: 'Content', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/gradebook', icon: 'file-text', label: 'Gradebook', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/enrollments', icon: 'user-plus', label: 'Enrollments', roles: ['superadmin','admin'] },
+		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/announcements', icon: 'megaphone', label: 'Announcements', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/gamification', icon: 'award', label: 'Gamification', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/faculties', icon: 'building', label: 'Faculties', roles: ['superadmin','admin'] },
+		{ path: '/admin/classes-structure', icon: 'grid', label: 'K13 Structure', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/academic-semesters', icon: 'calendar', label: 'Academic Semesters', roles: ['superadmin','admin'] },
+		{ path: '/admin/course-catalog', icon: 'book-open', label: 'Course Catalog', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/class-sessions', icon: 'users', label: 'Class Sessions', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/exam-scheduler', icon: 'clipboard', label: 'Exam Scheduler', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/payment-gateway', icon: 'credit-card', label: 'Payment Gateway', roles: ['superadmin','admin'] },
+		{ path: '/admin/attendance', icon: 'check-square', label: 'Attendance', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/notifications', icon: 'bell', label: 'Notifications', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/survey', icon: 'bar-chart', label: 'Survey', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/report-cards', icon: 'printer', label: 'Report Cards', roles: ['superadmin','admin'] },
+		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal', roles: ['superadmin','admin'] },
+		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs', roles: ['superadmin','admin'] },
+		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs', roles: ['superadmin','admin','instructor','ta'] },
+		{ path: '/admin/exports', icon: 'download', label: 'Exports', roles: ['superadmin','admin'] },
+		{ path: '/admin/system', icon: 'settings', label: 'System', roles: ['superadmin','admin'] },
+	];
+
+	const navItems = $derived(allNavItems.filter(item => item.roles.includes(userRole)));
+
 	function isActive(path: string) {
 		return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
 	}
-
-	const navItems = [
-		{ path: '/admin', icon: 'home', label: 'Dashboard' },
-		{ path: '/admin/tenants', icon: 'layers', label: 'Tenants' },
-		{ path: '/admin/users', icon: 'users', label: 'Users' },
-		{ path: '/admin/content', icon: 'book', label: 'Content' },
-		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum' },
-		{ path: '/admin/gradebook', icon: 'file-text', label: 'Gradebook' },
-		{ path: '/admin/enrollments', icon: 'user-plus', label: 'Enrollments' },
-		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions' },
-		{ path: '/admin/announcements', icon: 'megaphone', label: 'Announcements' },
-		{ path: '/admin/gamification', icon: 'award', label: 'Gamification' },
-		{ path: '/admin/faculties', icon: 'building', label: 'Faculties' },
-		{ path: '/admin/classes-structure', icon: 'grid', label: 'K13 Structure' },
-		{ path: '/admin/academic-semesters', icon: 'calendar', label: 'Academic Semesters' },
-		{ path: '/admin/course-catalog', icon: 'book-open', label: 'Course Catalog' },
-		{ path: '/admin/class-sessions', icon: 'users', label: 'Class Sessions' },
-		{ path: '/admin/exam-scheduler', icon: 'clipboard', label: 'Exam Scheduler' },
-		{ path: '/admin/payment-gateway', icon: 'credit-card', label: 'Payment Gateway' },
-		{ path: '/admin/attendance', icon: 'check-square', label: 'Attendance' },
-		{ path: '/admin/notifications', icon: 'bell', label: 'Notifications' },
-		{ path: '/admin/survey', icon: 'bar-chart', label: 'Survey' },
-		{ path: '/admin/report-cards', icon: 'printer', label: 'Report Cards' },
-		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal' },
-		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs' },
-		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs' },
-		{ path: '/admin/exports', icon: 'download', label: 'Exports' },
-		{ path: '/admin/system', icon: 'settings', label: 'System' },
-	];
 
 	async function loadTenants() {
 		if (!browser) return;
