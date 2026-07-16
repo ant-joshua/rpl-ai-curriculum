@@ -40,6 +40,8 @@
 		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal' },
 		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs' },
 		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs' },
+		{ path: '/admin/exports', icon: 'download', label: 'Exports' },
+		{ path: '/admin/system', icon: 'settings', label: 'System' },
 	];
 
 	async function loadTenants() {
