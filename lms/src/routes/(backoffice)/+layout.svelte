@@ -38,6 +38,8 @@
 		{ path: '/admin/survey', icon: 'bar-chart', label: 'Survey' },
 		{ path: '/admin/report-cards', icon: 'printer', label: 'Report Cards' },
 		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal' },
+		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs' },
+		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs' },
 	];
 
 	async function loadTenants() {

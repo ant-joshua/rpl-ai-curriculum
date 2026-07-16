@@ -175,50 +175,66 @@ export async function handle({ event, resolve }: {
 		currentUser = user;
 	}
 
-	// Activity logging for specific actions (best-effort, fires after response)
+	// Activity logging — capture full HTTP metadata
 	const method = event.request.method;
+	const startTime = Date.now();
 	const response = await resolve(event);
+	const durationMs = Date.now() - startTime;
 
-	if (currentUser && response.status < 400) {
-		// Fire-and-forget activity logging
-		logActivityAsync(event.platform, currentUser, method, path);
+	if (currentUser) {
+		// Fire-and-forget rich activity logging
+		logActivityAsync(event.platform, currentUser, method, path, response.status, durationMs, event.request);
 	}
 
 	return response;
 }
 
 /**
- * Fire-and-forget activity logging for common LMS actions.
+ * Fire-and-forget activity logging with full HTTP metadata.
  * Runs after response is sent — never blocks the main request.
  */
-async function logActivityAsync(platform: App.Platform, user: any, method: string, path: string) {
+async function logActivityAsync(
+	platform: App.Platform,
+	user: any,
+	method: string,
+	path: string,
+	statusCode: number,
+	durationMs: number,
+	request: Request,
+) {
 	try {
+		// Determine action type from method + path
 		let action: string | null = null;
 		let entityType: string | null = null;
 		let entityId: string | null = null;
 
-		if (method === 'GET' && path.match(/^\/api\/lessons\/([^/]+)$/)) {
-			action = 'view_lesson';
-			entityType = 'lesson';
-			entityId = path.match(/^\/api\/lessons\/([^/]+)$/)![1];
-		} else if (path.match(/^\/api\/progress\/([^/]+)\/complete/) && method === 'POST') {
-			action = 'complete_lesson';
-			entityType = 'lesson';
-			entityId = path.match(/^\/api\/progress\/([^/]+)\/complete/)![1];
-		} else if (path.match(/^\/api\/discussions/) && method === 'POST') {
-			action = 'create_thread';
-			entityType = 'discussion';
-		} else if (path.match(/^\/api\/replies/) && method === 'POST') {
-			action = 'create_reply';
-			entityType = 'reply';
-		} else if (path.match(/^\/api\/assessments\/[^/]+\/submit/) && method === 'POST') {
-			action = 'submit_assessment';
-			entityType = 'assessment';
+		// Try to classify the request by method + path pattern
+		if (statusCode >= 400) {
+			action = 'error';
+		} else if (method === 'GET' && path.includes('/api/')) {
+			action = 'read';
+		} else if (method === 'POST' && path.includes('/api/')) {
+			action = 'create';
+		} else if (method === 'PUT' || method === 'PATCH' && path.includes('/api/')) {
+			action = 'update';
+		} else if (method === 'DELETE' && path.includes('/api/')) {
+			action = 'delete';
+		} else if (method === 'POST' && path === '/api/auth/login') {
+			action = 'login';
+		} else if (method === 'POST' && path === '/api/auth/logout') {
+			action = 'logout';
+		} else {
+			action = method;
 		}
 
-		if (action) {
-			await logActivity(platform, user.id, action, entityType, entityId);
-		}
+		await logActivity(platform, user.id, action, entityType, entityId, undefined, {
+			path,
+			method,
+			statusCode,
+			durationMs,
+			ipAddress: request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || undefined,
+			userAgent: request.headers.get('user-agent') || undefined,
+		});
 	} catch {
 		// analytics logging is best-effort
 	}
