@@ -30,7 +30,8 @@
 		{ path: '/admin/struktur/tingkat', icon: '🏫', title: 'Tingkat', desc: 'Kelola jenjang & tingkat kelas (X, XI, XII)' },
 		{ path: '/admin/struktur/jurusan', icon: '📐', title: 'Jurusan', desc: 'Kelola program keahlian & jurusan' },
 		{ path: '/admin/struktur/kelas', icon: '🏠', title: 'Kelas', desc: 'Kelola rombongan belajar per tingkat' },
-		{ path: '/admin/struktur/mapel', icon: '📖', title: 'Mata Pelajaran', desc: 'Kelola mata pelajaran & KD' },
+		{ path: '/admin/struktur/mapel', icon: '📖', title: 'Mata Pelajaran', desc: 'Kelola mata pelajaran' },
+		{ path: '/admin/struktur/kd', icon: '📋', title: 'Kompetensi Dasar', desc: 'Kelola KD per mata pelajaran' },
 		{ path: '/admin/struktur/guru-mapel', icon: '👨‍🏫', title: 'Guru Mapel', desc: 'Atur penugasan guru per kelas-mapel' },
 		{ path: '/admin/struktur/import-siswa', icon: '📥', title: 'Import Siswa', desc: 'Import data siswa dari CSV' },
 	];

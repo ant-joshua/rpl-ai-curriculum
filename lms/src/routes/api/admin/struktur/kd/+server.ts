@@ -1,5 +1,34 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 
+export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }): Promise<Response> {
+	try {
+		const db = getDB(platform);
+		const tenantId = locals.tenant?.id || 'default';
+		const subjectId = url.searchParams.get('subject_id');
+		const gradeLevelId = url.searchParams.get('grade_level_id');
+		const type = url.searchParams.get('type');
+		const competenceType = url.searchParams.get('competence_type');
+		const semester = url.searchParams.get('semester');
+
+		let query = 'SELECT * FROM kompetensi_dasar WHERE tenant_id = ?';
+		const params: any[] = [tenantId];
+
+		if (subjectId) { query += ' AND subject_id = ?'; params.push(subjectId); }
+		if (gradeLevelId) { query += ' AND grade_level_id = ?'; params.push(gradeLevelId); }
+		if (type) { query += ' AND type = ?'; params.push(type); }
+		if (competenceType) { query += ' AND competence_type = ?'; params.push(competenceType); }
+		if (semester) { query += ' AND semester = ?'; params.push(Number(semester)); }
+
+		query += ' ORDER BY code ASC';
+
+		const rows = await db.prepare(query).bind(...params).all();
+		return jsonResponse({ success: true, data: rows.results || [] });
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}
+
 export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const db = getDB(platform);
