@@ -8,6 +8,8 @@
 	let { children, data }: { children: import('svelte').Snippet; data: PageData } = $props();
 
 	let sidebarOpen = $state(false);
+	let tenants = $state<any[]>([]);
+	let tenantLoading = $state(true);
 
 	function isActive(path: string) {
 		return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
@@ -15,6 +17,7 @@
 
 	const navItems = [
 		{ path: '/admin', icon: 'home', label: 'Dashboard' },
+		{ path: '/admin/tenants', icon: 'layers', label: 'Tenants' },
 		{ path: '/admin/users', icon: 'users', label: 'Users' },
 		{ path: '/admin/content', icon: 'book', label: 'Content' },
 		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum' },
@@ -23,7 +26,49 @@
 		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions' },
 		{ path: '/admin/announcements', icon: 'megaphone', label: 'Announcements' },
 		{ path: '/admin/gamification', icon: 'award', label: 'Gamification' },
+		{ path: '/admin/fakultas', icon: 'building', label: 'Fakultas' },
+		{ path: '/admin/struktur', icon: 'grid', label: 'K13 Structure' },
+		{ path: '/admin/semester', icon: 'calendar', label: 'Semester' },
+		{ path: '/admin/katalog-matkul', icon: 'book-open', label: 'Katalog Matkul' },
+		{ path: '/admin/kelas-kuliah', icon: 'users', label: 'Kelas Kuliah' },
 	];
+
+	async function loadTenants() {
+		if (!browser) return;
+		try {
+			const res = await fetch('/api/admin/tenants');
+			if (res.ok) {
+				const json = await res.json();
+				tenants = json.tenants || [];
+			}
+		} catch {} finally {
+			tenantLoading = false;
+		}
+	}
+
+	$effect(() => { if (browser) loadTenants(); });
+
+	const currentTenantSlug = $derived.by(() => {
+		const path = $page.url.pathname;
+		const m = path.match(/^\/t\/([^\/]+)/);
+		return m ? m[1] : null;
+	});
+
+	const currentTenant = $derived.by(() => {
+		if (!currentTenantSlug) return null;
+		return tenants.find(t => t.slug === currentTenantSlug);
+	});
+
+	function switchTenant(slug: string) {
+		if (!slug) {
+			// Clear cookie and reload current path
+			document.cookie = 'tenant=; Path=/; Max-Age=0';
+			window.location.reload();
+			return;
+		}
+		// Navigate through /t/slug/ which sets cookie and redirects
+		window.location.href = '/t/' + slug + $page.url.pathname;
+	}
 </script>
 
 <svelte:head>
@@ -51,6 +96,22 @@
 				<span class="logo-text">Admin Panel</span>
 			</a>
 		</div>
+
+		{#if !tenantLoading}
+			<div class="tenant-switcher">
+				<label class="tenant-label">Tenant</label>
+				<div class="tenant-select-wrapper">
+					<select class="tenant-select" onchange={(e) => switchTenant((e.target as HTMLSelectElement).value)}>
+						<option value="">Default (no prefix)</option>
+						{#each tenants as t}
+							<option value={t.slug} selected={currentTenantSlug === t.slug}>{t.name}</option>
+						{/each}
+					</select>
+					<Icon name="chevron-down" size={14} class="tenant-select-chevron" />
+				</div>
+			</div>
+		{/if}
+
 		<nav class="sidebar-nav">
 			<span class="nav-section-label">Management</span>
 			{#each navItems as item}
@@ -201,11 +262,52 @@
 		transform: translateY(-50%);
 	}
 
-	.sidebar-footer {
-		padding: 12px 8px;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
-	}
-	.back-link {
+		.sidebar-footer {
+			padding: 12px 8px;
+			border-top: 1px solid rgba(255, 255, 255, 0.05);
+		}
+		.tenant-switcher {
+			padding: 8px 12px 4px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			margin-bottom: 4px;
+		}
+		.tenant-label {
+			font-size: 10px;
+			font-weight: 510;
+			color: #62666d;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			padding: 4px 0 6px;
+			display: block;
+		}
+		.tenant-select-wrapper {
+			position: relative;
+		}
+		.tenant-select {
+			width: 100%;
+			padding: 6px 28px 6px 10px;
+			font-size: 12.5px;
+			background: rgba(255, 255, 255, 0.04);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			border-radius: 6px;
+			color: #d0d6e0;
+			cursor: pointer;
+			appearance: none;
+			-webkit-appearance: none;
+			outline: none;
+		}
+		.tenant-select:focus {
+			border-color: #5e6ad2;
+		}
+		.tenant-select-chevron {
+			position: absolute;
+			right: 8px;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+			color: #8a8f98;
+		}
+		.back-link {
 		display: flex;
 		align-items: center;
 		gap: 6px;

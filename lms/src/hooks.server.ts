@@ -7,13 +7,82 @@ const ADMIN_ROLES = ['superadmin', 'admin'];
 
 // Instructor-accessible API paths (instructors can also access these)
 const INSTRUCTOR_API_PREFIX = '/api/instructor/';
+const GURU_API_PREFIX = '/api/guru/';
+const TUTOR_API_PREFIX = '/api/tutor/';
+const BIMBEL_API_PREFIX = '/api/bimbel/';
+const DOSEN_API_PREFIX = '/api/dosen/';
+const MAHASISWA_API_PREFIX = '/api/mahasiswa/';
+const KAPRODI_API_PREFIX = '/api/kaprodi/';
 
 export async function handle({ event, resolve }: {
 	event: { request: Request; platform: App.Platform; locals: Record<string, any> };
 	resolve: (event: any) => Promise<Response>;
 }): Promise<Response> {
 	const url = new URL(event.request.url);
-	const path = url.pathname;
+	let path = url.pathname;
+
+	// Tenant resolution: /t/[slug]/... → resolve tenant, REWRITE URL path
+	const tenantMatch = path.match(/^\/t\/([^\/]+)(\/.*)?$/);
+	if (tenantMatch) {
+		const slug = tenantMatch[1];
+		try {
+			const db = getDB(event.platform);
+			const tenant = await db.prepare('SELECT * FROM tenants WHERE slug = ? AND is_active = 1').bind(slug).first<any>();
+			if (!tenant) {
+				return new Response(JSON.stringify({ success: false, error: 'Tenant not found' }), {
+					status: 404,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+			event.locals = event.locals || {};
+			event.locals.tenant = tenant;
+
+			// Rewrite URL: /t/[slug]/path → /path via client-friendly redirect with tenant cookie
+			const rewrittenUrl = event.request.url.replace(/\/t\/[^\/]+(\/|$)/, '/');
+			// Redirect to clean URL with tenant cookie for subsequent requests
+			// Hooks will read cookie to set locals.tenant on clean URLs
+			return new Response(null, {
+				status: 302,
+				headers: {
+					'Location': rewrittenUrl,
+					'Set-Cookie': `tenant=${tenant.id}; Path=/; Max-Age=86400; SameSite=Lax`,
+				},
+			});
+		} catch (e) {
+			return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+	} else {
+		// No /t/ prefix — try cookie first, then fallback to default tenant
+		try {
+			const cookieHeader = event.request.headers.get('cookie') || '';
+			const tenantCookie = cookieHeader.split(';').find(c => c.trim().startsWith('tenant='));
+			if (tenantCookie) {
+				const tenantId = tenantCookie.split('=')[1]?.trim();
+				if (tenantId) {
+					const db = getDB(event.platform);
+					const tenant = await db.prepare('SELECT * FROM tenants WHERE id = ? AND is_active = 1').bind(tenantId).first<any>();
+					if (tenant) {
+						event.locals = event.locals || {};
+						event.locals.tenant = tenant;
+					}
+				}
+			} else {
+				// Default tenant fallback
+				const db = getDB(event.platform);
+				const defaultTenant = await db.prepare('SELECT * FROM tenants WHERE slug = ? AND is_active = 1').bind('default').first<any>();
+				if (defaultTenant) {
+					event.locals = event.locals || {};
+					event.locals.tenant = defaultTenant;
+					// Set cookie if not already set (browser handles silently)
+				}
+			}
+		} catch {
+			// best-effort
+		}
+	}
 
 	// Try to get logged-in user for activity logging (available for any route)
 	let currentUser: any = null;
@@ -78,7 +147,7 @@ export async function handle({ event, resolve }: {
 	}
 
 	// Instructor API auth check — instructors access their own course data
-	if (path.startsWith(INSTRUCTOR_API_PREFIX)) {
+	if (path.startsWith(INSTRUCTOR_API_PREFIX) || path.startsWith(GURU_API_PREFIX) || path.startsWith(TUTOR_API_PREFIX) || path.startsWith(BIMBEL_API_PREFIX) || path.startsWith(DOSEN_API_PREFIX) || path.startsWith(MAHASISWA_API_PREFIX) || path.startsWith(KAPRODI_API_PREFIX)) {
 		const token = getBearerToken(event.request);
 		if (!token) {
 			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {

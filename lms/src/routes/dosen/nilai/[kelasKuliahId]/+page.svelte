@@ -1,0 +1,259 @@
+<script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+
+	let { data } = $props();
+
+	let kelasKuliahId = $derived($page.params.kelasKuliahId);
+
+	let mahasiswaList: any[] = $state([]);
+	let kelasInfo: any = $state(null);
+	let loading = $state(true);
+	let saving = $state(false);
+	let error = $state('');
+	let saveError = $state('');
+	let saveSuccess = $state('');
+
+	onMount(() => {
+		if (!browser) return;
+		loadData();
+	});
+
+	async function loadData() {
+		loading = true; error = '';
+		try {
+			const res = await fetch(`/api/dosen/kelas/${kelasKuliahId}/nilai`);
+			const json = await res.json();
+			if (json.success) {
+				kelasInfo = json.data.kelas || json.data.class_info || null;
+				mahasiswaList = json.data.mahasiswa || json.data.students || [];
+			} else error = json.error || 'Gagal memuat data';
+		} catch { error = 'Gagal terhubung ke server'; }
+		finally { loading = false; }
+	}
+
+	function nilaiHuruf(nilai: number | null | undefined): string {
+		if (nilai === null || nilai === undefined || nilai < 0) return '—';
+		if (nilai >= 85) return 'A';
+		if (nilai >= 80) return 'A-';
+		if (nilai >= 75) return 'B+';
+		if (nilai >= 70) return 'B';
+		if (nilai >= 65) return 'B-';
+		if (nilai >= 60) return 'C+';
+		if (nilai >= 55) return 'C';
+		if (nilai >= 45) return 'D';
+		return 'E';
+	}
+
+	function nilaiWarna(huruf: string): string {
+		switch (huruf) {
+			case 'A': case 'A-': return 'rgba(16,185,129,0.1); color: #10b981';
+			case 'B+': case 'B': case 'B-': return 'rgba(99,102,241,0.1); color: #6366f1';
+			case 'C+': case 'C': return 'rgba(245,158,11,0.1); color: #f59e0b';
+			case 'D': return 'rgba(239,68,68,0.1); color: #ef4444';
+			case 'E': return 'rgba(239,68,68,0.2); color: #dc2626';
+			default: return 'transparent; color: var(--text-quaternary)';
+		}
+	}
+
+	function updateNilai(m: any, nilai: number | null) {
+		m.nilai_angka = nilai;
+		// computed nilai_huruf will be derived
+	}
+
+	let allFilled = $derived(
+		mahasiswaList.length > 0 && mahasiswaList.every(m => m.nilai_angka !== null && m.nilai_angka >= 0)
+	);
+
+	let rataRata = $derived.by(() => {
+		const valid = mahasiswaList.filter(m => m.nilai_angka !== null && m.nilai_angka >= 0);
+		if (valid.length === 0) return null;
+		return valid.reduce((sum, m) => sum + (m.nilai_angka ?? 0), 0) / valid.length;
+	});
+
+	async function simpanNilai() {
+		const entries = mahasiswaList.map(m => ({
+			mahasiswa_id: m.id || m.mahasiswa_id || m.student_id,
+			nilai_angka: m.nilai_angka,
+		}));
+
+		saving = true; saveError = ''; saveSuccess = '';
+		try {
+			const res = await fetch(`/api/dosen/kelas/${kelasKuliahId}/nilai`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ nilai: entries }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				saveSuccess = 'Nilai berhasil disimpan';
+				setTimeout(() => { saveSuccess = ''; }, 3000);
+			} else saveError = json.error || 'Gagal menyimpan nilai';
+		} catch { saveError = 'Terjadi kesalahan'; }
+		finally { saving = false; }
+	}
+</script>
+
+<svelte:head>
+	<title>Input Nilai — {kelasInfo?.nama || kelasInfo?.name || 'Kelas'} — Dosen</title>
+</svelte:head>
+
+<div class="page">
+	<div class="page-header">
+		<div>
+			<div class="breadcrumb"><a href="/dosen/kelas">← Kelas Saya</a></div>
+			<h1>📝 Input Nilai</h1>
+			{#if kelasInfo}
+				<p class="subtitle">
+					{kelasInfo.nama || kelasInfo.name || kelasInfo.matkul_name || '—'}
+					{#if kelasInfo.kode || kelasInfo.code} <code>{kelasInfo.kode || kelasInfo.code}</code>{/if}
+					— <span class="meta-semester">{kelasInfo.semester_name || kelasInfo.semester || '—'}</span>
+				</p>
+			{/if}
+		</div>
+		<div class="header-actions">
+			<button class="btn-refresh" onclick={loadData}>🔄</button>
+		</div>
+	</div>
+
+	{#if loading}
+		<div class="loading">Memuat data mahasiswa...</div>
+	{:else if error}
+		<div class="error-state">
+			<p class="error-msg">{error}</p>
+			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+		</div>
+	{:else if mahasiswaList.length === 0}
+		<div class="empty-state">
+			<p>Belum ada mahasiswa terdaftar di kelas ini</p>
+		</div>
+	{:else}
+		<div class="info-bar">
+			<div class="info-item">
+				<span class="info-label">Mahasiswa</span>
+				<span class="info-value">{mahasiswaList.length}</span>
+			</div>
+			<div class="info-item">
+				<span class="info-label">Telah Dinilai</span>
+				<span class="info-value">{mahasiswaList.filter(m => m.nilai_angka !== null && m.nilai_angka >= 0).length}/{mahasiswaList.length}</span>
+			</div>
+			{#if rataRata !== null}
+				<div class="info-item">
+					<span class="info-label">Rata-rata</span>
+					<span class="info-value">{rataRata.toFixed(1)}</span>
+				</div>
+			{/if}
+		</div>
+
+		{#if saveSuccess}
+			<div class="success-msg">{saveSuccess}</div>
+		{/if}
+		{#if saveError}
+			<div class="error-msg">{saveError}</div>
+		{/if}
+
+		<div class="card">
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>NIM</th>
+							<th>Nama Mahasiswa</th>
+							<th>Nilai Angka</th>
+							<th>Nilai Huruf</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each mahasiswaList as m, i}
+							{@const huruf = nilaiHuruf(m.nilai_angka)}
+							<tr>
+								<td class="cell-num">{i + 1}</td>
+								<td><code>{m.nim || m.student_nim || '—'}</code></td>
+								<td class="cell-name">{m.name || m.nama || m.mahasiswa_name || '—'}</td>
+								<td>
+									<input
+										type="number"
+										class="nilai-input"
+										class:input-filled={m.nilai_angka !== null && m.nilai_angka >= 0}
+										value={m.nilai_angka ?? ''}
+										oninput={(e) => {
+											const val = (e.target as HTMLInputElement).value;
+											updateNilai(m, val === '' ? null : Math.min(100, Math.max(0, Number(val))));
+										}}
+										min="0"
+										max="100"
+										placeholder="0-100"
+									/>
+								</td>
+								<td>
+									<span class="nilai-badge" style={nilaiWarna(huruf)}>
+										{huruf}
+									</span>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="actions">
+			<button class="btn-primary" onclick={simpanNilai} disabled={saving}>
+				{saving ? 'Menyimpan...' : '💾 Simpan Nilai'}
+			</button>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.page { max-width: 1100px; }
+	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+	.breadcrumb { font-size: 13px; margin-bottom: 8px; }
+	.breadcrumb a { color: var(--accent); text-decoration: none; }
+	.breadcrumb a:hover { text-decoration: underline; }
+	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0; }
+	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+	.subtitle code { background: var(--bg-secondary); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+	.meta-semester { color: var(--text-tertiary); }
+	.header-actions { display: flex; gap: 8px; }
+	.btn-primary { padding: 10px 24px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
+	.btn-refresh:hover { background: var(--surface-hover); }
+
+	.info-bar { display: flex; gap: 20px; margin-bottom: 16px; }
+	.info-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; flex: 1; }
+	.info-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 4px; }
+	.info-value { font-size: 22px; font-weight: 700; color: var(--accent); }
+
+	.success-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+	.error-msg { padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+
+	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+	.error-state { text-align: center; padding: 40px; }
+	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+
+	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	.table-container { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; }
+	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+	td { padding: 10px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; }
+	tr:last-child td { border-bottom: none; }
+	tr:hover { background: rgba(255,255,255,0.01); }
+	.cell-name { font-weight: 500; }
+	.cell-num { text-align: center; color: var(--text-tertiary); }
+	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+	.nilai-input { width: 80px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 14px; font-weight: 600; text-align: center; }
+	.nilai-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+	.nilai-input.input-filled { border-color: var(--accent); }
+	.nilai-input::placeholder { color: var(--text-quaternary); font-weight: 400; }
+
+	.nilai-badge { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 13px; font-weight: 700; min-width: 36px; text-align: center; }
+
+	.actions { display: flex; justify-content: flex-end; margin-top: 20px; }
+</style>
