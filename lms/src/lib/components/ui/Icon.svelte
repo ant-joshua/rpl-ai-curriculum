@@ -121,5 +121,20 @@
     <path d="M7 3v2h10V3"/>
   {:else if name === 'chevron-left'}
     <polyline points="15 18 9 12 15 6"/>
+  {:else if name === 'building'}
+    <path d="M3 21h18"/>
+    <path d="M5 21V7l8-4v18"/>
+    <path d="M19 21V11l-6-4"/>
+    <path d="M9 9h.01"/>
+    <path d="M9 13h.01"/>
+    <path d="M9 17h.01"/>
+  {:else if name === 'grid'}
+    <rect x="3" y="3" width="7" height="7"/>
+    <rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/>
+    <rect x="3" y="14" width="7" height="7"/>
+  {:else if name === 'book-open'}
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
   {/if}
 </svg>

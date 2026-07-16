@@ -2,12 +2,17 @@
 	let { data }: { data: { assignments: any[] } } = $props();
 </script>
 
-<div class="nilai-index">
+<svelte:head>
+	<title>Input Nilai — Guru</title>
+</svelte:head>
+
+<div class="page">
 	<h2>Input Nilai</h2>
 
 	{#if data.assignments.length === 0}
 		<div class="empty-state">
 			<p>Belum ada penugasan mengajar.</p>
+			<p class="empty-hint">Hubungi admin untuk penugasan kelas</p>
 		</div>
 	{:else}
 		<div class="assignment-grid">
@@ -28,12 +33,12 @@
 </div>
 
 <style>
-	.nilai-index { padding: 24px; }
+	.page { padding: 24px; }
 	h2 { margin: 0 0 20px; font-size: 20px; font-weight: 600; color: var(--text-primary); }
 	.empty-state {
-		padding: 48px; text-align: center; color: var(--text-secondary);
-		background: var(--bg-secondary); border-radius: 12px;
+		text-align: center; padding: 60px 20px; color: var(--text-secondary);
 	}
+	.empty-hint { font-size: 13px; margin-top: 8px; color: var(--text-tertiary); }
 	.assignment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 	.assignment-card {
 		background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
