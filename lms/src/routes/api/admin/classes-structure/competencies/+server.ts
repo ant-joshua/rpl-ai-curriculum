@@ -1,28 +1,37 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const tenantId = locals.tenant?.id || 'default';
+
+		const params: unknown[] = [tenantId];
+		let where = 'WHERE tenant_id = ?';
+
 		const subjectId = url.searchParams.get('subject_id');
 		const gradeLevelId = url.searchParams.get('grade_level_id');
 		const type = url.searchParams.get('type');
 		const competenceType = url.searchParams.get('competence_type');
 		const semester = url.searchParams.get('semester');
 
-		let query = 'SELECT * FROM kompetensi_dasar WHERE tenant_id = ?';
-		const params: any[] = [tenantId];
+		if (subjectId) { where += ' AND subject_id = ?'; params.push(subjectId); }
+		if (gradeLevelId) { where += ' AND grade_level_id = ?'; params.push(gradeLevelId); }
+		if (type) { where += ' AND type = ?'; params.push(type); }
+		if (competenceType) { where += ' AND competence_type = ?'; params.push(competenceType); }
+		if (semester) { where += ' AND semester = ?'; params.push(Number(semester)); }
 
-		if (subjectId) { query += ' AND subject_id = ?'; params.push(subjectId); }
-		if (gradeLevelId) { query += ' AND grade_level_id = ?'; params.push(gradeLevelId); }
-		if (type) { query += ' AND type = ?'; params.push(type); }
-		if (competenceType) { query += ' AND competence_type = ?'; params.push(competenceType); }
-		if (semester) { query += ' AND semester = ?'; params.push(Number(semester)); }
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM kompetensi_dasar ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
 
-		query += ' ORDER BY code ASC';
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare(`SELECT * FROM kompetensi_dasar ${where} ORDER BY code ASC`).bind(...params).all();
+			return jsonResponse({ success: true, data: rows.results || [], total });
+		}
 
-		const rows = await db.prepare(query).bind(...params).all();
-		return jsonResponse({ success: true, data: rows.results || [] });
+		const rows = await db.prepare(`SELECT * FROM kompetensi_dasar ${where} ORDER BY code ASC LIMIT ? OFFSET ?`).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: rows.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

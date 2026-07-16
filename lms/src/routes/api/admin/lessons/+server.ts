@@ -1,23 +1,27 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const courseOfferingId = url.searchParams.get('course_offering_id');
 
-		let query = 'SELECT * FROM lessons';
-		const params: string[] = [];
-		if (courseOfferingId) {
-			query += ' WHERE course_offering_id = ?';
-			params.push(courseOfferingId);
+		const params: unknown[] = [];
+		let where = 'WHERE 1=1';
+		if (courseOfferingId) { where += ' AND course_offering_id = ?'; params.push(courseOfferingId); }
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM lessons ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const result = await db.prepare(`SELECT * FROM lessons ${where} ORDER BY order_index ASC`).bind(...params).all();
+			return jsonResponse({ success: true, data: result.results || [], total });
 		}
-		query += ' ORDER BY order_index ASC';
 
-		const result = params.length > 0
-			? await db.prepare(query).bind(...params).all()
-			: await db.prepare(query).all();
-
-		return jsonResponse({ success: true, data: result.results || [] });
+		const sql = `SELECT * FROM lessons ${where} ORDER BY order_index ASC LIMIT ? OFFSET ?`;
+		const result = await db.prepare(sql).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: result.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

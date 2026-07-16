@@ -1,10 +1,21 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
-export async function GET({ platform, locals }: { platform: App.Platform; locals: any }) {
+export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	const db = getDB(platform);
-	const tenants = await db.prepare('SELECT * FROM tenants ORDER BY created_at DESC').all<any>();
-	return json({ tenants: tenants.results });
+	const pag = getPaginationParams(url);
+
+	const countResult = await db.prepare('SELECT COUNT(*) as total FROM tenants').first<{ total: number }>();
+	const total = countResult?.total || 0;
+
+	if (pag.page === 0 || pag.limit === 0) {
+		const tenants = await db.prepare('SELECT * FROM tenants ORDER BY created_at DESC').all<any>();
+		return json({ tenants: tenants.results, total });
+	}
+
+	const tenants = await db.prepare('SELECT * FROM tenants ORDER BY created_at DESC LIMIT ? OFFSET ?').bind(pag.limit, pag.offset).all<any>();
+	return json({ tenants: tenants.results, pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 }
 
 export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }) {

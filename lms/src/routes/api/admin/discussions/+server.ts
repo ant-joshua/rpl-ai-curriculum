@@ -1,4 +1,5 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams, buildSearchCondition } from '$lib/server/pagination';
 
 /**
  * GET /api/admin/discussions
@@ -13,9 +14,9 @@ export async function GET({ request, platform, locals }: {
 	try {
 		const db = getDB(platform);
 		const url = new URL(request.url);
+		const pag = getPaginationParams(url);
 		const courseId = url.searchParams.get('courseId');
 		const status = url.searchParams.get('status'); // 'open' | 'resolved' | 'all'
-		const search = url.searchParams.get('search');
 
 		const user = locals.user;
 		const isSuperAdmin = user.role === 'superadmin' || user.role === 'admin';
@@ -58,16 +59,23 @@ export async function GET({ request, platform, locals }: {
 			query += ' AND t.is_resolved = 1';
 		}
 
-		if (search) {
-			query += ' AND (t.title LIKE ? OR t.body LIKE ?)';
-			params.push(`%${search}%`, `%${search}%`);
+		const searchCond = buildSearchCondition(pag.search, ['t.title', 't.body'], params);
+		if (searchCond) query += ` AND (${searchCond})`;
+
+		query += ' ORDER BY t.is_pinned DESC, t.created_at DESC';
+
+		const countQuery = query.replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(*) as count FROM');
+		const countResult = await db.prepare(countQuery).bind(...params).first<{ count: number }>();
+		const total = countResult?.count || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const { results } = await db.prepare(query).bind(...params).all<any>();
+			return jsonResponse({ success: true, data: results || [], total });
 		}
 
-		query += ' ORDER BY t.is_pinned DESC, t.created_at DESC LIMIT 100';
-
-		const { results } = await db.prepare(query).bind(...params).all<any>();
-
-		return jsonResponse({ success: true, data: results || [] });
+		query += ' LIMIT ? OFFSET ?';
+		const { results } = await db.prepare(query).bind(...params, pag.limit, pag.offset).all<any>();
+		return jsonResponse({ success: true, data: results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

@@ -1,28 +1,32 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams, buildSearchCondition } from '$lib/server/pagination';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const tenantId = locals.tenant?.id || 'default';
 		const gradeLevelId = url.searchParams.get('grade_level_id');
 		const majorId = url.searchParams.get('major_id');
 
-		let query = 'SELECT * FROM subjects WHERE tenant_id = ?';
-		const params: any[] = [tenantId];
+		const params: unknown[] = [tenantId];
+		let where = 'WHERE tenant_id = ?';
+		if (gradeLevelId) { where += ' AND grade_level_id = ?'; params.push(gradeLevelId); }
+		if (majorId) { where += ' AND major_id = ?'; params.push(majorId); }
 
-		if (gradeLevelId) {
-			query += ' AND grade_level_id = ?';
-			params.push(gradeLevelId);
+		const searchCond = buildSearchCondition(pag.search, ['name', 'code'], params);
+		if (searchCond) where += ` AND (${searchCond})`;
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM subjects ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare(`SELECT * FROM subjects ${where} ORDER BY name ASC`).bind(...params).all();
+			return jsonResponse({ success: true, data: rows.results || [], total });
 		}
-		if (majorId) {
-			query += ' AND major_id = ?';
-			params.push(majorId);
-		}
 
-		query += ' ORDER BY name ASC';
-
-		const rows = await db.prepare(query).bind(...params).all();
-		return jsonResponse({ success: true, data: rows.results || [] });
+		const rows = await db.prepare(`SELECT * FROM subjects ${where} ORDER BY name ASC LIMIT ? OFFSET ?`).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: rows.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

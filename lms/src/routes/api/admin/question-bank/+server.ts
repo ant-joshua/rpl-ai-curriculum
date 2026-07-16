@@ -1,27 +1,34 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		let query = 'SELECT * FROM question_bank WHERE 1=1';
+		const pag = getPaginationParams(url);
 		const params: unknown[] = [];
+		let where = 'WHERE 1=1';
 
 		const type = url.searchParams.get('type');
 		const difficulty = url.searchParams.get('difficulty');
 		const course_offering_id = url.searchParams.get('course_offering_id');
 		const status = url.searchParams.get('status');
 
-		if (type) { query += ' AND type = ?'; params.push(type); }
-		if (difficulty) { query += ' AND difficulty = ?'; params.push(difficulty); }
-		if (course_offering_id) { query += ' AND course_offering_id = ?'; params.push(course_offering_id); }
-		if (status) { query += ' AND status = ?'; params.push(status); }
+		if (type) { where += ' AND type = ?'; params.push(type); }
+		if (difficulty) { where += ' AND difficulty = ?'; params.push(difficulty); }
+		if (course_offering_id) { where += ' AND course_offering_id = ?'; params.push(course_offering_id); }
+		if (status) { where += ' AND status = ?'; params.push(status); }
 
-		query += ' ORDER BY created_at DESC';
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM question_bank ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
 
-		const stmt = db.prepare(query);
-		const bound = params.length ? stmt.bind(...params) : stmt;
-		const { results } = await bound.all<any>();
-		return jsonResponse({ success: true, data: results });
+		if (pag.page === 0 || pag.limit === 0) {
+			const { results } = await db.prepare(`SELECT * FROM question_bank ${where} ORDER BY created_at DESC`).bind(...params).all<any>();
+			return jsonResponse({ success: true, data: results, total });
+		}
+
+		const sql = `SELECT * FROM question_bank ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+		const { results } = await db.prepare(sql).bind(...params, pag.limit, pag.offset).all<any>();
+		return jsonResponse({ success: true, data: results, pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

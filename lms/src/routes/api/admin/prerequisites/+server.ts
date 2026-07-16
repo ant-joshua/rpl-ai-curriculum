@@ -1,32 +1,31 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const dependentId = url.searchParams.get('dependent_id');
 		const prerequisiteId = url.searchParams.get('prerequisite_id');
 
-		let query = 'SELECT * FROM prerequisites';
-		const params: string[] = [];
+		const params: unknown[] = [];
 		const conditions: string[] = [];
 
-		if (dependentId) {
-			conditions.push('dependent_id = ?');
-			params.push(dependentId);
-		}
-		if (prerequisiteId) {
-			conditions.push('prerequisite_id = ?');
-			params.push(prerequisiteId);
-		}
-		if (conditions.length > 0) {
-			query += ' WHERE ' + conditions.join(' AND ');
+		if (dependentId) { conditions.push('dependent_id = ?'); params.push(dependentId); }
+		if (prerequisiteId) { conditions.push('prerequisite_id = ?'); params.push(prerequisiteId); }
+
+		const where = conditions.length > 0 ? ' WHERE ' + conditions.join(' AND ') : '';
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM prerequisites${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const result = await db.prepare(`SELECT * FROM prerequisites${where}`).bind(...params).all();
+			return jsonResponse({ success: true, data: result.results || [], total });
 		}
 
-		const result = params.length > 0
-			? await db.prepare(query).bind(...params).all()
-			: await db.prepare(query).all();
-
-		return jsonResponse({ success: true, data: result.results || [] });
+		const result = await db.prepare(`SELECT * FROM prerequisites${where} LIMIT ? OFFSET ?`).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: result.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

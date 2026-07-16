@@ -1,33 +1,38 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const type = url.searchParams.get('type');
 		const lessonId = url.searchParams.get('lessonId');
 
-		let query: string;
-		const params: string[] = [];
-
 		if (lessonId) {
-			// GET content blocks for a specific lesson (from junction table)
-			query = `SELECT cb.*, lcb.order_index, lcb.type_override, lcb.id as lcb_id
-				FROM lesson_content_blocks lcb
-				JOIN content_blocks cb ON cb.id = lcb.content_block_id
-				WHERE lcb.lesson_id = ?
-				ORDER BY lcb.order_index ASC`;
-			params.push(lessonId);
-		} else if (type) {
-			query = 'SELECT * FROM content_blocks WHERE type = ? ORDER BY order_index ASC';
-			params.push(type);
-		} else {
-			query = 'SELECT * FROM content_blocks ORDER BY order_index ASC';
+			const result = await db.prepare(
+				`SELECT cb.*, lcb.order_index, lcb.type_override, lcb.id as lcb_id
+				 FROM lesson_content_blocks lcb
+				 JOIN content_blocks cb ON cb.id = lcb.content_block_id
+				 WHERE lcb.lesson_id = ?
+				 ORDER BY lcb.order_index ASC`
+			).bind(lessonId).all();
+			return jsonResponse({ success: true, data: result.results || [] });
 		}
 
-		const stmt = db.prepare(query);
-		for (const p of params) stmt.bind(p);
-		const result = params.length > 0 ? await db.prepare(query).bind(...params).all() : await db.prepare(query).all();
-		return jsonResponse({ success: true, data: result.results || [] });
+		const params: unknown[] = [];
+		let where = 'WHERE 1=1';
+		if (type) { where += ' AND type = ?'; params.push(type); }
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM content_blocks ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const result = await db.prepare(`SELECT * FROM content_blocks ${where} ORDER BY order_index ASC`).bind(...params).all();
+			return jsonResponse({ success: true, data: result.results || [], total });
+		}
+
+		const result = await db.prepare(`SELECT * FROM content_blocks ${where} ORDER BY order_index ASC LIMIT ? OFFSET ?`).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: result.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

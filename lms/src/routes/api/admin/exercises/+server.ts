@@ -1,14 +1,26 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
-export async function GET({ platform }: { platform: App.Platform }): Promise<Response> {
+export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const rows = await db.prepare('SELECT * FROM admin_content WHERE type = ? ORDER BY updated_at DESC').bind('exercise').all();
-		const exercises = await Promise.all((rows.results || []).map(async (row: any) => {
+		const pag = getPaginationParams(url);
+
+		const countResult = await db.prepare("SELECT COUNT(*) as total FROM admin_content WHERE type = 'exercise'").first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		const mapRows = (rows: any[]) => (rows || []).map((row: any) => {
 			const data = JSON.parse(row.data || '{}');
 			return { id: row.id, key: row.key, ...data, updated_at: row.updated_at, created_at: row.created_at };
-		}));
-		return jsonResponse({ success: true, data: exercises });
+		});
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare("SELECT * FROM admin_content WHERE type = 'exercise' ORDER BY updated_at DESC").all();
+			return jsonResponse({ success: true, data: mapRows(rows.results), total });
+		}
+
+		const rows = await db.prepare("SELECT * FROM admin_content WHERE type = 'exercise' ORDER BY updated_at DESC LIMIT ? OFFSET ?").bind(pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: mapRows(rows.results), pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

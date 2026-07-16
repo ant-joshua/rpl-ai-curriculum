@@ -1,29 +1,32 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const assessment_id = url.searchParams.get('assessment_id');
 		const user_id = url.searchParams.get('user_id');
-		let query = 'SELECT asub.*, u.display_name AS user_name FROM assessment_submissions asub LEFT JOIN users u ON u.id = asub.user_id';
+
 		const params: unknown[] = [];
 		const wheres: string[] = [];
 
-		if (assessment_id) {
-			wheres.push('asub.assessment_id = ?');
-			params.push(assessment_id);
-		}
-		if (user_id) {
-			wheres.push('asub.user_id = ?');
-			params.push(user_id);
-		}
-		if (wheres.length) query += ' WHERE ' + wheres.join(' AND ');
-		query += ' ORDER BY asub.created_at DESC';
+		if (assessment_id) { wheres.push('asub.assessment_id = ?'); params.push(assessment_id); }
+		if (user_id) { wheres.push('asub.user_id = ?'); params.push(user_id); }
 
-		const stmt = db.prepare(query);
-		const bound = params.length ? stmt.bind(...params) : stmt;
-		const { results } = await bound.all<any>();
-		return jsonResponse({ success: true, data: results });
+		const where = wheres.length ? ' WHERE ' + wheres.join(' AND ') : '';
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM assessment_submissions asub${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const { results } = await db.prepare(`SELECT asub.*, u.display_name AS user_name FROM assessment_submissions asub LEFT JOIN users u ON u.id = asub.user_id${where} ORDER BY asub.created_at DESC`).bind(...params).all<any>();
+			return jsonResponse({ success: true, data: results, total });
+		}
+
+		const sql = `SELECT asub.*, u.display_name AS user_name FROM assessment_submissions asub LEFT JOIN users u ON u.id = asub.user_id${where} ORDER BY asub.created_at DESC LIMIT ? OFFSET ?`;
+		const { results } = await db.prepare(sql).bind(...params, pag.limit, pag.offset).all<any>();
+		return jsonResponse({ success: true, data: results, pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

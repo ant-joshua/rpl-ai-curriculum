@@ -8,9 +8,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		throw redirect(302, '/?error=no-platform');
 	}
 
-	// Get token from cookie or Authorization header
 	const token = getBearerToken(request) || url.searchParams.get('token');
-
 	if (!token) {
 		throw redirect(302, '/login?redirect=/my/dashboard');
 	}
@@ -22,9 +20,17 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 
 	const userId = session.user.id;
 	const db = getDB(platform);
-	const userName = session.user.name || session.user.email?.split('@')[0] || 'Student';
 
-	// --- Current streak: count consecutive days with activity ---
+	// Fetch user display info
+	const user = await db.prepare(
+		`SELECT display_name, avatar_url
+		 FROM users WHERE id = ?`
+	).bind(userId).first<any>();
+
+	const displayName = user?.display_name || session.user.name || session.user.email?.split('@')[0] || 'Siswa';
+	const avatarUrl = user?.avatar_url || '';
+
+	// --- Current streak ---
 	const today = new Date().toISOString().slice(0, 10);
 	const { results: activityDays } = await db.prepare(
 		`SELECT DISTINCT DATE(created_at) as day
@@ -140,11 +146,50 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 
 	const averageProgress = enrollmentCount > 0 ? Math.round(totalProgressSum / enrollmentCount) : 0;
 
+	// --- Upcoming deadlines (assessments + assignments with due_date) ---
+	const { results: upcomingDeadlines } = await db.prepare(
+		`SELECT a.id, a.title, a.due_date, a.type AS type, 'assessment' AS kind,
+		        co.id AS offering_id, co.name AS offering_name
+		 FROM assessments a
+		 JOIN course_offerings co ON co.id = a.course_offering_id
+		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
+		 WHERE a.due_date IS NOT NULL AND a.due_date >= DATE('now')
+		   AND a.status = 'published'
+		 UNION ALL
+		 SELECT a.id, a.title, a.due_date, a.submission_type AS type, 'assignment' AS kind,
+		        co.id AS offering_id, co.name AS offering_name
+		 FROM assignments a
+		 JOIN course_offerings co ON co.id = a.course_offering_id
+		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
+		 WHERE a.due_date IS NOT NULL AND a.due_date >= DATE('now')
+		   AND a.status = 'published'
+		 ORDER BY due_date ASC
+		 LIMIT 10`
+	).bind(userId, userId).all<any>();
+
+	// --- Recent activity (last 5) ---
+	const { results: recentActivity } = await db.prepare(
+		`SELECT action, entity_type, entity_id, metadata, created_at
+		 FROM user_activity_log
+		 WHERE user_id = ?
+		 ORDER BY created_at DESC
+		 LIMIT 5`
+	).bind(userId).all<any>();
+
 	return {
-		userName,
+		displayName,
+		avatarUrl,
 		currentStreak,
 		averageProgress,
 		activeCourses,
+		upcomingDeadlines: upcomingDeadlines || [],
+		recentActivity: (recentActivity || []).map(a => ({
+			action: a.action,
+			entityType: a.entity_type,
+			entityId: a.entity_id,
+			metadata: a.metadata ? (() => { try { return JSON.parse(a.metadata); } catch { return a.metadata; } })() : null,
+			createdAt: a.created_at,
+		})),
 		token,
 	};
 };

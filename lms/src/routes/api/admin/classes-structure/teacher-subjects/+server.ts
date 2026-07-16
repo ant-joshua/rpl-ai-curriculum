@@ -1,55 +1,50 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const tenantId = locals.tenant?.id || 'default';
+
+		const params: unknown[] = [tenantId];
+		let where = 'WHERE cs.tenant_id = ?';
+
 		const classId = url.searchParams.get('class_id');
 		const subjectId = url.searchParams.get('subject_id');
 		const teacherId = url.searchParams.get('teacher_id');
 
-		let query = `
+		if (classId) { where += ' AND cs.class_id = ?'; params.push(classId); }
+		if (subjectId) { where += ' AND cs.subject_id = ?'; params.push(subjectId); }
+		if (teacherId) { where += ' AND cs.teacher_id = ?'; params.push(teacherId); }
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM class_subjects cs ${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		const baseQuery = `
 			SELECT
-				cs.id,
-				cs.class_id,
-				cs.subject_id,
-				cs.teacher_id,
-				cs.total_hours_per_week,
-				cs.semester,
-				cs.status,
-				cs.kd_list,
-				cs.created_at,
-				c.name AS class_name,
-				c.code AS class_code,
-				s.name AS subject_name,
-				s.code AS subject_code,
-				u.display_name AS teacher_name,
-				u.email AS teacher_email
+				cs.id, cs.class_id, cs.subject_id, cs.teacher_id,
+				cs.total_hours_per_week, cs.semester, cs.status,
+				cs.kd_list, cs.created_at,
+				c.name AS class_name, c.code AS class_code,
+				s.name AS subject_name, s.code AS subject_code,
+				u.display_name AS teacher_name, u.email AS teacher_email
 			FROM class_subjects cs
 			LEFT JOIN classes c ON c.id = cs.class_id
 			LEFT JOIN subjects s ON s.id = cs.subject_id
 			LEFT JOIN users u ON u.id = cs.teacher_id
-			WHERE cs.tenant_id = ?
+			${where}
+			ORDER BY c.name ASC, s.name ASC
 		`;
-		const params: any[] = [tenantId];
 
-		if (classId) {
-			query += ' AND cs.class_id = ?';
-			params.push(classId);
-		}
-		if (subjectId) {
-			query += ' AND cs.subject_id = ?';
-			params.push(subjectId);
-		}
-		if (teacherId) {
-			query += ' AND cs.teacher_id = ?';
-			params.push(teacherId);
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare(baseQuery).bind(...params).all();
+			return jsonResponse({ success: true, data: rows.results || [], total });
 		}
 
-		query += ' ORDER BY c.name ASC, s.name ASC';
-
-		const rows = await db.prepare(query).bind(...params).all();
-		return jsonResponse({ success: true, data: rows.results || [] });
+		const query = `${baseQuery} LIMIT ? OFFSET ?`;
+		const rows = await db.prepare(query).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: rows.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

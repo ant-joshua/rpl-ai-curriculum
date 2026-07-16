@@ -1,5 +1,6 @@
 import { getBearerToken, getSession } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams, buildSearchCondition } from '$lib/server/pagination';
 
 export async function GET({ url, platform, request }: { url: URL; platform: App.Platform; request: Request }): Promise<Response> {
 	try {
@@ -15,21 +16,32 @@ export async function GET({ url, platform, request }: { url: URL; platform: App.
 			return jsonResponse({ success: false, error: 'Forbidden — admin role required' }, 403);
 		}
 
+		const pag = getPaginationParams(url);
 		const offeringId = url.searchParams.get('course_offering_id');
-		let query = `
-			SELECT a.*, u.display_name as creator_name
-			FROM announcements a
-			LEFT JOIN users u ON a.created_by = u.id
-		`;
-		const params: any[] = [];
-		if (offeringId) {
-			query += ' WHERE a.course_offering_id = ?';
-			params.push(offeringId);
-		}
-		query += ' ORDER BY a.created_at DESC';
 
-		const rows = await db.prepare(query).bind(...params).all();
-		return jsonResponse({ success: true, data: rows.results || [] });
+		const params: unknown[] = [];
+		let where = '';
+		if (offeringId) { where = ' WHERE a.course_offering_id = ?'; params.push(offeringId); }
+
+		const searchCond = buildSearchCondition(pag.search, ['a.title', 'a.body'], params);
+		if (searchCond) { where = where ? `${where} AND (${searchCond})` : `WHERE ${searchCond}`; }
+
+		let baseQuery = `SELECT a.*, u.display_name as creator_name FROM announcements a LEFT JOIN users u ON a.created_by = u.id`;
+		let countQuery = `SELECT COUNT(*) as total FROM announcements a`;
+
+		if (where) { baseQuery += ` ${where}`; countQuery += ` ${where}`; }
+
+		const countResult = await db.prepare(countQuery).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare(`${baseQuery} ORDER BY a.created_at DESC`).bind(...params).all();
+			return jsonResponse({ success: true, data: rows.results || [], total });
+		}
+
+		const sql = `${baseQuery} ORDER BY a.created_at DESC LIMIT ? OFFSET ?`;
+		const rows = await db.prepare(sql).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: rows.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

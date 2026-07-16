@@ -1,11 +1,20 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { getPaginationParams } from '$lib/server/pagination';
 
 export async function GET({ url, platform }: { url: URL; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
+		const pag = getPaginationParams(url);
 		const tenantId = url.searchParams.get('tenant_id');
 
-		let query = `
+		const params: unknown[] = [];
+		let where = '';
+		if (tenantId) { where = ' WHERE c.tenant_id = ?'; params.push(tenantId); }
+
+		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM classes c${where}`).bind(...params).first<{ total: number }>();
+		const total = countResult?.total || 0;
+
+		const baseQuery = `
 			SELECT
 				c.*,
 				gl.name AS grade_level_name,
@@ -17,19 +26,18 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 			LEFT JOIN grade_levels gl ON gl.id = c.grade_level_id
 			LEFT JOIN majors m ON m.id = c.major_id
 			LEFT JOIN users u ON u.id = c.homeroom_teacher_id
+			${where}
+			ORDER BY c.created_at DESC
 		`;
-		const params: string[] = [];
-		if (tenantId) {
-			query += ' WHERE c.tenant_id = ?';
-			params.push(tenantId);
+
+		if (pag.page === 0 || pag.limit === 0) {
+			const rows = await db.prepare(baseQuery).bind(...params).all();
+			return jsonResponse({ success: true, data: rows.results || [], total });
 		}
-		query += ' ORDER BY c.created_at DESC';
 
-		const rows = params.length > 0
-			? await db.prepare(query).bind(...params).all()
-			: await db.prepare(query).all();
-
-		return jsonResponse({ success: true, data: rows.results || [] });
+		const query = `${baseQuery} LIMIT ? OFFSET ?`;
+		const rows = await db.prepare(query).bind(...params, pag.limit, pag.offset).all();
+		return jsonResponse({ success: true, data: rows.results || [], pagination: { page: pag.page, limit: pag.limit, total, totalPages: Math.ceil(total / pag.limit) } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);
