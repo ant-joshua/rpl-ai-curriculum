@@ -5,7 +5,7 @@ export async function GET({ platform }: { platform: App.Platform }): Promise<Res
 		const db = getDB(platform);
 		const users = await db.prepare('SELECT * FROM users ORDER BY created_at DESC LIMIT 100').all();
 		const enriched = await Promise.all((users.results || []).map(async (u: any) => {
-			const xpRow = await db.prepare('SELECT COALESCE(xp, 0) as xp, level FROM user_xp WHERE user_id = ?').bind(u.id).first<{ xp: number; level: number }>();
+			const xpRow = await db.prepare('SELECT COALESCE(total_xp, 0) as xp, level FROM user_xp WHERE user_id = ?').bind(u.id).first<{ xp: number; level: number }>();
 			const progressCount = await db.prepare('SELECT COUNT(*) as count FROM progress WHERE user_id = ? AND completed = 1').bind(u.id).first<{ count: number }>();
 			const projectsDone = await db.prepare('SELECT COUNT(*) as count FROM project_completions WHERE user_id = ?').bind(u.id).first<{ count: number }>();
 			return {

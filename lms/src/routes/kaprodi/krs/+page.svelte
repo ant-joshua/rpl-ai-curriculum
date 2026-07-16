@@ -18,7 +18,7 @@
 		try {
 			const [pendingRes, semRes] = await Promise.all([
 				fetch('/api/kaprodi/krs/pending'),
-				fetch('/api/admin/semester'),
+				fetch('/api/admin/academic-semesters'),
 			]);
 			const pjson = await pendingRes.json();
 			const sjson = await semRes.json();

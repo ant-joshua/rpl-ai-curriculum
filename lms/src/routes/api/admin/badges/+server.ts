@@ -3,7 +3,7 @@ import { getDB, jsonResponse } from '$lib/server/d1';
 export async function GET({ platform }: { platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const result = await db.prepare('SELECT * FROM badges ORDER BY created_at DESC').all();
+		const result = await db.prepare('SELECT * FROM badges ORDER BY unlocked_at DESC').all();
 		return jsonResponse({ success: true, data: result.results || [] });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';

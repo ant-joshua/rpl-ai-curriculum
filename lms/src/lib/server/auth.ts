@@ -50,7 +50,7 @@ export async function createSession(
 export async function getSession(
 	platform: App.Platform,
 	token: string,
-): Promise<{ session: Session; user: OAuthUser } | null> {
+): Promise<{ session: Session; user: any } | null> {
 	const db = getDB(platform);
 	const now = new Date().toISOString();
 
@@ -67,10 +67,18 @@ export async function getSession(
 
 	if (!session) return null;
 
-	const user = await db
-		.prepare('SELECT * FROM oauth_users WHERE id = ?')
+	// Try users table first (password auth), fallback to oauth_users (OAuth)
+	let user = await db
+		.prepare('SELECT * FROM users WHERE id = ?')
 		.bind(session.user_id)
-		.first<OAuthUser>();
+		.first<any>();
+
+	if (!user) {
+		user = await db
+			.prepare('SELECT * FROM oauth_users WHERE id = ?')
+			.bind(session.user_id)
+			.first<OAuthUser>();
+	}
 
 	if (!user) {
 		// User deleted but session remains — clean it up

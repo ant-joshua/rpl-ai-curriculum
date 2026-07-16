@@ -56,7 +56,7 @@
 
 	async function loadClassSubjects() {
 		try {
-			const res = await fetch('/api/admin/kelas-kuliah');
+			const res = await fetch('/api/admin/class-sessions');
 			const json = await res.json();
 			if (json.success) {
 				classSubjects.length = 0;

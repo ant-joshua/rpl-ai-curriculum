@@ -1,0 +1,298 @@
+<script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
+	let matkulList: any[] = $state([]);
+	let prodiList: any[] = $state([]);
+	let loading = $state(true);
+	let error = $state('');
+
+	let filterProdi = $state('');
+
+	let showForm = $state(false);
+	let formId = $state('');
+	let formKode = $state('');
+	let formName = $state('');
+	let formSks = $state(3);
+	let formProdiId = $state('');
+	let formSemester = $state(1);
+	let formSifat = $state('wajib');
+	let formDescription = $state('');
+	let saving = $state(false);
+	let saveError = $state('');
+
+	onMount(() => { if (browser) loadData(); });
+
+	async function loadData() {
+		loading = true; error = '';
+		try {
+			const [mkRes, prodiRes] = await Promise.all([
+				fetch('/api/admin/course-catalog'),
+				fetch('/api/admin/study-programs'),
+			]);
+			const mjson = await mkRes.json();
+			const pjson = await prodiRes.json();
+			if (mjson.success) matkulList = mjson.data;
+			else error = mjson.error || 'Gagal memuat katalog';
+			if (pjson.success) prodiList = pjson.data;
+		} catch { error = 'Gagal terhubung ke server'; }
+		finally { loading = false; }
+	}
+
+	let filtered = $derived(
+		matkulList.filter(m => {
+			if (filterProdi && (m.prodi_id || m.major_id) !== filterProdi) return false;
+			return true;
+		})
+	);
+
+	function getProdiName(id: string) {
+		return prodiList.find(p => p.id === id)?.name || '—';
+	}
+
+	function openCreate() {
+		formId = ''; formKode = ''; formName = ''; formSks = 3;
+		formProdiId = ''; formSemester = 1; formSifat = 'wajib'; formDescription = '';
+		saveError = ''; showForm = true;
+	}
+	function closeForm() { showForm = false; }
+
+	async function submitForm() {
+		if (!formName.trim()) { saveError = 'Nama mata kuliah wajib diisi'; return; }
+		if (!formKode.trim()) { saveError = 'Kode mata kuliah wajib diisi'; return; }
+		if (!formProdiId) { saveError = 'Pilih program studi'; return; }
+		saving = true; saveError = '';
+		try {
+			const res = await fetch('/api/admin/course-catalog', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					kode: formKode.trim(),
+					name: formName.trim(),
+					sks: formSks,
+					prodi_id: formProdiId,
+					semester: formSemester,
+					sifat: formSifat,
+					description: formDescription.trim(),
+				}),
+			});
+			const json = await res.json();
+			if (json.success) {
+				matkulList = [...matkulList, json.data];
+				closeForm();
+			} else saveError = json.error || 'Gagal menyimpan';
+		} catch { saveError = 'Terjadi kesalahan'; }
+		finally { saving = false; }
+	}
+
+	const sifatLabels: Record<string, string> = {
+		wajib: 'Wajib',
+		pilihan: 'Pilihan',
+		wajib_peminatan: 'Wajib Peminatan',
+	};
+	const sifatColors: Record<string, string> = {
+		wajib: 'background:rgba(99,102,241,0.1);color:#6366f1',
+		pilihan: 'background:rgba(16,185,129,0.1);color:#10b981',
+		wajib_peminatan: 'background:rgba(245,158,11,0.1);color:#f59e0b',
+	};
+</script>
+
+<svelte:head>
+	<title>Katalog Mata Kuliah — Admin</title>
+</svelte:head>
+
+<div class="page">
+	<div class="header">
+		<div>
+			<h1>📚 Katalog Mata Kuliah</h1>
+			<p class="subtitle">Daftar mata kuliah berdasarkan program studi</p>
+		</div>
+		<div class="header-actions">
+			<button class="btn-refresh" onclick={loadData}>🔄</button>
+			<button class="btn-primary" onclick={openCreate}>+ Matkul Baru</button>
+		</div>
+	</div>
+
+	<div class="filter-bar">
+		<select bind:value={filterProdi} class="filter-select">
+			<option value="">Semua Prodi</option>
+			{#each prodiList as p}
+				<option value={p.id}>{p.name}</option>
+			{/each}
+		</select>
+		<span class="filter-count">{filtered.length} mata kuliah</span>
+	</div>
+
+	{#if loading}
+		<div class="loading">Memuat data...</div>
+	{:else if error}
+		<div class="error-state">
+			<p class="error-msg">{error}</p>
+			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+		</div>
+	{:else if matkulList.length === 0}
+		<div class="empty-state">
+			<p>Belum ada mata kuliah</p>
+			<button class="btn-primary" onclick={openCreate}>Buat Matkul Pertama</button>
+		</div>
+	{:else}
+		<div class="card">
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>Kode</th>
+							<th>Nama Mata Kuliah</th>
+							<th>SKS</th>
+							<th>Program Studi</th>
+							<th>Semester</th>
+							<th>Sifat</th>
+							<th>Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filtered as m}
+							<tr>
+								<td><code>{m.kode || m.code || '—'}</code></td>
+								<td class="cell-name">{m.name}</td>
+								<td class="cell-num">{m.sks ?? m.credits ?? '—'}</td>
+								<td>{getProdiName(m.prodi_id || m.major_id)}</td>
+								<td class="cell-num">{m.semester ?? m.semester_value ?? '—'}</td>
+								<td>
+									<span class="sifat-badge" style={sifatColors[m.sifat || m.type || 'wajib']}>
+										{sifatLabels[m.sifat || m.type || 'wajib']}
+									</span>
+								</td>
+								<td>
+									<a href="/admin/course-catalog/{m.id}" class="btn-small">Detail</a>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	{/if}
+</div>
+
+{#if showForm}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal-overlay" onclick={closeForm} role="button" tabindex="-1">
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h2>Mata Kuliah Baru</h2>
+				<button class="modal-close" onclick={closeForm}>✕</button>
+			</div>
+			<div class="modal-body">
+				{#if saveError}<div class="form-error">{saveError}</div>{/if}
+				<div class="field-row">
+					<div class="field">
+						<label for="mk-kode">Kode MK</label>
+						<input id="mk-kode" type="text" bind:value={formKode} placeholder="Cth: IF-101" />
+					</div>
+					<div class="field">
+						<label for="mk-sks">SKS</label>
+						<input id="mk-sks" type="number" bind:value={formSks} min="1" max="24" />
+					</div>
+				</div>
+				<div class="field">
+					<label for="mk-name">Nama Mata Kuliah</label>
+					<input id="mk-name" type="text" bind:value={formName} placeholder="Cth: Algoritma & Pemrograman" />
+				</div>
+				<div class="field-row">
+					<div class="field">
+						<label for="mk-prodi">Program Studi</label>
+						<select id="mk-prodi" bind:value={formProdiId}>
+							<option value="">— Pilih Prodi —</option>
+							{#each prodiList as p}
+								<option value={p.id}>{p.name}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="field">
+						<label for="mk-semester">Semester</label>
+						<select id="mk-semester" bind:value={formSemester}>
+							<option value="1">Semester 1</option>
+							<option value="2">Semester 2</option>
+							<option value="3">Semester 3</option>
+							<option value="4">Semester 4</option>
+							<option value="5">Semester 5</option>
+							<option value="6">Semester 6</option>
+							<option value="7">Semester 7</option>
+							<option value="8">Semester 8</option>
+						</select>
+					</div>
+					<div class="field">
+						<label for="mk-sifat">Sifat</label>
+						<select id="mk-sifat" bind:value={formSifat}>
+							<option value="wajib">Wajib</option>
+							<option value="pilihan">Pilihan</option>
+							<option value="wajib_peminatan">Wajib Peminatan</option>
+						</select>
+					</div>
+				</div>
+				<div class="field">
+					<label for="mk-desc">Deskripsi (opsional)</label>
+					<textarea id="mk-desc" bind:value={formDescription} rows="3" placeholder="Deskripsi mata kuliah..."></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+					{saving ? 'Menyimpan...' : 'Simpan'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.page { max-width: 1100px; }
+	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
+	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+	.header-actions { display: flex; gap: 8px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
+	.btn-refresh:hover { background: var(--surface-hover); }
+	.btn-small { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
+	.btn-cancel { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
+
+	.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+	.filter-select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; }
+	.filter-count { font-size: 13px; color: var(--text-secondary); background: var(--bg-secondary); padding: 4px 10px; border-radius: 20px; }
+
+	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+	.error-state { text-align: center; padding: 40px; }
+	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+	.empty-state p { margin-bottom: 16px; }
+	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	.table-container { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; }
+	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
+	tr:last-child td { border-bottom: none; }
+	.cell-name { font-weight: 500; }
+	.cell-num { text-align: center; }
+	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+	.sifat-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+
+	.field-row { display: flex; gap: 12px; }
+	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+	.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 580px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+	.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 0; }
+	.modal-header h2 { margin: 0; font-size: 16px; font-weight: 600; }
+	.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 4px; }
+	.modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+	.modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 0 20px 18px; }
+	.field { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+	.field label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+	.field input, .field select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 14px; }
+	.field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+	.field textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 14px; resize: vertical; font-family: inherit; }
+	.field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+	.form-error { padding: 10px 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 8px; font-size: 13px; margin-bottom: 4px; }
+</style>

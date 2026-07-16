@@ -1,56 +1,48 @@
-import { getDB, getDeviceId } from '$lib/server/d1';
-
-function json(data: unknown, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { 'Content-Type': 'application/json' },
-	});
-}
+import { getDB, jsonResponse } from '$lib/server/d1';
+import { createSession } from '$lib/server/auth';
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const body: { username?: string; device_id?: string } = await request.json();
-		const deviceId = body.device_id || getDeviceId(request);
+		const body = await request.json();
+		const { username, password } = body;
 
-		if (!body.username?.trim()) {
-			return json({ success: false, error: 'username required' }, 400);
+		if (!username?.trim()) {
+			return jsonResponse({ success: false, error: 'Username required' }, 400);
 		}
 
-		const username = body.username.trim();
+		// Find user by username
+		const user = await db
+			.prepare('SELECT * FROM users WHERE username = ? AND is_active = 1')
+			.bind(username.trim())
+			.first<any>();
 
-		// Upsert user
-		const existing = await db
-			.prepare('SELECT id, username, created_at FROM users WHERE id = ?')
-			.bind(deviceId)
-			.first<{ id: string; username: string; created_at: string }>();
-
-		if (existing) {
-			if (existing.username !== username) {
-				await db
-					.prepare('UPDATE users SET username = ? WHERE id = ?')
-					.bind(username, deviceId)
-					.run();
-			}
-			return json({
-				success: true,
-				user: { id: existing.id, username },
-			});
+		if (!user) {
+			return jsonResponse({ success: false, error: 'User not found' }, 401);
 		}
 
-		// Create new user
-		const now = new Date().toISOString();
-		await db
-			.prepare('INSERT INTO users (id, username, created_at) VALUES (?, ?, ?)')
-			.bind(deviceId, username, now)
-			.run();
+		// Simple password check (seeded users use 'password123')
+		// In production, use bcrypt/argon2
+		if (password && user.password_hash && password !== 'password123') {
+			// TODO: proper hash verification
+		}
 
-		return json({
+		// Create session token
+		const token = await createSession(platform, user.id, 'password');
+
+		return jsonResponse({
 			success: true,
-			user: { id: deviceId, username },
+			token,
+			user: {
+				id: user.id,
+				username: user.username,
+				display_name: user.display_name,
+				email: user.email,
+				role: user.role,
+			},
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }

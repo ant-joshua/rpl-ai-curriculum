@@ -14,7 +14,7 @@ export async function GET({ platform }: { platform: App.Platform }): Promise<Res
 			.first<{ count: number }>();
 
 		const totalXp = await db
-			.prepare("SELECT COALESCE(SUM(xp), 0) as total FROM user_xp")
+			.prepare("SELECT COALESCE(SUM(total_xp), 0) as total FROM user_xp")
 			.first<{ total: number }>();
 
 		const activeToday = await db
