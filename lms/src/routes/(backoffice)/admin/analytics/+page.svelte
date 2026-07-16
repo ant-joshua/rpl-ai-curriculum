@@ -14,6 +14,26 @@
 	let enrollments: any[] = $state([]);
 	// Completion data
 	let completion: any[] = $state([]);
+	// Module analytics
+	let attendanceData: any = $state(null);
+	let paymentsData: any = $state(null);
+	let gradesData: any = $state(null);
+
+	async function loadModuleAnalytics() {
+		try {
+			const [attRes, payRes, grdRes] = await Promise.all([
+				fetch('/api/admin/analytics/attendance'),
+				fetch('/api/admin/analytics/payments'),
+				fetch('/api/admin/analytics/grades'),
+			]);
+			const att = await attRes.json();
+			const pay = await payRes.json();
+			const grd = await grdRes.json();
+			if (att.success) attendanceData = att.data;
+			if (pay.success) paymentsData = pay.data;
+			if (grd.success) gradesData = grd.data;
+		} catch {}
+	}
 
 	onMount(() => {
 		if (!browser) return;
@@ -36,6 +56,7 @@
 			else { error = ov.error || 'Failed'; loading = false; return; }
 			if (en.success) enrollments = en.data || [];
 			if (co.success) completion = co.data || [];
+			await loadModuleAnalytics();
 		} catch { error = 'Failed to load'; }
 		finally { loading = false; }
 	}
@@ -65,6 +86,9 @@
 		{ id: 'overview', label: 'Overview', icon: '📊' },
 		{ id: 'enrollments', label: 'Enrollments', icon: '📈' },
 		{ id: 'completion', label: 'Completion', icon: '✅' },
+		{ id: 'attendance', label: 'Attendance', icon: '📅' },
+		{ id: 'payments', label: 'Payments', icon: '💰' },
+		{ id: 'grades', label: 'Grades', icon: '🎓' },
 		{ id: 'activity', label: 'Activity', icon: '🕐' },
 	];
 </script>
@@ -255,6 +279,162 @@
 					{/if}
 				</CardContent>
 			</Card>
+
+		<!-- === ATTENDANCE TAB === -->
+		{:else if activeTab === 'attendance'}
+			<div class="stats-grid">
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📅</span>
+						<span class="stat-value">{attendanceData?.totalSessions ?? 0}</span>
+						<span class="stat-label">Total Sessions</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">✅</span>
+						<span class="stat-value">{attendanceData?.totalCheckIns ?? 0}</span>
+						<span class="stat-label">Total Check-Ins</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">⚠️</span>
+						<span class="stat-value">{attendanceData?.totalExceptions ?? 0}</span>
+						<span class="stat-label">Exceptions</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📊</span>
+						<span class="stat-value">{(attendanceData?.avgAttendanceRate ?? 0 * 100).toFixed(1)}%</span>
+						<span class="stat-label">Avg Attendance Rate</span>
+					</CardContent>
+				</Card>
+			</div>
+			{#if attendanceData?.topAbsentStudents?.length}
+			<Card class="section-card">
+				<CardContent>
+					<h2>Top Absent Students</h2>
+					<div class="completion-list">
+						{#each attendanceData.topAbsentStudents as s}
+						<div class="comp-row">
+							<span class="comp-name">{s.display_name || s.name || s.user_id}</span>
+							<span class="comp-students">{s.absent_count} absences</span>
+						</div>
+						{/each}
+					</div>
+				</CardContent>
+			</Card>
+			{/if}
+
+		<!-- === PAYMENTS TAB === -->
+		{:else if activeTab === 'payments'}
+			<div class="stats-grid">
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">💰</span>
+						<span class="stat-value">Rp {((paymentsData?.totalRevenue ?? 0)).toLocaleString()}</span>
+						<span class="stat-label">Total Revenue</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📄</span>
+						<span class="stat-value">{paymentsData?.totalInvoices ?? 0}</span>
+						<span class="stat-label">Total Invoices</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">💳</span>
+						<span class="stat-value">{paymentsData?.totalPayments ?? 0}</span>
+						<span class="stat-label">Payments Received</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">⏳</span>
+						<span class="stat-value">{paymentsData?.pendingInvoices ?? 0}</span>
+						<span class="stat-label">Pending Invoices</span>
+					</CardContent>
+				</Card>
+			</div>
+			{#if paymentsData?.revenueByMethod?.length}
+			<Card class="section-card">
+				<CardContent>
+					<h2>Revenue by Payment Method</h2>
+					{@const maxRev = Math.max(...paymentsData.revenueByMethod.map((m: any) => m.total), 1)}
+					<div class="completion-list">
+						{#each paymentsData.revenueByMethod as m}
+						{@const pct = (m.total / maxRev) * 100}
+						<div class="comp-row">
+							<span class="comp-name">{m.method || 'Unknown'}</span>
+							<div class="comp-bar-track">
+								<div class="comp-bar-fill" style="width: {pct}%"></div>
+							</div>
+							<span class="comp-pct">Rp {m.total.toLocaleString()}</span>
+						</div>
+						{/each}
+					</div>
+				</CardContent>
+			</Card>
+			{/if}
+
+		<!-- === GRADES TAB === -->
+		{:else if activeTab === 'grades'}
+			<div class="stats-grid">
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📝</span>
+						<span class="stat-value">{gradesData?.totalSubmissions ?? 0}</span>
+						<span class="stat-label">Total Submissions</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">✅</span>
+						<span class="stat-value">{gradesData?.gradedCount ?? 0}</span>
+						<span class="stat-label">Graded</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">⏳</span>
+						<span class="stat-value">{gradesData?.pendingCount ?? 0}</span>
+						<span class="stat-label">Pending</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">🎯</span>
+						<span class="stat-value">{(gradesData?.avgScore ?? 0).toFixed(1)}</span>
+						<span class="stat-label">Avg Score</span>
+					</CardContent>
+				</Card>
+			</div>
+			{#if gradesData?.gradeDistribution}
+			<Card class="section-card">
+				<CardContent>
+					<h2>Grade Distribution</h2>
+					{@const dist = gradesData.gradeDistribution}
+					{@const maxG = Math.max(dist.A ?? 0, dist.B ?? 0, dist.C ?? 0, dist.D ?? 0, dist.E ?? 0, 1)}
+					<div class="completion-list">
+						{#each ['A','B','C','D','E'] as g}
+						{@const val = dist[g] ?? 0}
+						{@const pctG = (val / maxG) * 100}
+						<div class="comp-row">
+							<span class="comp-name" style="min-width:30px;font-weight:700">{g}</span>
+							<div class="comp-bar-track">
+								<div class="comp-bar-fill" style="width: {pctG}%;background:{g === 'A' ? 'var(--accent)' : g === 'B' ? '#22c55e' : g === 'C' ? '#f59e0b' : g === 'D' ? '#f97316' : '#ef4444'}"></div>
+							</div>
+							<span class="comp-pct">{val}</span>
+						</div>
+						{/each}
+					</div>
+				</CardContent>
+			</Card>
+			{/if}
 
 		<!-- === ACTIVITY TAB === -->
 		{:else if activeTab === 'activity'}

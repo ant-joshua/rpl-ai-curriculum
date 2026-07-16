@@ -6,10 +6,10 @@ export async function GET({ platform }: { platform: App.Platform }): Promise<Res
 
 		const rows = await db
 			.prepare(
-				`SELECT DATE(created_at) as date, COUNT(*) as count
+				`SELECT DATE(enrolled_at) as date, COUNT(*) as count
 				 FROM enrollments
-				 WHERE created_at >= datetime('now', '-30 days')
-				 GROUP BY DATE(created_at)
+				 WHERE enrolled_at >= datetime('now', '-30 days')
+				 GROUP BY DATE(enrolled_at)
 				 ORDER BY date ASC`,
 			)
 			.all();
