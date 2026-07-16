@@ -32,6 +32,12 @@
 		{ path: '/admin/katalog-matkul', icon: 'book-open', label: 'Katalog Matkul' },
 		{ path: '/admin/kelas-kuliah', icon: 'users', label: 'Kelas Kuliah' },
 		{ path: '/admin/exam-scheduler', icon: 'clipboard', label: 'Exam Scheduler' },
+		{ path: '/admin/payment-gateway', icon: 'credit-card', label: 'Payment Gateway' },
+		{ path: '/admin/attendance', icon: 'check-square', label: 'Attendance' },
+		{ path: '/admin/notifications', icon: 'bell', label: 'Notifications' },
+		{ path: '/admin/survey', icon: 'bar-chart', label: 'Survey' },
+		{ path: '/admin/report-cards', icon: 'printer', label: 'Report Cards' },
+		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal' },
 	];
 
 	async function loadTenants() {

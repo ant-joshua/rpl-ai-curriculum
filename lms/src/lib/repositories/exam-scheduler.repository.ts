@@ -255,17 +255,17 @@ export class ExamSchedulerRepository {
 		name: string;
 		code?: string;
 		capacity: number;
-		location?: string;
-		facilities?: string;
 		building?: string;
 		floor?: string;
+		facilities?: string;
+		is_active?: number;
 	}): Promise<ExamRoom> {
 		const id = crypto.randomUUID();
 		const now = new Date().toISOString();
 		await this.db
 			.prepare(
 				`INSERT INTO exam_rooms (id, tenant_id, name, code, capacity, building, floor, facilities, is_active, created_at, updated_at)
-				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`
+				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 			)
 			.bind(
 				id,
@@ -273,9 +273,10 @@ export class ExamSchedulerRepository {
 				data.name,
 				data.code || null,
 				data.capacity,
-				data.building || data.location || null,
+				data.building || null,
 				data.floor || null,
 				data.facilities || null,
+				data.is_active ?? 1,
 				now,
 				now
 			)
@@ -320,6 +321,20 @@ export class ExamSchedulerRepository {
 	// EXAMS
 	// ----------------------------------------------------------
 
+	/** Public alias for routes. */
+	async getExams(filters?: {
+		exam_type_id?: string;
+		subject_id?: string;
+		class_id?: string;
+		status?: string;
+		room_id?: string;
+		exam_date?: string;
+		exam_date_from?: string;
+		exam_date_to?: string;
+	}): Promise<Exam[]> {
+		return this.listExamsImpl(filters);
+	}
+
 	/** List exams with filters. */
 	async listExams(filters?: {
 		exam_type_id?: string;
@@ -334,15 +349,15 @@ export class ExamSchedulerRepository {
 		return this.listExamsImpl(filters);
 	}
 
-	async getExams(filters?: {
+	private async listExamsImpl(filters?: {
 		exam_type_id?: string;
 		subject_id?: string;
 		class_id?: string;
 		status?: string;
 		room_id?: string;
-		date_from?: string;
-		date_to?: string;
 		exam_date?: string;
+		exam_date_from?: string;
+		exam_date_to?: string;
 	}): Promise<Exam[]> {
 		const conditions: string[] = [`e.tenant_id = ?`];
 		const params: any[] = [this.tenantId];
@@ -371,13 +386,13 @@ export class ExamSchedulerRepository {
 			conditions.push(`e.exam_date = ?`);
 			params.push(filters.exam_date);
 		}
-		if (filters?.date_from) {
+		if (filters?.exam_date_from) {
 			conditions.push(`e.exam_date >= ?`);
-			params.push(filters.date_from);
+			params.push(filters.exam_date_from);
 		}
-		if (filters?.date_to) {
+		if (filters?.exam_date_to) {
 			conditions.push(`e.exam_date <= ?`);
-			params.push(filters.date_to);
+			params.push(filters.exam_date_to);
 		}
 
 		const where = conditions.join(' AND ');
@@ -605,7 +620,7 @@ export class ExamSchedulerRepository {
 	// ----------------------------------------------------------
 
 	/** List participants for an exam. */
-	async listExamParticipants(examId: string): Promise<ExamParticipant[]> {
+	async getExamParticipants(examId: string): Promise<ExamParticipant[]> {
 		const rows = await this.db
 			.prepare(
 				`SELECT ep.*,
@@ -620,6 +635,10 @@ export class ExamSchedulerRepository {
 			.bind(examId, this.tenantId)
 			.all<ExamParticipant>();
 		return rows.results || [];
+	}
+
+	async listExamParticipants(examId: string): Promise<ExamParticipant[]> {
+		return this.getExamParticipants(examId);
 	}
 
 	async getExamParticipant(examId: string, studentId: string): Promise<ExamParticipant | null> {

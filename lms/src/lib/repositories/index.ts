@@ -4,3 +4,4 @@ export { RaporRepository } from './rapor.repository';
 export { TutorRepository } from './tutor.repository';
 export { UniversityRepository } from './university.repository';
 export { BimbelRepository } from './bimbel.repository';
+export { ReportCardRepository } from './report-card.repository';

@@ -17,7 +17,7 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 			exam_date_to: url.searchParams.get('exam_date_to') || url.searchParams.get('date_to') || undefined,
 			room_id: url.searchParams.get('room_id') || undefined
 		};
-		const data = await repo.getExams(filters);
+		const data = await repo.listExams(filters);
 		return json({ success: true, data });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;

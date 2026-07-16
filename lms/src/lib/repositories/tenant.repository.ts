@@ -1,58 +1,47 @@
-import { eq } from 'drizzle-orm';
-import { getDB } from '$lib/db/client';
-import { tenants } from '$lib/db/schema';
+import type { D1Database } from '@cloudflare/workers-types';
+import { getDB } from '$lib/server/d1';
 
 export class TenantRepository {
-	constructor(private platform: App.Platform) {}
+	private db: D1Database;
+
+	constructor(platform: any) {
+		this.db = getDB(platform);
+	}
 
 	async findAll() {
-		return getDB(this.platform).select().from(tenants).all();
+		const { results } = await this.db.prepare('SELECT * FROM tenants ORDER BY name').all();
+		return results;
 	}
 
 	async findById(id: string) {
-		return getDB(this.platform).select().from(tenants).where(eq(tenants.id, id)).get();
+		return await this.db.prepare('SELECT * FROM tenants WHERE id = ?').bind(id).first();
 	}
 
 	async findBySlug(slug: string) {
-		return getDB(this.platform).select().from(tenants).where(eq(tenants.slug, slug)).get();
+		return await this.db.prepare('SELECT * FROM tenants WHERE slug = ?').bind(slug).first();
 	}
 
-	async create(data: {
-		name: string;
-		slug: string;
-		type: string;
-		ownerId: string;
-		config?: Record<string, any>;
-	}) {
-		return getDB(this.platform).insert(tenants).values({
-			id: crypto.randomUUID(),
-			name: data.name,
-			slug: data.slug,
-			type: data.type,
-			ownerId: data.ownerId,
-			config: JSON.stringify(data.config || {}),
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString(),
-		}).returning().get();
+	async create(data: { name: string; slug: string; type?: string }) {
+		const id = crypto.randomUUID();
+		await this.db.prepare(
+			'INSERT INTO tenants (id, name, slug, type) VALUES (?,?,?,?)'
+		).bind(id, data.name, data.slug, data.type || 'school').run();
+		return this.findById(id);
 	}
 
-	async update(id: string, data: Partial<{
-		name: string;
-		slug: string;
-		type: string;
-		config: string;
-		features: string;
-		logoUrl: string;
-		primaryColor: string;
-		isActive: number;
-	}>) {
-		return getDB(this.platform).update(tenants).set({
-			...data,
-			updatedAt: new Date().toISOString(),
-		}).where(eq(tenants.id, id)).returning().get();
+	async update(id: string, data: any) {
+		const sets: string[] = [];
+		const vals: any[] = [];
+		for (const [k, v] of Object.entries(data)) {
+			if (v !== undefined) { sets.push(`${k} = ?`); vals.push(v); }
+		}
+		if (sets.length === 0) return;
+		vals.push(id);
+		await this.db.prepare(`UPDATE tenants SET ${sets.join(', ')} WHERE id = ?`).bind(...vals).run();
+		return this.findById(id);
 	}
 
-	async deactivate(id: string) {
-		return this.update(id, { isActive: 0 });
+	async delete(id: string) {
+		await this.db.prepare('DELETE FROM tenants WHERE id = ?').bind(id).run();
 	}
 }
