@@ -31,6 +31,7 @@
 		{ path: '/admin/semester', icon: 'calendar', label: 'Semester' },
 		{ path: '/admin/katalog-matkul', icon: 'book-open', label: 'Katalog Matkul' },
 		{ path: '/admin/kelas-kuliah', icon: 'users', label: 'Kelas Kuliah' },
+		{ path: '/admin/exam-scheduler', icon: 'clipboard', label: 'Exam Scheduler' },
 	];
 
 	async function loadTenants() {

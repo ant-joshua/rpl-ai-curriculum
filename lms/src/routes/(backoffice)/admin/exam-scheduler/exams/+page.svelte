@@ -1,0 +1,390 @@
+<script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
+	let exams: any[] = $state([]);
+	let loading = $state(true);
+	let error = $state('');
+	let success = $state('');
+
+	// Filters
+	let filterStatus = $state('');
+	let filterSearch = $state('');
+
+	// Create modal
+	let showModal = $state(false);
+	let formName = $state('');
+	let formDescription = $state('');
+	let formDate = $state('');
+	let formStartTime = $state('');
+	let formEndTime = $state('');
+	let formRoomId = $state('');
+	let formTypeId = $state('');
+	let formExamType = $state('');
+	let formStatus = $state('draft');
+	let formMaxParticipants = $state('');
+	let saving = $state(false);
+	let saveError = $state('');
+
+	// Rooms & types for selects
+	let rooms: any[] = $state([]);
+	let examTypes: any[] = $state([]);
+
+	onMount(() => {
+		if (browser) {
+			loadExams();
+			loadRooms();
+			loadTypes();
+		}
+	});
+
+	async function loadExams() {
+		loading = true; error = '';
+		try {
+			const res = await fetch('/api/admin/exam-scheduler/exams');
+			const json = await res.json();
+			if (json.success) exams = json.data || [];
+			else error = json.error || 'Gagal memuat data ujian';
+		} catch { error = 'Gagal terhubung ke server'; }
+		finally { loading = false; }
+	}
+
+	async function loadRooms() {
+		try {
+			const res = await fetch('/api/admin/exam-scheduler/rooms');
+			const json = await res.json();
+			if (json.success) rooms = json.data || [];
+		} catch { /* ignore */ }
+	}
+
+	async function loadTypes() {
+		try {
+			const res = await fetch('/api/admin/exam-scheduler/types');
+			const json = await res.json();
+			if (json.success) examTypes = json.data || [];
+		} catch { /* ignore */ }
+	}
+
+	let filteredExams = $derived.by(() => {
+		let list = exams;
+		if (filterStatus) list = list.filter(e => e.status === filterStatus);
+		if (filterSearch.trim()) {
+			const q = filterSearch.toLowerCase();
+			list = list.filter(e => (e.name || '').toLowerCase().includes(q) || (e.description || '').toLowerCase().includes(q));
+		}
+		return list;
+	});
+
+	function openCreate() {
+		formName = ''; formDescription = ''; formDate = '';
+		formStartTime = ''; formEndTime = ''; formRoomId = '';
+		formTypeId = ''; formExamType = ''; formStatus = 'draft';
+		formMaxParticipants = ''; saveError = ''; showModal = true;
+	}
+
+	function closeModal() { showModal = false; }
+
+	async function submitCreate() {
+		if (!formName.trim()) { saveError = 'Nama ujian wajib diisi'; return; }
+		if (!formDate) { saveError = 'Tanggal ujian wajib diisi'; return; }
+		saving = true; saveError = '';
+		try {
+			const body: Record<string, string> = {
+				name: formName.trim(),
+				description: formDescription.trim(),
+				date: formDate,
+				start_time: formStartTime,
+				end_time: formEndTime,
+				status: formStatus,
+			};
+			if (formRoomId) body.room_id = formRoomId;
+			if (formTypeId) body.type_id = formTypeId;
+			if (formExamType.trim()) body.exam_type = formExamType.trim();
+			if (formMaxParticipants) body.max_participants = formMaxParticipants;
+
+			const res = await fetch('/api/admin/exam-scheduler/exams', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			const json = await res.json();
+			if (json.success) {
+				exams = [json.data, ...exams];
+				closeModal();
+				success = 'Ujian berhasil dibuat';
+				setTimeout(() => success = '', 3000);
+			} else {
+				saveError = json.error || 'Gagal menyimpan';
+			}
+		} catch { saveError = 'Terjadi kesalahan'; }
+		finally { saving = false; }
+	}
+
+	async function deleteExam(id: string) {
+		if (!confirm('Hapus jadwal ujian ini?')) return;
+		try {
+			const res = await fetch(`/api/admin/exam-scheduler/exams/${id}`, { method: 'DELETE' });
+			const json = await res.json();
+			if (json.success) {
+				exams = exams.filter(e => e.id !== id);
+				success = 'Ujian berhasil dihapus';
+				setTimeout(() => success = '', 3000);
+			} else alert(json.error || 'Gagal menghapus');
+		} catch { alert('Terjadi kesalahan'); }
+	}
+
+	function statusColor(status: string): string {
+		switch (status) {
+			case 'draft': return 'status-draft';
+			case 'published': return 'status-published';
+			case 'ongoing': return 'status-ongoing';
+			case 'completed': return 'status-completed';
+			case 'cancelled': return 'status-cancelled';
+			default: return 'status-draft';
+		}
+	}
+
+	function formatDate(d: string): string {
+		if (!d) return '—';
+		try {
+			return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+		} catch { return d; }
+	}
+</script>
+
+<svelte:head>
+	<title>Ujian — Exam Scheduler</title>
+</svelte:head>
+
+<div class="page">
+	<div class="header">
+		<div>
+			<h1>📋 Jadwal Ujian</h1>
+			<p class="subtitle">Kelola jadwal ujian dan penilaian</p>
+		</div>
+		<div class="header-actions">
+			<button class="btn-refresh" onclick={loadExams}>🔄</button>
+			<button class="btn-primary" onclick={openCreate}>+ Ujian Baru</button>
+		</div>
+	</div>
+
+	{#if success}
+		<div class="success-msg">{success}</div>
+	{/if}
+
+	{#if loading}
+		<div class="loading">Memuat data ujian...</div>
+	{:else if error}
+		<div class="error-state">
+			<p class="error-msg">{error}</p>
+			<button class="btn-primary" onclick={loadExams}>Coba Lagi</button>
+		</div>
+	{:else}
+		<!-- Filters -->
+		<div class="filters">
+			<input
+				type="text"
+				class="filter-input"
+				placeholder="🔍 Cari ujian..."
+				bind:value={filterSearch}
+			/>
+			<select class="filter-select" bind:value={filterStatus}>
+				<option value="">Semua Status</option>
+				<option value="draft">Draft</option>
+				<option value="published">Published</option>
+				<option value="ongoing">Ongoing</option>
+				<option value="completed">Completed</option>
+				<option value="cancelled">Cancelled</option>
+			</select>
+			<span class="filter-count">{filteredExams.length} ujian</span>
+		</div>
+
+		{#if filteredExams.length === 0}
+			<div class="empty-state">
+				{#if exams.length === 0}
+					<p>Belum ada jadwal ujian</p>
+					<button class="btn-primary" onclick={openCreate}>Buat Ujian Pertama</button>
+				{:else}
+					<p>Tidak ada ujian yang cocok dengan filter</p>
+				{/if}
+			</div>
+		{:else}
+			<div class="card">
+				<div class="table-container">
+					<table>
+						<thead>
+							<tr>
+								<th>Nama Ujian</th>
+								<th>Tanggal</th>
+								<th>Jam</th>
+								<th>Ruangan</th>
+								<th>Tipe</th>
+								<th>Status</th>
+								<th>Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each filteredExams as exam}
+								<tr>
+									<td class="cell-name">{exam.name}</td>
+									<td>{formatDate(exam.date)}</td>
+									<td>{exam.start_time || '—'}{exam.end_time ? ` - ${exam.end_time}` : ''}</td>
+									<td>{rooms.find(r => r.id === exam.room_id)?.name || exam.room_id?.slice(0, 8) || '—'}</td>
+									<td>{exam.exam_type || examTypes.find(t => t.id === exam.type_id)?.name || '—'}</td>
+									<td><span class="status-badge {statusColor(exam.status)}">{exam.status}</span></td>
+									<td class="cell-actions">
+										<button class="btn-delete" onclick={() => deleteExam(exam.id)}>Hapus</button>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
+	{/if}
+</div>
+
+<!-- Create Modal -->
+{#if showModal}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal-overlay" onclick={closeModal} role="button" tabindex="-1">
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h2>Ujian Baru</h2>
+				<button class="modal-close" onclick={closeModal}>✕</button>
+			</div>
+			<div class="modal-body">
+				{#if saveError}<div class="form-error">{saveError}</div>{/if}
+				<div class="form-grid">
+					<div class="field field--full">
+						<label for="exam-name">Nama Ujian *</label>
+						<input id="exam-name" type="text" bind:value={formName} placeholder="Cth: UTS Pemrograman Web" />
+					</div>
+					<div class="field field--full">
+						<label for="exam-desc">Deskripsi</label>
+						<input id="exam-desc" type="text" bind:value={formDescription} placeholder="Deskripsi singkat ujian" />
+					</div>
+					<div class="field">
+						<label for="exam-date">Tanggal *</label>
+						<input id="exam-date" type="date" bind:value={formDate} />
+					</div>
+					<div class="field">
+						<label for="exam-type">Tipe Ujian</label>
+						<select id="exam-type" bind:value={formExamType}>
+							<option value="">— Pilih —</option>
+							<option value="UTS">UTS</option>
+							<option value="UAS">UAS</option>
+							<option value="Quiz">Quiz</option>
+							<option value="Praktikum">Praktikum</option>
+							<option value="Lainnya">Lainnya</option>
+						</select>
+					</div>
+					<div class="field">
+						<label for="exam-start">Jam Mulai</label>
+						<input id="exam-start" type="time" bind:value={formStartTime} />
+					</div>
+					<div class="field">
+						<label for="exam-end">Jam Selesai</label>
+						<input id="exam-end" type="time" bind:value={formEndTime} />
+					</div>
+					<div class="field">
+						<label for="exam-room">Ruangan</label>
+						<select id="exam-room" bind:value={formRoomId}>
+							<option value="">— Pilih Ruangan —</option>
+							{#each rooms as room}
+								<option value={room.id}>{room.name} (kap. {room.capacity || '?'})</option>
+							{/each}
+						</select>
+					</div>
+					<div class="field">
+						<label for="exam-max">Max Peserta</label>
+						<input id="exam-max" type="number" bind:value={formMaxParticipants} placeholder="Opsional" min="1" />
+					</div>
+					<div class="field">
+						<label for="exam-status">Status</label>
+						<select id="exam-status" bind:value={formStatus}>
+							<option value="draft">Draft</option>
+							<option value="published">Published</option>
+							<option value="ongoing">Ongoing</option>
+							<option value="completed">Completed</option>
+							<option value="cancelled">Cancelled</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-cancel" onclick={closeModal}>Batal</button>
+				<button class="btn-primary" onclick={submitCreate} disabled={saving}>
+					{saving ? 'Menyimpan...' : 'Simpan'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.page { max-width: 1100px; }
+	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
+	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
+	.header-actions { display: flex; gap: 8px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
+	.btn-refresh:hover { background: var(--surface-hover); }
+	.btn-cancel { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
+	.btn-delete { padding: 4px 10px; border: 1px solid rgba(239,68,68,0.2); border-radius: 6px; background: transparent; color: #ef4444; font-size: 12px; cursor: pointer; }
+	.btn-delete:hover { background: rgba(239,68,68,0.1); }
+
+	.success-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+
+	/* Filters */
+	.filters { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+	.filter-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; min-width: 200px; }
+	.filter-input:focus { outline: none; border-color: var(--accent); }
+	.filter-select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
+	.filter-select:focus { outline: none; border-color: var(--accent); }
+	.filter-count { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+
+	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	.table-container { overflow-x: auto; }
+	table { width: 100%; border-collapse: collapse; }
+	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
+	tr:last-child td { border-bottom: none; }
+	.cell-name { font-weight: 500; }
+	.cell-actions { white-space: nowrap; }
+
+	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+	.error-state { text-align: center; padding: 40px; }
+	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+	.empty-state p { margin-bottom: 16px; }
+
+	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+	.status-draft { background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.status-published { background: rgba(16,185,129,0.1); color: #10b981; }
+	.status-ongoing { background: rgba(59,130,246,0.1); color: #3b82f6; }
+	.status-completed { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+	.status-cancelled { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+	/* Modal */
+	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+	.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+	.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 0; }
+	.modal-header h2 { margin: 0; font-size: 16px; font-weight: 600; }
+	.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 4px; }
+	.modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+	.modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 0 20px 18px; }
+
+	/* Form */
+	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+	.field { display: flex; flex-direction: column; gap: 4px; }
+	.field--full { grid-column: 1 / -1; }
+	.field label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+	.field input, .field select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 14px; }
+	.field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+	.form-error { padding: 10px 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 8px; font-size: 13px; margin-bottom: 4px; }
+</style>
