@@ -32,6 +32,7 @@
 		{ href: '/my/planner', icon: '📅', label: 'Perencana' },
 		{ href: '/progress-quiz', icon: '🧪', label: 'Progress Quiz' },
 		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
+		{ href: '/my/payments', icon: '💳', label: 'Pembayaran' },
 		{ href: '/my/notifications', icon: '🔔', label: 'Notifikasi' },
 		{ href: '/my/profile', icon: '👤', label: 'Profil' },
 	];
@@ -39,6 +40,28 @@
 	let currentPath = $derived(String($page.url.pathname));
 
 	let sidebarOpen = $state(false);
+
+	// PWA install state
+	let deferredPrompt: any = $state(null);
+
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			window.addEventListener('beforeinstallprompt', (e) => {
+				e.preventDefault();
+				deferredPrompt = e;
+			});
+			window.addEventListener('appinstalled', () => {
+				deferredPrompt = null;
+			});
+		}
+	});
+
+	async function installPwa() {
+		if (!deferredPrompt) return;
+		deferredPrompt.prompt();
+		const result = await deferredPrompt.userChoice;
+		if (result.outcome === 'accepted') deferredPrompt = null;
+	}
 
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
@@ -89,6 +112,12 @@
 		</nav>
 
 		<div class="sidebar-footer">
+			{#if deferredPrompt}
+				<button onclick={installPwa} class="nav-item pwa-install-item">
+					<span class="nav-icon">📲</span>
+					<span class="nav-label">Install App</span>
+				</button>
+			{/if}
 			<a href="/" class="nav-item back-link">
 				<span class="nav-icon">🏠</span>
 				<span class="nav-label">Beranda</span>

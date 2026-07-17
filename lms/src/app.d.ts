@@ -34,6 +34,9 @@ declare global {
 					DB: D1Database;
 					ASSETS_BUCKET: R2Bucket;
 					AI_API_KEY?: string;
+					MIDTRANS_SERVER_KEY?: string;
+					MIDTRANS_CLIENT_KEY?: string;
+					MIDTRANS_IS_PRODUCTION?: string;
 				};
 			}
 	}
