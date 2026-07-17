@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { getBearerToken, getSession } from '$lib/server/auth';
 
-const PUBLIC_PATHS = new Set(['/', '/login', '/feed', '/feed.json', '/feed.xml', '/certificate']);
+const PUBLIC_PATHS = new Set(['/', '/login', '/feed', '/feed.json', '/feed.xml', '/certificate', '/register', '/sitemap.xml', '/robots.txt']);
 const PUBLIC_PREFIXES = ['/certificate/', '/announcements'];
 
 function isPublicPath(pathname: string): boolean {

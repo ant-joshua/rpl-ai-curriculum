@@ -193,6 +193,15 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<link rel="alternate" type="application/rss+xml" title="RPL AI Curriculum RSS" href="/feed.xml" />
 	<link rel="alternate" type="application/feed+json" title="RPL AI Curriculum JSON Feed" href="/feed.json" />
+	<!-- SEO meta -->
+	<meta name="description" content="RPL AI Curriculum — Platform pembelajaran AI untuk program Rekayasa Perangkat Lunak. Kursus interaktif, latihan, dan sertifikasi." />
+	<meta property="og:title" content="RPL AI Curriculum" />
+	<meta property="og:description" content="Platform pembelajaran AI untuk Rekayasa Perangkat Lunak." />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="https://{typeof $page !== 'undefined' ? $page.url.host : 'rpl-ai-curriculum.pages.dev'}/og-image.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="RPL AI Curriculum" />
+	<meta name="twitter:description" content="Platform pembelajaran AI untuk Rekayasa Perangkat Lunak." />
 </svelte:head>
 
 <!-- Mobile hamburger -->

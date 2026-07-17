@@ -56,10 +56,20 @@
 	}
 
 	let currentPath = $derived(String($page.url.pathname));
+
+	let pageTitle = $derived(offering.courseTitle || offering.name || 'Kursus');
+	let pageDesc = $derived(offering.courseDescription || offering.name || 'Kursus RPL AI Curriculum');
 </script>
 
 <svelte:head>
-	<title>{offering.courseTitle} — LMS RPL</title>
+	<title>{pageTitle} — LMS RPL</title>
+	<meta name="description" content={pageDesc} />
+	<meta property="og:title" content="{pageTitle} — LMS RPL" />
+	<meta property="og:description" content={pageDesc} />
+	<meta property="og:type" content="article" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{pageTitle} — LMS RPL" />
+	<meta name="twitter:description" content={pageDesc} />
 </svelte:head>
 
 <div class="learn-page">

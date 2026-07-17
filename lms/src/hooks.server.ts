@@ -1,6 +1,8 @@
 import { getSession, getBearerToken } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { logActivity } from '$lib/server/analytics';
+import { rateLimit } from '$lib/server/rate-limit';
+import { logError } from '$lib/server/error-logger';
 
 // Allow admin roles — superadmin and admin have full access
 const ADMIN_ROLES = ['superadmin', 'admin'];
@@ -21,6 +23,23 @@ export async function handle({ event, resolve }: {
 	const url = new URL(event.request.url);
 	let path = url.pathname;
 
+	// Rate limiting for API routes (skip static files)
+	if (path.startsWith('/api/')) {
+		const ip = event.request.headers.get('cf-connecting-ip')
+			|| event.request.headers.get('x-forwarded-for')
+			|| 'unknown';
+		const result = rateLimit(ip);
+		if (!result.allowed) {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Too many requests' }), {
+				status: 429,
+				headers: {
+					'Content-Type': 'application/json',
+					'Retry-After': String(result.retryAfter),
+				},
+			}));
+		}
+	}
+
 	// Tenant resolution: /t/[slug]/... → resolve tenant, REWRITE URL path
 	const tenantMatch = path.match(/^\/t\/([^\/]+)(\/.*)?$/);
 	if (tenantMatch) {
@@ -29,10 +48,10 @@ export async function handle({ event, resolve }: {
 			const db = getDB(event.platform);
 			const tenant = await db.prepare('SELECT * FROM tenants WHERE slug = ? AND is_active = 1').bind(slug).first<any>();
 			if (!tenant) {
-				return new Response(JSON.stringify({ success: false, error: 'Tenant not found' }), {
+				return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Tenant not found' }), {
 					status: 404,
 					headers: { 'Content-Type': 'application/json' },
-				});
+				}));
 			}
 			event.locals = event.locals || {};
 			event.locals.tenant = tenant;
@@ -49,10 +68,10 @@ export async function handle({ event, resolve }: {
 				},
 			});
 		} catch (e) {
-			return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 	} else {
 		// No /t/ prefix — try cookie first, then fallback to default tenant
@@ -106,19 +125,19 @@ export async function handle({ event, resolve }: {
 		const token = getBearerToken(event.request);
 
 		if (!token) {
-			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 
 		const session = await getSession(event.platform, token);
 
 		if (!session) {
-			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 
 		// Also query the users table for role (migration 0021 added role column)
@@ -126,18 +145,18 @@ export async function handle({ event, resolve }: {
 		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
 
 		if (!user) {
-			return new Response(JSON.stringify({ success: false, error: 'User not found' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'User not found' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 
 		// Check admin role
 		if (!ADMIN_ROLES.includes(user.role)) {
-			return new Response(JSON.stringify({ success: false, error: 'Forbidden — admin role required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — admin role required' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 
 		// Attach user info to locals for downstream use
@@ -150,25 +169,25 @@ export async function handle({ event, resolve }: {
 	if (path.startsWith(INSTRUCTOR_API_PREFIX) || path.startsWith(GURU_API_PREFIX) || path.startsWith(TUTOR_API_PREFIX) || path.startsWith(BIMBEL_API_PREFIX) || path.startsWith(DOSEN_API_PREFIX) || path.startsWith(MAHASISWA_API_PREFIX) || path.startsWith(KAPRODI_API_PREFIX)) {
 		const token = getBearerToken(event.request);
 		if (!token) {
-			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 		const session = await getSession(event.platform, token);
 		if (!session) {
-			return new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 		const db = getDB(event.platform);
 		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
 		if (!user || !['superadmin', 'admin', 'instructor'].includes(user.role)) {
-			return new Response(JSON.stringify({ success: false, error: 'Forbidden — instructor role required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — instructor role required' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
-			});
+			}));
 		}
 		event.locals = event.locals || {};
 		event.locals.user = user;
@@ -178,7 +197,38 @@ export async function handle({ event, resolve }: {
 	// Activity logging — capture full HTTP metadata
 	const method = event.request.method;
 	const startTime = Date.now();
-	const response = await resolve(event);
+
+	// Wrap resolve in try-catch to catch API errors and return proper JSON
+	let response: Response;
+	try {
+		response = await resolve(event);
+	} catch (err) {
+		const msg = err instanceof Error ? err.message : 'Internal Server Error';
+		const status = 500;
+
+		// Log to error_logs DB
+		logError(event.platform, {
+			level: 'critical',
+			message: msg,
+			stack: err instanceof Error ? err.stack : undefined,
+			url: path,
+			method,
+			userId: currentUser?.id || null,
+			userAgent: event.request.headers.get('user-agent') || undefined,
+			ipAddress: event.request.headers.get('cf-connecting-ip') || event.request.headers.get('x-forwarded-for') || undefined,
+			tenantId: event.locals?.tenant?.id || 'default',
+		});
+
+		if (path.startsWith('/api/')) {
+			response = addSecurityHeaders(new Response(JSON.stringify({ success: false, error: msg }), {
+				status,
+				headers: { 'Content-Type': 'application/json' },
+			}));
+		} else {
+			throw err; // Re-throw non-API errors for SvelteKit's default error handling
+		}
+	}
+
 	const durationMs = Date.now() - startTime;
 
 	if (currentUser) {
@@ -186,7 +236,7 @@ export async function handle({ event, resolve }: {
 		logActivityAsync(event.platform, currentUser, method, path, response.status, durationMs, event.request);
 	}
 
-	return response;
+	return addSecurityHeaders(response);
 }
 
 /**
@@ -238,4 +288,56 @@ async function logActivityAsync(
 	} catch {
 		// analytics logging is best-effort
 	}
+}
+
+/**
+ * Add security headers to every response.
+ * Called after resolve() and on rate-limit early returns.
+ */
+function addSecurityHeaders(response: Response): Response {
+	const headers = new Headers(response.headers);
+	headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https:; font-src 'self' data:; frame-src 'self'; object-src 'none'");
+	headers.set('X-Content-Type-Options', 'nosniff');
+	headers.set('X-Frame-Options', 'DENY');
+	headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+	headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+	headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+	return new Response(response.body, {
+		status: response.status,
+		statusText: response.statusText,
+		headers,
+	});
+}
+
+/**
+ * Global error handler — SvelteKit's handleError hook.
+ * Called automatically when an unexpected error is thrown during request handling.
+ * Logs to error_logs table and returns sanitized JSON for API routes.
+ */
+export function handleError({ error, event, status, message }: {
+	error: unknown;
+	event: { request: Request; locals: Record<string, any>; url: URL; platform: App.Platform };
+	status: number;
+	message: string;
+}): void {
+	// Extract context from the event
+	const url = event.url?.pathname || '';
+	const method = event.request?.method || '';
+	const userId = event.locals?.user?.id || null;
+	const userAgent = event.request?.headers?.get('user-agent') || undefined;
+	const ip = event.request?.headers?.get('cf-connecting-ip') || event.request?.headers?.get('x-forwarded-for') || undefined;
+	const tenantId = event.locals?.tenant?.id || 'default';
+
+	// Fire-and-forget DB logging — never blocks the response
+	logError(event.platform, {
+		level: status >= 500 ? 'critical' : 'error',
+		message: message || (error instanceof Error ? error.message : String(error)),
+		stack: error instanceof Error ? error.stack : undefined,
+		url,
+		method,
+		userId,
+		userAgent,
+		ipAddress: ip,
+		tenantId,
+	}).catch(() => { /* best-effort */ });
 }

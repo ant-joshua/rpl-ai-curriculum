@@ -75,6 +75,10 @@
 			</a>
 		</div>
 
+		<p class="reset-link">
+			<a href="/reset-password">Lupa Password?</a>
+		</p>
+
 		<p class="oauth-note">
 			Login via OAuth akan mengirim kamu ke Google/GitHub untuk verifikasi.
 			Data kamu aman dan tidak dibagikan.
@@ -226,5 +230,19 @@
 		color: var(--text-secondary);
 		opacity: 0.7;
 		line-height: 1.4;
+	}
+
+	.reset-link {
+		margin-top: 16px;
+		font-size: 13px;
+	}
+
+	.reset-link a {
+		color: var(--accent);
+		text-decoration: none;
+	}
+
+	.reset-link a:hover {
+		text-decoration: underline;
 	}
 </style>

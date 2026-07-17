@@ -33,6 +33,14 @@
 
 <svelte:head>
 	<title>{course?.title ?? 'Course'} — RPL AI Curriculum</title>
+	<meta name="description" content={course?.description || offering?.name || 'Kursus RPL AI Curriculum'} />
+	<meta property="og:title" content="{course?.title ?? 'Course'} — RPL AI Curriculum" />
+	<meta property="og:description" content={course?.description || offering?.name || 'Kursus RPL AI Curriculum'} />
+	<meta property="og:type" content="article" />
+	<meta property="og:image" content="/og-image.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{course?.title ?? 'Course'} — RPL AI Curriculum" />
+	<meta name="twitter:description" content={course?.description || offering?.name || 'Kursus RPL AI Curriculum'} />
 </svelte:head>
 
 <div class="learn-layout">

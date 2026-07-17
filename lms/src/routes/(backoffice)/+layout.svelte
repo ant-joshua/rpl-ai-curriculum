@@ -40,11 +40,14 @@
 		{ path: '/admin/report-cards', icon: 'printer', label: 'Report Cards', roles: ['superadmin','admin'] },
 		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal', roles: ['superadmin','admin'] },
 		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs', roles: ['superadmin','admin'] },
+		{ path: '/admin/error-logs', icon: 'alert-triangle', label: 'Error Logs', roles: ['superadmin','admin'] },
 		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs', roles: ['superadmin','admin','instructor','ta'] },
 		{ path: '/admin/export-import', icon: 'database', label: 'Backup & Restore', roles: ['superadmin','admin'] },
 		{ path: '/admin/course-migration', icon: 'refresh-cw', label: 'Migrasi Course', roles: ['superadmin','admin'] },
 		{ path: '/admin/exports', icon: 'download', label: 'Exports', roles: ['superadmin','admin'] },
 		{ path: '/admin/system', icon: 'settings', label: 'System', roles: ['superadmin','admin'] },
+		{ path: '/admin/course-offerings', icon: 'book-open', label: 'Course Offerings', roles: ['superadmin','admin'] },
+		{ path: '/admin/instructor-applications', icon: 'user-plus', label: 'Pengajuan Instruktur', roles: ['superadmin','admin'] },
 	];
 
 	const navItems = $derived(allNavItems.filter(item => item.roles.includes(userRole)));

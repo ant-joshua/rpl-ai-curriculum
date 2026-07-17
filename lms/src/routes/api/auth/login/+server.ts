@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { createSession } from '$lib/server/auth';
+import bcrypt from 'bcryptjs';
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -21,10 +22,15 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'User not found' }, 401);
 		}
 
-		// Simple password check (seeded users use 'password123')
-		// In production, use bcrypt/argon2
-		if (password && user.password_hash && password !== 'password123') {
-			// TODO: proper hash verification
+		// Verify password with bcrypt
+		if (user.password_hash) {
+			const valid = await bcrypt.compare(password || '', user.password_hash);
+			if (!valid) {
+				return jsonResponse({ success: false, error: 'Invalid password' }, 401);
+			}
+		} else if (password !== 'password123') {
+			// Fallback for legacy users without password_hash
+			// In production, this would only be for seeded test accounts
 		}
 
 		// Create session token
