@@ -12,11 +12,13 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 		const difficulty = url.searchParams.get('difficulty');
 		const course_offering_id = url.searchParams.get('course_offering_id');
 		const status = url.searchParams.get('status');
+		const search = url.searchParams.get('search');
 
 		if (type) { where += ' AND type = ?'; params.push(type); }
 		if (difficulty) { where += ' AND difficulty = ?'; params.push(difficulty); }
 		if (course_offering_id) { where += ' AND course_offering_id = ?'; params.push(course_offering_id); }
 		if (status) { where += ' AND status = ?'; params.push(status); }
+		if (search) { where += ' AND (question LIKE ? OR tags LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
 
 		const countResult = await db.prepare(`SELECT COUNT(*) as total FROM question_bank ${where}`).bind(...params).first<{ total: number }>();
 		const total = countResult?.total || 0;

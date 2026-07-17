@@ -29,6 +29,7 @@
 		{ href: '/my/assessments', icon: '📋', label: 'Penilaian' },
 		{ href: '/my/assignments', icon: '📂', label: 'Tugas' },
 		{ href: '/flashcards', icon: '📇', label: 'Flashcards' },
+		{ href: '/my/practice', icon: '🧪', label: 'Latihan Soal' },
 		{ href: '/my/planner', icon: '📅', label: 'Perencana' },
 		{ href: '/progress-quiz', icon: '🧪', label: 'Progress Quiz' },
 		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
