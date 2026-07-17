@@ -47,6 +47,8 @@
 		{ path: '/admin/exports', icon: 'download', label: 'Exports', roles: ['superadmin','admin'] },
 		{ path: '/admin/system', icon: 'settings', label: 'System', roles: ['superadmin','admin'] },
 		{ path: '/admin/course-offerings', icon: 'book-open', label: 'Course Offerings', roles: ['superadmin','admin'] },
+		{ path: '/admin/courses', icon: 'book-open', label: 'Kursus', roles: ['superadmin','admin'] },
+		{ path: '/admin/media', icon: 'image', label: 'Media', roles: ['superadmin','admin'] },
 		{ path: '/admin/instructor-applications', icon: 'user-plus', label: 'Pengajuan Instruktur', roles: ['superadmin','admin'] },
 	];
 
