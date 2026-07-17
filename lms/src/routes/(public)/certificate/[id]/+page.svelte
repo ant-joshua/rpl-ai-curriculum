@@ -70,6 +70,12 @@
 			<a href="/my/dashboard" class="dashboard-link">&larr; Dashboard</a>
 		</div>
 
+		<!-- Verification badge -->
+		<div class="verify-badge no-print">
+			<span class="verify-icon">✅</span>
+			<span class="verify-text">Sertifikat Terverifikasi — {cert.certificate_number}</span>
+		</div>
+
 		<div class="certificate" id="certificate">
 			<div class="cert-border-outer">
 				<div class="cert-border-inner">
@@ -245,6 +251,27 @@
 	.dashboard-link:hover {
 		border-color: var(--accent);
 		color: var(--accent);
+	}
+
+	.verify-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-bottom: 20px;
+		padding: 10px 20px;
+		background: rgba(46, 204, 113, 0.08);
+		border: 1px solid rgba(46, 204, 113, 0.25);
+		border-radius: 10px;
+		max-width: 380px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.verify-icon { font-size: 20px; }
+	.verify-text {
+		font-size: 12px;
+		font-weight: 600;
+		color: #2ecc71;
 	}
 
 	/* ===== Certificate design ===== */

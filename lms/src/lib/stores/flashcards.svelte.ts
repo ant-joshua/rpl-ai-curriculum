@@ -5,18 +5,41 @@ import { api } from '$lib/utils/api';
 
 const STORAGE_KEY = 'lms-flashcards';
 const SYNC_QUEUE_KEY = 'lms-flashcards-sync-queue';
+const DECK_META_KEY = 'lms-flashcard-decks';
+const STATS_KEY = 'lms-flashcard-stats';
+
+export type Difficulty = 'easy' | 'medium' | 'hard';
+export type DeckCategory = 'quiz' | 'summary' | 'custom';
 
 export interface Flashcard {
   id: string;
   moduleSlug: string;
-  sessionId?: string;
   front: string;
   back: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: Difficulty;
+  deckCategory: DeckCategory;
   interval: number;
   repetitions: number;
   easeFactor: number;
   nextReview: string;
+  lastReviewed?: string;
+  tags: string[];
+}
+
+export interface DeckMeta {
+  slug: string;
+  title: string;
+  category: DeckCategory;
+  cardCount: number;
+}
+
+export interface ReviewStats {
+  totalReviewed: number;
+  totalCorrect: number;
+  streak: number;
+  bestStreak: number;
+  lastReviewDate: string;
+  reviewsByDay: Record<string, number>;
 }
 
 export interface SyncQueueItem {
@@ -35,14 +58,14 @@ function createFlashcardStore() {
   let version = $state(0);
   let loadedFromApi = $state(false);
 
+  // ── Storage helpers ──
+
   function loadCards(): Flashcard[] {
     if (!browser) return [];
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
   function saveCards(cards: Flashcard[]): void {
@@ -51,19 +74,60 @@ function createFlashcardStore() {
     version++;
   }
 
+  function loadStats(): ReviewStats {
+    if (!browser) return emptyStats();
+    try {
+      const raw = localStorage.getItem(STATS_KEY);
+      return raw ? JSON.parse(raw) : emptyStats();
+    } catch { return emptyStats(); }
+  }
+
+  function saveStats(s: ReviewStats): void {
+    if (!browser) return;
+    localStorage.setItem(STATS_KEY, JSON.stringify(s));
+  }
+
+  function emptyStats(): ReviewStats {
+    return { totalReviewed: 0, totalCorrect: 0, streak: 0, bestStreak: 0, lastReviewDate: '', reviewsByDay: {} };
+  }
+
   function getQueue(): SyncQueueItem[] {
     if (!browser) return [];
     try {
       const raw = localStorage.getItem(SYNC_QUEUE_KEY);
       return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
   function saveQueue(items: SyncQueueItem[]): void {
     if (!browser) return;
     localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(items));
+  }
+
+  // ── Deck categories ──
+
+  function getDecks(): DeckMeta[] {
+    const cards = loadCards();
+    const map = new Map<string, { title: string; category: DeckCategory; count: number }>();
+    for (const c of cards) {
+      const mod = modules.find(m => m.slug === c.moduleSlug);
+      const title = mod?.title || c.moduleSlug;
+      if (!map.has(c.moduleSlug)) {
+        map.set(c.moduleSlug, { title, category: c.deckCategory || 'quiz', count: 0 });
+      }
+      const entry = map.get(c.moduleSlug)!;
+      entry.count++;
+    }
+    return Array.from(map.entries()).map(([slug, meta]) => ({
+      slug,
+      title: meta.title,
+      category: meta.category,
+      cardCount: meta.count,
+    }));
+  }
+
+  function getCardsByDeck(moduleSlug: string): Flashcard[] {
+    return loadCards().filter(c => c.moduleSlug === moduleSlug);
   }
 
   function getCards(): Flashcard[] {
@@ -94,20 +158,25 @@ function createFlashcardStore() {
     return cards.filter(c => c.nextReview <= today);
   }
 
-  function getCardCounts(): { total: number; dueToday: number; known: number; learning: number } {
+  function getCardsDueByDeck(moduleSlug: string): Flashcard[] {
+    const cards = loadCards();
+    const today = new Date().toISOString().split('T')[0];
+    return cards.filter(c => c.moduleSlug === moduleSlug && c.nextReview <= today);
+  }
+
+  function getCardCounts(): { total: number; dueToday: number; known: number; learning: number; newCards: number; decks: number } {
     const cards = loadCards();
     const today = new Date().toISOString().split('T')[0];
     const dueToday = cards.filter(c => c.nextReview <= today).length;
     const known = cards.filter(c => c.repetitions >= 3 && c.easeFactor >= 2.5).length;
     const learning = cards.filter(c => c.repetitions > 0 && c.repetitions < 3).length;
-    return {
-      total: cards.length,
-      dueToday,
-      known,
-      learning,
-    };
+    const newCards = cards.filter(c => c.repetitions === 0).length;
+    const decks = new Set(cards.map(c => c.moduleSlug)).size;
+    return { total: cards.length, dueToday, known, learning, newCards, decks };
   }
 
+  // ── Spaced repetition (SM-2 derived) ──
+  // Rating: 1=Sangat Mudah, 2=Mudah, 3=Sedang, 4=Sulit
   function reviewCard(id: string, rating: 1 | 2 | 3 | 4): Flashcard | null {
     const cards = loadCards();
     const idx = cards.findIndex(c => c.id === id);
@@ -115,29 +184,52 @@ function createFlashcardStore() {
 
     const card = cards[idx];
 
-    // Rating: 1=Sangat Mudah, 2=Mudah, 3=Sedang, 4=Sulit
-    const intervalMinutes: Record<number, number> = {
-      1: 5,    // 5 minutes
-      2: 10,   // 10 minutes
-      3: 1440, // 1 day
-      4: 5760, // 4 days
+    // SM-2 algorithm
+    let newInterval: number;
+    let newEase: number;
+    let newRepetitions: number;
+
+    if (rating <= 2) {
+      // Correct — increase interval
+      newRepetitions = card.repetitions + 1;
+      if (newRepetitions === 1) {
+        newInterval = 1; // 1 day
+      } else if (newRepetitions === 2) {
+        newInterval = 6; // 6 days
+      } else {
+        newInterval = Math.round(card.interval * card.easeFactor);
+      }
+    } else {
+      // Incorrect — reset
+      newRepetitions = 0;
+      newInterval = 1; // 1 day
+    }
+
+    // Ease factor adjustments
+    const easeDelta: Record<number, number> = {
+      1: 0.15,  // Sangat Mudah — increase ease
+      2: 0.05,  // Mudah — slight increase
+      3: -0.10, // Sedang — slight decrease
+      4: -0.20, // Sulit — decrease more
     };
 
-    const easeAdjustments: Record<number, number> = {
-      1: 0.15,
-      2: 0.05,
-      3: 0,
-      4: -0.15,
-    };
+    if (rating === 1) {
+      // Bonus for very easy
+      newEase = card.easeFactor + 0.15;
+    } else if (rating === 2) {
+      newEase = card.easeFactor + 0.05;
+    } else if (rating === 3) {
+      newEase = card.easeFactor - 0.10;
+    } else {
+      newEase = card.easeFactor - 0.20;
+    }
 
-    const newInterval = intervalMinutes[rating] / (24 * 60);
-    let newEase = card.easeFactor + easeAdjustments[rating];
     if (newEase < 1.3) newEase = 1.3;
-
-    const newRepetitions = rating <= 2 ? card.repetitions + 1 : Math.max(0, card.repetitions - 1);
+    if (newEase > 3.0) newEase = 3.0;
 
     const nextDate = new Date();
-    nextDate.setMinutes(nextDate.getMinutes() + intervalMinutes[rating]);
+    nextDate.setDate(nextDate.getDate() + newInterval);
+    nextDate.setHours(0, 0, 0, 0);
 
     const updated: Flashcard = {
       ...card,
@@ -145,10 +237,26 @@ function createFlashcardStore() {
       repetitions: newRepetitions,
       easeFactor: newEase,
       nextReview: nextDate.toISOString(),
+      lastReviewed: new Date().toISOString(),
     };
 
     cards[idx] = updated;
     saveCards(cards);
+
+    // Update review stats
+    const stats = loadStats();
+    stats.totalReviewed++;
+    if (rating <= 2) stats.totalCorrect++;
+    if (rating <= 2) {
+      stats.streak++;
+      if (stats.streak > stats.bestStreak) stats.bestStreak = stats.streak;
+    } else {
+      stats.streak = 0;
+    }
+    stats.lastReviewDate = new Date().toISOString().split('T')[0];
+    const today = stats.lastReviewDate;
+    stats.reviewsByDay[today] = (stats.reviewsByDay[today] || 0) + 1;
+    saveStats(stats);
 
     // Sync to API
     if (navigator.onLine) {
@@ -165,10 +273,7 @@ function createFlashcardStore() {
           next_review: updated.nextReview,
           last_reviewed: new Date().toISOString(),
         }),
-      }).catch(() => {
-        // offline — queue for later
-        queueSync(updated);
-      });
+      }).catch(() => queueSync(updated));
     } else {
       queueSync(updated);
     }
@@ -176,7 +281,16 @@ function createFlashcardStore() {
     return updated;
   }
 
-  /** Queue a single card for later batch sync */
+  function getReviewStats(): ReviewStats {
+    return loadStats();
+  }
+
+  function resetStats(): void {
+    saveStats(emptyStats());
+  }
+
+  // ── Sync ──
+
   function queueSync(card: Flashcard): void {
     const queue = getQueue();
     const existing = queue.findIndex(q => q.card_id === card.id);
@@ -191,20 +305,13 @@ function createFlashcardStore() {
       next_review: card.nextReview,
       last_reviewed: new Date().toISOString(),
     };
-    if (existing >= 0) {
-      queue[existing] = item;
-    } else {
-      queue.push(item);
-    }
+    if (existing >= 0) queue[existing] = item;
+    else queue.push(item);
     saveQueue(queue);
   }
 
-  /** Sync a single card directly */
   function syncSingleCard(card: Flashcard): void {
-    if (!navigator.onLine) {
-      queueSync(card);
-      return;
-    }
+    if (!navigator.onLine) { queueSync(card); return; }
     api('/api/flashcards', {
       method: 'POST',
       body: JSON.stringify({
@@ -217,45 +324,25 @@ function createFlashcardStore() {
         repetitions: card.repetitions,
         next_review: card.nextReview,
       }),
-    }).catch(() => {
-      queueSync(card);
-    });
+    }).catch(() => queueSync(card));
   }
 
-  /** Batch sync all local flashcards to D1 */
   async function syncAll(): Promise<number> {
     if (!browser || !navigator.onLine) return 0;
-
-    // Sync queue first
     const queue = getQueue();
     let synced = 0;
     if (queue.length > 0) {
       try {
         const res = await fetch('/api/flashcards', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-sync': 'true',
-          },
+          headers: { 'Content-Type': 'application/json', 'x-sync': 'true' },
           body: JSON.stringify({ cards: queue }),
         });
-        if (res.ok) {
-          synced = queue.length;
-          saveQueue([]);
-        }
-      } catch {
-        // still offline
-      }
+        if (res.ok) { synced = queue.length; saveQueue([]); }
+      } catch { /* offline */ }
     }
-
-    // Also sync all local cards (in case they were added offline)
     const localCards = loadCards();
-    const unsynced = localCards.filter(c => {
-      // Consider any card without recent sync as needing sync
-      // Simple heuristic: send all cards that aren't in the queue already
-      return !queue.some(q => q.card_id === c.id);
-    });
-
+    const unsynced = localCards.filter(c => !queue.some(q => q.card_id === c.id));
     if (unsynced.length > 0) {
       const payload = unsynced.map(c => ({
         card_id: c.id,
@@ -271,66 +358,47 @@ function createFlashcardStore() {
       try {
         await fetch('/api/flashcards', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-sync': 'true',
-          },
+          headers: { 'Content-Type': 'application/json', 'x-sync': 'true' },
           body: JSON.stringify({ cards: payload }),
         });
-      } catch {
-        // ignore
-      }
+      } catch { /* ignore */ }
     }
-
     return synced;
   }
 
-  /** Load flashcards from D1 API, fallback to localStorage */
   async function initFromApi(): Promise<void> {
     if (!browser || loadedFromApi) return;
     loadedFromApi = true;
-
     try {
       const res = await api<Array<{
         id: string; card_id: string; module_slug: string;
         question: string; answer: string; ease_factor: number;
         interval: number; repetitions: number; next_review: string | null;
       }>>('/api/flashcards');
-
       if (res.success && res.data && res.data.length > 0) {
-        // Merge with existing local cards — API wins
         const local = loadCards();
         const apiCards: Flashcard[] = res.data.map(row => ({
           id: row.card_id,
           moduleSlug: row.module_slug,
           front: row.question,
           back: row.answer,
-          difficulty: 'medium' as const,
+          difficulty: 'medium' as Difficulty,
+          deckCategory: 'quiz' as DeckCategory,
           interval: row.interval,
           repetitions: row.repetitions,
           easeFactor: row.ease_factor,
           nextReview: row.next_review || new Date().toISOString(),
+          tags: [],
         }));
-
-        // Merge: keep local cards not in API, add API cards
-        const localIds = new Set(local.map(c => c.id));
-        const merged = [...apiCards];
-        for (const c of local) {
-          if (!localIds.has(c.id)) {
-            merged.push(c);
-          }
-        }
+        const apiIds = new Set(apiCards.map(c => c.id));
+        const merged = [...apiCards, ...local.filter(c => !apiIds.has(c.id))];
         saveCards(merged);
       }
-    } catch {
-      // offline — use localStorage only
-    }
-
-    // Then try to flush any queued syncs
+    } catch { /* offline — use localStorage */ }
     syncAll().catch(() => {});
   }
 
-  async function generateFromModule(moduleSlug: string): Promise<number> {
+  async function generateFromModule(moduleSlug: string, deckCategory?: DeckCategory): Promise<number> {
     const mod = modules.find(m => m.slug === moduleSlug);
     if (!mod) return 0;
 
@@ -362,10 +430,12 @@ function createFlashcardStore() {
           front,
           back,
           difficulty: 'medium',
+          deckCategory: deckCategory || 'quiz',
           interval: 0,
           repetitions: 0,
           easeFactor: 2.5,
           nextReview: new Date().toISOString(),
+          tags: [],
         };
         cards.push(newCard);
         added++;
@@ -373,30 +443,27 @@ function createFlashcardStore() {
 
       if (added > 0) {
         saveCards(cards);
-        // Sync newly generated cards
         if (browser && navigator.onLine) {
-          const payload = cards.filter(c =>
-            cards.some(nc => nc.id === c.id)
-          ).map(c => ({
-            card_id: c.id,
-            module_slug: c.moduleSlug,
-            question: c.front,
-            answer: c.back,
-            ease_factor: c.easeFactor,
-            interval: c.interval,
-            repetitions: c.repetitions,
-            next_review: c.nextReview,
-          }));
+          const newCards = cards.slice(-added);
           fetch('/api/flashcards', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-sync': 'true' },
-            body: JSON.stringify({ cards: payload.filter(c => c.card_id === cards.find(lc => lc.id === c.card_id)?.id) }),
+            body: JSON.stringify({
+              cards: newCards.map(c => ({
+                card_id: c.id,
+                module_slug: c.moduleSlug,
+                question: c.front,
+                answer: c.back,
+                ease_factor: c.easeFactor,
+                interval: c.interval,
+                repetitions: c.repetitions,
+                next_review: c.nextReview,
+              }))
+            }),
           }).catch(() => {});
         }
       }
-    } catch {
-      return 0;
-    }
+    } catch { return 0; }
 
     return added;
   }
@@ -406,9 +473,7 @@ function createFlashcardStore() {
     saveQueue([]);
   }
 
-  // Auto-init on browser
   if (browser) {
-    // Defer init so it doesn't block rendering
     setTimeout(() => initFromApi(), 100);
   }
 
@@ -417,8 +482,13 @@ function createFlashcardStore() {
     addCard,
     deleteCard,
     getCardsDueToday,
+    getCardsDueByDeck,
     getCardCounts,
+    getDecks,
+    getCardsByDeck,
     reviewCard,
+    getReviewStats,
+    resetStats,
     generateFromModule,
     clearCards,
     syncAll,

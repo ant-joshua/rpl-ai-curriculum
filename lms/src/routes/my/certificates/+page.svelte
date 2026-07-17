@@ -116,9 +116,15 @@
 								<h3 class="cert-card-title">{cert.course_title}</h3>
 								<p class="cert-card-offering">{cert.offering_name}</p>
 								<div class="cert-card-meta">
+									<span class="status-badge issued">✅ Diterbitkan</span>
 									<span class="cert-card-number">{cert.certificate_number}</span>
 									<span class="cert-card-date">{formatDate(cert.issued_at)}</span>
 								</div>
+							</div>
+							<div class="cert-card-actions">
+								<button class="download-btn" onclick={(e) => { e.stopPropagation(); window.open('/certificate/' + cert.id); }}>
+									⬇️
+								</button>
 							</div>
 							<div class="cert-card-arrow">&rarr;</div>
 						</a>
@@ -346,6 +352,43 @@
 		padding: 2px 8px;
 		border-radius: 4px;
 		font-weight: 600;
+	}
+
+	.status-badge {
+		font-size: 11px;
+		font-weight: 600;
+		padding: 2px 10px;
+		border-radius: 4px;
+		background: rgba(46, 204, 113, 0.1);
+		color: #2ecc71;
+		border: 1px solid rgba(46, 204, 113, 0.3);
+	}
+
+	.status-badge.issued { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border-color: rgba(46, 204, 113, 0.3); }
+
+	.download-btn {
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		color: var(--text);
+		font-size: 16px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.15s;
+	}
+	.download-btn:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	.cert-card-actions {
+		display: flex;
+		gap: 6px;
+		flex-shrink: 0;
 	}
 
 	.cert-card-date {

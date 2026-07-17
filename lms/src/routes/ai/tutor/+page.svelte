@@ -36,6 +36,7 @@
 
 		try {
 			const token = getAuthToken();
+			const history = turns.slice(0, -1).map(t => ({ role: t.role, content: t.text }));
 			const res = await fetch('/api/ai/tutor', {
 				method: 'POST',
 				headers: {
@@ -45,6 +46,7 @@
 				body: JSON.stringify({
 					message: text,
 					courseOfferingId: selectedOfferingId || undefined,
+					history,
 				}),
 			});
 

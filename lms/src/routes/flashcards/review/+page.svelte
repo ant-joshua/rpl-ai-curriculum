@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
 
   let cards = $state<import('$lib/stores/flashcards.svelte').Flashcard[]>([]);
   let currentIndex = $state(0);
@@ -10,17 +11,32 @@
   let rated = $state(false);
   let isFinished = $state(false);
   let reviewCount = $state(0);
+  let correctCount = $state(0);
+  let streak = $state(0);
+  let bestStreak = $state(0);
   let refreshKey = $state(0);
+  let deckFilter = $state('');
 
   let currentCard = $derived(cards[currentIndex]);
   let totalCards = $derived(cards.length);
   let progressPct = $derived(totalCards > 0 ? Math.round((reviewCount / totalCards) * 100) : 0);
+  let accuracy = $derived(reviewCount > 0 ? Math.round((correctCount / reviewCount) * 100) : 0);
 
   onMount(() => {
-    cards = flashcards.getCardsDueToday();
-    if (cards.length === 0) {
-      // If none due today, show all cards for review practice
-      cards = flashcards.getCards().sort(() => Math.random() - 0.5);
+    // Check for deck filter in URL params
+    const params = new URLSearchParams(window.location.search);
+    deckFilter = params.get('deck') || '';
+
+    if (deckFilter) {
+      cards = flashcards.getCardsDueByDeck(deckFilter);
+      if (cards.length === 0) {
+        cards = flashcards.getCardsByDeck(deckFilter).sort(() => Math.random() - 0.5);
+      }
+    } else {
+      cards = flashcards.getCardsDueToday();
+      if (cards.length === 0) {
+        cards = flashcards.getCards().sort(() => Math.random() - 0.5);
+      }
     }
     if (cards.length === 0) {
       isFinished = true;
@@ -36,6 +52,13 @@
     flashcards.reviewCard(currentCard.id, rating);
     rated = true;
     reviewCount++;
+    if (rating <= 2) {
+      correctCount++;
+      streak++;
+      if (streak > bestStreak) bestStreak = streak;
+    } else {
+      streak = 0;
+    }
 
     setTimeout(() => {
       if (currentIndex < totalCards - 1) {
@@ -51,6 +74,17 @@
   function goBack() {
     goto('/flashcards');
   }
+
+  function restartReview() {
+    currentIndex = 0;
+    flipped = false;
+    rated = false;
+    isFinished = false;
+    reviewCount = 0;
+    correctCount = 0;
+    streak = 0;
+    cards = [...cards].sort(() => Math.random() - 0.5);
+  }
 </script>
 
 <div class="page">
@@ -60,13 +94,42 @@
       <div class="confetti">🎉</div>
       <h1>Review Selesai!</h1>
       <p class="end-subtitle">Kamu telah mereview {reviewCount} kartu</p>
+
+      <div class="end-stats">
+        <div class="end-stat">
+          <span class="end-stat-value">{correctCount}/{reviewCount}</span>
+          <span class="end-stat-label">Benar</span>
+        </div>
+        <div class="end-stat">
+          <span class="end-stat-value">{accuracy}%</span>
+          <span class="end-stat-label">Akurasi</span>
+        </div>
+        <div class="end-stat">
+          <span class="end-stat-value">🔥 {bestStreak}</span>
+          <span class="end-stat-label">Streak Terbaik</span>
+        </div>
+      </div>
+
       <div class="end-actions">
+        {#if cards.length > 0}
+          <button class="btn secondary big" onclick={restartReview}>
+            🔄 Review Lagi
+          </button>
+        {/if}
         <button class="btn primary big" onclick={goBack}>
           ↩️ Kembali ke Dashboard
         </button>
       </div>
     </div>
   {:else if currentCard}
+    <!-- Header -->
+    <div class="review-header">
+      {#if deckFilter}
+        <span class="deck-label">📂 {deckFilter}</span>
+      {/if}
+      <span class="streak-display">🔥 {streak}</span>
+    </div>
+
     <!-- Progress bar -->
     <div class="progress-bar-wrap">
       <div class="progress-bar" style="width: {progressPct}%"></div>
@@ -104,22 +167,22 @@
           <button class="rating-btn very-easy" onclick={() => rateCard(1)}>
             <span class="r-icon">😊</span>
             <span class="r-text">Sangat Mudah</span>
-            <span class="r-time">(5m)</span>
+            <span class="r-time">(1 hr)</span>
           </button>
           <button class="rating-btn easy" onclick={() => rateCard(2)}>
             <span class="r-icon">👍</span>
             <span class="r-text">Mudah</span>
-            <span class="r-time">(10m)</span>
+            <span class="r-time">(1 hr)</span>
           </button>
           <button class="rating-btn medium" onclick={() => rateCard(3)}>
             <span class="r-icon">🤔</span>
             <span class="r-text">Sedang</span>
-            <span class="r-time">(1d)</span>
+            <span class="r-time">(1 hr)</span>
           </button>
           <button class="rating-btn hard" onclick={() => rateCard(4)}>
             <span class="r-icon">😰</span>
             <span class="r-text">Sulit</span>
-            <span class="r-time">(4d)</span>
+            <span class="r-time">(1 hr)</span>
           </button>
         </div>
       </div>
@@ -144,6 +207,26 @@
     flex-direction: column;
     min-height: 60vh;
     padding-top: 20px;
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .deck-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .streak-display {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f59e0b;
   }
 
   /* Progress Bar */
@@ -288,7 +371,33 @@
   .end-screen h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
   .end-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
 
-  .end-actions { width: 100%; max-width: 300px; }
+  .end-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .end-stat {
+    text-align: center;
+  }
+  .end-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .end-stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .end-actions {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
   .btn {
     padding: 8px 20px;
@@ -308,6 +417,11 @@
     border-color: var(--accent);
   }
   .btn.primary:hover { opacity: 0.9; }
+  .btn.secondary {
+    border-color: var(--text-secondary);
+    color: var(--text);
+  }
+  .btn.secondary:hover { border-color: var(--accent); }
   .btn.big { padding: 12px 24px; font-size: 15px; width: 100%; }
 
   /* Empty */
