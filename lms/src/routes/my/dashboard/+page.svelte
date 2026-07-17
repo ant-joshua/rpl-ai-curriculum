@@ -17,6 +17,11 @@
 	let averageProgress = $derived(data.averageProgress || 0);
 	let activeCourses = $derived(data.activeCourses || []);
 	let upcomingDeadlines = $derived(data.upcomingDeadlines || []);
+	let upcomingSchedules = $derived(data.upcomingSchedules || []);
+	let recentAnnouncements = $derived(data.recentAnnouncements || []);
+	let completedCourseCount = $derived(data.completedCourseCount || 0);
+	let totalLessonsDone = $derived(data.totalLessonsDone || 0);
+	let totalXp = $derived(data.totalXp || 0);
 	let recentActivity = $derived(data.recentActivity || []);
 
 	let showAllCourses = $state(false);
@@ -62,6 +67,15 @@
 		now.setHours(0, 0, 0, 0);
 		const d = new Date(dateStr + 'T00:00:00Z');
 		return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+	}
+
+	function formatDateTime(dt: string): string {
+		if (!dt) return '';
+		const d = new Date(dt + (dt.endsWith('Z') ? '' : 'Z'));
+		return d.toLocaleDateString('id-ID', {
+			weekday: 'short', day: 'numeric', month: 'short',
+			hour: '2-digit', minute: '2-digit',
+		});
 	}
 
 	function activityLabel(action: string, entityType: string): string {
@@ -123,6 +137,39 @@
 		<Card variant="interactive">
 			<CardContent>
 				<div class="overview-item">
+					<span class="overview-icon">📖</span>
+					<div>
+						<span class="overview-value">{totalLessonsDone}</span>
+						<span class="overview-label">Pelajaran selesai</span>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+		<Card variant="interactive">
+			<CardContent>
+				<div class="overview-item">
+					<span class="overview-icon">🎓</span>
+					<div>
+						<span class="overview-value">{completedCourseCount}</span>
+						<span class="overview-label">Kursus selesai</span>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+		<Card variant="interactive">
+			<CardContent>
+				<div class="overview-item">
+					<span class="overview-icon">⭐</span>
+					<div>
+						<span class="overview-value">{totalXp}</span>
+						<span class="overview-label">Total XP</span>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+		<Card variant="interactive">
+			<CardContent>
+				<div class="overview-item">
 					<span class="overview-icon">🔥</span>
 					<div>
 						<span class="overview-value">{currentStreak}</span>
@@ -133,7 +180,7 @@
 		</Card>
 	</section>
 
-	<!-- Grid: Courses + Upcoming tasks -->
+	<!-- Grid: Courses + Side panel -->
 	<div class="content-grid">
 		<!-- Active Courses -->
 		<section class="courses-section">
@@ -198,8 +245,45 @@
 			{/if}
 		</section>
 
-		<!-- Side panel: Upcoming + Activity -->
+		<!-- Side panel -->
 		<div class="side-panel">
+			<!-- Upcoming Schedule Events -->
+			<section class="upcoming-section">
+				<div class="section-header">
+					<h2>📅 Jadwal Mendatang</h2>
+					{#if upcomingSchedules.length > 0}
+						<Button href="/my/schedule" variant="ghost" size="sm">Lihat Semua</Button>
+					{/if}
+				</div>
+
+				{#if upcomingSchedules.length === 0}
+					<Card>
+						<CardContent>
+							<div class="empty-mini">
+								<p class="empty-text">Tidak ada jadwal dalam waktu dekat</p>
+							</div>
+						</CardContent>
+					</Card>
+				{:else}
+					<div class="task-list">
+						{#each upcomingSchedules as s}
+							<a href="/learn/{s.course_offering_id}" class="task-item">
+								<span class="task-icon">{s.course_icon || '📅'}</span>
+								<div class="task-body">
+									<span class="task-title">{s.title}</span>
+									<span class="task-meta">
+										{s.offering_name} · {formatDateTime(s.startTime)}
+									</span>
+									{#if s.location}
+										<span class="task-meta">📍 {s.location}</span>
+									{/if}
+								</div>
+							</a>
+						{/each}
+					</div>
+				{/if}
+			</section>
+
 			<!-- Upcoming Tasks -->
 			<section class="upcoming-section">
 				<div class="section-header">
@@ -239,6 +323,38 @@
 									<span class="date-full">{formatDate(task.due_date)}</span>
 								</div>
 							</a>
+						{/each}
+					</div>
+				{/if}
+			</section>
+
+			<!-- Recent Announcements -->
+			<section class="activity-section">
+				<div class="section-header">
+					<h2>📢 Pengumuman Terbaru</h2>
+				</div>
+
+				{#if recentAnnouncements.length === 0}
+					<Card>
+						<CardContent>
+							<div class="empty-mini">
+								<p class="empty-text">Belum ada pengumuman</p>
+							</div>
+						</CardContent>
+					</Card>
+				{:else}
+					<div class="activity-list">
+						{#each recentAnnouncements as ann}
+							<div class="activity-item">
+								<span class="activity-dot" style="background: #7170ff"></span>
+								<div class="activity-body">
+									<span class="activity-action">{ann.title}</span>
+									{#if ann.body}
+										<span class="activity-detail">{ann.body.slice(0, 100)}{ann.body.length > 100 ? '…' : ''}</span>
+									{/if}
+									<span class="activity-meta">{ann.offering_name} · {timeAgo(ann.createdAt)}</span>
+								</div>
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -332,18 +448,25 @@
 	/* Overview */
 	.overview-cards {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 12px;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 10px;
 		margin-bottom: 28px;
+	}
+
+	@media (max-width: 1000px) {
+		.overview-cards { grid-template-columns: repeat(3, 1fr); }
+	}
+	@media (max-width: 500px) {
+		.overview-cards { grid-template-columns: repeat(2, 1fr); }
 	}
 
 	.overview-item {
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: 10px;
 	}
 
-	.overview-icon { font-size: 28px; }
+	.overview-icon { font-size: 24px; }
 
 	.overview-item div {
 		display: flex;
@@ -352,7 +475,7 @@
 	}
 
 	.overview-value {
-		font-size: 22px;
+		font-size: 20px;
 		font-weight: 700;
 		background: var(--gradient-primary);
 		-webkit-background-clip: text;
@@ -361,7 +484,7 @@
 	}
 
 	.overview-label {
-		font-size: 12px;
+		font-size: 11px;
 		color: var(--text-secondary);
 		font-weight: 500;
 	}
@@ -498,35 +621,18 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--accent);
-		transition: gap 0.15s ease;
 	}
 
-	/* Empty state */
-	.empty-state {
-		text-align: center;
-		padding: 40px 20px;
-	}
-
-	.empty-icon { font-size: 48px; margin-bottom: 12px; }
-
-	.empty-state h3 {
-		font-size: 17px;
-		font-weight: 600;
-		margin: 0 0 6px;
-		color: var(--text);
-	}
-
-	.empty-state p {
-		font-size: 13px;
-		color: var(--text-secondary);
-		margin: 0 0 16px;
-	}
+	/* Empty states */
+	.empty-state { text-align: center; padding: 20px; }
+	.empty-state h3 { margin: 8px 0 4px; font-size: 16px; }
+	.empty-state p { color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; }
 
 	/* Side panel */
 	.side-panel {
 		display: flex;
 		flex-direction: column;
-		gap: 24px;
+		gap: 20px;
 	}
 
 	/* Task list */
@@ -538,84 +644,44 @@
 
 	.task-item {
 		display: flex;
+		align-items: flex-start;
 		gap: 10px;
 		padding: 12px;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 10px;
 		text-decoration: none;
-		transition: all 0.15s ease;
-		align-items: center;
+		transition: all 0.15s;
 	}
 
 	.task-item:hover {
 		border-color: var(--accent);
-		background: var(--hover);
 	}
 
-	.task-icon { font-size: 20px; flex-shrink: 0; }
+	.task-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+	.task-body { flex: 1; min-width: 0; }
+	.task-title { font-size: 13px; font-weight: 600; color: var(--text); display: block; }
+	.task-meta { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+	.task-date { text-align: right; flex-shrink: 0; }
+	.date-label { font-size: 12px; font-weight: 600; color: var(--text); display: block; }
+	.task-date.urgent .date-label { color: #ef4444; }
+	.date-full { font-size: 11px; color: var(--text-secondary); }
 
-	.task-body {
-		flex: 1;
-		min-width: 0;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.task-title {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.task-meta {
-		font-size: 11px;
-		color: var(--text-secondary);
-	}
-
-	.task-date {
-		text-align: right;
-		flex-shrink: 0;
-	}
-
-	.date-label {
-		display: block;
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--text);
-	}
-
-	.task-date.urgent .date-label {
-		color: #ef4444;
-	}
-
-	.date-full {
-		display: block;
-		font-size: 10px;
-		color: var(--text-secondary);
-	}
-
-	/* Activity list */
+	/* Activity */
 	.activity-list {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 6px;
 	}
 
 	.activity-item {
 		display: flex;
+		align-items: flex-start;
 		gap: 10px;
 		padding: 10px 12px;
-		align-items: center;
-		border-radius: 8px;
-		transition: background 0.12s;
-	}
-
-	.activity-item:hover {
-		background: var(--hover);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 10px;
 	}
 
 	.activity-dot {
@@ -624,63 +690,19 @@
 		border-radius: 50%;
 		background: var(--accent);
 		flex-shrink: 0;
+		margin-top: 5px;
 	}
 
-	.activity-body {
-		flex: 1;
-		min-width: 0;
-		display: flex;
-		flex-direction: column;
-	}
+	.activity-body { flex: 1; min-width: 0; }
+	.activity-action { font-size: 13px; font-weight: 500; color: var(--text); display: block; }
+	.activity-detail { font-size: 12px; color: var(--text-secondary); display: block; margin-top: 1px; }
+	.activity-meta { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 2px; }
+	.activity-time { font-size: 11px; color: var(--text-secondary); flex-shrink: 0; }
 
-	.activity-action {
-		font-size: 13px;
-		color: var(--text);
-		font-weight: 500;
-	}
+	/* Empty mini */
+	.empty-mini { text-align: center; padding: 20px; }
+	.empty-text { color: var(--text-secondary); font-size: 13px; margin: 0; }
 
-	.activity-detail {
-		font-size: 11px;
-		color: var(--text-secondary);
-	}
-
-	.activity-time {
-		font-size: 11px;
-		color: var(--text-secondary);
-		flex-shrink: 0;
-	}
-
-	.empty-mini {
-		padding: 16px;
-		text-align: center;
-	}
-
-	.empty-text {
-		font-size: 13px;
-		color: var(--text-secondary);
-		margin: 0;
-	}
-
-	/* Responsive */
-	@media (max-width: 768px) {
-		.dashboard-page {
-			padding: 16px 12px;
-		}
-
-		.dashboard-header {
-			flex-direction: column;
-		}
-
-		.overview-cards {
-			grid-template-columns: 1fr;
-		}
-
-		.course-grid {
-			grid-template-columns: 1fr;
-		}
-
-		h1 {
-			font-size: 20px;
-		}
-	}
+	@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+	@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 </style>

@@ -21,6 +21,13 @@
 
 	let deletingOfId = $state<string | null>(null);
 
+	// Prerequisite management
+	let prerequisites = $state<any[]>([]);
+	let allCourses = $state<any[]>([]);
+	let showPrereqModal = $state(false);
+	let selectedPrereqCourseId = $state('');
+	let prereqLoading = $state(false);
+
 	let slug = $state('');
 
 	onMount(() => {
@@ -41,6 +48,15 @@
 			const courseJson = await courseRes.json();
 			if (courseJson.success) {
 				course = courseJson.data;
+				// Load prerequisites
+				const prereqRes = await fetch(`/api/admin/courses/${slug}/prerequisites`);
+				const prereqJson = await prereqRes.json();
+				if (prereqJson.success) prerequisites = prereqJson.data;
+
+				// Load all courses for prerequisite selection
+				const coursesRes = await fetch('/api/admin/courses?limit=0');
+				const coursesJson = await coursesRes.json();
+				if (coursesJson.success) allCourses = (coursesJson.data || []).filter((c: any) => c.id !== course.id);
 			} else {
 				error = 'Kursus tidak ditemukan';
 				return;
@@ -199,12 +215,55 @@
 								</div>
 							</div>
 							<div class="offering-actions">
-								<Button size="sm" variant="secondary" href="/admin/offerings/{offering.id}/lessons">
+								<Button size="sm" variant="secondary" href="/admin/schedules/{offering.id}">
+								📅 Jadwal
+							</Button>
+							<Button size="sm" variant="secondary" href="/admin/offerings/{offering.id}/lessons">
 									📖 Kelola Lesson
 								</Button>
 								<Button size="sm" variant="ghost" onclick={() => openEditOffering(offering)}>✏️</Button>
 								<Button size="sm" variant="danger" onclick={() => deleteOffering(offering.id)} loading={deletingOfId === offering.id}>🗑️</Button>
 							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</section>
+
+		<section class="section">
+			<div class="section-header">
+				<h2>🔗 Prasyarat Kursus</h2>
+				<Button size="sm" onclick={() => {
+					selectedPrereqCourseId = '';
+					showPrereqModal = true;
+				}}>+ Tambah Prasyarat</Button>
+			</div>
+
+			{#if prerequisites.length === 0}
+				<EmptyState icon="🔗" title="Tidak ada prasyarat" description="Kursus ini tidak memiliki prasyarat" />
+			{:else}
+				<div class="prereq-list">
+					{#each prerequisites as prereq}
+						<div class="prereq-row">
+							<div class="prereq-info">
+								<span class="prereq-icon">{prereq.prerequisite_icon || '📚'}</span>
+								<div>
+									<span class="prereq-title">{prereq.prerequisite_title}</span>
+									<span class="prereq-slug">/{prereq.prerequisite_slug}</span>
+								</div>
+							</div>
+							<Button size="sm" variant="danger" onclick={async () => {
+								if (!confirm('Hapus prasyarat ini?')) return;
+								const res = await fetch(`/api/admin/courses/${slug}/prerequisites`, {
+									method: 'DELETE',
+									headers: { 'Content-Type': 'application/json' },
+									body: JSON.stringify({ id: prereq.id }),
+								});
+								const json = await res.json();
+								if (json.success) {
+									prerequisites = prerequisites.filter((p: any) => p.id !== prereq.id);
+								}
+							}}>🗑️</Button>
 						</div>
 					{/each}
 				</div>
@@ -236,6 +295,44 @@
 		{#snippet footer()}
 			<Button variant="secondary" onclick={() => showOfferingModal = false} disabled={ofSaving}>Batal</Button>
 			<Button onclick={saveOffering} loading={ofSaving}>{editingOffering ? 'Simpan' : 'Buat'}</Button>
+		{/snippet}
+	</Modal>
+{/if}
+
+{#if showPrereqModal}
+	<Modal
+		open={showPrereqModal}
+		title="+ Tambah Prasyarat"
+		onclose={() => showPrereqModal = false}
+	>
+		<Select label="Pilih Kursus Prasyarat" options={allCourses.map((c: any) => ({
+			value: c.id,
+			label: `${c.icon || '📚'} ${c.title} (/${c.slug})`,
+		}))} bind:value={selectedPrereqCourseId} />
+		{#snippet footer()}
+			<Button variant="secondary" onclick={() => showPrereqModal = false}>Batal</Button>
+			<Button loading={prereqLoading} onclick={async () => {
+				if (!selectedPrereqCourseId) return;
+				prereqLoading = true;
+				try {
+					const res = await fetch(`/api/admin/courses/${slug}/prerequisites`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ prerequisite_course_id: selectedPrereqCourseId }),
+					});
+					const json = await res.json();
+					if (json.success) {
+						prerequisites = [...prerequisites, json.data];
+						showPrereqModal = false;
+					} else {
+						alert(json.error || 'Gagal');
+					}
+				} catch {
+					alert('Gagal terhubung');
+				} finally {
+					prereqLoading = false;
+				}
+			}}>Simpan</Button>
 		{/snippet}
 	</Modal>
 {/if}
@@ -284,4 +381,19 @@
 	.offering-meta code { font-size: 12px; color: #62666d; }
 	.offering-cap { font-size: 12px; color: #8a8f98; }
 	.offering-actions { display: flex; gap: 4px; flex-shrink: 0; }
+	.prereq-list { display: flex; flex-direction: column; gap: 6px; }
+	.prereq-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 14px;
+		background: rgba(255,255,255,0.02);
+		border: 1px solid rgba(255,255,255,0.06);
+		border-radius: 8px;
+		gap: 12px;
+	}
+	.prereq-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+	.prereq-icon { font-size: 20px; }
+	.prereq-title { font-size: 14px; font-weight: 600; color: #f7f8f8; display: block; }
+	.prereq-slug { font-size: 12px; color: #62666d; }
 </style>

@@ -167,6 +167,40 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 LIMIT 10`
 	).bind(userId, userId).all<any>();
 
+	// --- Upcoming schedule events (next 5) ---
+	const { results: upcomingSchedules } = await db.prepare(
+		`SELECT cs.id, cs.title, cs.description, cs.start_time, cs.end_time, cs.location, cs.meeting_link,
+		        cs.course_offering_id, co.name AS offering_name, c.icon AS course_icon
+		 FROM course_schedules cs
+		 JOIN course_offerings co ON co.id = cs.course_offering_id
+		 JOIN courses c ON c.id = co.course_id
+		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
+		 WHERE cs.start_time >= datetime('now')
+		 ORDER BY cs.start_time ASC
+		 LIMIT 5`
+	).bind(userId).all<any>();
+
+	// --- Recent announcements ---
+	const { results: recentAnnouncements } = await db.prepare(
+		`SELECT a.id, a.title, a.body, a.created_at, a.course_offering_id,
+		        co.name AS offering_name
+		 FROM announcements a
+		 JOIN course_offerings co ON co.id = a.course_offering_id
+		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
+		 ORDER BY a.created_at DESC
+		 LIMIT 5`
+	).bind(userId).all<any>();
+
+	// --- Completed course count & total lessons done ---
+	const completedCourseCount = (enrollments || []).filter(e => e.enrollment_status === 'completed').length;
+	const totalLessonsDone = (progressRows || []).length;
+
+	// --- XP ---
+	const { results: xpRows } = await db.prepare(
+		`SELECT total_xp FROM user_xp WHERE user_id = ?`
+	).bind(userId).all<any>();
+	const totalXp = xpRows?.[0]?.total_xp || 0;
+
 	// --- Recent activity (last 5) ---
 	const { results: recentActivity } = await db.prepare(
 		`SELECT action, entity_type, entity_id, metadata, created_at
@@ -183,6 +217,19 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		averageProgress,
 		activeCourses,
 		upcomingDeadlines: upcomingDeadlines || [],
+		upcomingSchedules: (upcomingSchedules || []).map(s => ({
+			...s,
+			startTime: s.start_time,
+			endTime: s.end_time,
+			meetingLink: s.meeting_link,
+		})),
+		recentAnnouncements: (recentAnnouncements || []).map(a => ({
+			...a,
+			createdAt: a.created_at,
+		})),
+		completedCourseCount,
+		totalLessonsDone,
+		totalXp,
 		recentActivity: (recentActivity || []).map(a => ({
 			action: a.action,
 			entityType: a.entity_type,

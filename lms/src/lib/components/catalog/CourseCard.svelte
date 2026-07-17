@@ -24,27 +24,35 @@
       spotsAvailable: boolean;
       progress?: number;
       xp?: number;
+      prerequisites?: { course_id: string; title: string; slug: string; icon: string }[];
+      prerequisitesMet?: boolean;
     };
     isAuthenticated?: boolean;
     enrollingId?: string | null;
     onenroll?: (id: string) => void;
   } = $props();
 
+  let prereqs = $derived(offering.prerequisites || []);
+  let hasUnmetPrereqs = $derived(prereqs.length > 0 && !offering.prerequisitesMet && !offering.isEnrolled);
+
   function levelLabel(level: string): string {
     const labels: Record<string, string> = {
-      beginner: 'Beginner',
-      intermediate: 'Intermediate',
-      advanced: 'Advanced',
+      beginner: 'Pemula',
+      intermediate: 'Menengah',
+      advanced: 'Lanjutan',
     };
     return labels[level] || level;
   }
 </script>
 
-<article class="course-card" class:enrolled={offering.isEnrolled}>
+<article class="course-card" class:enrolled={offering.isEnrolled} class:locked={hasUnmetPrereqs}>
   <!-- Top: category badge -->
   <div class="card-top">
     {#if offering.category}
       <Badge variant="accent" size="sm">{offering.category}</Badge>
+    {/if}
+    {#if prereqs.length > 0 && !offering.isEnrolled}
+      <Badge variant={offering.prerequisitesMet ? 'success' : 'warning'} size="sm">🔗 Prasyarat</Badge>
     {/if}
   </div>
 
@@ -55,6 +63,19 @@
       <p class="card-offering-name">{offering.name}</p>
     {/if}
     <p class="card-desc">{offering.description || 'No description'}</p>
+
+    {#if hasUnmetPrereqs}
+      <div class="prereq-info">
+        <span class="prereq-label">Membutuhkan:</span>
+        {#each prereqs as p}
+          <span class="prereq-badge">{p.icon || '📚'} {p.title}</span>
+        {/each}
+      </div>
+    {:else if prereqs.length > 0 && offering.prerequisitesMet}
+      <div class="prereq-info prereq-met">
+        <span class="prereq-label">✅ Prasyarat terpenuhi</span>
+      </div>
+    {/if}
   </div>
 
   <!-- Bottom: instructor + action -->
@@ -78,10 +99,12 @@
     <div class="card-action">
       {#if offering.isEnrolled}
         <Button href="/learn/{offering.id}/syllabus" variant="primary" size="sm">
-          Continue
+          Lanjutkan
         </Button>
       {:else if !offering.spotsAvailable}
-        <Button variant="outline" size="sm" disabled>Full</Button>
+        <Button variant="outline" size="sm" disabled>Penuh</Button>
+      {:else if hasUnmetPrereqs}
+        <Button variant="outline" size="sm" disabled title="Selesaikan prasyarat terlebih dahulu">Terkunci 🔒</Button>
       {:else}
         <Button
           variant="primary"
@@ -90,7 +113,7 @@
           loading={enrollingId === offering.id}
           disabled={enrollingId === offering.id}
         >
-          Enroll
+          Daftar
         </Button>
       {/if}
     </div>
@@ -125,6 +148,14 @@
 
   .course-card.enrolled {
     border-color: rgba(94,106,210,0.3);
+  }
+
+  .course-card.locked {
+    opacity: 0.7;
+  }
+
+  .course-card.locked:hover {
+    border-color: rgba(255,255,255,0.08);
   }
 
   .card-top {
@@ -163,6 +194,35 @@
     -webkit-box-orient: vertical;
     line-clamp: 2;
     overflow: hidden;
+  }
+
+  .prereq-info {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .prereq-label {
+    font-size: 11px;
+    color: #f59e0b;
+    font-weight: 600;
+    margin-right: 2px;
+  }
+
+  .prereq-met .prereq-label {
+    color: #22c55e;
+  }
+
+  .prereq-badge {
+    font-size: 11px;
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    white-space: nowrap;
   }
 
   .card-bottom {

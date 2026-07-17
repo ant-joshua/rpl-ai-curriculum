@@ -74,14 +74,22 @@ export async function load({ params, request, platform, url }: {
 
 	const tree = buildTree(treeBlocks || []);
 
-	// Completed lessons
+	// Completed lessons — query both old progress table and new lesson_completions
 	const { results: completed } = await db.prepare(
 		`SELECT session_id, completed
 		 FROM progress
 		 WHERE user_id = ? AND module_slug = ? AND completed = 1`
 	).bind(userId, offeringId).all<{ session_id: string; completed: number }>();
 
+	const { results: lcLessons } = await db.prepare(
+		`SELECT l.slug
+		 FROM lesson_completions lc
+		 JOIN lessons l ON l.id = lc.lesson_id
+		 WHERE lc.user_id = ? AND lc.course_offering_id = ?`
+	).bind(userId, offeringId).all<{ slug: string }>();
+
 	const completedSlugs = new Set((completed || []).map((c: any) => c.session_id));
+	(lcLessons || []).forEach((l: any) => completedSlugs.add(l.slug));
 
 	// Annotate tree
 	function annotateTree(nodes: any[]): any[] {

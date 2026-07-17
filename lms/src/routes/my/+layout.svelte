@@ -4,6 +4,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { getSnapshot, subscribe, stopPolling, fetchUnreadCount } from '$lib/stores/notifications.svelte';
+	import ContentSearchPanel from '$lib/components/ContentSearchPanel.svelte';
 
 	let { data, children } = $props();
 
@@ -28,16 +29,17 @@
 	const navItems: NavItem[] = [
 		{ href: '/my/dashboard', icon: '📊', label: 'Dashboard' },
 		{ href: '/my/courses', icon: '📚', label: 'Kursus' },
+		{ href: '/my/schedule', icon: '📅', label: 'Jadwal' },
 		{ href: '/my/grades', icon: '📝', label: 'Nilai' },
 		{ href: '/my/assessments', icon: '📋', label: 'Penilaian' },
 		{ href: '/my/assignments', icon: '📂', label: 'Tugas' },
 		{ href: '/flashcards', icon: '📇', label: 'Flashcards' },
 		{ href: '/my/practice', icon: '🧪', label: 'Latihan Soal' },
 		{ href: '/my/gamification', icon: '🏆', label: 'Gamification' },
-		{ href: '/my/planner', icon: '📅', label: 'Perencana' },
 		{ href: '/progress-quiz', icon: '🧪', label: 'Progress Quiz' },
 		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
 		{ href: '/my/payments', icon: '💳', label: 'Pembayaran' },
+		{ href: '/my/announcements', icon: '📢', label: 'Pengumuman' },
 		{ href: '/my/notifications', icon: '🔔', label: 'Notifikasi' },
 		{ href: '/my/chat', icon: '💬', label: 'Chat' },
 		{ href: '/my/profile', icon: '👤', label: 'Profil' },
@@ -46,6 +48,13 @@
 	let currentPath = $derived(String($page.url.pathname));
 
 	let sidebarOpen = $state(false);
+
+	// Search panel
+	let searchOpen = $state(false);
+
+	function toggleSearch() {
+		searchOpen = !searchOpen;
+	}
 
 	// Unread notification badge
 	let unreadCount = $state(0);
@@ -153,9 +162,16 @@
 
 	<!-- Main content -->
 	<main class="main-content">
+		<div class="main-toolbar">
+			<button class="search-toggle-btn" onclick={toggleSearch} title="Cari materi">
+				🔍
+			</button>
+		</div>
 		{@render children()}
 	</main>
 </div>
+
+<ContentSearchPanel isOpen={searchOpen} onClose={() => searchOpen = false} />
 
 <style>
 	.my-layout {
@@ -326,6 +342,31 @@
 		min-width: 0;
 		padding: 0;
 		animation: fadeIn 0.3s ease both;
+	}
+
+	.main-toolbar {
+		display: flex;
+		justify-content: flex-end;
+		padding: 8px 16px;
+		position: sticky;
+		top: 64px;
+		z-index: 40;
+		background: var(--bg);
+	}
+
+	.search-toggle-btn {
+		background: rgba(255,255,255,0.04);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: 8px;
+		padding: 6px 10px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: all 0.15s;
+		line-height: 1;
+	}
+	.search-toggle-btn:hover {
+		background: rgba(255,255,255,0.08);
+		border-color: rgba(255,255,255,0.15);
 	}
 
 	/* Responsive */

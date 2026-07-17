@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { getContext } from 'svelte';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
-	import DiscussionPanel from '$lib/components/DiscussionPanel.svelte';
+	import LessonDiscussions from '$lib/components/LessonDiscussions.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
 	import LessonSidebar from '$lib/components/lesson/LessonSidebar.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
@@ -143,6 +143,23 @@
 	async function loadProgress() {
 		if (!lesson || !params?.offeringId) return;
 		try {
+			// Try new lesson_completions API first
+			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				}
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success) {
+					isCompleted = json.data?.completed === true;
+				}
+				return;
+			}
+		} catch { /* fallback */ }
+
+		// Fallback to progress table
+		try {
 			const res = await fetch(`/api/my/progress?offeringId=${params.offeringId}`, {
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
@@ -188,22 +205,18 @@
 		if (!lesson || isCompleting) return;
 		isCompleting = true;
 		try {
-			const res = await fetch('/api/my/progress', {
+			// New lesson_completions API
+			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
 				},
-				body: JSON.stringify({
-					lessonSlug: lesson.slug,
-					courseOfferingId: params.offeringId,
-					completed: true,
-					timeSpent: 0
-				})
+				body: JSON.stringify({ time_spent_seconds: 0 })
 			});
 			if (res.ok) {
 				isCompleted = true;
-				addToast('Lesson marked as complete!', 'success');
+				addToast('Pelajaran ditandai selesai! ✓', 'success');
 
 				// Award XP for lesson completion
 				fetch('/api/gamification/award', {
@@ -257,6 +270,30 @@
 			}
 		} catch {
 			addToast('Failed to save progress', 'error');
+		} finally {
+			isCompleting = false;
+		}
+	}
+
+	async function undoComplete() {
+		if (!lesson || isCompleting) return;
+		isCompleting = true;
+		try {
+			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
+				method: 'DELETE',
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+				}
+			});
+			if (res.ok) {
+				isCompleted = false;
+				addToast('Tanda selesai dibatalkan', 'success');
+			} else {
+				const json = await res.json();
+				addToast(json.error || 'Gagal membatalkan', 'error');
+			}
+		} catch {
+			addToast('Gagal membatalkan', 'error');
 		} finally {
 			isCompleting = false;
 		}
@@ -462,22 +499,28 @@
 				{/if}
 			</div>
 
-			<!-- Mark complete button -->
+			<!-- Mark complete / Undo section -->
 			<div class="complete-section">
-				<Button
-					onclick={() => markComplete()}
-					disabled={isCompleted || isCompleting}
-					loading={isCompleting}
-					variant={isCompleted ? 'secondary' : 'primary'}
-				>
-					{#if isCompleted}
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-						Completed
-					{:else}
+				{#if isCompleted}
+					<Button
+						onclick={() => undoComplete()}
+						disabled={isCompleting}
+						variant="secondary"
+					>
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="15 9 9 15"/><polyline points="9 9 15 15"/></svg>
+						Batalkan Selesai
+					</Button>
+				{:else}
+					<Button
+						onclick={() => markComplete()}
+						disabled={isCompleting}
+						loading={isCompleting}
+						variant="primary"
+					>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-						Mark as Complete
-					{/if}
-				</Button>
+						Tandai Selesai
+					</Button>
+				{/if}
 			</div>
 
 			<!-- Navigation footer -->
@@ -542,7 +585,7 @@
 			</div>
 
 			<!-- Discussion panel -->
-			<DiscussionPanel lessonId={lesson.id} offeringId={params.offeringId as string} />
+			<LessonDiscussions lessonId={lesson.id} offeringId={params.offeringId as string} />
 		</div>
 	</div>
 {/if}

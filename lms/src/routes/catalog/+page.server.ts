@@ -73,25 +73,63 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		}
 	}
 
-	const items = (offerings || []).map((o: any) => ({
-		id: o.id,
-		name: o.name,
-		code: o.code,
-		courseId: o.course_id,
-		courseTitle: o.course_title,
-		courseSlug: o.course_slug,
-		description: o.description || o.short_description || '',
-		icon: o.course_icon || '📚',
-		level: o.level,
-		category: o.category,
-		instructorName: o.instructor_name || null,
-		startDate: o.start_date,
-		endDate: o.end_date,
-		enrolledCount: enrollmentCounts.get(o.id) || 0,
-		maxStudents: o.max_students,
-		isEnrolled: enrolledSet.has(o.id),
-		spotsAvailable: o.max_students ? (o.max_students - (enrollmentCounts.get(o.id) || 0)) > 0 : true,
-	}));
+	// Fetch prerequisites for all courses
+	let prereqMap = new Map<string, { course_id: string; title: string; slug: string; icon: string }[]>();
+	const courseIds = [...new Set((offerings || []).map((o: any) => o.course_id))];
+	if (courseIds.length > 0) {
+		const cp = courseIds.map(() => '?').join(',');
+		const { results: prereqs } = await db.prepare(
+			`SELECT cp.course_id, c.id AS prereq_course_id, c.title AS prereq_title, c.slug AS prereq_slug, c.icon AS prereq_icon
+			 FROM course_prerequisites cp
+			 JOIN courses c ON c.id = cp.prerequisite_course_id
+			 WHERE cp.course_id IN (${cp})`
+		).bind(...courseIds).all<any>();
+		for (const p of (prereqs || [])) {
+			const list = prereqMap.get(p.course_id) || [];
+			list.push({ course_id: p.prereq_course_id, title: p.prereq_title, slug: p.prereq_slug, icon: p.prereq_icon });
+			prereqMap.set(p.course_id, list);
+		}
+	}
+
+	// Check completed courses for user (to determine which prerequisites are met)
+	let completedCourseIds = new Set<string>();
+	if (userId) {
+		const { results: completed } = await db.prepare(
+			`SELECT DISTINCT co.course_id
+			 FROM enrollments e
+			 JOIN course_offerings co ON co.id = e.course_offering_id
+			 WHERE e.user_id = ? AND e.status = 'completed'`
+		).bind(userId).all<{ course_id: string }>();
+		for (const c of (completed || [])) {
+			completedCourseIds.add(c.course_id);
+		}
+	}
+
+	const items = (offerings || []).map((o: any) => {
+		const coursePrereqs = prereqMap.get(o.course_id) || [];
+		const metAllPrereqs = coursePrereqs.every(p => completedCourseIds.has(p.course_id));
+		return {
+			id: o.id,
+			name: o.name,
+			code: o.code,
+			courseId: o.course_id,
+			courseTitle: o.course_title,
+			courseSlug: o.course_slug,
+			description: o.description || o.short_description || '',
+			icon: o.course_icon || '📚',
+			level: o.level,
+			category: o.category,
+			instructorName: o.instructor_name || null,
+			startDate: o.start_date,
+			endDate: o.end_date,
+			enrolledCount: enrollmentCounts.get(o.id) || 0,
+			maxStudents: o.max_students,
+			isEnrolled: enrolledSet.has(o.id),
+			spotsAvailable: o.max_students ? (o.max_students - (enrollmentCounts.get(o.id) || 0)) > 0 : true,
+			prerequisites: coursePrereqs,
+			prerequisitesMet: metAllPrereqs,
+		};
+	});
 
 	return {
 		offerings: items,

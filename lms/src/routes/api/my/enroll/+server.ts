@@ -45,6 +45,36 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'Already enrolled in this course' }, 409);
 		}
 
+		// Check prerequisites
+		const { results: prereqs } = await db.prepare(
+			`SELECT cp.prerequisite_course_id, c.title AS prereq_title
+			 FROM course_prerequisites cp
+			 JOIN courses c ON c.id = cp.prerequisite_course_id
+			 WHERE cp.course_id = (SELECT course_id FROM course_offerings WHERE id = ?)`
+		).bind(body.offeringId).all<any>();
+
+		if (prereqs && prereqs.length > 0) {
+			const missingPrereqs: string[] = [];
+			for (const prereq of prereqs) {
+				// Check if user has completed the prerequisite course
+				const completedOffering = await db.prepare(
+					`SELECT e.id FROM enrollments e
+					 JOIN course_offerings co ON co.id = e.course_offering_id
+					 WHERE e.user_id = ? AND co.course_id = ? AND e.status = 'completed'`
+				).bind(userId, prereq.prerequisite_course_id).first<any>();
+
+				if (!completedOffering) {
+					missingPrereqs.push(prereq.prereq_title || prereq.prerequisite_course_id);
+				}
+			}
+			if (missingPrereqs.length > 0) {
+				return jsonResponse({
+					success: false,
+					error: `Menyelesaikan kursus berikut diperlukan: ${missingPrereqs.join(', ')}`
+				}, 400);
+			}
+		}
+
 		// Create enrollment
 		const enrollmentId = crypto.randomUUID();
 		const now = new Date().toISOString();

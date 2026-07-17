@@ -272,6 +272,9 @@
 									<span class="course-row-meta">
 										{course.completedLessons}/{course.totalLessons} sesi
 										· {course.status === 'completed' ? '✅ Selesai' : 'Aktif'}
+										{#if course.certificateUrl}
+											· <a href={course.certificateUrl} class="cert-link">🎓 Sertifikat</a>
+										{/if}
 									</span>
 								</div>
 							</div>
@@ -524,6 +527,15 @@
 		font-weight: 700;
 		min-width: 40px;
 		text-align: right;
+	}
+
+	.cert-link {
+		color: var(--accent);
+		text-decoration: none;
+		font-weight: 600;
+	}
+	.cert-link:hover {
+		text-decoration: underline;
 	}
 
 	/* Chart */

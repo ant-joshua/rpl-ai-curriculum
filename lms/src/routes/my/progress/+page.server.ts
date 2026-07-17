@@ -63,6 +63,18 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		completedMap.get(row.course_offering_id)!.add(row.session_id);
 	}
 
+	// --- Certificates lookup ---
+	const certsByOffering = new Map<string, any>();
+	if (offeringIds.length > 0) {
+		const placeholders = offeringIds.map(() => '?').join(',');
+		const { results: certs } = await db.prepare(
+			`SELECT id, course_offering_id, certificate_number FROM certificates WHERE user_id = ? AND course_offering_id IN (${placeholders})`
+		).bind(userId, ...offeringIds).all<any>();
+		for (const cert of (certs || [])) {
+			certsByOffering.set(cert.course_offering_id, cert);
+		}
+	}
+
 	// --- Per-course progress ---
 	const courseProgress: any[] = [];
 	let totalPct = 0;
@@ -81,6 +93,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			courseWithProgress++;
 		}
 
+		const cert = certsByOffering.get(offId);
 		courseProgress.push({
 			offeringId: offId,
 			courseTitle: enrollment.course_title,
@@ -90,6 +103,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			completedLessons: completed,
 			status: enrollment.status,
 			enrolledAt: enrollment.enrolled_at,
+			certificateUrl: cert ? `/certificate/${cert.id}` : null,
 		});
 	}
 
