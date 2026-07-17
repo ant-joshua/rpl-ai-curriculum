@@ -1,100 +1,53 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Avatar, Card } from '$lib/components/ui';
+	import { Avatar } from '$lib/components/ui';
 
-	let { data, children } = $props();
+	let { data, children }: {
+		data: import('./$types').PageData;
+		children: import('svelte').Snippet;
+	} = $props();
 
 	let user = $derived(data.user || {});
-	let displayName = $derived(user.display_name || user.name || 'Siswa');
+	let displayName = $derived(user.name || 'Instruktur');
 	let initials = $derived(
-		displayName
-			.split(' ')
-			.map((s: string) => s[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2)
+		displayName.split(' ').map((s: string) => s[0]).join('').toUpperCase().slice(0, 2)
 	);
 	let avatarUrl = $derived(user.avatar_url || '');
 
-	type NavItem = {
-		href: string;
-		icon: string;
-		label: string;
-	};
+	let sidebarOpen = $state(false);
 
-	const navItems: NavItem[] = [
-		{ href: '/my/dashboard', icon: '📊', label: 'Dashboard' },
-		{ href: '/my/courses', icon: '📚', label: 'Kursus' },
-		{ href: '/my/grades', icon: '📝', label: 'Nilai' },
-		{ href: '/my/assessments', icon: '📋', label: 'Penilaian' },
-		{ href: '/my/assignments', icon: '📂', label: 'Tugas' },
-		{ href: '/flashcards', icon: '📇', label: 'Flashcards' },
-		{ href: '/my/practice', icon: '🧪', label: 'Latihan Soal' },
-		{ href: '/my/gamification', icon: '🏆', label: 'Gamification' },
-		{ href: '/my/planner', icon: '📅', label: 'Perencana' },
-		{ href: '/progress-quiz', icon: '🧪', label: 'Progress Quiz' },
-		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
-		{ href: '/my/payments', icon: '💳', label: 'Pembayaran' },
-		{ href: '/my/notifications', icon: '🔔', label: 'Notifikasi' },
-		{ href: '/my/profile', icon: '👤', label: 'Profil' },
+	const navItems = [
+		{ href: '/instructor', icon: '📊', label: 'Dashboard' },
+		{ href: '/instructor/courses', icon: '📚', label: 'Kursus' },
+		{ href: '/instructor/submissions', icon: '📝', label: 'Tugas' },
+		{ href: '/instructor/students', icon: '👥', label: 'Siswa' },
+		{ href: '/admin/analytics', icon: '📈', label: 'Analytics' },
+		{ href: '/admin/gradebook', icon: '🎓', label: 'Nilai' },
 	];
 
 	let currentPath = $derived(String($page.url.pathname));
 
-	let sidebarOpen = $state(false);
-
-	// PWA install state
-	let deferredPrompt: any = $state(null);
-
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			window.addEventListener('beforeinstallprompt', (e) => {
-				e.preventDefault();
-				deferredPrompt = e;
-			});
-			window.addEventListener('appinstalled', () => {
-				deferredPrompt = null;
-			});
-		}
-	});
-
-	async function installPwa() {
-		if (!deferredPrompt) return;
-		deferredPrompt.prompt();
-		const result = await deferredPrompt.userChoice;
-		if (result.outcome === 'accepted') deferredPrompt = null;
-	}
-
-	function toggleSidebar() {
-		sidebarOpen = !sidebarOpen;
-	}
-
-	function closeSidebar() {
-		sidebarOpen = false;
-	}
-
 	function isActive(href: string): boolean {
-		if (href === '/my/dashboard') return currentPath === '/my/dashboard' || currentPath === '/my';
+		if (href === '/instructor') return currentPath === '/instructor';
 		return currentPath.startsWith(href);
 	}
 </script>
 
-<div class="my-layout">
-	<!-- Mobile hamburger -->
-	<button class="hamburger" onclick={toggleSidebar} aria-label="Toggle menu">
+<div class="instructor-layout">
+	<!-- Mobile toggle -->
+	<button class="hamburger" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle menu">
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
 	</button>
 
-	<!-- Sidebar -->
 	<aside class="sidebar" class:open={sidebarOpen}>
 		<div class="sidebar-header">
 			<div class="user-info">
 				<Avatar src={avatarUrl} {initials} alt={displayName} size="lg" />
 				<div class="user-text">
 					<span class="user-name">{displayName}</span>
-					<span class="user-role">Siswa</span>
+					<span class="user-role">Instruktur</span>
 				</div>
 			</div>
 		</div>
@@ -105,7 +58,7 @@
 					href={item.href}
 					class="nav-item"
 					class:active={isActive(item.href)}
-					onclick={closeSidebar}
+					onclick={() => sidebarOpen = false}
 				>
 					<span class="nav-icon">{item.icon}</span>
 					<span class="nav-label">{item.label}</span>
@@ -114,38 +67,33 @@
 		</nav>
 
 		<div class="sidebar-footer">
-			{#if deferredPrompt}
-				<button onclick={installPwa} class="nav-item pwa-install-item">
-					<span class="nav-icon">📲</span>
-					<span class="nav-label">Install App</span>
-				</button>
-			{/if}
+			<a href="/admin" class="nav-item back-link">
+				<span class="nav-icon">⚙️</span>
+				<span class="nav-label">Admin Panel</span>
+			</a>
 			<a href="/" class="nav-item back-link">
 				<span class="nav-icon">🏠</span>
 				<span class="nav-label">Beranda</span>
 			</a>
 		</div>
 
-		<!-- Mobile overlay close -->
 		{#if sidebarOpen}
-			<div class="sidebar-overlay" onclick={closeSidebar}></div>
+			<div class="sidebar-overlay" onclick={() => sidebarOpen = false}></div>
 		{/if}
 	</aside>
 
-	<!-- Main content -->
 	<main class="main-content">
 		{@render children()}
 	</main>
 </div>
 
 <style>
-	.my-layout {
+	.instructor-layout {
 		display: flex;
 		min-height: calc(100vh - 64px);
 		position: relative;
 	}
 
-	/* Hamburger */
 	.hamburger {
 		display: none;
 		position: fixed;
@@ -161,9 +109,7 @@
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
-	.hamburger:hover {
-		background: var(--hover);
-	}
+	.hamburger:hover { background: var(--hover); }
 	.hamburger-line {
 		display: block;
 		width: 20px;
@@ -172,7 +118,6 @@
 		border-radius: 2px;
 	}
 
-	/* Sidebar */
 	.sidebar {
 		width: 240px;
 		flex-shrink: 0;
@@ -198,13 +143,11 @@
 		align-items: center;
 		gap: 12px;
 	}
-
 	.user-text {
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
 	}
-
 	.user-name {
 		font-size: 14px;
 		font-weight: 600;
@@ -213,14 +156,12 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-
 	.user-role {
 		font-size: 11px;
 		color: var(--text-secondary);
 		font-weight: 500;
 	}
 
-	/* Navigation */
 	.sidebar-nav {
 		flex: 1;
 		padding: 8px;
@@ -241,18 +182,15 @@
 		font-weight: 500;
 		transition: all 0.15s ease;
 	}
-
 	.nav-item:hover {
 		background: var(--hover);
 		color: var(--text);
 	}
-
 	.nav-item.active {
 		background: var(--accent-dim);
 		color: var(--accent);
 		font-weight: 600;
 	}
-
 	.nav-icon {
 		font-size: 18px;
 		width: 24px;
@@ -260,32 +198,16 @@
 		flex-shrink: 0;
 		line-height: 1;
 	}
+	.nav-label { line-height: 1; }
 
-	.nav-label {
-		line-height: 1;
-	}
-
-	/* Footer */
 	.sidebar-footer {
 		padding: 8px;
 		border-top: 1px solid var(--border);
 	}
+	.back-link { font-size: 13px; }
 
-	.back-link {
-		font-size: 13px;
-		color: var(--text-secondary);
-	}
+	.sidebar-overlay { display: none; }
 
-	.back-link:hover {
-		color: var(--text);
-	}
-
-	/* Overlay (mobile) */
-	.sidebar-overlay {
-		display: none;
-	}
-
-	/* Main content */
 	.main-content {
 		flex: 1;
 		min-width: 0;
@@ -293,12 +215,8 @@
 		animation: fadeIn 0.3s ease both;
 	}
 
-	/* Responsive */
 	@media (max-width: 768px) {
-		.hamburger {
-			display: flex;
-		}
-
+		.hamburger { display: flex; }
 		.sidebar {
 			position: fixed;
 			top: 64px;
@@ -306,23 +224,15 @@
 			height: calc(100vh - 64px);
 			transform: translateX(-100%);
 			z-index: 60;
-			box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+			box-shadow: 4px 0 24px rgba(0,0,0,0.3);
 		}
-
-		.sidebar.open {
-			transform: translateX(0);
-		}
-
+		.sidebar.open { transform: translateX(0); }
 		.sidebar-overlay {
 			display: block;
 			position: fixed;
 			inset: 0;
-			background: rgba(0, 0, 0, 0.5);
+			background: rgba(0,0,0,0.5);
 			z-index: 55;
-		}
-
-		.main-content {
-			padding-left: 0;
 		}
 	}
 </style>

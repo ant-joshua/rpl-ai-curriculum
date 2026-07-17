@@ -26,7 +26,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 	try {
 		const db = getDB(platform);
 		const body = await request.json();
-		const { id, name, description, icon, criteria_type, criteria_value } = body;
+		const { id, name, description, icon, criteria_type, criteria_value, xp_reward } = body;
 
 		if (!id || !name || !description || !icon || !criteria_type) {
 			return jsonResponse({ success: false, error: 'id, name, description, icon, and criteria_type are required' }, 400);
@@ -38,9 +38,9 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		}
 
 		await db.prepare(
-			`INSERT INTO badges (id, name, description, icon, criteria_type, criteria_value)
-			 VALUES (?, ?, ?, ?, ?, ?)`
-		).bind(id, name, description, icon, criteria_type, criteria_value ?? 1).run();
+			`INSERT INTO badges (id, name, description, icon, criteria_type, criteria_value, xp_reward)
+			 VALUES (?, ?, ?, ?, ?, ?, ?)`
+		).bind(id, name, description, icon, criteria_type, criteria_value ?? 1, xp_reward ?? 0).run();
 
 		const row = await db.prepare('SELECT * FROM badges WHERE id = ?').bind(id).first<any>();
 		return jsonResponse({ success: true, data: row }, 201);

@@ -8,6 +8,17 @@
 
 	let activeTab = $state('overview');
 
+	// Date range
+	function defaultStart(): string {
+		const d = new Date(); d.setMonth(d.getMonth() - 1);
+		return d.toISOString().slice(0, 10);
+	}
+	function defaultEnd(): string {
+		return new Date().toISOString().slice(0, 10);
+	}
+	let startDate = $state(defaultStart());
+	let endDate = $state(defaultEnd());
+
 	// Overview data
 	let overview: any = $state(null);
 	// Enrollment trend data
@@ -18,13 +29,21 @@
 	let attendanceData: any = $state(null);
 	let paymentsData: any = $state(null);
 	let gradesData: any = $state(null);
+	// New: distribution
+	let distributionData: any = $state(null);
+	// New: course comparison
+	let courseComparison: any[] = $state([]);
+
+	function dateParam(): string {
+		return `?start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(endDate)}`;
+	}
 
 	async function loadModuleAnalytics() {
 		try {
 			const [attRes, payRes, grdRes] = await Promise.all([
-				fetch('/api/admin/analytics/attendance'),
-				fetch('/api/admin/analytics/payments'),
-				fetch('/api/admin/analytics/grades'),
+				fetch(`/api/admin/analytics/attendance${dateParam()}`),
+				fetch(`/api/admin/analytics/payments${dateParam()}`),
+				fetch(`/api/admin/analytics/grades${dateParam()}`),
 			]);
 			const att = await attRes.json();
 			const pay = await payRes.json();
@@ -32,6 +51,22 @@
 			if (att.success) attendanceData = att.data;
 			if (pay.success) paymentsData = pay.data;
 			if (grd.success) gradesData = grd.data;
+		} catch {}
+	}
+
+	async function loadDistribution() {
+		try {
+			const res = await fetch(`/api/admin/analytics/distribution${dateParam()}`);
+			const d = await res.json();
+			if (d.success) distributionData = d.data;
+		} catch {}
+	}
+
+	async function loadCourseComparison() {
+		try {
+			const res = await fetch(`/api/admin/analytics/course-comparison`);
+			const d = await res.json();
+			if (d.success) courseComparison = d.data || [];
 		} catch {}
 	}
 
@@ -45,9 +80,9 @@
 		error = '';
 		try {
 			const [ovRes, enRes, coRes] = await Promise.all([
-				fetch('/api/admin/analytics/overview'),
-				fetch('/api/admin/analytics/enrollments'),
-				fetch('/api/admin/analytics/completion'),
+				fetch(`/api/admin/analytics/overview${dateParam()}`),
+				fetch(`/api/admin/analytics/enrollments${dateParam()}`),
+				fetch(`/api/admin/analytics/completion${dateParam()}`),
 			]);
 			const ov = await ovRes.json();
 			const en = await enRes.json();
@@ -56,20 +91,25 @@
 			else { error = ov.error || 'Failed'; loading = false; return; }
 			if (en.success) enrollments = en.data || [];
 			if (co.success) completion = co.data || [];
-			await loadModuleAnalytics();
+			await Promise.all([loadModuleAnalytics(), loadDistribution(), loadCourseComparison()]);
 		} catch { error = 'Failed to load'; }
 		finally { loading = false; }
+	}
+
+	function exportCSV(format: string) {
+		if (!browser) return;
+		window.open(`/api/admin/analytics/export?format=${format}&start=${startDate}&end=${endDate}`, '_blank');
 	}
 
 	function timeAgo(dateStr: string) {
 		const d = new Date(dateStr + 'Z');
 		const now = new Date();
 		const sec = Math.floor((now.getTime() - d.getTime()) / 1000);
-		if (sec < 60) return 'just now';
-		if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
-		if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
-		if (sec < 604800) return `${Math.floor(sec / 86400)}d ago`;
-		return d.toLocaleDateString();
+		if (sec < 60) return 'baru saja';
+		if (sec < 3600) return `${Math.floor(sec / 60)}m lalu`;
+		if (sec < 86400) return `${Math.floor(sec / 3600)}j lalu`;
+		if (sec < 604800) return `${Math.floor(sec / 86400)}h lalu`;
+		return d.toLocaleDateString('id-ID');
 	}
 
 	function actionIcon(action: string) {
@@ -89,6 +129,8 @@
 		{ id: 'attendance', label: 'Attendance', icon: '📅' },
 		{ id: 'payments', label: 'Payments', icon: '💰' },
 		{ id: 'grades', label: 'Grades', icon: '🎓' },
+		{ id: 'distribution', label: 'Distribution', icon: '📊' },
+		{ id: 'course-compare', label: 'Course Compare', icon: '🔍' },
 		{ id: 'activity', label: 'Activity', icon: '🕐' },
 	];
 </script>
@@ -100,7 +142,30 @@
 <div class="analytics-page">
 	<div class="header-row">
 		<h1>📈 Analytics</h1>
-		<Button size="sm" onclick={loadAll}>🔄 Refresh</Button>
+		<div class="header-actions">
+			<div class="date-range">
+				<label class="date-label">Dari</label>
+				<input type="date" class="date-input" bind:value={startDate} />
+				<label class="date-label">Ke</label>
+				<input type="date" class="date-input" bind:value={endDate} />
+			</div>
+			<Button size="sm" onclick={loadAll}>🔄 Refresh</Button>
+			{#if activeTab !== 'overview' && activeTab !== 'activity' && activeTab !== 'distribution' && activeTab !== 'course-compare'}
+				<Button size="sm" variant="secondary" onclick={() => exportCSV(activeTab)}>
+					📥 CSV
+				</Button>
+			{/if}
+			{#if activeTab === 'distribution'}
+				<Button size="sm" variant="secondary" onclick={() => exportCSV('grades')}>
+					📥 Export Grades CSV
+				</Button>
+			{/if}
+			{#if activeTab === 'course-compare'}
+				<Button size="sm" variant="secondary" onclick={() => exportCSV('overview')}>
+					📥 Export Overview CSV
+				</Button>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Tabs -->
@@ -118,11 +183,11 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Loading analytics...</div>
+		<div class="loading">Memuat analytics...</div>
 	{:else if error}
 		<div class="error-state">
 			<Alert variant="danger">{error}</Alert>
-			<Button onclick={loadAll}>Retry</Button>
+			<Button onclick={loadAll}>Coba Lagi</Button>
 		</div>
 	{:else}
 
@@ -140,56 +205,52 @@
 					<CardContent>
 						<span class="stat-icon">📋</span>
 						<span class="stat-value">{overview?.activeEnrollments ?? 0}</span>
-						<span class="stat-label">Active Enrollments</span>
+						<span class="stat-label">Enrollments Aktif</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">📚</span>
 						<span class="stat-value">{overview?.totalCourses ?? 0}</span>
-						<span class="stat-label">Total Courses</span>
+						<span class="stat-label">Total Kursus</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">📖</span>
 						<span class="stat-value">{overview?.totalLessons ?? 0}</span>
-						<span class="stat-label">Published Lessons</span>
+						<span class="stat-label">Pelajaran Publikasi</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">⏳</span>
 						<span class="stat-value">{overview?.pendingGrades ?? 0}</span>
-						<span class="stat-label">Pending Grades</span>
+						<span class="stat-label">Menunggu Nilai</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">🆕</span>
 						<span class="stat-value">{overview?.newUsers ?? 0}</span>
-						<span class="stat-label">New Users (7d)</span>
+						<span class="stat-label">User Baru (7 hari)</span>
 					</CardContent>
 				</Card>
 			</div>
 
 			<Card class="section-card">
 				<CardContent>
-					<h2>Recent Activity</h2>
+					<h2>Aktivitas Terbaru</h2>
 					{#if overview?.recentActivity?.length}
 						<div class="activity-feed">
 							{#each overview.recentActivity.slice(0, 10) as act}
 								<div class="activity-item">
-									<span class="act-avatar">
-										{act.avatar_url
-											? `<img src="${act.avatar_url}" alt="" class="act-img" />`
-											: '👤'}
-									</span>
+									<span class="act-avatar">{actionIcon(act.action)}</span>
 									<div class="act-body">
 										<span class="act-user">{act.display_name || act.email || act.user_id?.slice(0, 12)}</span>
 										<span class="act-action">{act.action}</span>
 										{#if act.entity_type}
-											<span class="act-entity">on {act.entity_type} {act.entity_id?.slice(0, 12)}</span>
+											<span class="act-entity">· {act.entity_type}</span>
 										{/if}
 									</div>
 									<span class="act-time">{timeAgo(act.created_at)}</span>
@@ -197,7 +258,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="empty">No recent activity</p>
+						<p class="empty">Belum ada aktivitas</p>
 					{/if}
 				</CardContent>
 			</Card>
@@ -206,7 +267,10 @@
 		{:else if activeTab === 'enrollments'}
 			<Card class="section-card">
 				<CardContent>
-					<h2>Enrollment Trend — Last 30 Days</h2>
+					<div class="card-header-actions">
+						<h2>Enrollment Trend — {startDate} s.d. {endDate}</h2>
+						<Button size="sm" variant="secondary" onclick={() => exportCSV('enrollments')}>📥 CSV</Button>
+					</div>
 					{#if enrollments.length > 0}
 						{@const maxVal = Math.max(...enrollments.map((e: any) => e.count), 1)}
 						{@const chartW = 700}
@@ -215,11 +279,9 @@
 						{@const gap = 2}
 						<div class="svg-chart-wrap">
 							<svg viewBox="0 0 {chartW} {chartH + 40}" class="bar-svg">
-								<!-- Y axis labels -->
 								<text x="10" y="15" class="chart-label">{maxVal}</text>
 								<text x="10" y={chartH / 2 + 5} class="chart-label">{Math.round(maxVal / 2)}</text>
 								<text x="10" y={chartH + 5} class="chart-label">0</text>
-								<!-- Bars -->
 								{#each enrollments as item, i}
 									{@const barH = (item.count / maxVal) * chartH}
 									{@const x = 35 + i * (barW + gap)}
@@ -232,7 +294,6 @@
 									>
 										<title>{item.date}: {item.count} enrollments</title>
 									</rect>
-									<!-- Date label every 5th bar -->
 									{#if i % 5 === 0}
 										<text x={x + barW / 2} y={chartH + 16} text-anchor="middle" class="chart-label-x">
 											{item.date?.slice(5)}
@@ -242,7 +303,7 @@
 							</svg>
 						</div>
 					{:else}
-						<p class="empty">No enrollment data yet</p>
+						<p class="empty">Belum ada data enrollment</p>
 					{/if}
 				</CardContent>
 			</Card>
@@ -251,7 +312,10 @@
 		{:else if activeTab === 'completion'}
 			<Card class="section-card">
 				<CardContent>
-					<h2>Lesson Completion Rates per Offering</h2>
+					<div class="card-header-actions">
+						<h2>Lesson Completion Rates per Offering</h2>
+						<Button size="sm" variant="secondary" onclick={() => exportCSV('overview')}>📥 CSV</Button>
+					</div>
 					{#if completion.length > 0}
 						{@const maxRate = Math.max(...completion.map((c: any) => c.completion_rate), 0.01)}
 						<div class="completion-list">
@@ -261,7 +325,7 @@
 								<div class="comp-row">
 									<div class="comp-info">
 										<span class="comp-name">{item.offering_name}</span>
-										<span class="comp-students">{item.active_students} students</span>
+										<span class="comp-students">{item.active_students} siswa</span>
 									</div>
 									<div class="comp-bar-track">
 										<div
@@ -275,7 +339,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="empty">No completion data yet</p>
+						<p class="empty">Belum ada data completion</p>
 					{/if}
 				</CardContent>
 			</Card>
@@ -287,40 +351,43 @@
 					<CardContent>
 						<span class="stat-icon">📅</span>
 						<span class="stat-value">{attendanceData?.totalSessions ?? 0}</span>
-						<span class="stat-label">Total Sessions</span>
+						<span class="stat-label">Total Sesi</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">✅</span>
 						<span class="stat-value">{attendanceData?.totalCheckIns ?? 0}</span>
-						<span class="stat-label">Total Check-Ins</span>
+						<span class="stat-label">Total Check-In</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">⚠️</span>
 						<span class="stat-value">{attendanceData?.totalExceptions ?? 0}</span>
-						<span class="stat-label">Exceptions</span>
+						<span class="stat-label">Eksepsi</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">📊</span>
 						<span class="stat-value">{(attendanceData?.avgAttendanceRate ?? 0 * 100).toFixed(1)}%</span>
-						<span class="stat-label">Avg Attendance Rate</span>
+						<span class="stat-label">Rata-rata Kehadiran</span>
 					</CardContent>
 				</Card>
+			</div>
+			<div class="card-header-actions" style="margin-bottom:12px">
+				<Button size="sm" variant="secondary" onclick={() => exportCSV('attendance')}>📥 Export CSV</Button>
 			</div>
 			{#if attendanceData?.topAbsentStudents?.length}
 			<Card class="section-card">
 				<CardContent>
-					<h2>Top Absent Students</h2>
+					<h2>Siswa dengan Absensi Tertinggi</h2>
 					<div class="completion-list">
 						{#each attendanceData.topAbsentStudents as s}
 						<div class="comp-row">
 							<span class="comp-name">{s.display_name || s.name || s.user_id}</span>
-							<span class="comp-students">{s.absent_count} absences</span>
+							<span class="comp-students">{s.absent_count} absen</span>
 						</div>
 						{/each}
 					</div>
@@ -335,35 +402,35 @@
 					<CardContent>
 						<span class="stat-icon">💰</span>
 						<span class="stat-value">Rp {((paymentsData?.totalRevenue ?? 0)).toLocaleString()}</span>
-						<span class="stat-label">Total Revenue</span>
+						<span class="stat-label">Total Pendapatan</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">📄</span>
 						<span class="stat-value">{paymentsData?.totalInvoices ?? 0}</span>
-						<span class="stat-label">Total Invoices</span>
+						<span class="stat-label">Total Invoice</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">💳</span>
 						<span class="stat-value">{paymentsData?.totalPayments ?? 0}</span>
-						<span class="stat-label">Payments Received</span>
+						<span class="stat-label">Pembayaran</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">⏳</span>
 						<span class="stat-value">{paymentsData?.pendingInvoices ?? 0}</span>
-						<span class="stat-label">Pending Invoices</span>
+						<span class="stat-label">Invoice Tertunda</span>
 					</CardContent>
 				</Card>
 			</div>
 			{#if paymentsData?.revenueByMethod?.length}
 			<Card class="section-card">
 				<CardContent>
-					<h2>Revenue by Payment Method</h2>
+					<h2>Pendapatan per Metode</h2>
 					{@const maxRev = Math.max(...paymentsData.revenueByMethod.map((m: any) => m.total), 1)}
 					<div class="completion-list">
 						{#each paymentsData.revenueByMethod as m}
@@ -388,35 +455,38 @@
 					<CardContent>
 						<span class="stat-icon">📝</span>
 						<span class="stat-value">{gradesData?.totalSubmissions ?? 0}</span>
-						<span class="stat-label">Total Submissions</span>
+						<span class="stat-label">Total Pengumpulan</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">✅</span>
 						<span class="stat-value">{gradesData?.gradedCount ?? 0}</span>
-						<span class="stat-label">Graded</span>
+						<span class="stat-label">Sudah Dinilai</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">⏳</span>
 						<span class="stat-value">{gradesData?.pendingCount ?? 0}</span>
-						<span class="stat-label">Pending</span>
+						<span class="stat-label">Menunggu</span>
 					</CardContent>
 				</Card>
 				<Card class="stat-card">
 					<CardContent>
 						<span class="stat-icon">🎯</span>
 						<span class="stat-value">{(gradesData?.avgScore ?? 0).toFixed(1)}</span>
-						<span class="stat-label">Avg Score</span>
+						<span class="stat-label">Rata-rata Nilai</span>
 					</CardContent>
 				</Card>
+			</div>
+			<div class="card-header-actions" style="margin-bottom:12px">
+				<Button size="sm" variant="secondary" onclick={() => exportCSV('grades')}>📥 Export CSV</Button>
 			</div>
 			{#if gradesData?.gradeDistribution}
 			<Card class="section-card">
 				<CardContent>
-					<h2>Grade Distribution</h2>
+					<h2>Distribusi Nilai</h2>
 					{@const dist = gradesData.gradeDistribution}
 					{@const maxG = Math.max(dist.A ?? 0, dist.B ?? 0, dist.C ?? 0, dist.D ?? 0, dist.E ?? 0, 1)}
 					<div class="completion-list">
@@ -435,6 +505,117 @@
 				</CardContent>
 			</Card>
 			{/if}
+
+		<!-- === DISTRIBUTION TAB === -->
+		{:else if activeTab === 'distribution'}
+			<div class="stats-grid">
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">🎯</span>
+						<span class="stat-value">{distributionData?.avgScore ?? 0}</span>
+						<span class="stat-label">Rata-rata Nilai</span>
+					</CardContent>
+				</Card>
+				<Card class="stat-card">
+					<CardContent>
+						<span class="stat-icon">📝</span>
+						<span class="stat-value">{distributionData?.totalSubmissions ?? 0}</span>
+						<span class="stat-label">Total Pengumpulan</span>
+					</CardContent>
+				</Card>
+			</div>
+
+			<Card class="section-card">
+				<CardContent>
+					<h2>Distribusi Skor Siswa ({startDate} - {endDate})</h2>
+					{#if distributionData?.distribution?.length}
+						{@const maxCount = Math.max(...distributionData.distribution.map((d: any) => d.count), 1)}
+						{@const barW = 600}
+						{@const barH = 200}
+						{@const offsetX = 60}
+						{@const barAreaW = barW - 20}
+						{@const barCount = distributionData.distribution.length}
+						{@const bW = Math.min(60, barAreaW / barCount - 10)}
+						{@const bGap = 10}
+						<div class="svg-chart-wrap">
+							<svg viewBox="0 0 {barW + 60} {barH + 50}" class="bar-svg">
+								<text x="50" y="15" class="chart-label" text-anchor="end">{maxCount}</text>
+								<text x="50" y={barH / 2 + 5} class="chart-label" text-anchor="end">{Math.round(maxCount/2)}</text>
+								<text x="50" y={barH + 5} class="chart-label" text-anchor="end">0</text>
+								{#each distributionData.distribution as d, i (d.range)}
+									{@const h = maxCount > 0 ? (d.count / maxCount) * barH : 0}
+									{@const x = offsetX + i * (bW + bGap)}
+									{@const y = barH - h}
+									<rect
+										x={x} y={y}
+										width={bW} height={h}
+										rx="3" ry="3"
+										fill={d.count > maxCount * 0.66 ? '#ef4444' : d.count > maxCount * 0.33 ? '#f59e0b' : '#22c55e'}
+									>
+										<title>{d.range}: {d.count} siswa</title>
+									</rect>
+									<text x={x + bW / 2} y={barH + 16} text-anchor="middle" class="chart-label-x">
+										{d.range}
+									</text>
+									<text x={x + bW / 2} y={y - 6} text-anchor="middle" class="chart-label-x" fill="var(--accent)">
+										{d.count}
+									</text>
+								{/each}
+								<!-- Y axis -->
+								<line x1={offsetX - 5} y1="0" x2={offsetX - 5} y2={barH} stroke="rgba(255,255,255,0.1)" />
+							</svg>
+						</div>
+					{:else}
+						<p class="empty">Belum ada data distribusi</p>
+					{/if}
+				</CardContent>
+			</Card>
+
+		<!-- === COURSE COMPARISON TAB === -->
+		{:else if activeTab === 'course-compare'}
+			<Card class="section-card">
+				<CardContent>
+					<div class="card-header-actions">
+						<h2>Perbandingan Kursus (Enrollment vs Completion)</h2>
+						<Button size="sm" variant="secondary" onclick={() => exportCSV('overview')}>📥 Export CSV</Button>
+					</div>
+					{#if courseComparison.length > 0}
+						{@const maxEnroll = Math.max(...courseComparison.map((c: any) => c.totalEnrollments), 1)}
+						{@const barW = 700}
+						{@const barH = 25}
+						{@const gap = 8}
+						<div class="svg-chart-wrap" style="margin-top:10px">
+							<svg viewBox="0 0 {barW + 30} {(barH + gap + 30) * courseComparison.length + 20}">
+								{#each courseComparison as course, i}
+									{@const y = 15 + i * (barH + gap + 30)}
+									{@const enrollW = (course.totalEnrollments / maxEnroll) * (barW - 100)}
+									{@const compW = course.completedEnrollments > 0 ? (course.completedEnrollments / maxEnroll) * (barW - 100) : 0}
+									<text x="5" y={y + barH / 2 + 4} class="chart-label-x" text-anchor="start" font-size="10">
+										{course.name?.slice(0, 20)}
+									</text>
+									<!-- Enrollment bar -->
+									<rect x="110" y={y} width={Math.max(enrollW, 0)} height={barH} rx="3" ry="3" fill="var(--accent)" opacity="0.6">
+										<title>Enrollments: {course.totalEnrollments}</title>
+									</rect>
+									<!-- Completed bar (overlay) -->
+									<rect x="110" y={y} width={Math.max(compW, 0)} height={barH} rx="3" ry="3" fill="#22c55e" opacity="0.9">
+										<title>Completed: {course.completedEnrollments}</title>
+									</rect>
+									<text x={110 + Math.max(enrollW, compW) + 6} y={y + barH / 2 + 4} font-size="10" fill="var(--text-secondary)">
+										{course.totalEnrollments} enrolled · {course.completedEnrollments} done · {course.completionRate}%
+									</text>
+								{/each}
+							</svg>
+						</div>
+						<div class="legend" style="display:flex; gap:16px; margin-top:8px; font-size:12px; color:var(--text-secondary)">
+							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--accent);opacity:0.6;vertical-align:middle;margin-right:4px"></span> Enrollment</span>
+							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#22c55e;vertical-align:middle;margin-right:4px"></span> Completed</span>
+						</div>
+					{:else}
+						<p class="empty">Belum ada data kursus</p>
+					{/if}
+				</CardContent>
+			</Card>
 
 		<!-- === ACTIVITY TAB === -->
 		{:else if activeTab === 'activity'}
@@ -458,7 +639,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="empty">No activity logged yet</p>
+						<p class="empty">Belum ada aktivitas</p>
 					{/if}
 				</CardContent>
 			</Card>
@@ -472,7 +653,19 @@
 	h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 60px; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 16px; }
-	.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+	.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+	.header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+	.date-range { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+	.date-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+	.date-input {
+		padding: 4px 8px;
+		font-size: 12px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		color: var(--text);
+		font-family: inherit;
+	}
 
 	/* Tabs */
 	.tabs {
@@ -489,11 +682,11 @@
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		padding: 8px 16px;
+		padding: 8px 14px;
 		border: none;
 		background: transparent;
 		color: var(--text-secondary);
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 500;
 		border-radius: 8px;
 		cursor: pointer;
@@ -502,7 +695,7 @@
 	}
 	.tab:hover { background: var(--bg-secondary); color: var(--text); }
 	.tab--active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
-	.tab-icon { font-size: 16px; }
+	.tab-icon { font-size: 15px; }
 
 	/* Stats cards */
 	.stats-grid {
@@ -525,6 +718,12 @@
 
 	/* Section card */
 	:global(.section-card) { margin-bottom: 20px; }
+	.card-header-actions {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.card-header-actions h2 { margin-bottom: 0; }
 
 	/* SVG bar chart */
 	.svg-chart-wrap {
@@ -586,5 +785,6 @@
 	@media (max-width: 768px) {
 		.stats-grid { grid-template-columns: repeat(2, 1fr); }
 		.comp-info { min-width: 120px; }
+		.header-row { flex-direction: column; align-items: flex-start; }
 	}
 </style>

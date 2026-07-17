@@ -3,7 +3,7 @@ import { getDB, jsonResponse } from '$lib/server/d1';
 export async function GET({ params, platform }: { params: { id: string }; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const row = await db.prepare('SELECT * FROM badges WHERE id = ?').bind(params.id).first<any>();
+		const row = await db.prepare('SELECT * FROM xp_rules WHERE id = ?').bind(params.id).first<any>();
 		if (!row) return jsonResponse({ success: false, error: 'Not found' }, 404);
 		return jsonResponse({ success: true, data: row });
 	} catch (e: unknown) {
@@ -15,31 +15,29 @@ export async function GET({ params, platform }: { params: { id: string }; platfo
 export async function PUT({ request, params, platform }: { request: Request; params: { id: string }; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const existing = await db.prepare('SELECT * FROM badges WHERE id = ?').bind(params.id).first<any>();
+		const existing = await db.prepare('SELECT * FROM xp_rules WHERE id = ?').bind(params.id).first<any>();
 		if (!existing) return jsonResponse({ success: false, error: 'Not found' }, 404);
 
 		const body = await request.json();
 		const merged = { ...existing, ...body };
 
-		const validTypes = ['lessons_completed', 'assessments_passed', 'streak_days', 'courses_completed', 'discussion_posts', 'custom'];
-		if (merged.criteria_type && !validTypes.includes(merged.criteria_type)) {
-			return jsonResponse({ success: false, error: 'Invalid criteria_type' }, 400);
+		const validTypes = ['lesson_complete', 'daily_login', 'assignment_graded', 'assessment_completed', 'discussion_post', 'streak_milestone', 'custom'];
+		if (merged.action_type && !validTypes.includes(merged.action_type)) {
+			return jsonResponse({ success: false, error: 'Invalid action_type' }, 400);
 		}
 
 		await db.prepare(
-			`UPDATE badges SET name = ?, description = ?, icon = ?, criteria_type = ?, criteria_value = ?, xp_reward = ?
+			`UPDATE xp_rules SET action_type = ?, xp_amount = ?, description = ?, is_active = ?, updated_at = datetime('now')
 			 WHERE id = ?`
 		).bind(
-			merged.name,
-			merged.description,
-			merged.icon,
-			merged.criteria_type,
-			merged.criteria_value,
-			merged.xp_reward ?? 0,
+			merged.action_type,
+			merged.xp_amount,
+			merged.description || '',
+			merged.is_active ? 1 : 0,
 			params.id
 		).run();
 
-		const updated = await db.prepare('SELECT * FROM badges WHERE id = ?').bind(params.id).first<any>();
+		const updated = await db.prepare('SELECT * FROM xp_rules WHERE id = ?').bind(params.id).first<any>();
 		return jsonResponse({ success: true, data: updated });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -50,11 +48,9 @@ export async function PUT({ request, params, platform }: { request: Request; par
 export async function DELETE({ params, platform }: { params: { id: string }; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const existing = await db.prepare('SELECT * FROM badges WHERE id = ?').bind(params.id).first<any>();
+		const existing = await db.prepare('SELECT id FROM xp_rules WHERE id = ?').bind(params.id).first<any>();
 		if (!existing) return jsonResponse({ success: false, error: 'Not found' }, 404);
-
-		await db.prepare('DELETE FROM user_badges WHERE badge_id = ?').bind(params.id).run();
-		await db.prepare('DELETE FROM badges WHERE id = ?').bind(params.id).run();
+		await db.prepare('DELETE FROM xp_rules WHERE id = ?').bind(params.id).run();
 		return jsonResponse({ success: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
