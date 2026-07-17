@@ -124,31 +124,30 @@
 			{:else}
 				<div class="course-list">
 					{#each visibleCourses as course}
-						<a href="/instructor/courses/{course.id}" class="course-row">
-							<div class="course-row-info">
-								<div class="course-row-top">
-									<span class="course-icon">{course.courseIcon}</span>
-									<div>
-										<span class="course-name">{course.offeringName}</span>
-										<span class="course-title-sub">{course.courseTitle}</span>
+						<div class="course-row-wrapper">
+							<a href="/instructor/courses/{course.id}" class="course-row">
+								<div class="course-row-info">
+									<div class="course-row-top">
+										<span class="course-icon">{course.courseIcon}</span>
+										<div>
+											<span class="course-name">{course.offeringName}</span>
+											<span class="course-title-sub">{course.courseTitle}</span>
+										</div>
+									</div>
+									<div class="course-row-stats">
+										<span class="stat-chip">👥 {course.activeEnrollments} siswa</span>
+										<span class="stat-chip">🎯 {courseStats[course.id]?.completionRate ?? 0}%</span>
+										<span class="stat-chip">📊 {courseStats[course.id]?.avgGrade ?? 0}</span>
 									</div>
 								</div>
-								<div class="course-row-stats">
-									<span class="stat-chip">
-										👥 {course.activeEnrollments} siswa
-									</span>
-									<span class="stat-chip">
-										🎯 {courseStats[course.id]?.completionRate ?? 0}%
-									</span>
-									<span class="stat-chip">
-										📊 {courseStats[course.id]?.avgGrade ?? 0}
-									</span>
-								</div>
+							</a>
+							<div class="course-row-actions">
+								<a href="/my/chat/{course.id}" class="chat-link" title="Chat kursus">💬</a>
+								<Badge variant={statusBadge(course.status)}>
+									{course.status === 'active' ? 'Aktif' : course.status === 'draft' ? 'Draft' : 'Arsip'}
+								</Badge>
 							</div>
-							<Badge variant={statusBadge(course.status)}>
-								{course.status === 'active' ? 'Aktif' : course.status === 'draft' ? 'Draft' : 'Arsip'}
-							</Badge>
-						</a>
+						</div>
 					{/each}
 				</div>
 			{/if}
@@ -292,19 +291,28 @@
 		flex-direction: column;
 		gap: 8px;
 	}
+	.course-row-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		transition: all 0.2s ease;
+	}
+	.course-row-wrapper:hover {
+		border-color: var(--accent);
+	}
 	.course-row {
+		flex: 1;
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		padding: 14px 16px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
 		text-decoration: none !important;
-		transition: all 0.2s ease;
+		min-width: 0;
 	}
 	.course-row:hover {
-		border-color: var(--accent);
 		transform: translateX(2px);
 	}
 	.course-row-info { flex: 1; min-width: 0; }
@@ -336,6 +344,25 @@
 		background: var(--bg-secondary);
 		padding: 2px 8px;
 		border-radius: 4px;
+	}
+
+	.course-row-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 12px 8px 0;
+		flex-shrink: 0;
+	}
+	.chat-link {
+		font-size: 20px;
+		text-decoration: none !important;
+		opacity: 0.7;
+		transition: opacity 0.15s;
+		line-height: 1;
+	}
+	.chat-link:hover {
+		opacity: 1;
 	}
 
 	/* Panel sections */

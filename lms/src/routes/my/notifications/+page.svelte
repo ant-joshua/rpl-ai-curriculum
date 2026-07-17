@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 
 	const TYPE_LABELS: Record<string, string> = {
 		assessment: 'Penilaian',
@@ -32,11 +32,19 @@
 	let showArchived = $state(false);
 	let selectedIds = $state<Set<string>>(new Set());
 	let selectAll = $state(false);
+	let pollingInterval: ReturnType<typeof setInterval> | null = null;
 
 	const types = Object.keys(TYPE_LABELS);
 
 	onMount(() => {
 		if (browser) loadNotifications();
+		if (browser) {
+			pollingInterval = setInterval(loadNotifications, 30000);
+		}
+	});
+
+	onDestroy(() => {
+		if (pollingInterval) clearInterval(pollingInterval);
 	});
 
 	async function loadNotifications() {

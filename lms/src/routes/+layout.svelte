@@ -17,6 +17,8 @@
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
+	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
 
 	const navSections = [
 		{
@@ -117,6 +119,13 @@
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js');
 		}
+	});
+
+	// Start notification polling
+	$effect(() => {
+		if (!browser) return;
+		startPolling(30000);
+		return () => stopPolling();
 	});
 
 	$effect(() => {
@@ -353,6 +362,8 @@
 <div class="toast-container">
 	<Toast />
 </div>
+
+<NotificationToast />
 
 <ConfirmDialog />
 

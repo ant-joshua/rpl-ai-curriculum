@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Avatar, Card } from '$lib/components/ui';
+	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
+	import { getSnapshot, subscribe, stopPolling, fetchUnreadCount } from '$lib/stores/notifications.svelte';
 
 	let { data, children } = $props();
 
@@ -36,12 +39,25 @@
 		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
 		{ href: '/my/payments', icon: '💳', label: 'Pembayaran' },
 		{ href: '/my/notifications', icon: '🔔', label: 'Notifikasi' },
+		{ href: '/my/chat', icon: '💬', label: 'Chat' },
 		{ href: '/my/profile', icon: '👤', label: 'Profil' },
 	];
 
 	let currentPath = $derived(String($page.url.pathname));
 
 	let sidebarOpen = $state(false);
+
+	// Unread notification badge
+	let unreadCount = $state(0);
+
+	onMount(() => {
+		if (!browser) return;
+		fetchUnreadCount();
+		const unsub = subscribe(() => {
+			unreadCount = getSnapshot().unreadCount;
+		});
+		return unsub;
+	});
 
 	// PWA install state
 	let deferredPrompt: any = $state(null);
@@ -109,6 +125,9 @@
 				>
 					<span class="nav-icon">{item.icon}</span>
 					<span class="nav-label">{item.label}</span>
+					{#if item.label === 'Notifikasi' && unreadCount > 0}
+						<span class="nav-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+					{/if}
 				</a>
 			{/each}
 		</nav>
@@ -263,6 +282,22 @@
 
 	.nav-label {
 		line-height: 1;
+	}
+
+	.nav-badge {
+		background: var(--accent, #5e6ad2);
+		color: #fff;
+		font-size: 10px;
+		font-weight: 700;
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		border-radius: 9px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		margin-left: auto;
 	}
 
 	/* Footer */

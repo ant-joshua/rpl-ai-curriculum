@@ -41,6 +41,8 @@
 		{ path: '/admin/parent-portal', icon: 'eye', label: 'Parent Portal', roles: ['superadmin','admin'] },
 		{ path: '/admin/activity-logs', icon: 'bar-chart', label: 'Activity Logs', roles: ['superadmin','admin'] },
 		{ path: '/admin/api-docs', icon: 'book-open', label: 'API Docs', roles: ['superadmin','admin','instructor','ta'] },
+		{ path: '/admin/export-import', icon: 'database', label: 'Backup & Restore', roles: ['superadmin','admin'] },
+		{ path: '/admin/course-migration', icon: 'refresh-cw', label: 'Migrasi Course', roles: ['superadmin','admin'] },
 		{ path: '/admin/exports', icon: 'download', label: 'Exports', roles: ['superadmin','admin'] },
 		{ path: '/admin/system', icon: 'settings', label: 'System', roles: ['superadmin','admin'] },
 	];
