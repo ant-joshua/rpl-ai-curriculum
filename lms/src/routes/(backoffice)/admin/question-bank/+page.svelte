@@ -68,6 +68,15 @@
 	// Delete confirm
 	let deleteId = $state<string | null>(null);
 
+	// AI Generate
+	let showGenerateModal = $state(false);
+	let genCount = $state('5');
+	let genType = $state('all');
+	let genDifficulty = $state('all');
+	let genSubmitting = $state(false);
+	let genError = $state('');
+	let genResult = $state<{ count: number; questions: any[] } | null>(null);
+
 	const typeOptions = [
 		{ value: '', label: 'Semua Tipe' },
 		{ value: 'multiple_choice', label: 'Pilihan Ganda' },
@@ -303,6 +312,49 @@
 		deleteId = null;
 	}
 
+	function openGenerate() {
+		genCount = '5';
+		genType = 'all';
+		genDifficulty = 'all';
+		genError = '';
+		genResult = null;
+		showGenerateModal = true;
+	}
+
+	async function doGenerate() {
+		if (!formOffering) {
+			genError = 'Pilih course offering terlebih dahulu';
+			return;
+		}
+		genSubmitting = true;
+		genError = '';
+		genResult = null;
+
+		try {
+			const res = await fetch('/api/admin/question-bank/generate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					course_offering_id: formOffering,
+					count: parseInt(genCount) || 5,
+					type: genType === 'all' ? undefined : genType,
+					difficulty: genDifficulty === 'all' ? undefined : genDifficulty,
+				}),
+			});
+			const json = await res.json();
+			if (json.success) {
+				genResult = json.data;
+				loadData();
+			} else {
+				genError = json.error || 'Gagal generate soal';
+			}
+		} catch {
+			genError = 'Gagal terhubung ke server';
+		} finally {
+			genSubmitting = false;
+		}
+	}
+
 	let offeringOptions = $derived(
 		offerings.map(o => ({ value: o.id, label: `${o.name} (${o.code})` }))
 	);
@@ -322,7 +374,10 @@
 			<h1>🗂️ Bank Soal</h1>
 			<p class="page-desc">Kelola soal untuk kuis, ujian, dan latihan</p>
 		</div>
-		<Button onclick={openAdd}>➕ Buat Soal Baru</Button>
+		<div class="header-actions">
+			<Button onclick={openGenerate}>🤖 Generate Soal AI</Button>
+			<Button onclick={openAdd}>➕ Buat Soal Baru</Button>
+		</div>
 	</div>
 
 	{#if error}
@@ -451,6 +506,58 @@
 	</Modal>
 {/if}
 
+<!-- AI Generate Modal -->
+{#if showGenerateModal}
+	<Modal open={showGenerateModal} title="🤖 Generate Soal AI" onclose={() => showGenerateModal = false}>
+		{#if genError}
+			<Alert variant="danger">{genError}</Alert>
+		{/if}
+
+		{#if genResult}
+			<Alert variant="success">✅ {genResult.count} soal berhasil digenerate dan disimpan!</Alert>
+			<div class="gen-result-list">
+				{#each genResult.questions as q, i}
+					<div class="gen-result-item">
+						<span class="gen-result-num">{i + 1}.</span>
+						<span class="gen-result-text">{q.question}</span>
+						<div class="gen-result-meta">
+							<Badge variant="info">{q.type}</Badge>
+							<Badge variant="warning">{q.difficulty}</Badge>
+							<span class="gen-points">{q.points} poin</span>
+						</div>
+					</div>
+				{/each}
+			</div>
+			{#snippet footer()}
+				<Button onclick={() => showGenerateModal = false}>Tutup</Button>
+			{/snippet}
+		{:else}
+			<p class="gen-desc">Pilih mata pelajaran dan atur parameter untuk generate soal otomatis menggunakan AI.</p>
+			<Select label="Course Offering" options={offeringOptions} bind:value={formOffering} />
+			<Input label="Jumlah Soal (1-20)" type="number" bind:value={genCount} min={1} max={20} />
+			<Select label="Tipe Soal" options={[
+				{ value: 'all', label: 'Semua Tipe' },
+				{ value: 'multiple_choice', label: 'Pilihan Ganda' },
+				{ value: 'essay', label: 'Essay' },
+				{ value: 'coding', label: 'Coding' },
+			]} bind:value={genType} />
+			<Select label="Tingkat Kesulitan" options={[
+				{ value: 'all', label: 'Semua Tingkat' },
+				{ value: 'easy', label: 'Easy' },
+				{ value: 'medium', label: 'Medium' },
+				{ value: 'hard', label: 'Hard' },
+			]} bind:value={genDifficulty} />
+
+			{#snippet footer()}
+				<Button variant="secondary" onclick={() => showGenerateModal = false} disabled={genSubmitting}>Batal</Button>
+				<Button onclick={doGenerate} disabled={genSubmitting} loading={genSubmitting}>
+					🤖 Generate
+				</Button>
+			{/snippet}
+		{/if}
+	</Modal>
+{/if}
+
 <!-- Delete Confirmation -->
 {#if deleteId}
 	<Modal open={!!deleteId} title="Hapus Soal?" onclose={() => deleteId = null}>
@@ -571,4 +678,51 @@
 	}
 	.options-editor, .test-cases-editor { margin-top: 8px; }
 	.coding-fields { display: flex; flex-direction: column; gap: 12px; }
+
+	.gen-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+	.gen-result-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: 12px;
+		max-height: 400px;
+		overflow-y: auto;
+	}
+	.gen-result-item {
+		background: rgba(255,255,255,0.02);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 10px 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.gen-result-num {
+		font-weight: 600;
+		color: var(--accent);
+		margin-right: 6px;
+	}
+	.gen-result-text {
+		font-size: 14px;
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.gen-result-meta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 12px;
+	}
+	.gen-points {
+		color: var(--text-secondary);
+		font-weight: 500;
+	}
+	.header-actions {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
 </style>
