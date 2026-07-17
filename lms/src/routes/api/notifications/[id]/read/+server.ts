@@ -1,24 +1,34 @@
-import { json } from '@sveltejs/kit';
+import { getBearerToken, getSession } from '$lib/server/auth';
+import { jsonResponse } from '$lib/server/d1';
 import { NotificationRepository } from '$lib/repositories/notification.repository';
 
-export async function POST({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+/**
+ * PUT /api/notifications/[id]/read — mark single notification as read
+ * POST /api/notifications/[id]/read — alias for PUT
+ */
+export async function PUT({ request, platform, params }: { request: Request; platform: App.Platform; params: { id: string } }): Promise<Response> {
+	return handleMarkRead(request, platform, params.id);
+}
+
+export async function POST({ request, platform, params }: { request: Request; platform: App.Platform; params: { id: string } }): Promise<Response> {
+	return handleMarkRead(request, platform, params.id);
+}
+
+async function handleMarkRead(request: Request, platform: App.Platform, notificationId: string): Promise<Response> {
 	try {
-		const userId = locals.user?.id || locals.userId;
+		const token = getBearerToken(request);
+		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
+		const session = await getSession(platform, token);
+		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
+		const userId = session.user.id;
 
-		if (!userId) {
-			return json({ success: false, error: 'Unauthorized' }, { status: 401 });
+		const ok = await NotificationRepository.markAsRead(userId, notificationId, platform);
+		if (!ok) {
+			return jsonResponse({ success: false, error: 'Notifikasi tidak ditemukan' }, 404);
 		}
-
-		const repo = new NotificationRepository(platform);
-		const result = await repo.markAsRead(userId, params.id);
-
-		if (!result) {
-			return json({ success: false, error: 'Notifikasi tidak ditemukan' }, { status: 404 });
-		}
-
-		return json({ success: true, data: result });
+		return jsonResponse({ success: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, { status: 500 });
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }

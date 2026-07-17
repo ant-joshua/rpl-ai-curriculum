@@ -32,6 +32,7 @@
 		{ href: '/my/planner', icon: '📅', label: 'Perencana' },
 		{ href: '/progress-quiz', icon: '🧪', label: 'Progress Quiz' },
 		{ href: '/my/certificates', icon: '🎓', label: 'Sertifikat' },
+		{ href: '/my/notifications', icon: '🔔', label: 'Notifikasi' },
 		{ href: '/my/profile', icon: '👤', label: 'Profil' },
 	];
 

@@ -4,28 +4,27 @@
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 
-	interface Notification {
+	interface AppNotif {
 		id: string;
-		user_id: string;
 		type: string;
 		title: string;
 		body: string | null;
-		link: string | null;
 		is_read: number;
 		created_at: string;
 	}
 
 	const TYPE_ICONS: Record<string, string> = {
-		course_update: '📢',
-		new_lesson: '📚',
-		discussion_reply: '💬',
-		assignment_grade: '📝',
+		assessment: '📋',
+		assignment: '📂',
+		attendance: '✅',
+		payment: '💰',
+		grade: '📝',
 		system: '⚙️',
-		announcement: '📣',
+		announcement: '📢',
 	};
 
 	let open = $state(false);
-	let notifications = $state<Notification[]>([]);
+	let notifications = $state<AppNotif[]>([]);
 	let unreadCount = $state(0);
 	let loading = $state(false);
 
@@ -36,7 +35,7 @@
 
 	function timeAgo(dateStr: string): string {
 		const now = Date.now();
-		const then = new Date(dateStr + 'Z').getTime();
+		const then = new Date(dateStr + (dateStr.endsWith('Z') ? '' : 'Z')).getTime();
 		const diff = now - then;
 		const minutes = Math.floor(diff / 60000);
 		if (minutes < 1) return 'baru saja';
@@ -45,7 +44,7 @@
 		if (hours < 24) return `${hours}j lalu`;
 		const days = Math.floor(hours / 24);
 		if (days < 30) return `${days}h lalu`;
-		return new Date(dateStr).toLocaleDateString();
+		return new Date(dateStr).toLocaleDateString('id-ID');
 	}
 
 	async function fetchNotifications() {
@@ -54,7 +53,7 @@
 		if (!token) return;
 		loading = true;
 		try {
-			const res = await fetch('/api/notifications?page=1', {
+			const res = await fetch('/api/notifications?page=1&limit=5', {
 				headers: { 'Authorization': `Bearer ${token}` },
 			});
 			const json = await res.json();
@@ -73,9 +72,10 @@
 		const token = getToken();
 		if (!browser || !token) return;
 		try {
-			await fetch('/api/notifications/read-all', {
+			await fetch('/api/notifications', {
 				method: 'PUT',
-				headers: { 'Authorization': `Bearer ${token}` },
+				headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+				body: JSON.stringify({ all: true }),
 			});
 			unreadCount = 0;
 			notifications = notifications.map(n => ({ ...n, is_read: 1 }));
@@ -84,7 +84,7 @@
 		}
 	}
 
-	async function markRead(notif: Notification) {
+	async function markRead(notif: AppNotif) {
 		const token = getToken();
 		if (!browser || !token || notif.is_read) return;
 		try {
@@ -99,12 +99,9 @@
 		}
 	}
 
-	function handleNotifClick(notif: Notification) {
+	function handleNotifClick(notif: AppNotif) {
 		open = false;
 		if (!notif.is_read) markRead(notif);
-		if (notif.link) {
-			goto(notif.link);
-		}
 	}
 
 	function toggleDropdown() {
@@ -186,7 +183,7 @@
 				</div>
 
 				<div class="notif-footer">
-					<a href="/notifications" onclick={() => { open = false; }}>Lihat semua</a>
+					<a href="/my/notifications" onclick={() => { open = false; }}>Lihat semua</a>
 				</div>
 			</div>
 		{/if}

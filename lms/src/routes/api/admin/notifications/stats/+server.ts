@@ -1,14 +1,19 @@
-import { json } from '@sveltejs/kit';
+import { jsonResponse } from '$lib/server/d1';
 import { NotificationRepository } from '$lib/repositories/notification.repository';
 
-export async function GET({ platform, locals }: { platform: App.Platform; locals: any }) {
+/**
+ * GET /api/admin/notifications/stats — queue statistics
+ */
+export async function GET({ platform, locals }: {
+	platform: App.Platform;
+	locals: Record<string, any>;
+}): Promise<Response> {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
-		const stats = await NotificationRepository.getNotificationStats(platform, tenantId);
-		return json({ success: true, data: stats });
+		const stats = await NotificationRepository.getQueueStats(platform, tenantId);
+		return jsonResponse({ success: true, data: stats });
 	} catch (e: unknown) {
-		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, { status: 500 });
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }

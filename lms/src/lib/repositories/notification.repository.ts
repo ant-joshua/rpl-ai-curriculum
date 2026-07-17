@@ -1,107 +1,271 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import { getDB } from '$lib/server/d1';
 
-export interface NotificationChannel {
+// ── Types ────────────────────────────────────────────
+export interface AppNotification {
 	id: string;
 	tenant_id: string;
-	name: string;
-	channel_type: string;
-	provider: string;
-	is_active: number;
-	config_json: string;
+	user_id: string;
+	type: 'assessment' | 'assignment' | 'attendance' | 'payment' | 'grade' | 'system' | 'announcement';
+	title: string;
+	body: string | null;
+	reference_type: string | null;
+	reference_id: string | null;
+	is_read: number;
+	is_archived: number;
+	channel: 'in_app' | 'email' | 'whatsapp';
+	status: 'pending' | 'sent' | 'failed' | 'queued';
+	sent_at: string | null;
 	created_at: string;
 }
 
 export interface NotificationTemplate {
 	id: string;
 	tenant_id: string;
-	name: string;
-	category: string;
-	channel_type: string;
-	subject: string;
+	code: string;
+	type: string;
+	channels: string;
+	subject: string | null;
 	body_template: string;
+	variables: string;
 	is_active: number;
 	created_at: string;
 }
 
-export interface NotificationQueue {
+export interface NotificationQueueItem {
 	id: string;
 	tenant_id: string;
-	template_id: string;
-	channel_type: string;
-	recipient_id: string;
-	recipient_address: string;
-	subject: string;
+	user_id: string | null;
+	channel: 'in_app' | 'email' | 'whatsapp';
+	recipient: string | null;
+	subject: string | null;
 	body: string;
-	status: string;
-	sent_at: string;
-	delivered_at: string;
-	error_message: string;
-	retry_count: number;
-	metadata: string;
+	priority: number;
+	status: 'queued' | 'processing' | 'sent' | 'failed';
+	attempts: number;
+	max_attempts: number;
+	last_error: string | null;
+	scheduled_at: string | null;
+	sent_at: string | null;
 	created_at: string;
 }
 
+export interface WaTemplate {
+	id: string;
+	tenant_id: string;
+	code: string;
+	template_name: string;
+	language: string;
+	body_template: string;
+	variables: string;
+	is_active: number;
+	created_at: string;
+}
+
+export interface NotificationPreferences {
+	category: string;
+	in_app: boolean;
+	email: boolean;
+	whatsapp: boolean;
+}
+
+// ── Default preferences per notification type ───
+const DEFAULT_PREFS: Record<string, NotificationPreferences> = {
+	assessment:  { category: 'assessment',  in_app: true, email: true,  whatsapp: false },
+	assignment:  { category: 'assignment',  in_app: true, email: true,  whatsapp: false },
+	attendance:  { category: 'attendance',  in_app: true, email: false, whatsapp: false },
+	payment:     { category: 'payment',     in_app: true, email: true,  whatsapp: true  },
+	grade:       { category: 'grade',       in_app: true, email: true,  whatsapp: false },
+	system:      { category: 'system',      in_app: true, email: false, whatsapp: false },
+	announcement:{ category: 'announcement',in_app: true, email: true,  whatsapp: true  },
+};
+
+// ── NotificationRepository ──────────────────────────
 export class NotificationRepository {
-	static async getChannels(platform: { env: { DB: D1Database } }, tenantId: string): Promise<NotificationChannel[]> {
+	// ─── NOTIFICATIONS (user-facing in-app) ───────
+	static async getUserNotifications(
+		platform: { env: { DB: D1Database } },
+		userId: string,
+		tenantId: string,
+		opts?: { unreadOnly?: boolean; type?: string; limit?: number; offset?: number }
+	): Promise<{ rows: AppNotification[]; total: number; unreadCount: number }> {
 		const db = getDB(platform);
-		const { results } = await db.prepare('SELECT * FROM notification_channels WHERE tenant_id = ? ORDER BY name').bind(tenantId).all<NotificationChannel>();
-		return results;
+		const params: any[] = [tenantId, userId];
+		const where = ['n.tenant_id = ?', 'n.user_id = ?'];
+
+		if (opts?.unreadOnly) {
+			where.push('n.is_read = 0');
+		}
+		if (opts?.type) {
+			where.push('n.type = ?');
+			params.push(opts.type);
+		}
+
+		const whereClause = where.join(' AND ');
+		const limit = opts?.limit ?? 20;
+		const offset = opts?.offset ?? 0;
+
+		const countRow = await db.prepare(
+			`SELECT COUNT(*) as count FROM notifications n WHERE ${whereClause}`
+		).bind(...params).first<{ count: number }>();
+		const total = countRow?.count ?? 0;
+
+		const unreadRow = await db.prepare(
+			'SELECT COUNT(*) as count FROM notifications WHERE tenant_id = ? AND user_id = ? AND is_read = 0'
+		).bind(tenantId, userId).first<{ count: number }>();
+		const unreadCount = unreadRow?.count ?? 0;
+
+		const { results } = await db.prepare(
+			`SELECT * FROM notifications n WHERE ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`
+		).bind(...params, limit, offset).all<AppNotification>();
+
+		return { rows: results || [], total, unreadCount };
 	}
 
-	static async createChannel(platform: { env: { DB: D1Database } }, tenantId: string, data: { name: string; channel_type: string; provider?: string; config_json?: string }): Promise<NotificationChannel> {
+	static async markAsRead(userId: string, notificationId: string, platform: { env: { DB: D1Database } }): Promise<boolean> {
+		const db = getDB(platform);
+		const result = await db.prepare(
+			'UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?'
+		).bind(notificationId, userId).run();
+		return (result.meta?.changes ?? 0) > 0;
+	}
+
+	static async markAllAsRead(userId: string, tenantId: string, platform: { env: { DB: D1Database } }): Promise<void> {
+		const db = getDB(platform);
+		await db.prepare(
+			'UPDATE notifications SET is_read = 1 WHERE tenant_id = ? AND user_id = ? AND is_read = 0'
+		).bind(tenantId, userId).run();
+	}
+
+	static async archiveNotification(userId: string, notificationId: string, platform: { env: { DB: D1Database } }): Promise<boolean> {
+		const db = getDB(platform);
+		const result = await db.prepare(
+			'UPDATE notifications SET is_archived = 1 WHERE id = ? AND user_id = ?'
+		).bind(notificationId, userId).run();
+		return (result.meta?.changes ?? 0) > 0;
+	}
+
+	static async createNotification(
+		platform: { env: { DB: D1Database } },
+		data: {
+			tenant_id: string;
+			user_id: string;
+			type: string;
+			title: string;
+			body?: string;
+			reference_type?: string;
+			reference_id?: string;
+			channel?: string;
+			status?: string;
+		}
+	): Promise<AppNotification> {
 		const db = getDB(platform);
 		const id = crypto.randomUUID();
+		const now = new Date().toISOString();
 		await db.prepare(
-			'INSERT INTO notification_channels (id, tenant_id, name, channel_type, provider, is_active, config_json) VALUES (?,?,?,?,?,1,?)'
-		).bind(id, tenantId, data.name, data.channel_type, data.provider || null, data.config_json || null).run();
-		return this.getById(platform, tenantId, id) as Promise<NotificationChannel>;
+			`INSERT INTO notifications (id, tenant_id, user_id, type, title, body, reference_type, reference_id, channel, status, sent_at, created_at)
+			 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
+		).bind(
+			id, data.tenant_id, data.user_id, data.type, data.title,
+			data.body || null, data.reference_type || null, data.reference_id || null,
+			data.channel || 'in_app', data.status || 'sent',
+			data.status === 'sent' ? now : null, now
+		).run();
+		return db.prepare('SELECT * FROM notifications WHERE id = ?').bind(id).first<AppNotification>() as Promise<AppNotification>;
 	}
 
-	static async getById(platform: { env: { DB: D1Database } }, tenantId: string, id: string): Promise<NotificationChannel | null> {
+	static async createNotificationForAllUsers(
+		platform: { env: { DB: D1Database } },
+		tenantId: string,
+		data: {
+			type: string;
+			title: string;
+			body?: string;
+			reference_type?: string;
+			reference_id?: string;
+			channel?: string;
+		}
+	): Promise<number> {
 		const db = getDB(platform);
-		return db.prepare('SELECT * FROM notification_channels WHERE id = ? AND tenant_id = ?').bind(id, tenantId).first<NotificationChannel>();
+		const now = new Date().toISOString();
+		const id = crypto.randomUUID();
+
+		// Insert into a batch table first, then fan out via a background process
+		// For immediate broadcast, we INSERT into notifications per user
+		const { results: users } = await db.prepare(
+			'SELECT id FROM users WHERE tenant_id = ? AND is_active = 1'
+		).bind(tenantId).all<{ id: string }>();
+		if (!users || users.length === 0) return 0;
+
+		// Batch insert in chunks of 50
+		const chunkSize = 50;
+		let count = 0;
+		for (let i = 0; i < users.length; i += chunkSize) {
+			const chunk = users.slice(i, i + chunkSize);
+			const values = chunk.map(u => {
+				const nid = crypto.randomUUID();
+				return `('${nid}','${tenantId}','${u.id}','${data.type}','${data.title.replace(/'/g, "''")}',${data.body ? `'${data.body.replace(/'/g, "''")}'` : 'NULL'},${data.reference_type ? `'${data.reference_type}'` : 'NULL'},${data.reference_id ? `'${data.reference_id}'` : 'NULL'},${data.channel || "'in_app'"},'sent','${now}','${now}')`;
+			}).join(',');
+			await db.prepare(
+				`INSERT INTO notifications (id, tenant_id, user_id, type, title, body, reference_type, reference_id, channel, status, sent_at, created_at) VALUES ${values}`
+			).run();
+			count += chunk.length;
+		}
+		return count;
 	}
 
-	static async updateChannel(platform: { env: { DB: D1Database } }, id: string, tenantId: string, data: { name?: string; is_active?: number; config_json?: string }): Promise<void> {
-		const db = getDB(platform);
-		const sets: string[] = [];
-		const vals: any[] = [];
-		if (data.name !== undefined) { sets.push('name = ?'); vals.push(data.name); }
-		if (data.is_active !== undefined) { sets.push('is_active = ?'); vals.push(data.is_active); }
-		if (data.config_json !== undefined) { sets.push('config_json = ?'); vals.push(data.config_json); }
-		if (sets.length === 0) return;
-		vals.push(id, tenantId);
-		await db.prepare(`UPDATE notification_channels SET ${sets.join(', ')} WHERE id = ? AND tenant_id = ?`).bind(...vals).run();
-	}
-
-	static async getTemplates(platform: { env: { DB: D1Database } }, tenantId: string, filters?: { category?: string }): Promise<NotificationTemplate[]> {
+	// ─── TEMPLATES ──────────────────────────────
+	static async getTemplates(
+		platform: { env: { DB: D1Database } },
+		tenantId: string,
+		filters?: { type?: string }
+	): Promise<NotificationTemplate[]> {
 		const db = getDB(platform);
 		let sql = 'SELECT * FROM notification_templates WHERE tenant_id = ?';
 		const params: any[] = [tenantId];
-		if (filters?.category) { sql += ' AND category = ?'; params.push(filters.category); }
-		sql += ' ORDER BY name';
+		if (filters?.type) { sql += ' AND type = ?'; params.push(filters.type); }
+		sql += ' ORDER BY code';
 		const { results } = await db.prepare(sql).bind(...params).all<NotificationTemplate>();
 		return results;
 	}
 
-	static async createTemplate(platform: { env: { DB: D1Database } }, tenantId: string, data: { name: string; category: string; channel_type: string; subject?: string; body_template: string }): Promise<NotificationTemplate> {
+	static async getTemplateById(
+		platform: { env: { DB: D1Database } },
+		id: string,
+		tenantId: string
+	): Promise<NotificationTemplate | null> {
+		const db = getDB(platform);
+		return db.prepare('SELECT * FROM notification_templates WHERE id = ? AND tenant_id = ?').bind(id, tenantId).first<NotificationTemplate>();
+	}
+
+	static async createTemplate(
+		platform: { env: { DB: D1Database } },
+		tenantId: string,
+		data: { code: string; type: string; channels?: string; subject?: string; body_template: string; variables?: string }
+	): Promise<NotificationTemplate> {
 		const db = getDB(platform);
 		const id = crypto.randomUUID();
 		await db.prepare(
-			'INSERT INTO notification_templates (id, tenant_id, name, category, channel_type, subject, body_template, is_active) VALUES (?,?,?,?,?,?,?,1)'
-		).bind(id, tenantId, data.name, data.category, data.channel_type, data.subject || null, data.body_template).run();
+			'INSERT INTO notification_templates (id, tenant_id, code, type, channels, subject, body_template, variables) VALUES (?,?,?,?,?,?,?,?)'
+		).bind(id, tenantId, data.code, data.type, data.channels || 'in_app', data.subject || null, data.body_template, data.variables || '[]').run();
 		return db.prepare('SELECT * FROM notification_templates WHERE id = ?').bind(id).first<NotificationTemplate>() as Promise<NotificationTemplate>;
 	}
 
-	static async updateTemplate(platform: { env: { DB: D1Database } }, id: string, tenantId: string, data: { name?: string; category?: string; subject?: string; body_template?: string; is_active?: number }): Promise<void> {
+	static async updateTemplate(
+		platform: { env: { DB: D1Database } },
+		id: string,
+		tenantId: string,
+		data: { code?: string; type?: string; channels?: string; subject?: string; body_template?: string; variables?: string; is_active?: number }
+	): Promise<void> {
 		const db = getDB(platform);
 		const sets: string[] = [];
 		const vals: any[] = [];
-		if (data.name !== undefined) { sets.push('name = ?'); vals.push(data.name); }
-		if (data.category !== undefined) { sets.push('category = ?'); vals.push(data.category); }
+		if (data.code !== undefined) { sets.push('code = ?'); vals.push(data.code); }
+		if (data.type !== undefined) { sets.push('type = ?'); vals.push(data.type); }
+		if (data.channels !== undefined) { sets.push('channels = ?'); vals.push(data.channels); }
 		if (data.subject !== undefined) { sets.push('subject = ?'); vals.push(data.subject); }
 		if (data.body_template !== undefined) { sets.push('body_template = ?'); vals.push(data.body_template); }
+		if (data.variables !== undefined) { sets.push('variables = ?'); vals.push(data.variables); }
 		if (data.is_active !== undefined) { sets.push('is_active = ?'); vals.push(data.is_active); }
 		if (sets.length === 0) return;
 		vals.push(id, tenantId);
@@ -113,120 +277,133 @@ export class NotificationRepository {
 		await db.prepare('DELETE FROM notification_templates WHERE id = ? AND tenant_id = ?').bind(id, tenantId).run();
 	}
 
-	static async queueNotification(platform: { env: { DB: D1Database } }, tenantId: string, data: { template_id?: string; channel_type: string; recipient_id?: string; recipient_address: string; subject?: string; body: string; metadata?: string }): Promise<string> {
+	// ─── QUEUE ──────────────────────────────────
+	static async enqueue(
+		platform: { env: { DB: D1Database } },
+		tenantId: string,
+		data: {
+			user_id?: string;
+			channel: string;
+			recipient?: string;
+			subject?: string;
+			body: string;
+			priority?: number;
+			scheduled_at?: string;
+			max_attempts?: number;
+		}
+	): Promise<string> {
 		const db = getDB(platform);
 		const id = crypto.randomUUID();
 		await db.prepare(
-			'INSERT INTO notification_queue (id, tenant_id, template_id, channel_type, recipient_id, recipient_address, subject, body, status, metadata) VALUES (?,?,?,?,?,?,?,?,\'pending\',?)'
-		).bind(id, tenantId, data.template_id || null, data.channel_type, data.recipient_id || null, data.recipient_address, data.subject || null, data.body, data.metadata || null).run();
+			'INSERT INTO notification_queue (id, tenant_id, user_id, channel, recipient, subject, body, priority, max_attempts, scheduled_at) VALUES (?,?,?,?,?,?,?,?,?,?)'
+		).bind(
+			id, tenantId, data.user_id || null, data.channel, data.recipient || null,
+			data.subject || null, data.body, data.priority ?? 0, data.max_attempts ?? 3,
+			data.scheduled_at || null
+		).run();
 		return id;
 	}
 
-	static async listNotifications(platform: { env: { DB: D1Database } }, tenantId: string, filters?: { status?: string; recipient_id?: string; limit?: number }): Promise<NotificationQueue[]> {
+	static async listQueue(
+		platform: { env: { DB: D1Database } },
+		tenantId: string,
+		filters?: { status?: string; channel?: string; limit?: number; offset?: number }
+	): Promise<{ rows: NotificationQueueItem[]; total: number }> {
 		const db = getDB(platform);
-		let sql = 'SELECT * FROM notification_queue WHERE tenant_id = ?';
 		const params: any[] = [tenantId];
-		if (filters?.status) { sql += ' AND status = ?'; params.push(filters.status); }
-		if (filters?.recipient_id) { sql += ' AND recipient_id = ?'; params.push(filters.recipient_id); }
-		sql += ' ORDER BY created_at DESC';
-		if (filters?.limit) { sql += ' LIMIT ?'; params.push(filters.limit); }
-		const { results } = await db.prepare(sql).bind(...params).all<NotificationQueue>();
-		return results;
+		const where = ['tenant_id = ?'];
+		if (filters?.status) { where.push('status = ?'); params.push(filters.status); }
+		if (filters?.channel) { where.push('channel = ?'); params.push(filters.channel); }
+		const whereClause = where.join(' AND ');
+		const limit = filters?.limit ?? 50;
+		const offset = filters?.offset ?? 0;
+
+		const countRow = await db.prepare(
+			`SELECT COUNT(*) as count FROM notification_queue WHERE ${whereClause}`
+		).bind(...params).first<{ count: number }>();
+		const total = countRow?.count ?? 0;
+
+		const { results } = await db.prepare(
+			`SELECT * FROM notification_queue WHERE ${whereClause} ORDER BY priority DESC, created_at DESC LIMIT ? OFFSET ?`
+		).bind(...params, limit, offset).all<NotificationQueueItem>();
+		return { rows: results || [], total };
 	}
 
-	static async getNotificationStats(platform: { env: { DB: D1Database } }, tenantId: string): Promise<{ sent: number; pending: number; delivered: number; failed: number }> {
+	static async retryFailed(platform: { env: { DB: D1Database } }, tenantId: string, maxItems?: number): Promise<number> {
+		const db = getDB(platform);
+		const limit = maxItems ?? 50;
+		const result = await db.prepare(
+			`UPDATE notification_queue SET status = 'queued', attempts = 0, last_error = NULL
+			 WHERE tenant_id = ? AND status = 'failed' AND attempts < max_attempts
+			 LIMIT ?`
+		).bind(tenantId, limit).run();
+		return result.meta?.changes ?? 0;
+	}
+
+	static async getQueueStats(platform: { env: { DB: D1Database } }, tenantId: string): Promise<Record<string, number>> {
 		const db = getDB(platform);
 		const rows = await db.prepare(
-			"SELECT status, COUNT(*) as count FROM notification_queue WHERE tenant_id = ? GROUP BY status"
+			'SELECT status, COUNT(*) as count FROM notification_queue WHERE tenant_id = ? GROUP BY status'
 		).bind(tenantId).all<{ status: string; count: number }>();
-		const stats = { sent: 0, pending: 0, delivered: 0, failed: 0 };
+		const stats: Record<string, number> = { queued: 0, processing: 0, sent: 0, failed: 0 };
 		for (const r of rows.results) {
-			if (r.status === 'sent') stats.sent = r.count;
-			else if (r.status === 'pending') stats.pending = r.count;
-			else if (r.status === 'delivered') stats.delivered = r.count;
-			else if (r.status === 'failed') stats.failed = r.count;
+			stats[r.status] = r.count;
 		}
 		return stats;
 	}
 
-	static async getUserNotifications(platform: { env: { DB: D1Database } }, userId: string, tenantId: string, opts?: { unreadOnly?: boolean }): Promise<any[]> {
+	// ─── WA TEMPLATES ───────────────────────────
+	static async getWaTemplates(platform: { env: { DB: D1Database } }, tenantId: string): Promise<WaTemplate[]> {
 		const db = getDB(platform);
-		let sql = `SELECT nq.*, nr.read_at FROM notification_queue nq LEFT JOIN notification_read nr ON nq.id = nr.notification_id AND nr.user_id = ? WHERE nq.tenant_id = ? AND nq.recipient_id = ?`;
-		const params: any[] = [userId, tenantId, userId];
-		if (opts?.unreadOnly) { sql += ' AND nr.id IS NULL'; }
-		sql += ' ORDER BY nq.created_at DESC LIMIT 50';
-		const { results } = await db.prepare(sql).bind(...params).all<any>();
+		const { results } = await db.prepare('SELECT * FROM wa_templates WHERE tenant_id = ? ORDER BY code').bind(tenantId).all<WaTemplate>();
 		return results;
 	}
 
-	static async markAsRead(platform: { env: { DB: D1Database } }, userId: string, notificationId: string): Promise<void> {
+	static async createWaTemplate(platform: { env: { DB: D1Database } }, tenantId: string, data: { code: string; template_name: string; language?: string; body_template: string; variables?: string }): Promise<WaTemplate> {
 		const db = getDB(platform);
+		const id = crypto.randomUUID();
 		await db.prepare(
-			'INSERT OR IGNORE INTO notification_read (id, tenant_id, user_id, notification_id) VALUES (?, (SELECT tenant_id FROM notification_queue WHERE id = ?), ?, ?)'
-		).bind(crypto.randomUUID(), notificationId, userId, notificationId).run();
+			'INSERT INTO wa_templates (id, tenant_id, code, template_name, language, body_template, variables) VALUES (?,?,?,?,?,?,?)'
+		).bind(id, tenantId, data.code, data.template_name, data.language || 'id', data.body_template, data.variables || '[]').run();
+		return db.prepare('SELECT * FROM wa_templates WHERE id = ?').bind(id).first<WaTemplate>() as Promise<WaTemplate>;
 	}
 
-	static async markAllAsRead(platform: { env: { DB: D1Database } }, userId: string, tenantId: string): Promise<void> {
-		const db = getDB(platform);
-		await db.prepare(
-			`INSERT OR IGNORE INTO notification_read (id, tenant_id, user_id, notification_id)
-			 SELECT DISTINCT ? || '_' || nq.id, ?, ?, nq.id FROM notification_queue nq
-			 WHERE nq.tenant_id = ? AND nq.recipient_id = ? AND nq.id NOT IN (SELECT notification_id FROM notification_read WHERE user_id = ?)`
-		).bind(userId, tenantId, userId, tenantId, userId, userId).run();
-	}
-
-	static async getUnreadCount(platform: { env: { DB: D1Database } }, userId: string, tenantId: string): Promise<number> {
-		const db = getDB(platform);
-		const row = await db.prepare(
-			"SELECT COUNT(*) as count FROM notification_queue nq WHERE nq.tenant_id = ? AND nq.recipient_id = ? AND nq.id NOT IN (SELECT notification_id FROM notification_read WHERE user_id = ?)"
-		).bind(tenantId, userId, userId).first<{ count: number }>();
-		return row?.count || 0;
-	}
-
-	static async getPreferences(platform: { env: { DB: D1Database } }, userId: string, tenantId: string): Promise<any[]> {
+	// ─── PREFERENCES (stored as JSON in user meta or notification_preferences) ─────
+	static async getPreferences(platform: { env: { DB: D1Database } }, userId: string, tenantId: string): Promise<NotificationPreferences[]> {
 		const db = getDB(platform);
 		const { results } = await db.prepare(
-			'SELECT * FROM notification_preferences WHERE tenant_id = ? AND user_id = ?'
-		).bind(tenantId, userId).all();
-		return results;
+			'SELECT * FROM notification_preferences WHERE tenant_id = ? AND user_id = ? ORDER BY category'
+		).bind(tenantId, userId).all<any>();
+		if (results.length > 0) {
+			return results.map(r => ({
+				category: r.category,
+				in_app: r.in_app_enabled === 1,
+				email: r.email_enabled === 1,
+				whatsapp: r.sms_enabled === 1,
+			}));
+		}
+		// Return defaults
+		return Object.values(DEFAULT_PREFS);
 	}
 
-	static async updatePreferences(platform: { env: { DB: D1Database } }, userId: string, tenantId: string, category: string, prefs: { email_enabled?: number; push_enabled?: number; sms_enabled?: number; in_app_enabled?: number }): Promise<void> {
+	static async updatePreferences(
+		platform: { env: { DB: D1Database } },
+		userId: string,
+		tenantId: string,
+		prefs: NotificationPreferences
+	): Promise<void> {
 		const db = getDB(platform);
 		const existing = await db.prepare(
 			'SELECT id FROM notification_preferences WHERE tenant_id = ? AND user_id = ? AND category = ?'
-		).bind(tenantId, userId, category).first<{ id: string }>();
+		).bind(tenantId, userId, prefs.category).first<{ id: string }>();
 		if (existing) {
-			const sets: string[] = [];
-			const vals: any[] = [];
-			if (prefs.email_enabled !== undefined) { sets.push('email_enabled = ?'); vals.push(prefs.email_enabled); }
-			if (prefs.push_enabled !== undefined) { sets.push('push_enabled = ?'); vals.push(prefs.push_enabled); }
-			if (prefs.sms_enabled !== undefined) { sets.push('sms_enabled = ?'); vals.push(prefs.sms_enabled); }
-			if (prefs.in_app_enabled !== undefined) { sets.push('in_app_enabled = ?'); vals.push(prefs.in_app_enabled); }
-			if (sets.length === 0) return;
-			vals.push(existing.id);
-			await db.prepare(`UPDATE notification_preferences SET ${sets.join(', ')} WHERE id = ?`).bind(...vals).run();
+			await db.prepare(
+				'UPDATE notification_preferences SET in_app_enabled = ?, email_enabled = ?, sms_enabled = ? WHERE id = ?'
+			).bind(prefs.in_app ? 1 : 0, prefs.email ? 1 : 0, prefs.whatsapp ? 1 : 0, existing.id).run();
 		} else {
 			await db.prepare(
-				'INSERT INTO notification_preferences (id, tenant_id, user_id, category, email_enabled, push_enabled, sms_enabled, in_app_enabled) VALUES (?,?,?,?,?,?,?,?)'
-			).bind(crypto.randomUUID(), tenantId, userId, category, prefs.email_enabled ?? 1, prefs.push_enabled ?? 1, prefs.sms_enabled ?? 0, prefs.in_app_enabled ?? 1).run();
+				'INSERT INTO notification_preferences (id, tenant_id, user_id, category, in_app_enabled, email_enabled, sms_enabled) VALUES (?,?,?,?,?,?,?)'
+			).bind(crypto.randomUUID(), tenantId, userId, prefs.category, prefs.in_app ? 1 : 0, prefs.email ? 1 : 0, prefs.whatsapp ? 1 : 0).run();
 		}
-	}
-
-	static async registerToken(platform: { env: { DB: D1Database } }, tenantId: string, data: { user_id: string; token: string; platform?: string }): Promise<void> {
-		const db = getDB(platform);
-		const existing = await db.prepare('SELECT id FROM push_tokens WHERE token = ?').bind(data.token).first<{ id: string }>();
-		if (existing) {
-			await db.prepare('UPDATE push_tokens SET last_used_at = datetime(\'now\'), is_active = 1 WHERE id = ?').bind(existing.id).run();
-		} else {
-			await db.prepare(
-				'INSERT INTO push_tokens (id, tenant_id, user_id, token, platform, is_active) VALUES (?,?,?,?,?,1)'
-			).bind(crypto.randomUUID(), tenantId, data.user_id, data.token, data.platform || null).run();
-		}
-	}
-
-	static async removeToken(platform: { env: { DB: D1Database } }, token: string): Promise<void> {
-		const db = getDB(platform);
-		await db.prepare('UPDATE push_tokens SET is_active = 0 WHERE token = ?').bind(token).run();
 	}
 }

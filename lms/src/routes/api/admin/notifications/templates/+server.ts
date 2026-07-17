@@ -1,36 +1,48 @@
-import { json } from '@sveltejs/kit';
+import { jsonResponse } from '$lib/server/d1';
 import { NotificationRepository } from '$lib/repositories/notification.repository';
 
-export async function GET({ platform, locals }: { platform: App.Platform; locals: any }) {
+/**
+ * GET /api/admin/notifications/templates — list all templates
+ * POST /api/admin/notifications/templates — create
+ */
+export async function GET({ url, platform, locals }: {
+	url: URL;
+	platform: App.Platform;
+	locals: Record<string, any>;
+}): Promise<Response> {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
-		const templates = await NotificationRepository.getTemplates(platform, tenantId);
-		return json({ success: true, data: templates });
+		const type = url.searchParams.get('type') || undefined;
+		const templates = await NotificationRepository.getTemplates(platform, tenantId, { type });
+		return jsonResponse({ success: true, data: templates });
 	} catch (e: unknown) {
-		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, { status: 500 });
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }
 
-export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }) {
+export async function POST({ request, platform, locals }: {
+	request: Request;
+	platform: App.Platform;
+	locals: Record<string, any>;
+}): Promise<Response> {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
 		const body = await request.json();
-		if (!body.name || !body.body_template) {
-			return json({ success: false, error: 'name dan body_template wajib diisi' }, { status: 400 });
+		if (!body.code || !body.type || !body.body_template) {
+			return jsonResponse({ success: false, error: 'code, type, dan body_template wajib diisi' }, 400);
 		}
 		const template = await NotificationRepository.createTemplate(platform, tenantId, {
-			name: body.name,
-			category: body.category || 'system',
-			channel_type: body.channel_type || 'in_app',
+			code: body.code,
+			type: body.type,
+			channels: body.channels,
 			subject: body.subject,
-			body_template: body.body_template
+			body_template: body.body_template,
+			variables: body.variables ? JSON.stringify(body.variables) : undefined,
 		});
-		return json({ success: true, data: template }, { status: 201 });
+		return jsonResponse({ success: true, data: template }, 201);
 	} catch (e: unknown) {
-		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, { status: 500 });
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }

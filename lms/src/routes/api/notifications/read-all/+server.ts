@@ -1,44 +1,26 @@
 import { getBearerToken, getSession } from '$lib/server/auth';
-import { getDB } from '$lib/server/d1';
-
-function json(data: unknown, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { 'Content-Type': 'application/json' },
-	});
-}
-
-export async function OPTIONS(): Promise<Response> {
-	return new Response(null, {
-		headers: {
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'PUT, OPTIONS',
-			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-		},
-	});
-}
+import { getDB, jsonResponse } from '$lib/server/d1';
+import { NotificationRepository } from '$lib/repositories/notification.repository';
 
 /**
- * PUT /api/notifications/read-all
- * Mark all notifications as read for the current user.
+ * PUT /api/notifications/read-all — mark all notifications as read
  */
 export async function PUT({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
 		const token = getBearerToken(request);
-		if (!token) return json({ success: false, error: 'Not authenticated' }, 401);
-
+		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
 		const session = await getSession(platform, token);
-		if (!session) return json({ success: false, error: 'Session expired or invalid' }, 401);
+		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
+		const userId = session.user.id;
 
 		const db = getDB(platform);
-		await db
-			.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0')
-			.bind(session.user.id)
-			.run();
+		const tenantRow = await db.prepare('SELECT tenant_id FROM users WHERE id = ?').bind(userId).first<{ tenant_id: string }>();
+		const tenantId = tenantRow?.tenant_id || 'default';
 
-		return json({ success: true });
+		await NotificationRepository.markAllAsRead(userId, tenantId, platform);
+		return jsonResponse({ success: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }

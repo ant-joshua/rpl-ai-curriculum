@@ -14,7 +14,6 @@ export async function load({ request, platform, url }: {
 	platform: App.Platform;
 	url: URL;
 }) {
-	// Allow public routes + API through without auth
 	if (url.pathname.startsWith('/api/') || isPublicPath(url.pathname)) {
 		return {};
 	}
