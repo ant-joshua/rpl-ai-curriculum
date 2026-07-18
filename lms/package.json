@@ -50,6 +50,7 @@
 		"drizzle-orm": "^0.45.2",
 		"highlight.js": "^11.11.1",
 		"katex": "^0.17.0",
+		"lowlight": "^3.3.0",
 		"marked": "^18.0.6",
 		"marked-highlight": "^2.2.4",
 		"prismjs": "^1.30.0"
