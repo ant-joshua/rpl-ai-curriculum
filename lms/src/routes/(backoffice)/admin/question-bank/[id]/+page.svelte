@@ -376,7 +376,7 @@
 				<div class="detail-section">
 					<div class="detail-grid">
 						<div class="detail-field">
-							<label class="detail-label">Soal</label>
+							<label class="detail-label">{t('admin.soal')}</label>
 							<p class="detail-value question-text">{q.question}</p>
 						</div>
 
@@ -401,7 +401,7 @@
 
 						<div class="detail-row">
 							<div class="detail-field">
-								<label class="detail-label">Course Offering</label>
+								<label class="detail-label">{t('admin.course_offering')}</label>
 								<span class="detail-value">{offeringName}</span>
 							</div>
 							<div class="detail-field">

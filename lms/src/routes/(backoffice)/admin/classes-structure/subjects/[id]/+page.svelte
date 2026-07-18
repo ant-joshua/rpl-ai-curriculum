@@ -143,11 +143,11 @@
 
 <div class="page">
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<a href="/admin/classes-structure/mapel" class="btn-primary">← Kembali</a>
+			<a href="/admin/classes-structure/mapel" class="btn-primary">{t('admin.kembali')}</a>
 		</div>
 	{:else if mapel}
 		<div class="header">
@@ -171,7 +171,7 @@
 				<span class="info-value">{mapel.grade_level_name || mapel.gradeLevelName || 'Semua'}</span>
 			</div>
 			<div class="info-card">
-				<span class="info-label">Jurusan</span>
+				<span class="info-label">{t('admin.jurusan')}</span>
 				<span class="info-value">{mapel.major_name || mapel.majorName || 'Semua'}</span>
 			</div>
 			<div class="info-card">

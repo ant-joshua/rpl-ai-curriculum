@@ -94,7 +94,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	<div class="header">
 		<div>
 			<h1>📊 Survey & Feedback</h1>
-			<p class="subtitle">Dashboard survei: statistik, survei terbaru, dan aksi cepat</p>
+			<p class="subtitle">{t('admin.survey_desc')}</p>
 		</div>
 		<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
 	</div>
@@ -115,10 +115,10 @@ const instanceColumns: ColumnDef<any, any>[] = [
 
 		<!-- Quick Actions -->
 		<div class="quick-actions">
-			<h3>Aksi Cepat</h3>
+			<h3>{t('admin.aksi_cepat')}</h3>
 			<div class="action-row">
-				<Button variant="primary" onclick={() => goto('/admin/survey/templates')}>+ Template Baru</Button>
-				<Button variant="secondary" onclick={() => goto('/admin/survey/instances')}>+ Buat Survei</Button>
+				<Button variant="primary" onclick={() => goto('/admin/survey/templates')}>{t('admin.template_baru')}</Button>
+				<Button variant="secondary" onclick={() => goto('/admin/survey/instances')}>{t('admin.buat_survei')}</Button>
 				<Button variant="secondary" onclick={() => goto('/admin/survey/instances')}>Lihat Semua Instance</Button>
 			</div>
 		</div>
@@ -127,14 +127,14 @@ const instanceColumns: ColumnDef<any, any>[] = [
 			<!-- Recent Instances -->
 			<div class="card">
 				<div class="card-header">
-					<h3>Survei Terbaru</h3>
-					<a href="/admin/survey/instances" class="link-btn">Lihat Semua →</a>
+					<h3>{t('admin.survei_terbaru')}</h3>
+					<a href="/admin/survey/instances" class="link-btn">{t('admin.lihat_semua')}</a>
 				</div>
 				{#if loading}
 					<div class="loading">Memuat survei...</div>
 				{:else if recentInstances.length === 0}
 					<div class="empty-state small">
-						<p>Belum ada survei</p>
+						<p>{t('admin.belum_ada_survei')}</p>
 					</div>
 				{:else}
 					<DataTable columns={instanceColumns} data={recentInstances} pageSize={10} showSearch={false} showPagination={false} emptyMessage="Belum ada survei" emptyIcon="📊" />
@@ -144,8 +144,8 @@ const instanceColumns: ColumnDef<any, any>[] = [
 			<!-- Templates Summary -->
 			<div class="card">
 				<div class="card-header">
-					<h3>Templates</h3>
-					<a href="/admin/survey/templates" class="link-btn">Kelola →</a>
+					<h3>{t('admin.templates')}</h3>
+					<a href="/admin/survey/templates" class="link-btn">{t('admin.kelola_arrow')}</a>
 				</div>
 				{#if loading}
 					<div class="loading">Memuat template...</div>

@@ -33,7 +33,7 @@
 <div class="gradebook-page">
 	<div class="page-header">
 		<h1>📋 Gradebook</h1>
-		<p class="subtitle">Pilih course offering untuk melihat nilai seluruh mahasiswa.</p>
+		<p class="subtitle">{t('admin.gradebook_desc')}</p>
 	</div>
 
 	{#if loading}

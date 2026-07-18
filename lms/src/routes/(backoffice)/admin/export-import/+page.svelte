@@ -120,7 +120,7 @@
 	<!-- Backup Section -->
 	<Card class="section-card">
 		<CardContent>
-			<h2>Buat Backup Baru</h2>
+			<h2>{t('admin.buat_backup')}</h2>
 			<p class="desc">Ekspor semua data tenant saat ini sebagai file JSON terkompresi ke R2 storage.</p>
 			<Button onclick={createBackup} disabled={creatingBackup}>
 				{creatingBackup ? 'Membuat backup...' : '📦 Backup Sekarang'}
@@ -137,9 +137,9 @@
 	<!-- Backup List -->
 	<Card class="section-card">
 		<CardContent>
-			<h2>Daftar Backup</h2>
+			<h2>{t('admin.daftar_backup')}</h2>
 			{#if loadingBackups}
-				<p class="loading-text">Memuat...</p>
+				<p class="loading-text">{t('common.loading')}</p>
 			{:else if backups.length === 0}
 				<p class="empty-text">Belum ada backup. Buat backup baru di atas.</p>
 			{:else}
@@ -167,7 +167,7 @@
 	<!-- Restore Section -->
 	<Card class="section-card">
 		<CardContent>
-			<h2>Restore Data</h2>
+			<h2>{t('admin.restore_data')}</h2>
 			<p class="desc">Upload file backup JSON untuk mengembalikan data ke tenant saat ini. Data yang sudah ada akan dilewati (INSERT OR IGNORE).</p>
 <Input  />
 				type="file"

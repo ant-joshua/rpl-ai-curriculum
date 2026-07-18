@@ -53,7 +53,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>

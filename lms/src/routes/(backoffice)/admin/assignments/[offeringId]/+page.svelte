@@ -198,7 +198,7 @@
 
 <div class="grading-page">
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}
@@ -255,12 +255,12 @@
 										<table class="submissions-table">
 											<thead>
 												<tr>
-													<th>Mahasiswa</th>
+													<th>{t('kaprodi.col_student')}</th>
 													<th>{t('common.status')}</th>
 													<th>Submission</th>
 													<th>Score</th>
 													<th>Submitted</th>
-													<th>Feedback</th>
+													<th>{t('reviews.feedback_label')}</th>
 													<th>{t('common.action')}</th>
 												</tr>
 											</thead>

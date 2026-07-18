@@ -204,7 +204,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<Button href="/admin/courses">← Kembali</Button>
+			<Button href="/admin/courses">{t('admin.kembali')}</Button>
 		</div>
 	{:else}
 		<div class="breadcrumb">

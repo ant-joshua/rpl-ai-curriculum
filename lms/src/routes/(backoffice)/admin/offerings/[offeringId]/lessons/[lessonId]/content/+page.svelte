@@ -293,7 +293,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<Button href="/admin/offerings/{offeringId}/lessons">← Kembali</Button>
+			<Button href="/admin/offerings/{offeringId}/lessons">{t('admin.kembali')}</Button>
 		</div>
 	{:else}
 		<div class="breadcrumb">
@@ -308,7 +308,7 @@
 				<p class="page-desc">Atur konten pembelajaran untuk lesson ini</p>
 			</div>
 			<div class="header-actions">
-				<Button variant="secondary" href="/admin/offerings/{offeringId}/lessons">← Kembali</Button>
+				<Button variant="secondary" href="/admin/offerings/{offeringId}/lessons">{t('admin.kembali')}</Button>
 				<Button onclick={openCreateBlock}>+ Content Block</Button>
 			</div>
 		</div>

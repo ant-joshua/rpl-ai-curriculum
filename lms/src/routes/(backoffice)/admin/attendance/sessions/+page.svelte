@@ -239,7 +239,7 @@
 		<div>
 			<div class="breadcrumb"><a href="/admin/attendance">← Attendance System</a></div>
 			<h1>📅 Sesi Presensi</h1>
-			<p class="subtitle">Kelola sesi presensi dan QR code</p>
+			<p class="subtitle">{t('admin.kelola_sesi')}</p>
 		</div>
 		<Button variant="primary" onclick={() => { showCreateModal = true; resetForm(); }}>
 			<Icon name="calendar" size={16} />
@@ -267,7 +267,7 @@
 	{#if loading}
 		<div class="loading-state">
 			<div class="spinner"></div>
-			<p>Memuat sesi...</p>
+			<p>{t('admin.memuat_sesi')}</p>
 		</div>
 	{:else if error}
 		<div class="error-state">
@@ -278,7 +278,7 @@
 	{:else if sessions.length === 0}
 		<div class="empty-state">
 			<Icon name="calendar" size={48} />
-			<p>Belum ada sesi presensi</p>
+			<p>{t('admin.belum_ada_sesi')}</p>
 			<Button variant="secondary" onclick={() => { showCreateModal = true; resetForm(); }}>
 				Buat Sesi Pertama
 			</Button>

@@ -139,7 +139,7 @@
 <div class="discussions-page">
 	<div class="page-header">
 		<h1>💬 Discussions</h1>
-		<p class="subtitle">Manage all student discussions across your courses</p>
+		<p class="subtitle">{t('admin.kelola_diskusi')}</p>
 	</div>
 
 	<!-- Filters -->

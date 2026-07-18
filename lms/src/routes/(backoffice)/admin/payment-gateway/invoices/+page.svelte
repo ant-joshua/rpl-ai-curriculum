@@ -251,7 +251,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 <div class="pg-page">
 	<div class="pg-header">
 		<div>
-			<h1 class="pg-title">Invoice</h1>
+			<h1 class="pg-title">{t('admin.invoice')}</h1>
 			<p class="pg-subtitle">Daftar invoice & pencatatan pembayaran</p>
 		</div>
 		<Button variant="primary" class="pg-btn pg-" onclick={() => { resetForm(); showModal = true; }}>
@@ -267,7 +267,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	</div>
 
 	{#if loading}
-		<div class="pg-loading"><div class="pg-spinner"></div><p>Memuat data...</p></div>
+		<div class="pg-loading"><div class="pg-spinner"></div><p>{t('admin.memuat_data')}</p></div>
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
@@ -276,7 +276,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	{:else if invoices.length === 0}
 		<div class="pg-empty">
 			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-			<p>Belum ada invoice</p>
+			<p>{t('admin.belum_ada_invoice')}</p>
 			<Button variant="primary" size="sm" class="pg-btn pg-pg-" onclick={() => { resetForm(); showModal = true; }}>Buat Invoice Baru</Button>
 		</div>
 	{:else}
@@ -311,7 +311,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<span class="pg-detail-value pg-mono">{selectedInvoice.invoice_number}</span>
 						</div>
 						<div class="pg-detail-item">
-							<span class="pg-detail-label">Mahasiswa</span>
+							<span class="pg-detail-label">{t('kaprodi.col_student')}</span>
 							<span class="pg-detail-value">{selectedInvoice.student_name || selectedInvoice.student_id}</span>
 						</div>
 						<div class="pg-detail-item">
@@ -331,7 +331,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<span class="pg-detail-value pg-bold">{formatCurrency(selectedInvoice.total_amount)}</span>
 						</div>
 						<div class="pg-detail-item">
-							<span class="pg-detail-label">Dibayar</span>
+							<span class="pg-detail-label">{t('financial.dibayar')}</span>
 							<span class="pg-detail-value">{formatCurrency(selectedInvoice.paid_amount || 0)}</span>
 						</div>
 						<div class="pg-detail-item">
@@ -339,7 +339,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<span class="pg-badge {statusBadge(selectedInvoice.status)}">{selectedInvoice.status}</span>
 						</div>
 						<div class="pg-detail-item">
-							<span class="pg-detail-label">Jatuh Tempo</span>
+							<span class="pg-detail-label">{t('flashcards.due')}</span>
 							<span class="pg-detail-value">{formatDate(selectedInvoice.due_date || '')}</span>
 						</div>
 					</div>
@@ -388,7 +388,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 <Input bind:value={formStudentId} placeholder="ID mahasiswa" />
 						</div>
 						<div class="pg-field">
-							<label class="pg-label">Jatuh Tempo</label>
+							<label class="pg-label">{t('flashcards.due')}</label>
 							<input class="pg-input" type="date" bind:value={formDueDate} />
 						</div>
 						<div class="pg-field">

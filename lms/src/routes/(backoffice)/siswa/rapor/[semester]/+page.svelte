@@ -164,7 +164,7 @@ import { t } from '$lib/stores/i18n.svelte';
 				<span>RPL AI Curriculum</span>
 			</div>
 			<div class="print-title">
-				<h2>LAPORAN HASIL BELAJAR</h2>
+				<h2>{t('rapor.laporan')}</h2>
 				<p>Tahun Pelajaran {rapor.academic_year || rapor.tahun_ajaran || '-'}</p>
 			</div>
 		</div>
@@ -172,69 +172,69 @@ import { t } from '$lib/stores/i18n.svelte';
 		<!-- Student Identity -->
 		<div class="identity-section">
 			<div class="identity-row">
-				<span class="identity-label">Nama Siswa</span>
+				<span class="identity-label">{t('rapor.nama_siswa')}</span>
 				<span class="identity-value">: {studentInfo?.name || studentInfo?.display_name || '-'}</span>
 			</div>
 			<div class="identity-row">
-				<span class="identity-label">Kelas</span>
+				<span class="identity-label">{t('admin.kelas')}</span>
 				<span class="identity-value">: {classInfo?.name || classInfo?.class_name || '-'}</span>
 			</div>
 			<div class="identity-row">
-				<span class="identity-label">Semester</span>
+				<span class="identity-label">{t('admin.semester')}</span>
 				<span class="identity-value">: {getSemesterLabel(semester)}</span>
 			</div>
 		</div>
 
 		<!-- A. PENGETAHUAN -->
 		<div class="section">
-			<h3 class="section-title">A. PENGETAHUAN</h3>
+			<h3 class="section-title">{t('rapor.pengetahuan')}</h3>
 			{#if pengetahuanData.length > 0}
 				<DataTable columns={pengetahuanColumns} data={pengetahuanData} pageSize={20} showSearch={false} showPagination={false} />
 			{:else}
-				<div class="empty-table">Belum ada data pengetahuan</div>
+				<div class="empty-table">{t('rapor.belum_ada_pengetahuan')}</div>
 			{/if}
 		</div>
 
 		<!-- B. KETERAMPILAN -->
 		<div class="section">
-			<h3 class="section-title">B. KETERAMPILAN</h3>
+			<h3 class="section-title">{t('rapor.keterampilan')}</h3>
 			{#if keterampilanData.length > 0}
 				<DataTable columns={keterampilanColumns} data={keterampilanData} pageSize={20} showSearch={false} showPagination={false} />
 			{:else}
-				<div class="empty-table">Belum ada data keterampilan</div>
+				<div class="empty-table">{t('rapor.belum_ada_keterampilan')}</div>
 			{/if}
 		</div>
 
 		<!-- C. SIKAP -->
 		<div class="section">
-			<h3 class="section-title">C. SIKAP</h3>
+			<h3 class="section-title">{t('rapor.sikap')}</h3>
 			<DataTable columns={sikapColumns} data={sikapData} pageSize={20} showSearch={false} showPagination={false} />
 		</div>
 
 		<!-- D. EKSTRAKURIKULER -->
 		<div class="section">
-			<h3 class="section-title">D. EKSTRAKURIKULER</h3>
+			<h3 class="section-title">{t('rapor.ekstrakurikuler')}</h3>
 			{#if (rapor.extracurriculars || []).length > 0}
 				<DataTable columns={ekstraColumns} data={rapor.extracurriculars || []} pageSize={20} showSearch={false} showPagination={false} />
 			{:else}
-				<div class="empty-table">Tidak ada data ekstrakurikuler</div>
+				<div class="empty-table">{t('rapor.tidak_ada_ekstra')}</div>
 			{/if}
 		</div>
 
 		<!-- E. ABSENSI -->
 		<div class="section">
-			<h3 class="section-title">E. ABSENSI</h3>
+			<h3 class="section-title">{t('rapor.absensi')}</h3>
 			<div class="absensi-grid">
 				<div class="absensi-item">
-					<span class="absensi-label">Sakit</span>
+					<span class="absensi-label">{t('rapor.sakit')}</span>
 					<span class="absensi-value">{rapor.attendance_sick ?? 0}</span>
 				</div>
 				<div class="absensi-item">
-					<span class="absensi-label">Izin</span>
+					<span class="absensi-label">{t('rapor.izin')}</span>
 					<span class="absensi-value">{rapor.attendance_permit ?? 0}</span>
 				</div>
 				<div class="absensi-item">
-					<span class="absensi-label">Alpha</span>
+					<span class="absensi-label">{t('rapor.alpha')}</span>
 					<span class="absensi-value">{rapor.attendance_absent ?? 0}</span>
 				</div>
 			</div>
@@ -242,25 +242,25 @@ import { t } from '$lib/stores/i18n.svelte';
 
 		<!-- F. CATATAN WALI KELAS -->
 		<div class="section">
-			<h3 class="section-title">F. CATATAN WALI KELAS</h3>
+			<h3 class="section-title">{t('rapor.catatan_wali')}</h3>
 			<p class="notes-display">{rapor.homeroom_notes || '—'}</p>
 		</div>
 
 		<!-- Signature Area (print only) -->
 		<div class="signature-area">
 			<div class="signature-box">
-				<p>Mengetahui,</p>
-				<p class="signature-title">Kepala Sekolah</p>
+				<p>{t('rapor.mengetahui')}</p>
+				<p class="signature-title">{t('rapor.kepala_sekolah')}</p>
 				<div class="signature-space"></div>
 				<p class="signature-name">_________________________</p>
-				<p class="signature-nip">NIP. ____________________</p>
+				<p class="signature-nip">{t('rapor.nip')}</p>
 			</div>
 			<div class="signature-box">
 				<p>{classInfo?.city || ''}, {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-				<p class="signature-title">Wali Kelas</p>
+				<p class="signature-title">{t('admin.wali_kelas')}</p>
 				<div class="signature-space"></div>
 				<p class="signature-name">{classInfo?.homeroom_teacher_name || '_________________________'}</p>
-				<p class="signature-nip">NIP. ____________________</p>
+				<p class="signature-nip">{t('rapor.nip')}</p>
 			</div>
 		</div>
 	{/if}

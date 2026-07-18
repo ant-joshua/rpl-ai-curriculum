@@ -113,20 +113,20 @@
 					</div>
 					<div class="batch-meta">
 						<span class="meta-item">
-							<span class="meta-label">Tipe</span>
+							<span class="meta-label">{t('batch.type_label')}</span>
 							<span class="meta-value">{b.type || '-'}</span>
 						</span>
 						<span class="meta-item">
-							<span class="meta-label">Siswa</span>
+							<span class="meta-label">{t('finance.col_student')}</span>
 							<span class="meta-value">{b.studentCount}</span>
 						</span>
 						<span class="meta-item">
-							<span class="meta-label">Dibuat</span>
+							<span class="meta-label">{t('admin.dibuat')}</span>
 							<span class="meta-value">{formatDate(b.createdAt)}</span>
 						</span>
 					</div>
 					<div class="batch-footer">
-						<span class="enter-link">Detail →</span>
+						<span class="enter-link">{t('tutor.detail')}</span>
 					</div>
 				</a>
 			{/each}
@@ -150,7 +150,7 @@
 		/>
 	</div>
 	<div class="modal-actions">
-		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="ghost" onclick={closeModal}>{t('common.cancel')}</Button>
 		<Button variant="primary" onclick={createBatch} disabled={saving || !formName.trim()}>
 			{saving ? 'Menyimpan...' : 'Buat'}
 		</Button>

@@ -46,7 +46,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat..." />
+		<Loading message={t('common.loading')} />
 	{:else}
 		<div class="card-grid">
 			{#each menuCards as card}

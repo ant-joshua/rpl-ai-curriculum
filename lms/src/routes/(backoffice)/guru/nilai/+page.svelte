@@ -8,7 +8,7 @@
 </svelte:head>
 
 <div class="page">
-	<h2>Input Nilai</h2>
+	<h2>{t('dosen.title')}</h2>
 
 	{#if data.assignments.length === 0}
 		<div class="empty-state">

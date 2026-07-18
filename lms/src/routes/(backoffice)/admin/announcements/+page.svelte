@@ -167,7 +167,7 @@
 	<div class="page-header">
 		<div>
 			<h1>📢 Pengumuman</h1>
-			<p class="page-desc">Kelola pengumuman untuk semua kelas</p>
+			<p class="page-desc">{t('admin.kelola_pengumuman')}</p>
 		</div>
 		<Button onclick={openCreate}>➕ Buat Pengumuman</Button>
 	</div>

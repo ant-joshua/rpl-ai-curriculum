@@ -199,22 +199,22 @@
 	<Input label="Nama Siswa" bind:value={formStudent} placeholder="Nama siswa" />
 	<div class="form-row">
 		<div class="form-group">
-			<label for="form-date">Tanggal</label>
+			<label for="form-date">{t('tutor.tanggal')}</label>
 			<input id="form-date" class="input-field" type="date" bind:value={formDate} />
 		</div>
 		<div class="form-group">
-			<label for="form-start">Mulai</label>
+			<label for="form-start">{t('study.pomodoro_start')}</label>
 			<input id="form-start" class="input-field" type="time" bind:value={formStart} />
 		</div>
 		<div class="form-group">
-			<label for="form-end">Selesai</label>
+			<label for="form-end">{t('tutor.selesai')}</label>
 			<input id="form-end" class="input-field" type="time" bind:value={formEnd} />
 		</div>
 	</div>
 	<Input label="Mata Pelajaran" bind:value={formSubject} placeholder="Matematika / Fisika / ..." />
 	<Textarea label="Catatan" bind:value={formNotes} placeholder="Catatan sesi" rows={3} />
 	<div class="modal-actions">
-		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="ghost" onclick={closeModal}>{t('common.cancel')}</Button>
 		<Button variant="secondary" onclick={saveSession} disabled={saving}>
 			{saving ? 'Menyimpan...' : (editingSession ? 'Simpan' : 'Tambah')}
 		</Button>

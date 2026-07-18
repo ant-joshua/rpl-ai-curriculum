@@ -157,7 +157,7 @@ const classColumns: ColumnDef<any, any>[] = [
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openForm}>+ Kelas Baru</Button>
+			<Button variant="primary" onclick={openForm}>{t('admin.kelas_baru_btn')}</Button>
 		</div>
 	</div>
 
@@ -167,7 +167,7 @@ const classColumns: ColumnDef<any, any>[] = [
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -175,8 +175,8 @@ const classColumns: ColumnDef<any, any>[] = [
 		</div>
 	{:else if kelasList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada kelas</p>
-			<Button variant="primary" onclick={openForm}>Buat Kelas Pertama</Button>
+			<p>{t('admin.belum_ada_kelas')}</p>
+			<Button variant="primary" onclick={openForm}>{t('admin.buat_kelas_pertama')}</Button>
 		</div>
 	{:else}
 		<DataTable columns={classColumns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari kelas..." emptyMessage="Belum ada kelas" />
@@ -189,7 +189,7 @@ const classColumns: ColumnDef<any, any>[] = [
 	<div class="modal-overlay" onclick={closeForm} role="button" tabindex="-1">
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
-				<h2>Kelas Baru</h2>
+				<h2>{t('admin.kelas_baru')}</h2>
 				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">

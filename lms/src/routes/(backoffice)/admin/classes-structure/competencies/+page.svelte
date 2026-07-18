@@ -126,7 +126,7 @@
 </script>
 
 <div class="page-header">
-	<h2>Kompetensi Dasar</h2>
+	<h2>{t('admin.kompetensi_dasar')}</h2>
 	<Button variant="primary" class="btn" onclick={() => openForm()}>
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 		Tambah KD
@@ -141,7 +141,7 @@
 		{/each}
 	</select>
 	<select onchange={filterType} class="filter-select">
-		<option value="">Semua Tipe</option>
+		<option value="">{t('exercises.all_types')}</option>
 		<option value="pengetahuan" selected={data.filters.type === 'pengetahuan'}>Pengetahuan</option>
 		<option value="keterampilan" selected={data.filters.type === 'keterampilan'}>Keterampilan</option>
 	</select>

@@ -118,7 +118,7 @@
 
 <div class="p-6">
 	<div class="flex items-center justify-between mb-6">
-		<h1 class="text-2xl font-bold text-[var(--text-primary)]">Activity Logs</h1>
+		<h1 class="text-2xl font-bold text-[var(--text-primary)]">{t('admin.activity_logs')}</h1>
 		<span class="text-sm text-[var(--text-muted)]">{total} events</span>
 	</div>
 

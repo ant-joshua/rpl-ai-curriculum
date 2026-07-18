@@ -142,16 +142,16 @@
 	<div class="header">
 		<div>
 			<h1>📅 Semester</h1>
-			<p class="subtitle">Kelola semester akademik</p>
+			<p class="subtitle">{t('admin.kelola_semester')}</p>
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Semester Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.semester_baru')}</Button>
 		</div>
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -159,8 +159,8 @@
 		</div>
 	{:else if semesterList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada semester</p>
-			<Button variant="primary" onclick={openCreate}>Buat Semester Pertama</Button>
+			<p>{t('admin.belum_ada_semester')}</p>
+			<Button variant="primary" onclick={openCreate}>{t('admin.buat_semester_pertama')}</Button>
 		</div>
 	{:else}
 		<div class="card">

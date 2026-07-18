@@ -205,7 +205,7 @@
 	<div class="filters">
 		<div class="filter-group">
 			<label for="class-select">{t('absensi.kelas')}</label>
-			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} disabled={loadingClasses} placeholder="— Pilih Kelas —" />
+			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} disabled={loadingClasses} placeholder={t('absensi.pilih_kelas')} />
 		</div>
 		<div class="filter-group">
 			<label for="month-select">{t('absensi.bulan')}</label>

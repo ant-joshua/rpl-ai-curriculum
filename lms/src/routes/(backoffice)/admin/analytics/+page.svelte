@@ -205,7 +205,7 @@
 
 			<Card class="section-card">
 				<CardContent>
-					<h2>Aktivitas Terbaru</h2>
+					<h2>{t('insights.recent_activity')}</h2>
 					{#if overview?.recentActivity?.length}
 						<div class="activity-feed">
 							{#each overview.recentActivity.slice(0, 10) as act}
@@ -223,7 +223,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="empty">Belum ada aktivitas</p>
+						<p class="empty">{t('insights.no_activity')}</p>
 					{/if}
 				</CardContent>
 			</Card>
@@ -490,7 +490,7 @@
 						</div>
 						<div class="legend" style="display:flex; gap:16px; margin-top:8px; font-size:12px; color:var(--text-secondary)">
 							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--accent);opacity:0.6;vertical-align:middle;margin-right:4px"></span> Enrollment</span>
-							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#22c55e;vertical-align:middle;margin-right:4px"></span> Completed</span>
+							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#22c55e;vertical-align:middle;margin-right:4px"></span>{t('admin.completed')}</span>
 						</div>
 					{:else}
 						<p class="empty">Belum ada data kursus</p>
@@ -520,7 +520,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="empty">Belum ada aktivitas</p>
+						<p class="empty">{t('insights.no_activity')}</p>
 					{/if}
 				</CardContent>
 			</Card>

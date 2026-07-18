@@ -371,11 +371,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	{#if activeTab === 'badges'}
 		<div class="section-header">
 			<h2>🎖️ Daftar Badge</h2>
-			<Button variant="primary" onclick={openNewBadge}>+ Badge Baru</Button>
+			<Button variant="primary" onclick={openNewBadge}>{t('admin.badge_baru')}</Button>
 		</div>
 
 		{#if badges.length === 0}
-			<EmptyState title="Belum ada badge" description="Buat badge pertama untuk memotivasi siswa" />
+			<EmptyState title={t('admin.belum_ada_badge')} description="Buat badge pertama untuk memotivasi siswa" />
 		{:else}
 			<div class="badge-grid">
 				{#each badges as b}
@@ -416,21 +416,21 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						<Input bind:value={badgeEditModal.description} placeholder="Deskripsi badge" />
 					</div>
 					<div class="form-group">
-						<label>Icon (emoji)</label>
+						<label>{t('admin.icon_emoji')}</label>
 						<Input bind:value={badgeEditModal.icon} placeholder="🏆" />
 					</div>
 					<div class="form-row">
 						<div class="form-group">
-							<label>Kriteria</label>
+							<label>{t('admin.kriteria')}</label>
 <Select bind:value={badgeEditModal.criteria_type} />
 						</div>
 						<div class="form-group">
-							<label>Nilai Minimal</label>
+							<label>{t('admin.nilai_minimal')}</label>
 							<Input type="number" value={String(badgeEditModal.criteria_value)} oninput={(e) => badgeEditModal.criteria_value = parseInt((e.target as HTMLInputElement).value) || 1} min="1" />
 						</div>
 					</div>
 					<div class="form-group">
-						<label>XP Reward (saat badge diklaim)</label>
+						<label>{t('admin.xp_reward')}</label>
 						<Input type="number" value={String(badgeEditModal.xp_reward)} oninput={(e) => badgeEditModal.xp_reward = parseInt((e.target as HTMLInputElement).value) || 0} min="0" />
 					</div>
 					<div class="modal-actions">
@@ -445,11 +445,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<!-- ========== XP RULES TAB ========== -->
 		<div class="section-header">
 			<h2>⚡ Aturan XP</h2>
-			<Button variant="primary" onclick={openNewXpRule}>+ Aturan Baru</Button>
+			<Button variant="primary" onclick={openNewXpRule}>{t('admin.aturan_baru')}</Button>
 		</div>
 
 		{#if xpRules.length === 0}
-			<EmptyState title="Belum ada aturan XP" description="Aturan default akan digunakan jika tidak dikonfigurasi" />
+			<EmptyState title={t('admin.belum_ada_aturan_xp')} description="Aturan default akan digunakan jika tidak dikonfigurasi" />
 		{:else}
 			<Card>
 				<CardContent>
@@ -464,11 +464,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog">
 					<h3>{xpRuleEditModal.id && xpRules.find((x: any) => x.id === xpRuleEditModal.id) ? 'Edit Aturan XP' : 'Aturan XP Baru'}</h3>
 					<div class="form-group">
-						<label>Tipe Aksi</label>
+						<label>{t('admin.tipe_aksi')}</label>
 <Select bind:value={xpRuleEditModal.action_type} />
 					</div>
 					<div class="form-group">
-						<label>Jumlah XP</label>
+						<label>{t('admin.jumlah_xp')}</label>
 						<Input type="number" value={String(xpRuleEditModal.xp_amount)} oninput={(e) => xpRuleEditModal.xp_amount = parseInt((e.target as HTMLInputElement).value) || 1} min="1" />
 					</div>
 					<div class="form-group">
@@ -498,23 +498,23 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<CardContent>
 				<div class="settings-form">
 					<div class="form-group">
-						<label>XP per Level</label>
+						<label>{t('admin.xp_per_level')}</label>
 						<p class="form-hint">Jumlah XP yang dibutuhkan untuk naik satu level</p>
 						<Input type="number" value={String(levelSettings.xpPerLevel)} oninput={(e) => levelSettings = { ...levelSettings, xpPerLevel: parseInt((e.target as HTMLInputElement).value) || 100 }} min="10" max="10000" />
 					</div>
 					<div class="form-group">
-						<label>Level Maksimal</label>
+						<label>{t('admin.level_maksimal')}</label>
 						<p class="form-hint">Level tertinggi yang dapat dicapai</p>
 						<Input type="number" value={String(levelSettings.maxLevel)} oninput={(e) => levelSettings = { ...levelSettings, maxLevel: parseInt((e.target as HTMLInputElement).value) || 100 }} min="1" max="999" />
 					</div>
-					<Button variant="primary" onclick={saveLevelSettings}>Simpan Pengaturan Level</Button>
+					<Button variant="primary" onclick={saveLevelSettings}>{t('admin.simpan_pengaturan')}</Button>
 				</div>
 			</CardContent>
 		</Card>
 
 		<!-- Level Preview -->
 		<div class="level-preview">
-			<h3>Pratinjau Level</h3>
+			<h3>{t('admin.pratinjau_level')}</h3>
 			<div class="level-list">
 				{#each Array(Math.min(15, levelSettings.maxLevel || 100)) as _, i}
 					{@const lvl = i + 1}

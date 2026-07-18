@@ -269,7 +269,7 @@
 					</div>
 					<div class="info-card">
 						<h3>Enrollment</h3>
-						<div class="info-row"><span>Active</span><span>{enrollments.filter(e => e.status === 'active').length}</span></div>
+						<div class="info-row"><span>{t('common.active')}</span><span>{enrollments.filter(e => e.status === 'active').length}</span></div>
 						<div class="info-row"><span>{t('admin.completed')}</span><span>{enrollments.filter(e => e.status === 'completed').length}</span></div>
 						<div class="info-row"><span>Dropped</span><span>{enrollments.filter(e => e.status === 'dropped').length}</span></div>
 						<div class="info-row"><span>Max Students</span><span>{course.max_students || 'Unlimited'}</span></div>
@@ -328,7 +328,7 @@
 												<TableHead>{t('common.status')}</TableHead>
 												<TableHead>Submitted</TableHead>
 												<TableHead>Score</TableHead>
-												<TableHead>Feedback</TableHead>
+												<TableHead>{t('reviews.feedback_label')}</TableHead>
 												<TableHead>Action</TableHead>
 											</TableRow>
 										</TableHeader>
@@ -391,7 +391,7 @@
 							<TableHeader>
 								<TableRow>
 									<TableHead>Name</TableHead>
-									<TableHead>Email</TableHead>
+									<TableHead>{t('register.email')}</TableHead>
 									<TableHead>{t('common.status')}</TableHead>
 									<TableHead>Enrolled</TableHead>
 									<TableHead>{t('common.action')}</TableHead>

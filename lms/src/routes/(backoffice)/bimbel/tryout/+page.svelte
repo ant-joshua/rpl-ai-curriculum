@@ -112,7 +112,7 @@
 					</div>
 					<div class="tryout-meta">
 						<span class="meta-item">
-							<span class="meta-label">Tanggal</span>
+							<span class="meta-label">{t('admin.tanggal')}</span>
 							<span class="meta-value">{formatDate(t.date)}</span>
 						</span>
 						<span class="meta-item">
@@ -134,11 +134,11 @@
 		<Input label="Judul" bind:value={formTitle} placeholder="Contoh: Try Out UTBK #1" />
 	</div>
 	<div class="form-group">
-		<label for="to-date">Tanggal</label>
+		<label for="to-date">{t('admin.tanggal')}</label>
 		<input id="to-date" class="input-field" type="date" bind:value={formDate} />
 	</div>
 	<div class="modal-actions">
-		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="ghost" onclick={closeModal}>{t('common.cancel')}</Button>
 		<Button variant="primary" onclick={createTryout} disabled={saving || !formTitle.trim() || !formDate}>
 			{saving ? 'Menyimpan...' : 'Buat'}
 		</Button>

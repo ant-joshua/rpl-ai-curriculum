@@ -244,8 +244,8 @@
 <div class="page">
 	<PageHeader title="📋 Manajemen Pendaftaran" subtitle="Total {totalEnrollments} pendaftaran">
 		{#snippet action()}
-			<Button variant="secondary" onclick={exportCsv}>📤 Export CSV</Button>
-			<Button onclick={openAddModal}>+ Tambah Pendaftaran</Button>
+			<Button variant="secondary" onclick={exportCsv}>{t('admin.export_csv')}</Button>
+			<Button onclick={openAddModal}>{t('admin.tambah_pendaftaran')}</Button>
 		{/snippet}
 	</PageHeader>
 
@@ -259,11 +259,11 @@
 
 	<!-- Table -->
 	{#if loading}
-		<Card><CardContent><div class="loading-state">Memuat data...</div></CardContent></Card>
+		<Card><CardContent><div class="loading-state">{t('admin.memuat_data')}</div></CardContent></Card>
 	{:else if error}
 		<Card><CardContent><div class="error-state">{error}</div></CardContent></Card>
 	{:else if enrollments.length === 0}
-		<EmptyState icon="📋" title="Belum ada enrollment" description="Belum ada data pendaftaran." />
+		<EmptyState icon="📋" title={t('admin.belum_ada_enrollment')} description="Belum ada data pendaftaran." />
 	{:else}
 		<div class="table-wrapper">
 			<DataTable

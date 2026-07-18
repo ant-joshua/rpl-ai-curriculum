@@ -369,7 +369,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-row">
-						<label class="form-label">Pertanyaan</label>
+						<label class="form-label">{t('admin.pertanyaan')}</label>
 <Input bind:value={qFormText} placeholder="e.g. How satisfied are you?" />
 					</div>
 					<div class="form-row-2col">
@@ -432,7 +432,7 @@
 					{#if selectedTemplateId === t.id}
 						<div class="questions-section">
 							<div class="q-header">
-								<h5>Pertanyaan</h5>
+								<h5>{t('admin.pertanyaan')}</h5>
 							</div>
 							{#if questionsLoading}
 								<div class="loading">Memuat pertanyaan...</div>

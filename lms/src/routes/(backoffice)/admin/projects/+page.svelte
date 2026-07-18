@@ -110,7 +110,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 				<button class="tab" class:active={tab === 'published'} onclick={() => tab = 'published'}>Published ({projects.filter(p => p.status === 'published').length})</button>
 				<button class="tab" class:active={tab === 'draft'} onclick={() => tab = 'draft'}>Drafts ({projects.filter(p => p.status === 'draft' || !p.status).length})</button>
 			</div>
-			<Button variant="primary" class="btn" onclick={openNew}>+ New Project</Button>
+			<Button variant="primary" class="btn" onclick={openNew}>{t('admin.new_project')}</Button>
 		</div>
 
 		<div class="project-grid">
@@ -141,7 +141,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 				</div>
 			{/each}
 			{#if filtered.length === 0}
-				<p class="empty">No projects found.</p>
+				<p class="empty">{t('admin.no_projects')}</p>
 			{/if}
 		</div>
 	{/if}

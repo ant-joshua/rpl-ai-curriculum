@@ -80,14 +80,14 @@
 
 <div class="pp-dashboard">
 	<div class="pp-header">
-		<h1 class="pp-title">Parent Portal</h1>
-		<p class="pp-subtitle">Dashboard manajemen akses orang tua</p>
+		<h1 class="pp-title">{t('admin.parent_portal')}</h1>
+		<p class="pp-subtitle">{t('admin.kelola_orang_tua')}</p>
 	</div>
 
 	{#if loading}
 		<div class="pp-loading">
 			<div class="pp-spinner"></div>
-			<p>Memuat data...</p>
+			<p>{t('admin.memuat_data')}</p>
 		</div>
 	{:else if error}
 		<div class="pp-error">
@@ -104,8 +104,8 @@
 
 		<div class="pp-section">
 			<div class="pp-section-header">
-				<h2 class="pp-section-title">Pesan Terbaru</h2>
-				<a href="/admin/parent-portal/parents" class="pp-btn pp-btn-ghost pp-btn-sm">Kelola Orang Tua</a>
+				<h2 class="pp-section-title">{t('admin.pesan_terbaru')}</h2>
+				<a href="/admin/parent-portal/parents" class="pp-btn pp-btn-ghost pp-btn-sm">{t('admin.kelola_orang_tua_btn')}</a>
 			</div>
 
 			{#if stats.recentMessages && stats.recentMessages.length > 0}
@@ -115,7 +115,7 @@
 			{:else}
 				<div class="pp-empty">
 					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-					<p>Belum ada pesan</p>
+					<p>{t('admin.belum_ada_pesan')}</p>
 				</div>
 			{/if}
 		</div>

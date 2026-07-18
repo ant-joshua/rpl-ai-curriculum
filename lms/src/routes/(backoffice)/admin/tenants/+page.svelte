@@ -65,9 +65,9 @@
 </svelte:head>
 
 <div class="page">
-	<PageHeader title="Tenants" subtitle="Kelola data tenant">
+	<PageHeader title={t('admin.tenants')} subtitle="Kelola data tenant">
 		{#snippet action()}
-			<a href="/admin/tenants/new" class="btn-primary">+ Tenant Baru</a>
+			<a href="/admin/tenants/new" class="btn-primary">{t('admin.tenant_baru')}</a>
 		{/snippet}
 	</PageHeader>
 
@@ -82,8 +82,8 @@
 			<div class="error">{error}</div>
 		{:else if tenants.length === 0}
 			<div class="empty">
-				<p>Belum ada tenant</p>
-				<a href="/admin/tenants/new" class="btn-primary">Buat Tenant Pertama</a>
+				<p>{t('admin.belum_ada_tenant')}</p>
+				<a href="/admin/tenants/new" class="btn-primary">{t('admin.buat_tenant_pertama')}</a>
 			</div>
 		{:else}
 			<div class="table-container">

@@ -154,7 +154,7 @@ const linkColumns: ColumnDef<any, any>[] = [
 	{#if loading}
 		<div class="pp-loading">
 			<div class="pp-spinner"></div>
-			<p>Memuat data...</p>
+			<p>{t('admin.memuat_data')}</p>
 		</div>
 	{:else if error}
 		<div class="pp-error">
@@ -182,7 +182,7 @@ const linkColumns: ColumnDef<any, any>[] = [
 					<span class="pp-info-value">{parent.phone || '-'}</span>
 				</div>
 				<div class="pp-info-row">
-					<span class="pp-info-label">Email</span>
+					<span class="pp-info-label">{t('register.email')}</span>
 					<span class="pp-info-value">{parent.email || '-'}</span>
 				</div>
 				<div class="pp-info-row">

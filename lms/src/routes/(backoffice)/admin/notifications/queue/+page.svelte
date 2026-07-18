@@ -164,7 +164,7 @@
 		<span class="filter-label" style="margin-left:12px">Channel:</span>
 		<button class="filter-btn" class:active={channelFilter === ''} onclick={() => { channelFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</button>
 		<button class="filter-btn" class:active={channelFilter === 'in_app'} onclick={() => { channelFilter = 'in_app'; pagination.page = 1; loadQueue(); }}>In-App</button>
-		<button class="filter-btn" class:active={channelFilter === 'email'} onclick={() => { channelFilter = 'email'; pagination.page = 1; loadQueue(); }}>Email</button>
+		<button class="filter-btn" class:active={channelFilter === 'email'} onclick={() => { channelFilter = 'email'; pagination.page = 1; loadQueue(); }}>{t('register.email')}</button>
 		<button class="filter-btn" class:active={channelFilter === 'whatsapp'} onclick={() => { channelFilter = 'whatsapp'; pagination.page = 1; loadQueue(); }}>WhatsApp</button>
 	</div>
 
@@ -173,7 +173,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading">Memuat...</div>
+		<div class="loading">{t('common.loading')}</div>
 	{:else if items.length === 0}
 		<div class="empty-state"><p>Belum ada antrian notifikasi</p></div>
 	{:else}

@@ -200,7 +200,7 @@
 			<h1>📚 Kursus</h1>
 			<p class="page-desc">Kelola {total} kursus dalam platform</p>
 		</div>
-		<Button onclick={openCreate}>+ Kursus Baru</Button>
+		<Button onclick={openCreate}>{t('admin.kursus_baru')}</Button>
 	</div>
 
 	<div class="filter-bar">
@@ -215,7 +215,7 @@
 			<Button onclick={loadCourses}>{t('common.retry')}</Button>
 		</div>
 	{:else if courses.length === 0}
-		<EmptyState icon="📚" title="Belum ada kursus" description="Buat kursus pertama" />
+		<EmptyState icon="📚" title={t('admin.belum_ada_kursus')} description={t('admin.buat_kursus_pertama')} />
 	{:else}
 		<div class="course-list">
 			{#each courses as course (course.id)}

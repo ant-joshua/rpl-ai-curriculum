@@ -165,7 +165,7 @@
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Matkul Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.matkul_baru')}</Button>
 		</div>
 	</div>
 
@@ -175,7 +175,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -183,8 +183,8 @@
 		</div>
 	{:else if matkulList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada mata kuliah</p>
-			<Button variant="primary" onclick={openCreate}>Buat Matkul Pertama</Button>
+			<p>{t('admin.belum_ada_matkul')}</p>
+			<Button variant="primary" onclick={openCreate}>{t('admin.buat_matkul_pertama')}</Button>
 		</div>
 	{:else}
 		<div class="card">

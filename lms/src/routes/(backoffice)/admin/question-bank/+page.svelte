@@ -425,7 +425,7 @@
 			<Select options={offeringFilterOptions} bind:value={filterOffering} />
 			<Select options={statusOptions} bind:value={filterStatus} />
 			<SearchBar bind:value={searchText} placeholder="Cari soal atau tag..." onSearch={applyFilters} />
-			<Button onclick={applyFilters}>Cari</Button>
+			<Button onclick={applyFilters}>{t('nav.search')}</Button>
 		</div>
 		<span class="filter-count">{total} soal</span>
 	</div>
@@ -443,7 +443,7 @@
 			<table class="data-table">
 				<thead>
 					<tr>
-						<th>Soal</th>
+						<th>{t('admin.soal')}</th>
 						<th>{t('admin.tipe')}</th>
 						<th>{t('admin.tingkat')}</th>
 						<th>{t('common.status')}</th>

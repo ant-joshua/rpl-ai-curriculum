@@ -233,7 +233,7 @@
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadExams}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Ujian Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.ujian_baru')}</Button>
 		</div>
 	</div>
 
@@ -264,8 +264,8 @@
 		{#if filteredExams.length === 0}
 			<div class="empty-state">
 				{#if exams.length === 0}
-					<p>Belum ada jadwal ujian</p>
-					<Button variant="primary" onclick={openCreate}>Buat Ujian Pertama</Button>
+					<p>{t('admin.belum_ada_ujian')}</p>
+					<Button variant="primary" onclick={openCreate}>{t('admin.buat_ujian_pertama')}</Button>
 				{:else}
 					<p>Tidak ada ujian yang cocok dengan filter</p>
 				{/if}

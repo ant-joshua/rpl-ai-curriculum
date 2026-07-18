@@ -127,11 +127,11 @@
 	<div class="header">
 		<div>
 			<h1>🏫 Kelas Kuliah</h1>
-			<p class="subtitle">Jadwal kelas perkuliahan</p>
+			<p class="subtitle">{t('admin.jadwal_kelas')}</p>
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Kelas Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.kelas_baru_btn')}</Button>
 		</div>
 	</div>
 
@@ -142,7 +142,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -150,8 +150,8 @@
 		</div>
 	{:else if kelasList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada kelas kuliah</p>
-			<Button variant="primary" onclick={openCreate}>Buat Kelas Pertama</Button>
+			<p>{t('admin.belum_ada_kelas_kuliah')}</p>
+			<Button variant="primary" onclick={openCreate}>{t('admin.buat_kelas_pertama')}</Button>
 		</div>
 	{:else}
 		<div class="class-grid">

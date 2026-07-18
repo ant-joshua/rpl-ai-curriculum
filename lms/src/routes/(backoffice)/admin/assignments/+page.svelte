@@ -275,12 +275,12 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	<PageHeader title="📂 Manajemen Tugas" subtitle="{assignments.length} tugas">
 		{#snippet action()}
 <Select bind:value={selectedOfferingId} onchange={loadData} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
-			<Button onclick={openCreate}>+ Buat Tugas</Button>
+			<Button onclick={openCreate}>{t('admin.buat_tugas')}</Button>
 		{/snippet}
 	</PageHeader>
 
 	{#if loading}
-		<Card><CardContent><div class="loading-state">Memuat data...</div></CardContent></Card>
+		<Card><CardContent><div class="loading-state">{t('admin.memuat_data')}</div></CardContent></Card>
 	{:else if error}
 		<Card><CardContent><div class="error-state">{error}</div></CardContent></Card>
 	{:else if assignments.length === 0}
@@ -291,7 +291,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<thead>
 					<tr>
 						<th>{t('admin.judul')}</th>
-						<th>Kursus</th>
+						<th>{t('admin.kursus')}</th>
 						<th>{t('admin.tipe')}</th>
 						<th>{t('admin.nilai')}</th>
 						<th>Tenggat</th>
@@ -327,14 +327,14 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<tr class="submissions-row">
 								<td colspan="7">
 									<div class="submissions-panel">
-										<h4>Submissions</h4>
+										<h4>{t('admin.submissions')}</h4>
 										{#if submissionsLoading}
-											<p class="loading-sub">Memuat...</p>
+											<p class="loading-sub">{t('common.loading')}</p>
 										{:else if submissions.length === 0}
-											<p class="empty-sub">Belum ada submission.</p>
+											<p class="empty-sub">{t('admin.belum_ada_submission')}</p>
 										{:else}
 											<table class="sub-table">
-												<thead><tr><th>Siswa</th><th>{t('common.status')}</th><th>Nilai</th><th>Dikirim</th><th>Aksi</th></tr></thead>
+												<thead><tr><th>{t('admin.siswa')}</th><th>{t('common.status')}</th><th>{t('admin.nilai_soal')}</th><th>Dikirim</th><th>{t('admin.aksi')}</th></tr></thead>
 												<tbody>
 													{#each submissions as s}
 														<tr>
@@ -344,7 +344,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 															<td class="date-cell">{formatDate(s.submitted_at)}</td>
 															<td>
 																{#if s.status !== 'graded'}
-																	<Button size="sm" onclick={() => { gradeId = s.id; gradeScore = 0; gradeFeedback = ''; }}>Nilai</Button>
+																	<Button size="sm" onclick={() => { gradeId = s.id; gradeScore = 0; gradeFeedback = ''; }}>{t('admin.nilai_soal')}</Button>
 																{:else}
 																	<Button size="sm" variant="ghost" onclick={() => { gradeId = s.id; gradeScore = s.score; gradeFeedback = s.feedback || ''; }}>{t('common.edit')}</Button>
 																{/if}
@@ -379,7 +379,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<div class="modal-body">
 				<div class="form-row">
 					<div class="form-group">
-						<label>Kursus</label>
+						<label>{t('admin.kursus')}</label>
 <Select bind:value={form.course_offering_id} onchange={() => loadLessons(form.course_offering_id)} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
 					</div>
 					<div class="form-group">
@@ -456,7 +456,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label>Nilai</label>
+					<label>{t('admin.nilai_soal')}</label>
 					<input type="number" bind:value={gradeScore} min="0" class="input" />
 				</div>
 				<div class="form-group">

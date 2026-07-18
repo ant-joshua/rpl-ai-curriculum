@@ -90,8 +90,8 @@
 <div class="page">
 	<div class="page-header">
 		<div>
-			<h1>Pengajuan Instruktur</h1>
-			<p class="subtitle">Kelola pendaftaran instruktur baru</p>
+			<h1>{t('admin.instructor_applications')}</h1>
+			<p class="subtitle">{t('admin.kelola_instruktur')}</p>
 		</div>
 		<div class="filter-row">
 			<select class="filter-select" value={filterStatus} onchange={handleFilterChange}>

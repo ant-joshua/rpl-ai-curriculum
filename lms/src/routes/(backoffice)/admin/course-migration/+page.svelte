@@ -97,7 +97,7 @@
 	<!-- Export Section -->
 	<Card class="section-card">
 		<CardContent>
-			<h2>Ekspor Course</h2>
+			<h2>{t('admin.ekspor_course')}</h2>
 			<p class="desc">Pilih course offering untuk diekspor beserta lessons, content blocks, assessments, assignments, dan question bank.</p>
 
 			{#if loadingOfferings}
@@ -131,7 +131,7 @@
 	<!-- Import Section -->
 	<Card class="section-card">
 		<CardContent>
-			<h2>Impor Course</h2>
+			<h2>{t('admin.impor_course')}</h2>
 			<p class="desc">Upload file JSON hasil ekspor course untuk diimpor ke tenant saat ini. ID akan digenerate baru, data lama tidak akan ditimpa.</p>
 <Input  />
 				type="file"

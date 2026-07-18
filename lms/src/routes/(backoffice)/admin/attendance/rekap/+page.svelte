@@ -202,7 +202,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 		<div>
 			<div class="breadcrumb"><a href="/admin">← Dashboard Admin</a></div>
 			<h1>📊 Rekap Absensi</h1>
-			<p class="subtitle">Rekapitulasi absensi semua kelas</p>
+			<p class="subtitle">{t('admin.rekap_desc')}</p>
 		</div>
 		<Button class="btn-outline" onclick={exportCsv} disabled={students.length === 0}>📥 Export CSV</Button>
 	</div>
@@ -218,12 +218,12 @@ const recapColumns: ColumnDef<any, any>[] = [
 <Select label="Tahun" bind:value={selectedYear} options={years.map((y) => ({ value: y, label: y }))} />
 		</div>
 		<div class="filter-action">
-			<Button variant="secondary" onclick={loadRecap}>🔍 Tampilkan</Button>
+			<Button variant="secondary" onclick={loadRecap}>{t('absensi.tampilkan')}</Button>
 		</div>
 	</div>
 
 	{#if loadingClasses}
-		<Loading message="Memuat data..." />
+		<Loading message={t('admin.memuat_data')} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -235,7 +235,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 		{#if loading}
 			<Loading message="Memuat rekap absensi..." />
 		{:else if students.length === 0}
-			<EmptyState icon="📋" title="Belum Ada Data" description="Belum ada data absensi untuk periode ini." />
+			<EmptyState icon="📋" title={t('absensi.belum_ada_data')} description="Belum ada data absensi untuk periode ini." />
 		{:else}
 			<div class="summary-bar">
 				<span class="summary-item">👥 {students.length} siswa</span>

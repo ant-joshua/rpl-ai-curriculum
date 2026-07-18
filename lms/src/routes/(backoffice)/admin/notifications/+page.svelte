@@ -129,17 +129,17 @@ const queueColumns: ColumnDef<any, any>[] = [
 			<!-- Recent Queue -->
 			<div class="card">
 				<div class="card-header">
-					<h3>Antrian Terbaru</h3>
-					<a href="/admin/notifications/queue" class="link-btn">Lihat Semua →</a>
+					<h3>{t('admin.antrian_terbaru')}</h3>
+					<a href="/admin/notifications/queue" class="link-btn">{t('admin.lihat_semua')}</a>
 				</div>
 				{#if loading}
-					<div class="loading">Memuat...</div>
+					<div class="loading">{t('common.loading')}</div>
 				{:else if recentQueue.length === 0}
-					<div class="empty-state small"><p>Belum ada antrian</p></div>
+					<div class="empty-state small"><p>{t('admin.belum_ada_antrian')}</p></div>
 				{:else}
 					<div class="table-container">
 						<table>
-							<thead><tr><th>{t('admin.channel')}</th><th>{t('common.status')}</th><th>Waktu</th></tr></thead>
+							<thead><tr><th>{t('admin.channel')}</th><th>{t('common.status')}</th><th>{t('admin.waktu')}</th></tr></thead>
 							<tbody>
 								{#each recentQueue as n}
 									<tr>
@@ -156,19 +156,19 @@ const queueColumns: ColumnDef<any, any>[] = [
 
 			<!-- Quick links -->
 			<div class="card">
-				<div class="card-header"><h3>Menu Cepat</h3></div>
+				<div class="card-header"><h3>{t('admin.menu_cepat')}</h3></div>
 				<div class="quick-links">
 					<a href="/admin/notifications/templates" class="quick-link">
 						<span class="ql-icon">📋</span>
-						<span class="ql-text">Kelola Template</span>
+						<span class="ql-text">{t('admin.kelola_template')}</span>
 					</a>
 					<a href="/admin/notifications/queue" class="quick-link">
 						<span class="ql-icon">📨</span>
-						<span class="ql-text">Monitoring Queue</span>
+						<span class="ql-text">{t('admin.monitoring_queue')}</span>
 					</a>
 					<Button class="quick-link" onclick={() => showBroadcast = true}>
 						<span class="ql-icon">📢</span>
-						<span class="ql-text">Broadcast Baru</span>
+						<span class="ql-text">{t('admin.broadcast_baru')}</span>
 					</Button>
 				</div>
 			</div>
@@ -201,10 +201,10 @@ const queueColumns: ColumnDef<any, any>[] = [
 					</div>
 					<div class="form-row">
 						<label class="form-label">Judul *</label>
-<Input bind:value={broadcastTitle} placeholder="Judul notifikasi" />
+<Input bind:value={broadcastTitle} placeholder={t('admin.judul_notifikasi')} />
 					</div>
 					<div class="form-row">
-						<label class="form-label">Pesan (opsional)</label>
+						<label class="form-label">{t('admin.pesan_opsional')}</label>
 <Textarea placeholder="Isi pesan..." bind:value={broadcastBody} rows=4 />
 					</div>
 				</div>

@@ -122,10 +122,10 @@
 	<div class="header">
 		<div>
 			<h1>📥 Import Siswa</h1>
-			<p class="subtitle">Import data siswa dari file CSV</p>
+			<p class="subtitle">{t('admin.import_siswa_desc')}</p>
 		</div>
 		{#if step !== 'upload'}
-			<Button variant="secondary" onclick={reset}>← Kembali</Button>
+			<Button variant="secondary" onclick={reset}>{t('admin.kembali')}</Button>
 		{/if}
 	</div>
 
@@ -140,7 +140,7 @@
 			</div>
 
 			<div class="field">
-				<label for="file-input">File CSV</label>
+				<label for="file-input">{t('admin.file_csv')}</label>
 				<div class="dropzone">
 <Input  />
 						id="file-input"

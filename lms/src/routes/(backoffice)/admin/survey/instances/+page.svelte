@@ -204,7 +204,7 @@
 					</div>
 					<div class="form-row-2col">
 						<div>
-							<label class="form-label">Mulai</label>
+							<label class="form-label">{t('study.pomodoro_start')}</label>
 							<input class="form-input" type="date" bind:value={formStartDate} />
 						</div>
 						<div>

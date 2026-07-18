@@ -193,11 +193,11 @@
 
 	<div class="filters">
 		<div class="filter-group">
-			<label for="class-select">Kelas</label>
-			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} onchange={handleClassChange} disabled={loadingClasses} placeholder="— Pilih Kelas —" />
+			<label for="class-select">{t('rapor.kelas')}</label>
+			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} onchange={handleClassChange} disabled={loadingClasses} placeholder={t('absensi.pilih_kelas')} />
 		</div>
 		<div class="filter-group">
-			<label for="date-picker">Tanggal</label>
+			<label for="date-picker">{t('tutor.tanggal')}</label>
 			<input id="date-picker" type="date" bind:value={selectedDate} onchange={handleDateChange} max={today} />
 		</div>
 		<div class="filter-group">
@@ -211,7 +211,7 @@
 	{:else if error && students.length === 0}
 		<div class="error-state">{error}</div>
 	{:else if !selectedClassId}
-		<EmptyState icon="📋" title="Pilih Kelas" description="Pilih kelas dan tanggal untuk mulai mencatat absensi." />
+		<EmptyState icon="📋" title={t('absensi.pilih_kelas_title')} description="Pilih kelas dan tanggal untuk mulai mencatat absensi." />
 	{:else if loadingStudents}
 		<Loading message="Memuat data siswa..." />
 	{:else if students.length === 0}
@@ -221,11 +221,11 @@
 			<table>
 				<thead>
 					<tr>
-						<th class="col-no">No</th>
-						<th class="col-name">Nama Siswa</th>
-						<th class="col-nis">NIS</th>
-						<th class="col-status">Status</th>
-						<th class="col-reason">Keterangan</th>
+						<th class="col-no">{t('rapor.no')}</th>
+						<th class="col-name">{t('rapor.nama_siswa')}</th>
+						<th class="col-nis">{t('batch.col_nis')}</th>
+						<th class="col-status">{t('rapor.status')}</th>
+						<th class="col-reason">{t('rapor.keterangan')}</th>
 						<th class="col-time">Jam Masuk</th>
 						<th class="col-late">Telat (mnt)</th>
 					</tr>

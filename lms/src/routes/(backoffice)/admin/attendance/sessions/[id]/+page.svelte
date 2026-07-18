@@ -236,7 +236,7 @@
 					<span class="info-value">{formatTime(session.start_time)} {session.end_time ? `- ${session.end_time}` : ''}</span>
 				</div>
 				<div class="info-item">
-					<span class="info-label">Kelas</span>
+					<span class="info-label">{t('admin.kelas')}</span>
 					<span class="info-value">{session.class_name || '—'}</span>
 				</div>
 				<div class="info-item">

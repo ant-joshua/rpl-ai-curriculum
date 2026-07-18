@@ -120,10 +120,10 @@
 
 <div class="p-6">
 	<div class="flex items-center justify-between mb-6">
-		<h1 class="text-2xl font-bold text-[var(--text-primary)]">Error Logs</h1>
+		<h1 class="text-2xl font-bold text-[var(--text-primary)]">{t('admin.error_logs')}</h1>
 		<div class="flex items-center gap-3">
 			<span class="text-sm text-[var(--text-muted)]">{total} errors</span>
-			<Button class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm hover:bg-[var(--accent)] hover:text-white transition-colors" onclick={resetFilter}>Reset</Button>
+			<Button class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm hover:bg-[var(--accent)] hover:text-white transition-colors" onclick={resetFilter}>{t('study.pomodoro_reset')}</Button>
 		</div>
 	</div>
 

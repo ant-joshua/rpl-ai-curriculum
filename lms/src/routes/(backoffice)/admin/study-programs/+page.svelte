@@ -134,11 +134,11 @@
 	<div class="header">
 		<div>
 			<h1>🎓 Program Studi</h1>
-			<p class="subtitle">Kelola program studi per fakultas</p>
+			<p class="subtitle">{t('admin.kelola_prodi')}</p>
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Prodi Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.prodi_baru')}</Button>
 		</div>
 	</div>
 
@@ -148,7 +148,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -156,8 +156,8 @@
 		</div>
 	{:else if prodiList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada program studi</p>
-			<Button variant="primary" onclick={openCreate}>Buat Prodi Pertama</Button>
+			<p>{t('admin.belum_ada_prodi')}</p>
+			<Button variant="primary" onclick={openCreate}>{t('admin.buat_prodi_pertama')}</Button>
 		</div>
 	{:else}
 		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari prodi..." />

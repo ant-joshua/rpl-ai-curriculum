@@ -160,10 +160,10 @@ const roomColumns: ColumnDef<any, any>[] = [
 <div class="page">
 	<div class="page-header">
 		<div>
-			<h2>Ruangan Ujian</h2>
+			<h2>{t('admin.ruangan_ujian')}</h2>
 			<p class="page-desc">{rooms.length} ruangan · {activeCount} aktif</p>
 		</div>
-		<Button variant="primary" class="btn" onclick={openCreate}>+ Tambah Ruangan</Button>
+		<Button variant="primary" class="btn" onclick={openCreate}>{t('admin.tambah_ruangan')}</Button>
 	</div>
 
 	{#if !loading && rooms.length > 0}
@@ -173,7 +173,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 	{/if}
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -181,7 +181,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 		</div>
 	{:else if rooms.length === 0}
 		<div class="empty-state">
-			<p>Belum ada ruangan ujian</p>
+			<p>{t('admin.belum_ada_ruangan')}</p>
 			<Button variant="primary" class="btn" onclick={openCreate}>Tambah Ruangan Pertama</Button>
 		</div>
 	{:else if filteredRooms.length === 0}

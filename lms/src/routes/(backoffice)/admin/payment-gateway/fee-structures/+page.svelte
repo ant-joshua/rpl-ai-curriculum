@@ -123,7 +123,7 @@
 <div class="pg-page">
 	<div class="pg-header">
 		<div>
-			<h1 class="pg-title">Fee Structure</h1>
+			<h1 class="pg-title">{t('admin.fee_structure')}</h1>
 			<p class="pg-subtitle">Pengaturan biaya: SPP, gedung, praktikum, dll.</p>
 		</div>
 		<Button variant="primary" class="pg-btn pg-" onclick={openCreate}>
@@ -139,7 +139,7 @@
 	</div>
 
 	{#if loading}
-		<div class="pg-loading"><div class="pg-spinner"></div><p>Memuat data...</p></div>
+		<div class="pg-loading"><div class="pg-spinner"></div><p>{t('admin.memuat_data')}</p></div>
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
@@ -148,8 +148,8 @@
 	{:else if feeStructures.length === 0}
 		<div class="pg-empty">
 			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-			<p>Belum ada fee structure</p>
-			<Button variant="primary" size="sm" class="pg-btn pg-pg-" onclick={openCreate}>Tambah Fee Pertama</Button>
+			<p>{t('admin.belum_ada_fee')}</p>
+			<Button variant="primary" size="sm" class="pg-btn pg-pg-" onclick={openCreate}>{t('admin.tambah_fee_pertama')}</Button>
 		</div>
 	{:else}
 		<div class="pg-cards">
@@ -202,7 +202,7 @@
 				<div class="pg-modal-body">
 					<div class="pg-form-grid">
 						<div class="pg-field">
-							<label class="pg-label">Nama <span class="pg-required">*</span></label>
+							<label class="pg-label">{t('common.name')}<span class="pg-required">*</span></label>
 <Input bind:value={formName} placeholder="Contoh: SPP Semester 1" />
 						</div>
 						<div class="pg-field">
@@ -210,7 +210,7 @@
 <Input bind:value={formCode} placeholder="Contoh: SPP-01" />
 						</div>
 						<div class="pg-field">
-							<label class="pg-label">Tipe <span class="pg-required">*</span></label>
+							<label class="pg-label">{t('admin.tipe')}<span class="pg-required">*</span></label>
 <Select bind:value={formFeeType} options={feeTypes.map((ft) => ({ value: ft.value, label: ft.label }))} />
 						</div>
 						<div class="pg-field">

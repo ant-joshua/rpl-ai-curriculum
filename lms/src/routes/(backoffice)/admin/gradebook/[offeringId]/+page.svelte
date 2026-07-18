@@ -511,7 +511,7 @@
 				<table class="gradebook-table">
 					<thead>
 						<tr>
-							<th class="sticky-col name-col">Mahasiswa</th>
+							<th class="sticky-col name-col">{t('kaprodi.col_student')}</th>
 							{#each items as item}
 								<th class="item-col" title="{item.title} (max: {item.maxScore})">
 									<div class="item-header">

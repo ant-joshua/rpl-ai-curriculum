@@ -161,7 +161,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		<div>
 			<div class="breadcrumb"><a href="/admin">← Dashboard Admin</a></div>
 			<h1>📋 Attendance System</h1>
-			<p class="subtitle">Dashboard kehadiran siswa dan sesi presensi</p>
+			<p class="subtitle">{t('admin.dashboard_kehadiran')}</p>
 		</div>
 		<div class="header-actions">
 			<a href="/admin/attendance/sessions" class="btn-primary">
@@ -174,7 +174,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	{#if loading}
 		<div class="loading-state">
 			<div class="spinner"></div>
-			<p>Memuat data...</p>
+			<p>{t('admin.memuat_data')}</p>
 		</div>
 	{:else if error}
 		<div class="error-state">
@@ -193,7 +193,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 
 		<!-- Attendance Overview -->
 		<div class="section">
-			<h2 class="section-title">Ringkasan Kehadiran</h2>
+			<h2 class="section-title">{t('admin.ringkasan_kehadiran')}</h2>
 			<div class="overview-cards">
 				<div class="overview-card overview-present">
 					<div class="overview-bar" style="width: {presentPct}%"></div>
@@ -222,7 +222,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 				<div class="overview-card overview-excused">
 					<div class="overview-bar" style="width: {excusedPct}%"></div>
 					<div class="overview-info">
-						<span class="overview-label">Izin/Sakit</span>
+						<span class="overview-label">{t('admin.izin_sakit')}</span>
 						<span class="overview-value">{stats?.excused_count ?? 0}</span>
 						<span class="overview-pct">{excusedPct}%</span>
 					</div>
@@ -233,13 +233,13 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		<!-- Recent Sessions -->
 		<div class="section">
 			<div class="section-header">
-				<h2 class="section-title">Sesi Terbaru</h2>
-				<a href="/admin/attendance/sessions" class="btn-link">Lihat Semua →</a>
+				<h2 class="section-title">{t('admin.sesi_terbaru')}</h2>
+				<a href="/admin/attendance/sessions" class="btn-link">{t('admin.lihat_semua')}</a>
 			</div>
 			{#if (stats?.recent_sessions ?? []).length === 0}
 				<div class="empty-state">
 					<Icon name="calendar" size={40} />
-					<p>Belum ada sesi presensi</p>
+					<p>{t('admin.belum_ada_sesi')}</p>
 				</div>
 			{:else}
 				<DataTable columns={sessionColumns} data={stats?.recent_sessions ?? []} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada sesi presensi" emptyIcon="📅" />

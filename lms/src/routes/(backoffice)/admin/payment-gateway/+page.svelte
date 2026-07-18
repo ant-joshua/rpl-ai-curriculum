@@ -98,12 +98,12 @@
 </script>
 
 <div class="pg-dashboard">
-	<PageHeader title="Payment Gateway" subtitle="Dashboard keuangan & pembayaran" />
+	<PageHeader title={t('admin.payment_gateway')} subtitle="Dashboard keuangan & pembayaran" />
 
 	{#if loading}
 		<div class="pg-loading">
 			<div class="pg-spinner"></div>
-			<p>Memuat data...</p>
+			<p>{t('admin.memuat_data')}</p>
 		</div>
 	{:else if error}
 		<div class="pg-error">
@@ -122,7 +122,7 @@
 
 		<div class="pg-section">
 			<div class="pg-section-header">
-				<h2 class="pg-section-title">Pembayaran Terbaru</h2>
+				<h2 class="pg-section-title">{t('admin.pembayaran_terbaru')}</h2>
 				<a href="/admin/payment-gateway/invoices" class="pg-btn pg-btn-ghost pg-btn-sm">Lihat Semua</a>
 			</div>
 
@@ -133,7 +133,7 @@
 			{:else}
 				<div class="pg-empty">
 					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-					<p>Belum ada pembayaran</p>
+					<p>{t('admin.belum_ada_pembayaran')}</p>
 				</div>
 			{/if}
 		</div>

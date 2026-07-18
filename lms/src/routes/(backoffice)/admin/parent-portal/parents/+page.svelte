@@ -184,7 +184,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 	{#if loading}
 		<div class="pp-loading">
 			<div class="pp-spinner"></div>
-			<p>Memuat data...</p>
+			<p>{t('admin.memuat_data')}</p>
 		</div>
 	{:else if error}
 		<div class="pp-error">
@@ -248,7 +248,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 <Input bind:value={formUserId} placeholder="user_id" disabled required />
 				</div>
 				<div class="pp-field">
-					<label class="pp-label">Nama Lengkap</label>
+					<label class="pp-label">{t('register.fullname')}</label>
 <Input bind:value={formName} placeholder="Nama orang tua" required />
 				</div>
 				<div class="pp-row">
@@ -257,7 +257,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 <Input bind:value={formPhone} placeholder="08xxxxxxxxxx" />
 					</div>
 					<div class="pp-field">
-						<label class="pp-label">Email</label>
+						<label class="pp-label">{t('register.email')}</label>
 <Input type="email" bind:value={formEmail} placeholder="email@example.com" />
 					</div>
 				</div>

@@ -154,8 +154,8 @@
 <div class="page" onchange={handleAssign}>
 	<div class="page-header">
 		<div>
-			<h1>Course Offerings</h1>
-			<p class="subtitle">Atur instruktur untuk setiap course offering</p>
+			<h1>{t('admin.course_offerings')}</h1>
+			<p class="subtitle">{t('admin.atur_instruktur')}</p>
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄 Refresh</Button>

@@ -55,8 +55,8 @@
 		</div>
 		<div class="header-actions">
 			<select class="sem-select" bind:value={selectedSemester} onchange={() => loadRapor()}>
-				<option value="1">Semester Ganjil</option>
-				<option value="2">Semester Genap</option>
+				<option value="1">{t('nilai.semester_ganjil')}</option>
+				<option value="2">{t('nilai.semester_genap')}</option>
 			</select>
 		</div>
 	</div>

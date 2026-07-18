@@ -139,7 +139,7 @@
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openForm}>+ Assign Baru</Button>
+			<Button variant="primary" onclick={openForm}>{t('admin.assign_baru')}</Button>
 		</div>
 	</div>
 
@@ -150,7 +150,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -158,7 +158,7 @@
 		</div>
 	{:else if assignments.length === 0}
 		<div class="empty-state">
-			<p>Belum ada penugasan guru mapel</p>
+			<p>{t('admin.belum_ada_penugasan')}</p>
 			<Button variant="primary" onclick={openForm}>Assign Pertama</Button>
 		</div>
 	{:else}

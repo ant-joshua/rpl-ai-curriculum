@@ -83,12 +83,12 @@
 	<PageHeader title="🏛️ Fakultas" subtitle="Kelola data fakultas">
 		{#snippet action()}
 			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
-			<Button variant="primary" onclick={openCreate}>+ Fakultas Baru</Button>
+			<Button variant="primary" onclick={openCreate}>{t('admin.fakultas_baru')}</Button>
 		{/snippet}
 	</PageHeader>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -96,8 +96,8 @@
 		</div>
 	{:else if fakultasList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada fakultas</p>
-			<Button variant="primary" onclick={openCreate}>Buat Fakultas Pertama</Button>
+			<p>{t('admin.belum_ada_fakultas')}</p>
+			<Button variant="primary" onclick={openCreate}>{t('admin.buat_fakultas_pertama')}</Button>
 		</div>
 	{:else}
 		<div class="card">

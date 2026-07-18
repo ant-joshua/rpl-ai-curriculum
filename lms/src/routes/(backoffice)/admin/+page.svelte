@@ -9,7 +9,7 @@
 </svelte:head>
 
 <div class="dash-page">
-	<h1>Dashboard</h1>
+	<h1>{t('admin.dashboard')}</h1>
 	<p class="subtitle">{t('admin.welcome')}</p>
 
 	<div class="shortcut-grid">
@@ -19,7 +19,7 @@
 		</a>
 		<a href="/admin/gradebook" class="shortcut">
 			<span class="sc-icon">🎓</span>
-			<span class="sc-label">Gradebook</span>
+			<span class="sc-label">{t('admin.gradebook_title')}</span>
 		</a>
 		<a href="/admin/announcements" class="shortcut">
 			<span class="sc-icon">📢</span>

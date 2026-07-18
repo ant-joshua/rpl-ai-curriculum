@@ -148,7 +148,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('admin.memuat_data')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -156,8 +156,8 @@
 		</div>
 	{:else if mapelList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada mata pelajaran</p>
-			<Button variant="primary" onclick={openForm}>Buat Mapel Pertama</Button>
+			<p>{t('admin.belum_ada_mapel')}</p>
+			<Button variant="primary" onclick={openForm}>{t('admin.buat_mapel_pertama')}</Button>
 		</div>
 	{:else}
 		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari mata pelajaran..." />

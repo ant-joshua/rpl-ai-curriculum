@@ -135,7 +135,7 @@
 	<!-- Offering Selector -->
 	<div class="filter-bar">
 		<label class="filter-label">
-			<span>Course Offering</span>
+			<span>{t('admin.course_offering')}</span>
 			<Select
 				options={offeringOptions}
 				value={selectedOfferingId}
@@ -146,7 +146,7 @@
 
 	<!-- Add Prerequisite Form -->
 	<div class="add-form">
-		<h2>Add Prerequisite</h2>
+		<h2>{t('admin.add_prerequisite')}</h2>
 		<div class="form-row">
 			<div class="form-group">
 				<label>
@@ -174,9 +174,9 @@
 
 	<!-- Prerequisites Table -->
 	<div class="prereqs-table-wrapper">
-		<h2>Existing Prerequisites</h2>
+		<h2>{t('admin.existing_prerequisites')}</h2>
 		{#if filteredPrereqs.length === 0}
-			<p class="empty-state">No prerequisites defined yet.</p>
+			<p class="empty-state">{t('admin.no_prerequisites')}</p>
 		{:else}
 			<Table>
 				<TableHeader>

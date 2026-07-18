@@ -209,17 +209,17 @@
 		{#if kds.length === 0}
 			<EmptyState icon="🔧" message="Belum ada KD Keterampilan untuk kelas ini." />
 		{:else if students.length === 0}
-			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
+			<EmptyState icon="👨‍🎓" message={t('nilai.belum_ada_siswa')} />
 		{:else}
 			<div class="table-wrapper">
 				<table class="skill-table">
 					<thead>
 						<tr>
-							<th class="sticky-col name-col">Siswa</th>
+							<th class="sticky-col name-col">{t('rapor.siswa')}</th>
 							{#each visibleKds as kd}
 								<th class="kd-col">{kd.code || `KD ${kd.no}`}</th>
 							{/each}
-							<th class="avg-col">Rata-rata</th>
+							<th class="avg-col">{t('dosen.average_label')}</th>
 						</tr>
 					</thead>
 					<tbody>

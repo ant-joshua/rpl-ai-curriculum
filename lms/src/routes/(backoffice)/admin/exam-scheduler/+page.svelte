@@ -102,7 +102,7 @@
 	<div class="header">
 		<div>
 			<h1>📋 Exam Scheduler</h1>
-			<p class="subtitle">Kelola jadwal ujian, ruangan, dan tipe ujian</p>
+			<p class="subtitle">{t('admin.kelola_jadwal_ujian')}</p>
 		</div>
 		<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
 	</div>
@@ -139,14 +139,14 @@
 				<div class="loading">Memuat data ujian...</div>
 			{:else if exams.length === 0}
 				<div class="empty-state">
-					<p>Belum ada jadwal ujian</p>
-					<a href="/admin/exam-scheduler/exams" class="btn-primary">Buat Ujian Pertama</a>
+					<p>{t('admin.belum_ada_ujian')}</p>
+					<a href="/admin/exam-scheduler/exams" class="btn-primary">{t('admin.buat_ujian_pertama')}</a>
 				</div>
 			{:else}
 				<div class="card">
 					<div class="card-header">
 						<h3>Jadwal Ujian Terbaru</h3>
-						<a href="/admin/exam-scheduler/exams" class="link-btn">Lihat Semua →</a>
+						<a href="/admin/exam-scheduler/exams" class="link-btn">{t('admin.lihat_semua')}</a>
 					</div>
 					<div class="table-container">
 						<table>
@@ -187,7 +187,7 @@
 				<div class="card">
 					<div class="card-header">
 						<h3>Ruangan Tersedia</h3>
-						<a href="/admin/exam-scheduler/rooms" class="link-btn">Lihat Semua →</a>
+						<a href="/admin/exam-scheduler/rooms" class="link-btn">{t('admin.lihat_semua')}</a>
 					</div>
 					<div class="table-container">
 						<table>

@@ -316,7 +316,7 @@
 							<thead>
 								<tr>
 									<th>#</th>
-									<th>Sesi</th>
+									<th>{t('module.sessions')}</th>
 									<th>Content Block</th>
 									<th>{t('common.status')}</th>
 								</tr>
@@ -379,7 +379,7 @@
 			<TableBody>
 				{#if filteredBlocks.length === 0}
 					<TableRow>
-						<TableCell colspan="6" class="empty-cell">No content blocks found</TableCell>
+						<TableCell colspan="6" class="empty-cell">{t('admin.no_content_blocks')}</TableCell>
 					</TableRow>
 				{:else}
 					{#each filteredBlocks as cb (cb.id)}
@@ -451,7 +451,7 @@
 			<Alert variant="success">{linkSuccess}</Alert>
 		{/if}
 		<label class="form-group">
-			<span>Course Offering</span>
+			<span>{t('admin.course_offering')}</span>
 			<Select bind:value={linkOfferingId}
 				options={data.offerings.map(o => ({ value: o.id, label: `${o.name} (${o.code})` }))}
 				placeholder="Pilih offering..." />

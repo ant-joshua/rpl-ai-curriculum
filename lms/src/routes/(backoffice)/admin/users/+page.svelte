@@ -152,7 +152,7 @@
 	</PageHeader>
 
 	{#if loading}
-		<Loading message="Loading users..." />
+		<Loading message={t('admin.loading_users')} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -162,17 +162,17 @@
 		<div class="toolbar">
 			<SearchBar bind:value={searchQuery} placeholder="Cari username atau ID..." />
 			<div class="sort-group">
-				<span class="sort-label">Sort:</span>
+				<span class="sort-label">{t('admin.sort')}</span>
 				<Button
 					variant={sortBy === 'xp' ? 'primary' : 'secondary'}
 					size="sm"
 					onclick={() => sortBy = 'xp'}
-				>XP</Button>
+				>{t('common.xp')}</Button>
 				<Button
 					variant={sortBy === 'level' ? 'primary' : 'secondary'}
 					size="sm"
 					onclick={() => sortBy = 'level'}
-				>Level</Button>
+				>{t('common.level')}</Button>
 				<Button
 					variant={sortBy === 'sessions' ? 'primary' : 'secondary'}
 					size="sm"
@@ -216,13 +216,13 @@
 			{/each}
 		</Table>
 		{#if filtered.length === 0 && !loading}
-			<EmptyState message="No users found." />
+			<EmptyState message={t('admin.no_users')} />
 		{/if}
 
 		<!-- Bulk user creation -->
 		<div class="bulk-section">
 			<h2>📋 Bulk Create Users</h2>
-			<p class="bulk-hint">Paste email addresses (one per line or comma-separated) to create user accounts.</p>
+			<p class="bulk-hint">{t('admin.bulk_hint')}</p>
 <Textarea placeholder="user1@example.com&#10;user2@example.com" bind:value={bulkEmails} class="bulk-textarea" />
 			<div class="bulk-actions">
 				<Button onclick={bulkCreateUsers} disabled={bulkSaving} variant="secondary">
@@ -253,7 +253,7 @@
 	<div class="field field-checkbox">
 		<label>
 			<input type="checkbox" bind:checked={editIsActive} />
-			<span>Active</span>
+			<span>{t('common.active')}</span>
 		</label>
 	</div>
 	{#if saveError}

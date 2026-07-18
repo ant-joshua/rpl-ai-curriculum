@@ -179,7 +179,7 @@
     {#if offeringName}
       / <span>{offeringName}</span>
     {/if}
-    / <span>Jadwal</span>
+    / <span>{t('mahasiswa.col_schedule')}</span>
   </div>
 
   {#if loading}
