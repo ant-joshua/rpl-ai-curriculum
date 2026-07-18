@@ -116,10 +116,11 @@
 		} catch { saveError = 'Terjadi kesalahan'; }
 		finally { saving = false; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Kelas Kuliah — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -155,7 +156,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if kelasList.length === 0}
 		<div class="empty-state">
@@ -203,7 +204,7 @@
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field-row">
 					<div class="field">
-						<label for="kk-matkul">Mata Kuliah</label>
+						<label for="kk-matkul">{t('admin.mata_kuliah')}</label>
 						<select id="kk-matkul" bind:value={formMatkulId}>
 							<option value="">— Pilih Matkul —</option>
 							{#each matkulList as m}
@@ -212,7 +213,7 @@
 						</select>
 					</div>
 					<div class="field">
-						<label for="kk-prodi">Program Studi</label>
+						<label for="kk-prodi">{t('admin.program_studi')}</label>
 						<select id="kk-prodi" bind:value={formProdiId}>
 							<option value="">— Pilih Prodi —</option>
 							{#each prodiList as p}
@@ -223,7 +224,7 @@
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="kk-semester">Semester</label>
+						<label for="kk-semester">{t('admin.semester')}</label>
 						<select id="kk-semester" bind:value={formSemesterId}>
 							<option value="">— Pilih Semester —</option>
 							{#each semesterList as s}
@@ -251,7 +252,7 @@
 						<input id="kk-nama" type="text" bind:value={formNama} placeholder="Cth: Kelas A" />
 					</div>
 					<div class="field">
-						<label for="kk-kapasitas">Kapasitas</label>
+						<label for="kk-kapasitas">{t('admin.kapasitas')}</label>
 						<input id="kk-kapasitas" type="number" bind:value={formKapasitas} min="1" max="200" />
 					</div>
 				</div>
@@ -260,11 +261,11 @@
 						<label for="kk-hari">Hari</label>
 						<select id="kk-hari" bind:value={formHari}>
 							<option value="">— Pilih Hari —</option>
-							<option value="Senin">Senin</option>
-							<option value="Selasa">Selasa</option>
-							<option value="Rabu">Rabu</option>
-							<option value="Kamis">Kamis</option>
-							<option value="Jumat">Jumat</option>
+							<option value="Senin">{t('admin.senin')}</option>
+							<option value="Selasa">{t('admin.selasa')}</option>
+							<option value="Rabu">{t('admin.rabu')}</option>
+							<option value="Kamis">{t('admin.kamis')}</option>
+							<option value="Jumat">{t('admin.jumat')}</option>
 							<option value="Sabtu">Sabtu</option>
 						</select>
 					</div>
@@ -277,13 +278,13 @@
 						<input id="kk-jam-selesai" type="time" bind:value={formJamSelesai} />
 					</div>
 					<div class="field">
-						<label for="kk-ruangan">Ruangan</label>
+						<label for="kk-ruangan">{t('admin.ruangan')}</label>
 						<input id="kk-ruangan" type="text" bind:value={formRuangan} placeholder="Cth: Lab Komputer A" />
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

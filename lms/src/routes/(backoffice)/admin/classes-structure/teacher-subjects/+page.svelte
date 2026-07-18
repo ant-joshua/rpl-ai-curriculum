@@ -124,10 +124,11 @@
 			cell: ({ row }) => `<button class="btn-danger-icon" onclick="window.__deleteAssignment('${row.original.id}')" title="Hapus">✕</button>`
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Guru Mapel — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -163,7 +164,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if assignments.length === 0}
 		<div class="empty-state">
@@ -196,7 +197,7 @@
 					</select>
 				</div>
 				<div class="field">
-					<label for="gm-mapel">Mata Pelajaran</label>
+					<label for="gm-mapel">{t('admin.mapel')}</label>
 					<select id="gm-mapel" bind:value={formSubjectId}>
 						<option value="">— Pilih Mapel —</option>
 						{#each mapelList as m}
@@ -215,20 +216,20 @@
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="gm-semester">Semester</label>
+						<label for="gm-semester">{t('admin.semester')}</label>
 						<select id="gm-semester" bind:value={formSemester}>
 							<option value={1}>Semester 1 (Ganjil)</option>
 							<option value={2}>Semester 2 (Genap)</option>
 						</select>
 					</div>
 					<div class="field">
-						<label for="gm-hours">JP per Minggu</label>
+						<label for="gm-hours">{t('admin.jp_per_minggu')}</label>
 						<input id="gm-hours" type="number" bind:value={formTotalHours} min="1" max="40" />
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

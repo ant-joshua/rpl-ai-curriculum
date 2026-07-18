@@ -137,10 +137,11 @@
 			bulkSaving = false;
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>👥 Users — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="users-page">
@@ -155,7 +156,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<Button onclick={loadUsers} variant="secondary">Retry</Button>
+			<Button onclick={loadUsers} variant="secondary">{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<div class="toolbar">
@@ -267,7 +268,7 @@
 		<div class="save-error">{saveError}</div>
 	{/if}
 	{#snippet footer()}
-		<Button onclick={closeEdit} variant="secondary">Cancel</Button>
+		<Button onclick={closeEdit} variant="secondary">{t('common.cancel')}</Button>
 		<Button onclick={saveUser} disabled={saving} variant="primary">
 			{saving ? 'Saving...' : 'Save Changes'}
 		</Button>

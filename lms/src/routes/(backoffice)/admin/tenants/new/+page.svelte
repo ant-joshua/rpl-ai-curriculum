@@ -46,6 +46,7 @@
 			saving = false;
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="page">
@@ -81,7 +82,7 @@
 		</div>
 
 		<div class="actions">
-			<a href="/admin/tenants" class="btn-cancel">Batal</a>
+			<a href="/admin/tenants" class="btn-cancel">{t('common.cancel')}</a>
 			<button type="submit" class="btn-primary" disabled={saving}>
 				{saving ? 'Menyimpan...' : 'Buat Tenant'}
 			</button>

@@ -69,6 +69,7 @@
 			goto('/admin/tenants');
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="page">
@@ -90,7 +91,7 @@
 				<button class="btn-small" onclick={toggleActive}>
 					{tenant.is_active ? 'Nonaktifkan' : 'Aktifkan'}
 				</button>
-				<button class="btn-small btn-danger" onclick={deleteTenant}>Hapus</button>
+				<button class="btn-small btn-danger" onclick={deleteTenant}>{t('common.delete')}</button>
 			</div>
 		</div>
 

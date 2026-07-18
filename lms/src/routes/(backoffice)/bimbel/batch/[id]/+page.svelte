@@ -5,6 +5,7 @@
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { page } from '$app/stores';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	type Student = {
 		id: string;
@@ -22,9 +23,9 @@
 	const batchId = $derived($page.params.id);
 
 	const columns: ColumnDef<any, any>[] = [
-		{ header: 'Nama', accessorKey: 'name' },
-		{ header: 'NIS', accessorFn: (row) => row.nis || '-', cell: ({ getValue }) => `<code>${getValue()}</code>` },
-		{ header: 'Tanggal Daftar', accessorKey: 'joinedAt', cell: ({ getValue }) => formatDate(getValue() as string) }
+		{ header: t('batch.col_name'), accessorKey: 'name' },
+		{ header: t('batch.col_nis'), accessorFn: (row) => row.nis || '-', cell: ({ getValue }) => `<code>${getValue()}</code>` },
+		{ header: t('batch.col_date'), accessorKey: 'joinedAt', cell: ({ getValue }) => formatDate(getValue() as string) }
 	];
 
 	onMount(() => {
@@ -101,24 +102,24 @@
 
 	function getStatusLabel(status: string) {
 		switch (status) {
-			case 'active': return 'Aktif';
-			case 'completed': return 'Selesai';
-			case 'cancelled': return 'Dibatalkan';
+			case 'active': return t('batch.status_active');
+			case 'completed': return t('batch.status_completed');
+			case 'cancelled': return t('batch.status_cancelled');
 			default: return status;
 		}
 	}
 </script>
 
 <svelte:head>
-	<title>{batch?.name || 'Detail Batch'} — Bimbel — RPL AI Curriculum</title>
+	<title>{batch?.name || t('batch.detail')} — Bimbel — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/bimbel/batch">← Batch</a></div>
+		<div class="breadcrumb"><a href="/bimbel/batch">← {t('batch.breadcrumb')}</a></div>
 
 		{#if loading}
-			<Loading message="Memuat data..." />
+			<Loading message={t('common.loading')} />
 		{:else if error}
 			<div class="error-state">{error}</div>
 		{:else if batch}
@@ -126,45 +127,45 @@
 				<div>
 					<h1>{batch.name}</h1>
 					<p class="subtitle">
-						Tipe: {batch.type || '-'}
+						{t('batch.type_label')}: {batch.type || '-'}
 						<span class="sep">·</span>
 						<Badge variant={getStatusBadge(batch.status)}>{getStatusLabel(batch.status)}</Badge>
 						<span class="sep">·</span>
-						{students.length} siswa terdaftar
+						{students.length} {t('batch.student_count_unit')}
 					</p>
 				</div>
 			</div>
 
 			<div class="toolbar">
-				<input class="search-input" type="text" placeholder="Cari siswa..." bind:value={studentSearch} />
+				<input class="search-input" type="text" placeholder={t('batch.search_placeholder')} bind:value={studentSearch} />
 				<button class="btn btn-secondary btn-sm" onclick={toggleEnroll}>
-					{showEnroll ? 'Tutup' : '+ Daftarkan Siswa'}
+					{showEnroll ? t('batch.toggle_close') : t('batch.enroll_student')}
 				</button>
-				<button class="btn btn-ghost btn-sm" onclick={loadData}>🔄 Refresh</button>
+				<button class="btn btn-ghost btn-sm" onclick={loadData}>🔄 {t('common.refresh')}</button>
 			</div>
 
 			{#if showEnroll}
 				<div class="enroll-box">
-					<input class="input-field" type="text" placeholder="ID Siswa atau Nama" bind:value={enrollStudentId} />
+					<input class="input-field" type="text" placeholder={t('batch.student_id_placeholder')} bind:value={enrollStudentId} />
 					<button class="btn btn-secondary btn-sm" onclick={enrollStudent} disabled={loadingEnroll || !enrollStudentId.trim()}>
-						{loadingEnroll ? 'Mendaftarkan...' : 'Daftarkan'}
+						{loadingEnroll ? t('batch.enrolling') : t('batch.enroll')}
 					</button>
 				</div>
 			{/if}
 
 			{#if students.length === 0}
-				<EmptyState icon="👨‍🎓" title="Belum Ada Siswa" description="Daftarkan siswa ke batch ini." />
+				<EmptyState icon="👨‍🎓" title={t('batch.no_students_title')} description={t('batch.no_students_desc')} />
 			{:else if filteredStudents.length === 0}
-				<EmptyState icon="🔍" title="Tidak Ditemukan" description="Tidak ada siswa yang cocok." />
+				<EmptyState icon="🔍" title={t('common.not_found')} description={t('batch.no_students_match')} />
 			{:else}
 				<div class="table-wrap">
 					<table>
 						<thead>
 							<tr>
-								<th>No</th>
-								<th>Nama</th>
-								<th>NIS</th>
-								<th>Tanggal Daftar</th>
+								<th>{t('batch.col_no')}</th>
+								<th>{t('batch.col_name')}</th>
+								<th>{t('batch.col_nis')}</th>
+								<th>{t('batch.col_date')}</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -176,7 +177,7 @@
 									<td class="col-nis">{s.nis || '-'}</td>
 									<td class="col-date">{formatDate(s.joinedAt)}</td>
 									<td class="col-action">
-										<button class="btn-unenroll" onclick={() => unenrollStudent(s.id)}>Keluarkan</button>
+										<button class="btn-unenroll" onclick={() => unenrollStudent(s.id)}>{t('batch.remove')}</button>
 									</td>
 								</tr>
 							{/each}

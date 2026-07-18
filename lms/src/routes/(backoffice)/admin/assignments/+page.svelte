@@ -263,9 +263,10 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	function offeringName(id: string): string {
 		return offerings.find(o => o.id === id)?.name || id;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
-<svelte:head><title>Manajemen Tugas — Admin</title></svelte:head>
+<svelte:head><title>{t('admin.title')}</title></svelte:head>
 
 <div class="page">
 	<div class="stats-row">
@@ -294,13 +295,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<table class="assign-table">
 				<thead>
 					<tr>
-						<th>Judul</th>
+						<th>{t('admin.judul')}</th>
 						<th>Kursus</th>
-						<th>Tipe</th>
-						<th>Nilai Maks</th>
+						<th>{t('admin.tipe')}</th>
+						<th>{t('admin.nilai')}</th>
 						<th>Tenggat</th>
-						<th>Status</th>
-						<th>Aksi</th>
+						<th>{t('common.status')}</th>
+						<th>{t('common.action')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -319,8 +320,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 								<Button variant="ghost" size="sm" onclick={() => openEdit(a)}>✏️</Button>
 								{#if confirmDelete === a.id}
 									<span class="confirm-group">
-										<Button variant="danger" size="sm" onclick={() => handleDelete(a.id)}>Hapus</Button>
-										<Button variant="ghost" size="sm" onclick={() => confirmDelete = null}>Batal</Button>
+										<Button variant="danger" size="sm" onclick={() => handleDelete(a.id)}>{t('common.delete')}</Button>
+										<Button variant="ghost" size="sm" onclick={() => confirmDelete = null}>{t('common.cancel')}</Button>
 									</span>
 								{:else}
 									<Button variant="ghost" size="sm" onclick={() => confirmDelete = a.id}>🗑️</Button>
@@ -338,7 +339,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 											<p class="empty-sub">Belum ada submission.</p>
 										{:else}
 											<table class="sub-table">
-												<thead><tr><th>Siswa</th><th>Status</th><th>Nilai</th><th>Dikirim</th><th>Aksi</th></tr></thead>
+												<thead><tr><th>Siswa</th><th>{t('common.status')}</th><th>Nilai</th><th>Dikirim</th><th>Aksi</th></tr></thead>
 												<tbody>
 													{#each submissions as s}
 														<tr>
@@ -350,7 +351,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 																{#if s.status !== 'graded'}
 																	<Button size="sm" onclick={() => { gradeId = s.id; gradeScore = 0; gradeFeedback = ''; }}>Nilai</Button>
 																{:else}
-																	<Button size="sm" variant="ghost" onclick={() => { gradeId = s.id; gradeScore = s.score; gradeFeedback = s.feedback || ''; }}>Edit</Button>
+																	<Button size="sm" variant="ghost" onclick={() => { gradeId = s.id; gradeScore = s.score; gradeFeedback = s.feedback || ''; }}>{t('common.edit')}</Button>
 																{/if}
 															</td>
 														</tr>
@@ -406,7 +407,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					<input type="text" bind:value={form.title} class="input" placeholder="Nama tugas..." />
 				</div>
 				<div class="form-group">
-					<label>Deskripsi</label>
+					<label>{t('common.description')}</label>
 					<textarea bind:value={form.description} class="input" rows="3" placeholder="Deskripsi tugas..."></textarea>
 				</div>
 				<div class="form-row">
@@ -434,10 +435,10 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						<input type="datetime-local" bind:value={form.due_date} class="input" />
 					</div>
 					<div class="form-group">
-						<label>Status</label>
+						<label>{t('common.status')}</label>
 						<select bind:value={form.status} class="select-input">
-							<option value="draft">Draft</option>
-							<option value="published">Published</option>
+							<option value="draft">{t('admin.draft')}</option>
+							<option value="published">{t('admin.published')}</option>
 							<option value="archived">Archived</option>
 						</select>
 					</div>
@@ -459,7 +460,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				{/if}
 			</div>
 			<div class="modal-footer">
-				<Button variant="ghost" onclick={closeModal}>Batal</Button>
+				<Button variant="ghost" onclick={closeModal}>{t('common.cancel')}</Button>
 				<Button onclick={handleSubmit} disabled={submitting}>{submitting ? 'Menyimpan...' : 'Simpan'}</Button>
 			</div>
 		</div>
@@ -488,7 +489,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				</div>
 			</div>
 			<div class="modal-footer">
-				<Button variant="ghost" onclick={() => gradeId = null}>Batal</Button>
+				<Button variant="ghost" onclick={() => gradeId = null}>{t('common.cancel')}</Button>
 				<Button onclick={() => handleGrade(gradeId!)} disabled={grading}>{grading ? 'Menyimpan...' : 'Simpan Nilai'}</Button>
 			</div>
 		</div>

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let grades: any[] = $state([]);
 	let studentInfo: any = $state(null);
@@ -112,36 +113,36 @@
 <div class="page">
 	<div class="page-header">
 		<div>
-			<h1>📊 Nilai Saya</h1>
+			<h1>{t('siswa.nilai_saya')}</h1>
 			<p class="subtitle">
 				{#if studentInfo}
 					{studentInfo.display_name || studentInfo.name || studentInfo.username}
 				{:else}
-					Rekap nilai pembelajaran
+					{t('siswa.rekap_nilai')}
 				{/if}
 			</p>
 		</div>
 		<div class="header-actions">
 			<select class="sem-select" bind:value={selectedSemester} onchange={() => loadGrades()}>
-				<option value="1">Semester Ganjil</option>
-				<option value="2">Semester Genap</option>
+				<option value="1">{t('nilai.semester_ganjil')}</option>
+				<option value="2">{t('nilai.semester_genap')}</option>
 			</select>
 		</div>
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat data nilai..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if grades.length === 0}
-		<EmptyState icon="📊" message="Belum ada data nilai untuk ditampilkan." description="Nilai akan muncul setelah guru menginputnya." />
+		<EmptyState icon="📊" message={t('siswa.belum_ada_nilai')} description={t('siswa.belum_ada_nilai_desc')} />
 	{:else}
 		<DataTable
 			{columns}
 			data={grades}
 			showSearch={false}
 			showPagination={false}
-			emptyMessage="Belum ada data nilai"
+			emptyMessage={t('siswa.belum_ada_nilai_tabel')}
 		/>
 	{/if}
 </div>

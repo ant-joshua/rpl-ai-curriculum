@@ -142,10 +142,11 @@ const classColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Kelas — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -175,7 +176,7 @@ const classColumns: ColumnDef<any, any>[] = [
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if kelasList.length === 0}
 		<div class="empty-state">
@@ -199,7 +200,7 @@ const classColumns: ColumnDef<any, any>[] = [
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="kelas-name">Nama Kelas</label>
+					<label for="kelas-name">{t('admin.nama_kelas')}</label>
 					<input id="kelas-name" type="text" bind:value={formName} placeholder="Cth: X RPL 1" />
 				</div>
 				<div class="field">
@@ -207,7 +208,7 @@ const classColumns: ColumnDef<any, any>[] = [
 					<input id="kelas-code" type="text" bind:value={formCode} placeholder="X-RPL-1" />
 				</div>
 				<div class="field">
-					<label for="kelas-tingkat">Tingkat</label>
+					<label for="kelas-tingkat">{t('admin.tingkat')}</label>
 					<select id="kelas-tingkat" bind:value={formGradeLevelId}>
 						<option value="">— Pilih Tingkat —</option>
 						{#each tingkatList as t}
@@ -230,21 +231,21 @@ const classColumns: ColumnDef<any, any>[] = [
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="kelas-room">Ruangan</label>
+						<label for="kelas-room">{t('admin.ruangan')}</label>
 						<input id="kelas-room" type="text" bind:value={formRoom} placeholder="Cth: R.101" />
 					</div>
 					<div class="field">
-						<label for="kelas-shift">Shift</label>
+						<label for="kelas-shift">{t('admin.shift')}</label>
 						<select id="kelas-shift" bind:value={formShift}>
-							<option value="pagi">Pagi</option>
-							<option value="siang">Siang</option>
-							<option value="sore">Sore</option>
+							<option value="pagi">{t('admin.pagi')}</option>
+							<option value="siang">{t('admin.siang')}</option>
+							<option value="sore">{t('admin.sore')}</option>
 						</select>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

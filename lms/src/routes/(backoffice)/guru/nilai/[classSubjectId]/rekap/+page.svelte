@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -121,7 +122,7 @@
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat rekap nilai..." />
+		<Loading message={t('common.loading')} />
 	{:else if error && !classSubject}
 		<div class="error-state">{error}</div>
 	{:else}
@@ -130,26 +131,26 @@
 				<div class="breadcrumb">
 					<a href="/guru/nilai/{classSubjectId}">← {classSubject?.subject_name || 'Nilai'}</a>
 				</div>
-				<h1>📊 Rekap Nilai</h1>
+				<h1>{t('nilai.rekap')}</h1>
 				<p class="meta">{classSubject?.class_name} — {classSubject?.subject_name}</p>
 			</div>
 			<div class="header-actions">
 				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadRekap()}>
-					<option value="1">Semester Ganjil</option>
-					<option value="2">Semester Genap</option>
+					<option value="1">{t('nilai.semester_ganjil')}</option>
+					<option value="2">{t('nilai.semester_genap')}</option>
 				</select>
 			</div>
 		</div>
 
 		{#if rekap.length === 0}
-			<EmptyState icon="📊" message="Belum ada data rekap. Input nilai terlebih dahulu." />
+			<EmptyState icon="📊" message={t('nilai.belum_ada_rekap')} />
 		{:else}
 			<DataTable
 				{columns}
 				data={rekap}
 				showSearch={false}
 				showPagination={false}
-				emptyMessage="Belum ada data rekap"
+				emptyMessage={t('nilai.belum_ada_rekap_tabel')}
 			/>
 		{/if}
 	{/if}

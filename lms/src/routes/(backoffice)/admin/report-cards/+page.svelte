@@ -98,10 +98,11 @@
 		}
 		generating = false;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Report Cards — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="report-cards-dashboard">

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	let pendingList: any[] = $state([]);
 	let riwayatList: any[] = $state([]);
@@ -78,7 +79,7 @@
 
 	const riwayatColumns: ColumnDef<any, any>[] = [
 		{
-			header: 'Mahasiswa',
+			header: t('kaprodi.col_student'),
 			accessorKey: 'mahasiswa_name',
 			cell: ({ getValue, row }) => {
 				const name = getValue() || row.original.student_name || '—';
@@ -86,7 +87,7 @@
 			}
 		},
 		{
-			header: 'NIM',
+			header: t('kaprodi.col_nim'),
 			accessorKey: 'nim',
 			cell: ({ getValue, row }) => {
 				const nim = getValue() || row.original.student_nim || '—';
@@ -94,7 +95,7 @@
 			}
 		},
 		{
-			header: 'Semester',
+			header: t('kaprodi.col_semester'),
 			accessorKey: 'semester_id',
 			cell: ({ getValue, row }) => {
 				const id = getValue() || row.original.semesterId;
@@ -102,7 +103,7 @@
 			}
 		},
 		{
-			header: 'SKS',
+			header: t('kaprodi.col_sks'),
 			accessorKey: 'total_sks',
 			cell: ({ getValue, row }) => {
 				const v = getValue() ?? row.original.totalSks ?? 0;
@@ -110,7 +111,7 @@
 			}
 		},
 		{
-			header: 'Status',
+			header: t('kaprodi.col_status'),
 			accessorKey: 'status',
 			cell: ({ getValue }) => {
 				const status = (getValue() as string) || '—';
@@ -119,13 +120,13 @@
 				let bg = 'rgba(98,102,109,0.1)';
 				let color = 'var(--text-quaternary)';
 				let label = status;
-				if (approved) { bg = 'rgba(16,185,129,0.1)'; color = '#10b981'; label = 'Disetujui'; }
-				else if (rejected) { bg = 'rgba(239,68,68,0.1)'; color = '#ef4444'; label = 'Ditolak'; }
+				if (approved) { bg = 'rgba(16,185,129,0.1)'; color = '#10b981'; label = t('kaprodi.status_approved'); }
+				else if (rejected) { bg = 'rgba(239,68,68,0.1)'; color = '#ef4444'; label = t('kaprodi.status_rejected'); }
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
 		},
 		{
-			header: 'Tanggal',
+			header: t('kaprodi.col_date'),
 			accessorKey: 'updated_at',
 			cell: ({ getValue }) => {
 				const d = getValue() as string;
@@ -138,14 +139,14 @@
 </script>
 
 <svelte:head>
-	<title>Verifikasi KRS — Kaprodi</title>
+	<title>{t('kaprodi.title')}</title>
 </svelte:head>
 
 <div class="page">
 	<div class="header">
 		<div>
-			<h1>✅ Verifikasi KRS</h1>
-			<p class="subtitle">Pengajuan Kartu Rencana Studi mahasiswa</p>
+			<h1>{t('kaprodi.heading')}</h1>
+			<p class="subtitle">{t('kaprodi.subtitle')}</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={loadData}>🔄</button>
@@ -153,24 +154,24 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('common.loading')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if pendingList.length === 0 && !showRiwayat}
 		<div class="empty-state">
-			<p>Tidak ada pengajuan KRS yang menunggu</p>
-			<button class="btn-secondary" onclick={loadRiwayat}>Lihat Riwayat</button>
+			<p>{t('kaprodi.no_pending')}</p>
+			<button class="btn-secondary" onclick={loadRiwayat}>{t('kaprodi.view_history')}</button>
 		</div>
 	{:else}
 		<section class="section">
 			<div class="section-header">
-				<h2>Menunggu Persetujuan ({pendingList.length})</h2>
+				<h2>{t('kaprodi.pending_approval')} ({pendingList.length})</h2>
 			</div>
 			{#if pendingList.length === 0}
-				<div class="empty-subtle">Semua KRS sudah diproses</div>
+				<div class="empty-subtle">{t('kaprodi.all_processed')}</div>
 			{:else}
 				{#each pendingList as krs}
 					<div class="krs-card">
@@ -181,7 +182,7 @@
 							</div>
 							<div class="krs-meta">
 								<span class="krs-semester">{getSemesterName(krs.semester_id || krs.semesterId)}</span>
-								<span class="krs-sks">{krs.total_sks ?? krs.totalSks ?? 0} SKS</span>
+								<span class="krs-sks">{krs.total_sks ?? krs.totalSks ?? 0} {t('kaprodi.col_sks')}</span>
 								<span class="krs-matkul">{krs.jumlah_matkul ?? krs.course_count ?? 0} mata kuliah</span>
 							</div>
 							{#if krs.catatan || krs.notes}
@@ -194,8 +195,8 @@
 							{/each}
 						</div>
 						<div class="krs-actions">
-							<button class="btn-approve" onclick={() => approveKrs(krs.id)}>✓ Setujui</button>
-							<button class="btn-reject" onclick={() => rejectKrs(krs.id)}>✕ Tolak</button>
+							<button class="btn-approve" onclick={() => approveKrs(krs.id)}>{t('kaprodi.approve')}</button>
+							<button class="btn-reject" onclick={() => rejectKrs(krs.id)}>{t('kaprodi.reject')}</button>
 						</div>
 					</div>
 				{/each}
@@ -204,12 +205,12 @@
 
 		<section class="section">
 			<div class="section-header">
-				<h2>Riwayat</h2>
-				<button class="btn-secondary" onclick={loadRiwayat}>Muat Riwayat</button>
+				<h2>{t('common.history')}</h2>
+				<button class="btn-secondary" onclick={loadRiwayat}>{t('kaprodi.load_history')}</button>
 			</div>
 			{#if showRiwayat}
 				{#if riwayatList.length === 0}
-					<div class="empty-subtle">Belum ada riwayat</div>
+					<div class="empty-subtle">{t('kaprodi.no_history')}</div>
 				{:else}
 					<DataTable
 						columns={riwayatColumns}
@@ -217,7 +218,7 @@
 						pageSize={50}
 						showSearch={false}
 						showPagination={false}
-						emptyMessage="Belum ada riwayat"
+						emptyMessage={t('kaprodi.no_history')}
 					/>
 				{/if}
 			{/if}

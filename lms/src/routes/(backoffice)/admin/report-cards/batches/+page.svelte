@@ -172,10 +172,11 @@
 		}
 		submitting = false;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Report Card Batches — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="batches-page">
@@ -271,7 +272,7 @@
 		</div>
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showCreateModal = false} disabled={submitting}>Cancel</Button>
+			<Button variant="secondary" onclick={() => showCreateModal = false} disabled={submitting}>{t('common.cancel')}</Button>
 			<Button onclick={createBatch} disabled={submitting || selectedClassIds.length === 0}>
 				{submitting ? 'Creating...' : '📦 Create Batch'}
 			</Button>

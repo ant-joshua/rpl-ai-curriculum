@@ -113,6 +113,7 @@
 	];
 
 	$effect(() => { load(); });
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="p-6">
@@ -126,9 +127,9 @@
 		<select bind:value={filterAction} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm">
 			<option value="">All actions</option>
 			<option value="read">Read</option>
-			<option value="create">Create</option>
+			<option value="create">{t('common.create')}</option>
 			<option value="update">Update</option>
-			<option value="delete">Delete</option>
+			<option value="delete">{t('common.delete')}</option>
 			<option value="login">Login</option>
 			<option value="logout">Logout</option>
 			<option value="error">Error</option>

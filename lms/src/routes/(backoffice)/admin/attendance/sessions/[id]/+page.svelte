@@ -184,10 +184,11 @@
 			}
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Detail Sesi — Attendance — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -214,24 +215,24 @@
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadSession}>Coba Lagi</button>
+			<button class="btn-secondary" onclick={loadSession}>{t('common.retry')}</button>
 		</div>
 	{:else if session}
 		<!-- Session Info -->
 		<div class="session-info">
 			<div class="info-grid">
 				<div class="info-item">
-					<span class="info-label">Status</span>
+					<span class="info-label">{t('common.status')}</span>
 					<span class="badge {session.status === 'active' ? 'badge-active' : 'badge-closed'}">
 						{session.status === 'active' ? '🟢 Aktif' : '⚫ Selesai'}
 					</span>
 				</div>
 				<div class="info-item">
-					<span class="info-label">Tanggal</span>
+					<span class="info-label">{t('admin.tanggal')}</span>
 					<span class="info-value">{formatDate(session.session_date)}</span>
 				</div>
 				<div class="info-item">
-					<span class="info-label">Waktu</span>
+					<span class="info-label">{t('admin.waktu')}</span>
 					<span class="info-value">{formatTime(session.start_time)} {session.end_time ? `- ${session.end_time}` : ''}</span>
 				</div>
 				<div class="info-item">
@@ -239,11 +240,11 @@
 					<span class="info-value">{session.class_name || '—'}</span>
 				</div>
 				<div class="info-item">
-					<span class="info-label">Mata Kuliah</span>
+					<span class="info-label">{t('admin.mata_kuliah')}</span>
 					<span class="info-value">{session.subject_name || '—'}</span>
 				</div>
 				<div class="info-item">
-					<span class="info-label">Tahun Ajaran</span>
+					<span class="info-label">{t('admin.tahun_ajaran')}</span>
 					<span class="info-value">{session.academic_year} / Semester {session.semester}</span>
 				</div>
 				<div class="info-item">
@@ -252,7 +253,7 @@
 				</div>
 				{#if session.notes}
 					<div class="info-item info-item--full">
-						<span class="info-label">Catatan</span>
+						<span class="info-label">{t('admin.catatan')}</span>
 						<span class="info-value">{session.notes}</span>
 					</div>
 				{/if}
@@ -300,11 +301,11 @@
 								<input id="manual-student" type="text" bind:value={manualStudentId} placeholder="ID siswa..." />
 							</div>
 							<div class="form-group">
-								<label for="manual-status">Status</label>
+								<label for="manual-status">{t('common.status')}</label>
 								<select id="manual-status" bind:value={manualStatus}>
-									<option value="present">Hadir</option>
-									<option value="late">Terlambat</option>
-									<option value="absent">Absen</option>
+									<option value="present">{t('admin.hadir')}</option>
+									<option value="late">{t('admin.terlambat')}</option>
+									<option value="absent">{t('admin.absen')}</option>
 									<option value="excused">Izin/Sakit</option>
 								</select>
 							</div>

@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let classId = $state('');
 	let classInfo: any = $state(null);
@@ -94,7 +95,7 @@
 	}
 
 	function esc(s: string): string {
-		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
 	}
 
 	const columns: ColumnDef<any, any>[] = [
@@ -149,16 +150,16 @@
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat data rapor..." />
+		<Loading message={t('common.loading')} />
 	{:else if error && !classInfo}
 		<div class="error-state">{error}</div>
 	{:else}
 		<div class="page-header">
 			<div>
 				<div class="breadcrumb">
-					<a href="/guru/rapor">← Daftar Kelas</a>
+					<a href="/guru/rapor">← {t('rapor.daftar_kelas')}</a>
 				</div>
-				<h1>📄 Rapor Siswa</h1>
+				<h1>{t('rapor.rapor_siswa')}</h1>
 				<p class="meta">
 					{classInfo?.name || classInfo?.class_name}
 					{#if classInfo?.grade_level_name}
@@ -169,17 +170,17 @@
 			</div>
 			<div class="header-actions">
 				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-					<option value="1">Semester Ganjil</option>
-					<option value="2">Semester Genap</option>
+					<option value="1">{t('nilai.semester_ganjil')}</option>
+					<option value="2">{t('nilai.semester_genap')}</option>
 				</select>
 				<button class="btn-secondary" onclick={generateAll} disabled={generating || students.length === 0}>
-					{generating ? '⏳ Generating...' : '⚡ Generate All'}
+					{generating ? t('rapor.generating') : t('rapor.generate_all')}
 				</button>
 			</div>
 		</div>
 
 		{#if students.length === 0}
-			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." description="Tambahkan siswa terlebih dahulu pada menu struktur kelas." />
+			<EmptyState icon="👨‍🎓" message={t('rapor.belum_ada_siswa')} description={t('rapor.belum_ada_siswa_desc')} />
 		{:else}
 			<DataTable
 				{columns}
@@ -187,7 +188,7 @@
 				pageSize={200}
 				showSearch={false}
 				showPagination={false}
-				emptyMessage="Belum ada siswa"
+				emptyMessage={t('rapor.belum_ada_siswa_tabel')}
 			/>
 		{/if}
 	{/if}

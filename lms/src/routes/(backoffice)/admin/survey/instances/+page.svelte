@@ -133,10 +133,11 @@
 	function templateName(id: string): string {
 		return templates.find((t: any) => t.id === id)?.name || id.slice(0, 8) + '...';
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Survey Instances — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -166,7 +167,7 @@
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
 		</div>
 	{/if}
 
@@ -217,13 +218,13 @@
 							<input class="form-input" type="date" bind:value={formStartDate} />
 						</div>
 						<div>
-							<label class="form-label">Selesai</label>
+							<label class="form-label">{t('admin.selesai')}</label>
 							<input class="form-input" type="date" bind:value={formEndDate} />
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>Batal</button>
+					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
 					<button class="btn-primary" onclick={saveInstance} disabled={saving || !formTitle || !formTemplateId}>
 						{saving ? 'Menyimpan...' : 'Buat Survei'}
 					</button>
@@ -270,7 +271,7 @@
 							<button class="btn-small btn-primary-small" onclick={() => updateStatus(inst.id, 'active')}>Aktifkan</button>
 						{/if}
 						{#if inst.status === 'active'}
-							<button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>Tutup</button>
+							<button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>{t('common.close')}</button>
 							<a href={`/api/admin/survey/instances/${inst.id}/analytics`} target="_blank" class="btn-small">Analytics</a>
 						{/if}
 						{#if inst.status === 'closed'}

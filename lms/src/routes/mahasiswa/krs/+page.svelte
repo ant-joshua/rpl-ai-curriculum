@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	let kelasList: any[] = $state([]);
 	let selectedKelas: any[] = $state([]);
@@ -70,7 +71,7 @@
 
 	const columns: ColumnDef<any, any>[] = [
 		{
-			header: 'Pilih',
+			header: t('mahasiswa.col_select'),
 			accessorKey: '_selected',
 			cell: ({ row }) => {
 				const k = row.original;
@@ -78,7 +79,7 @@
 			}
 		},
 		{
-			header: 'Kode',
+			header: t('mahasiswa.col_code'),
 			accessorKey: 'kode',
 			cell: ({ getValue }) => {
 				const v = getValue();
@@ -86,7 +87,7 @@
 			}
 		},
 		{
-			header: 'Mata Kuliah',
+			header: t('mahasiswa.col_course'),
 			accessorKey: 'nama',
 			cell: ({ row }) => {
 				const k = row.original;
@@ -94,16 +95,16 @@
 			}
 		},
 		{
-			header: 'SKS',
+			header: t('mahasiswa.col_sks'),
 			accessorKey: '_skss',
 			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600">${getValue()}</span>`
 		},
-		{ header: 'Dosen', accessorKey: 'dosen_name' },
+		{ header: t('mahasiswa.col_lecturer'), accessorKey: 'dosen_name' },
 		{
-			header: 'Jadwal',
+			header: t('mahasiswa.col_schedule'),
 			accessorKey: '_schedule',
 		},
-		{ header: 'Ruangan', accessorKey: 'ruangan' },
+		{ header: t('mahasiswa.col_room'), accessorKey: 'ruangan' },
 	];
 
 	function handleTableChange(e: Event) {

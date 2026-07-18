@@ -234,10 +234,11 @@
 			}
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Manajemen Pendaftaran — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -282,9 +283,9 @@
 		<!-- Pagination -->
 		{#if totalPages > 1}
 			<div class="pagination">
-				<Button variant="secondary" size="sm" disabled={page <= 1} onclick={() => changePage(-1)}>← Sebelumnya</Button>
+				<Button variant="secondary" size="sm" disabled={page <= 1} onclick={() => changePage(-1)}>{t('admin.prev')}</Button>
 				<span class="page-info">Halaman {page} dari {totalPages}</span>
-				<Button variant="secondary" size="sm" disabled={page >= totalPages} onclick={() => changePage(1)}>Berikutnya →</Button>
+				<Button variant="secondary" size="sm" disabled={page >= totalPages} onclick={() => changePage(1)}>{t('admin.berikutnya')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -325,7 +326,7 @@
 				{/if}
 			</div>
 			<div class="modal-footer">
-				<Button variant="ghost" onclick={closeAddModal}>Batal</Button>
+				<Button variant="ghost" onclick={closeAddModal}>{t('common.cancel')}</Button>
 				<Button onclick={handleAddEnrollment} disabled={submitting || !addUserId || !addOfferingId}>
 					{submitting ? 'Mendaftarkan...' : 'Daftarkan'}
 				</Button>

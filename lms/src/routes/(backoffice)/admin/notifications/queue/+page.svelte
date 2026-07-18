@@ -133,10 +133,11 @@
 			cell: ({ getValue }) => formatDate(getValue() as string)
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Notification Queue — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -156,19 +157,19 @@
 	<!-- Filters -->
 	<div class="filter-bar">
 		<span class="filter-label">Status:</span>
-		<button class="filter-btn" class:active={statusFilter === ''} onclick={() => { statusFilter = ''; pagination.page = 1; loadQueue(); }}>Semua</button>
+		<button class="filter-btn" class:active={statusFilter === ''} onclick={() => { statusFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</button>
 		{#each statuses as s}
 			<button class="filter-btn" class:active={statusFilter === s} onclick={() => { statusFilter = s; pagination.page = 1; loadQueue(); }}>{s}</button>
 		{/each}
 		<span class="filter-label" style="margin-left:12px">Channel:</span>
-		<button class="filter-btn" class:active={channelFilter === ''} onclick={() => { channelFilter = ''; pagination.page = 1; loadQueue(); }}>Semua</button>
+		<button class="filter-btn" class:active={channelFilter === ''} onclick={() => { channelFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</button>
 		<button class="filter-btn" class:active={channelFilter === 'in_app'} onclick={() => { channelFilter = 'in_app'; pagination.page = 1; loadQueue(); }}>In-App</button>
 		<button class="filter-btn" class:active={channelFilter === 'email'} onclick={() => { channelFilter = 'email'; pagination.page = 1; loadQueue(); }}>Email</button>
 		<button class="filter-btn" class:active={channelFilter === 'whatsapp'} onclick={() => { channelFilter = 'whatsapp'; pagination.page = 1; loadQueue(); }}>WhatsApp</button>
 	</div>
 
 	{#if error}
-		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadQueue}>Coba Lagi</button></div>
+		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadQueue}>{t('common.retry')}</button></div>
 	{/if}
 
 	{#if loading}

@@ -117,6 +117,7 @@
 	}
 
 	onMount(loadFeeStructures);
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="pg-page">
@@ -147,7 +148,7 @@
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
-			<button class="pg-btn pg-btn-ghost" onclick={loadFeeStructures}>Coba Lagi</button>
+			<button class="pg-btn pg-btn-ghost" onclick={loadFeeStructures}>{t('common.retry')}</button>
 		</div>
 	{:else if feeStructures.length === 0}
 		<div class="pg-empty">
@@ -163,11 +164,11 @@
 						<div>
 							<span class="pg-badge pg-badge-type">{feeTypeLabel(fee.fee_type)}</span>
 							{#if fee.is_active === 0}
-								<span class="pg-badge pg-badge-off">Non-aktif</span>
+								<span class="pg-badge pg-badge-off">{t('common.inactive')}</span>
 							{/if}
 						</div>
 						<div class="pg-fee-actions">
-							<button class="pg-btn-icon" onclick={() => openEdit(fee)} title="Edit">
+							<button class="pg-btn-icon" onclick={() => openEdit(fee)} title={t('common.edit')}>
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 							</button>
 						</div>
@@ -210,7 +211,7 @@
 							<input class="pg-input" bind:value={formName} placeholder="Contoh: SPP Semester 1" />
 						</div>
 						<div class="pg-field">
-							<label class="pg-label">Kode</label>
+							<label class="pg-label">{t('common.code')}</label>
 							<input class="pg-input" bind:value={formCode} placeholder="Contoh: SPP-01" />
 						</div>
 						<div class="pg-field">
@@ -230,15 +231,15 @@
 							<input class="pg-input" bind:value={formAcademicYear} placeholder="Contoh: 2025/2026" />
 						</div>
 						<div class="pg-field">
-							<label class="pg-label">Semester</label>
+							<label class="pg-label">{t('admin.semester')}</label>
 							<input class="pg-input" bind:value={formSemester} placeholder="Contoh: 1" />
 						</div>
 						<div class="pg-field pg-field-full">
-							<label class="pg-label">Deskripsi</label>
+							<label class="pg-label">{t('common.description')}</label>
 							<input class="pg-input" bind:value={formDescription} placeholder="Deskripsi opsional" />
 						</div>
 						<div class="pg-field pg-field-full">
-							<label class="pg-label">Status</label>
+							<label class="pg-label">{t('common.status')}</label>
 							<label class="pg-toggle-label">
 								<input type="checkbox" bind:checked={formIsActive} class="pg-toggle-input" />
 								<span>{formIsActive ? 'Aktif' : 'Non-aktif'}</span>
@@ -247,7 +248,7 @@
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>Batal</button>
+					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
 					<button class="pg-btn pg-btn-primary" onclick={submitFee} disabled={saving || !formName || formAmount <= 0}>
 						{saving ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Tambah Fee')}
 					</button>

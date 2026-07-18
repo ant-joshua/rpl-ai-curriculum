@@ -52,10 +52,11 @@
 			cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.joined_at || row.original.joinedAt ? new Date(row.original.joined_at || row.original.joinedAt).toLocaleDateString() : '—'}</span>`
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>{kelas?.name || 'Detail Kelas'} — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -83,7 +84,7 @@
 
 		<div class="info-grid">
 			<div class="info-card">
-				<span class="info-label">Wali Kelas</span>
+				<span class="info-label">{t('admin.wali_kelas')}</span>
 				<span class="info-value">{kelas.homeroom_teacher_name || kelas.homeroomTeacherName || 'Belum ditentukan'}</span>
 			</div>
 			<div class="info-card">
@@ -95,7 +96,7 @@
 				<span class="info-value">{kelas.academic_period_name || kelas.academicPeriodName || '—'}</span>
 			</div>
 			<div class="info-card">
-				<span class="info-label">Status</span>
+				<span class="info-label">{t('common.status')}</span>
 				<span class="info-value" class:active={kelas.is_active !== false}>{(kelas.is_active !== false) ? 'Aktif' : 'Nonaktif'}</span>
 			</div>
 		</div>

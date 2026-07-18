@@ -187,10 +187,11 @@
 			formSlug = generateSlug(formTitle);
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Kursus — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="courses-page">
@@ -211,7 +212,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<Button onclick={loadCourses}>Coba Lagi</Button>
+			<Button onclick={loadCourses}>{t('common.retry')}</Button>
 		</div>
 	{:else if courses.length === 0}
 		<EmptyState icon="📚" title="Belum ada kursus" description="Buat kursus pertama" />
@@ -238,7 +239,7 @@
 						</div>
 					</div>
 					<div class="course-actions">
-						<Button size="sm" variant="secondary" href="/admin/courses/{course.slug}">Kelola</Button>
+						<Button size="sm" variant="secondary" href="/admin/courses/{course.slug}">{t('admin.kelola')}</Button>
 						<Button size="sm" variant="ghost" onclick={() => openEdit(course)}>✏️</Button>
 						<Button size="sm" variant="danger" onclick={() => deleteCourse(course)} loading={deletingId === course.id}>🗑️</Button>
 					</div>
@@ -248,9 +249,9 @@
 
 		{#if totalPages > 1}
 			<div class="pagination">
-				<Button size="sm" onclick={prevPage} disabled={page <= 1}>← Sebelumnya</Button>
+				<Button size="sm" onclick={prevPage} disabled={page <= 1}>{t('admin.prev')}</Button>
 				<span class="page-info">Hal {page}/{totalPages} ({total})</span>
-				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>Selanjutnya →</Button>
+				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>{t('admin.next_page')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -277,7 +278,7 @@
 		<Textarea label="Deskripsi Pendek" bind:value={formShortDesc} rows={2} placeholder="Ringkasan singkat" />
 		<Textarea label="Deskripsi" bind:value={formDescription} rows={4} placeholder="Deskripsi lengkap" />
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showFormModal = false} disabled={formSaving}>Batal</Button>
+			<Button variant="secondary" onclick={() => showFormModal = false} disabled={formSaving}>{t('common.cancel')}</Button>
 			<Button onclick={saveCourse} loading={formSaving}>{editingCourse ? 'Simpan' : 'Buat'}</Button>
 		{/snippet}
 	</Modal>

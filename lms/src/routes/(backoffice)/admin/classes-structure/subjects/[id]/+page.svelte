@@ -134,10 +134,11 @@
 			cell: ({ row }) => `<button class="btn-danger-icon" onclick="window.__deleteKD('${row.original.id}')" title="Hapus KD">✕</button>`
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>{mapel?.name || 'Detail Mapel'} — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -166,7 +167,7 @@
 
 		<div class="info-grid">
 			<div class="info-card">
-				<span class="info-label">Tingkat</span>
+				<span class="info-label">{t('admin.tingkat')}</span>
 				<span class="info-value">{mapel.grade_level_name || mapel.gradeLevelName || 'Semua'}</span>
 			</div>
 			<div class="info-card">
@@ -205,7 +206,7 @@
 		<!-- Mapel Description -->
 		{#if mapel.description}
 			<div class="card card-desc">
-				<h2>Deskripsi</h2>
+				<h2>{t('common.description')}</h2>
 				<p>{mapel.description}</p>
 			</div>
 		{/if}
@@ -229,7 +230,7 @@
 						<input id="kd-code" type="text" bind:value={formCode} placeholder="Cth: 3.1" />
 					</div>
 					<div class="field">
-						<label for="kd-semester">Semester</label>
+						<label for="kd-semester">{t('admin.semester')}</label>
 						<select id="kd-semester" bind:value={formSemester}>
 							<option value={1}>Semester 1 (Ganjil)</option>
 							<option value={2}>Semester 2 (Genap)</option>
@@ -261,7 +262,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan KD'}
 				</button>

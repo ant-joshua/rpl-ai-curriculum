@@ -112,7 +112,7 @@
 			cell: ({ getValue }) => {
 				const active = getValue() as boolean;
 				if (active) {
-					return '<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(16,185,129,0.1);color:#10b981">Aktif</span>';
+					return '<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(16,185,129,0.1);color:#10b981">'+t('common.active')+'</span>';
 				}
 				return '<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(98,102,109,0.1);color:var(--text-quaternary)">Tidak Aktif</span>';
 			}
@@ -131,10 +131,11 @@
 	$effect(() => {
 		(window as any).__semSetActive = setActive;
 	});
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Semester — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -154,7 +155,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if semesterList.length === 0}
 		<div class="empty-state">
@@ -188,7 +189,7 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="sem-name">Nama Semester</label>
+					<label for="sem-name">{t('admin.nama_semester')}</label>
 					<input id="sem-name" type="text" bind:value={formName} placeholder="Cth: Semester Ganjil 2025/2026" />
 				</div>
 				<div class="field-row">
@@ -197,20 +198,20 @@
 						<input id="sem-code" type="text" bind:value={formCode} placeholder="GANJIL-2025" />
 					</div>
 					<div class="field">
-						<label for="sem-tahun">Tahun Ajaran</label>
+						<label for="sem-tahun">{t('admin.tahun_ajaran')}</label>
 						<input id="sem-tahun" type="text" bind:value={formTahunAjaran} placeholder="2025/2026" />
 					</div>
 					<div class="field">
-						<label for="sem-value">Semester</label>
+						<label for="sem-value">{t('admin.semester')}</label>
 						<select id="sem-value" bind:value={formSemester}>
-							<option value="1">Ganjil</option>
-							<option value="2">Genap</option>
+							<option value="1">{t('admin.ganjil')}</option>
+							<option value="2">{t('admin.genap')}</option>
 						</select>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

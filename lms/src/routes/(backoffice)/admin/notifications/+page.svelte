@@ -94,10 +94,11 @@ const queueColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Notifications — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -113,7 +114,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -138,7 +139,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 				{:else}
 					<div class="table-container">
 						<table>
-							<thead><tr><th>Channel</th><th>Status</th><th>Waktu</th></tr></thead>
+							<thead><tr><th>{t('admin.channel')}</th><th>{t('common.status')}</th><th>Waktu</th></tr></thead>
 							<tbody>
 								{#each recentQueue as n}
 									<tr>
@@ -191,7 +192,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 						<div class="result-msg">{broadcastResult}</div>
 					{/if}
 					<div class="form-row">
-						<label class="form-label">Tipe</label>
+						<label class="form-label">{t('admin.tipe')}</label>
 						<select class="form-input" bind:value={broadcastType}>
 							{#each types as t}
 								<option value={t}>{t}</option>
@@ -199,7 +200,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 						</select>
 					</div>
 					<div class="form-row">
-						<label class="form-label">Channel</label>
+						<label class="form-label">{t('admin.channel')}</label>
 						<select class="form-input" bind:value={broadcastChannel}>
 							<option value="in_app">In-App</option>
 							<option value="email">Email</option>
@@ -216,7 +217,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={() => showBroadcast = false}>Batal</button>
+					<button class="btn-secondary" onclick={() => showBroadcast = false}>{t('common.cancel')}</button>
 					<button class="btn-primary" onclick={sendBroadcast} disabled={broadcasting || !broadcastTitle}>
 						{broadcasting ? 'Mengirim...' : 'Kirim Broadcast'}
 					</button>

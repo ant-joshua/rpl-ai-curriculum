@@ -246,10 +246,11 @@
 			previewFeedback = { correct: true, explanation: 'Jawaban coding diperiksa oleh sistem.' };
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>{q ? q.question.slice(0, 50) : 'Soal'} — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -365,7 +366,7 @@
 						{/if}
 
 						<div class="form-actions">
-							<Button variant="secondary" onclick={cancelEdit}>Batal</Button>
+							<Button variant="secondary" onclick={cancelEdit}>{t('common.cancel')}</Button>
 							<Button onclick={submitForm} disabled={submitting} loading={submitting}>Simpan Perubahan</Button>
 						</div>
 					</div>
@@ -381,19 +382,19 @@
 
 						<div class="detail-row">
 							<div class="detail-field">
-								<label class="detail-label">Tipe</label>
+								<label class="detail-label">{t('admin.tipe')}</label>
 								<Badge variant="info">{typeLabelMap[q.type] || capitalize(q.type)}</Badge>
 							</div>
 							<div class="detail-field">
-								<label class="detail-label">Tingkat</label>
+								<label class="detail-label">{t('admin.tingkat')}</label>
 								<Badge variant={difficultyBadgeMap[q.difficulty] || 'default'}>{capitalize(q.difficulty)}</Badge>
 							</div>
 							<div class="detail-field">
-								<label class="detail-label">Status</label>
+								<label class="detail-label">{t('common.status')}</label>
 								<Badge variant={statusBadgeMap[q.status] || 'default'}>{capitalize(q.status)}</Badge>
 							</div>
 							<div class="detail-field">
-								<label class="detail-label">Nilai</label>
+								<label class="detail-label">{t('admin.nilai')}</label>
 								<span class="detail-value">{q.points}</span>
 							</div>
 						</div>
@@ -411,7 +412,7 @@
 
 						{#if q.type === 'multiple_choice' && q.options}
 							<div class="detail-field">
-								<label class="detail-label">Opsi Jawaban</label>
+								<label class="detail-label">{t('admin.opsi_jawaban')}</label>
 								<ol class="options-list">
 									{#each parseOptions(q.options) as opt, i}
 										<li class:correct-answer={i === 0}>{opt}</li>
@@ -443,7 +444,7 @@
 
 						<div class="detail-row timeline">
 							<div class="detail-field">
-								<label class="detail-label">Dibuat</label>
+								<label class="detail-label">{t('admin.dibuat')}</label>
 								<span class="detail-value">{formatDate(q.created_at)}</span>
 							</div>
 							<div class="detail-field">
@@ -464,7 +465,7 @@
 		<p>Soal yang dihapus tidak dapat dikembalikan.</p>
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => deleteConfirm = false}>Batal</Button>
+			<Button variant="secondary" onclick={() => deleteConfirm = false}>{t('common.cancel')}</Button>
 			<Button variant="danger" onclick={doDelete}>🗑️ Hapus</Button>
 		{/snippet}
 	</Modal>

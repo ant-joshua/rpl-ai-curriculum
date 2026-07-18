@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { Loading, Badge, Button, DataTable } from '$lib/components/ui/index.js';
 import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let classId = $state('');
 	let studentId = $state('');
@@ -138,26 +139,26 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat rapor..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if rapor}
 		<!-- Action Bar (no-print) -->
 		<div class="action-bar no-print">
 			<div class="breadcrumb">
-				<a href="/guru/rapor/{classId}">← Daftar Rapor</a>
+				<a href="/guru/rapor/{classId}">← {t('rapor.daftar')}</a>
 			</div>
 			<div class="action-bar-right">
 				<span class="status-label">
-					Status: <Badge variant={getStatusBadgeVariant(rapor.status)}>{getStatusLabel(rapor.status)}</Badge>
+					{t('common.status')}: <Badge variant={getStatusBadgeVariant(rapor.status)}>{getStatusLabel(rapor.status)}</Badge>
 				</span>
 				{#if rapor.status === 'draft'}
-					<Button onclick={finalizeRapor} variant="primary" size="sm">🔒 Finalize</Button>
+					<Button onclick={finalizeRapor} variant="primary" size="sm">{t('rapor.finalize')}</Button>
 				{/if}
 				{#if rapor.status !== 'draft'}
-					<Button onclick={unlockRapor} variant="secondary" size="sm">🔓 Unlock</Button>
+					<Button onclick={unlockRapor} variant="secondary" size="sm">{t('rapor.unlock')}</Button>
 				{/if}
-				<Button onclick={handlePrint} variant="secondary" size="sm">🖨 Print</Button>
+				<Button onclick={handlePrint} variant="secondary" size="sm">{t('common.print')}</Button>
 			</div>
 		</div>
 
@@ -170,40 +171,40 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<span>RPL AI Curriculum</span>
 			</div>
 			<div class="print-title">
-				<h2>LAPORAN HASIL BELAJAR</h2>
-				<p>Tahun Pelajaran {rapor.academic_year || rapor.tahun_ajaran || '-'}</p>
+				<h2>{t('rapor.laporan')}</h2>
+				<p>{t('rapor.tahun_pelajaran')} {rapor.academic_year || rapor.tahun_ajaran || '-'}</p>
 			</div>
 		</div>
 
 		<!-- Student Identity -->
 		<div class="identity-section">
 			<div class="identity-row">
-				<span class="identity-label">Nama Siswa</span>
+				<span class="identity-label">{t('rapor.nama_siswa')}</span>
 				<span class="identity-value">: {studentInfo?.name || studentInfo?.display_name || '-'}</span>
 			</div>
 			<div class="identity-row">
-				<span class="identity-label">Kelas</span>
+				<span class="identity-label">{t('rapor.kelas')}</span>
 				<span class="identity-value">: {classInfo?.name || classInfo?.class_name || '-'}</span>
 			</div>
 			<div class="identity-row">
-				<span class="identity-label">Semester</span>
-				<span class="identity-value">: {selectedSemester === '1' ? 'Ganjil' : 'Genap'}</span>
+				<span class="identity-label">{t('rapor.semester')}</span>
+				<span class="identity-value">: {selectedSemester === '1' ? t('rapor.ganjil') : t('rapor.genap')}</span>
 			</div>
 		</div>
 
 		<!-- A. PENGETAHUAN -->
 		<div class="section">
-			<h3 class="section-title">A. PENGETAHUAN</h3>
+			<h3 class="section-title">{t('rapor.pengetahuan')}</h3>
 			<div class="table-wrapper">
 				<table class="grade-detail-table">
 					<thead>
 						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Mata Pelajaran</th>
-							<th class="score-col">NA</th>
-							<th class="pred-col">Predikat</th>
-							<th class="score-col">KKM</th>
-							<th class="desc-col">Keterangan</th>
+							<th class="no-col">{t('rapor.no')}</th>
+							<th class="mapel-col">{t('rapor.mapel')}</th>
+							<th class="score-col">{t('rapor.na')}</th>
+							<th class="pred-col">{t('rapor.predikat')}</th>
+							<th class="score-col">{t('rapor.kkm')}</th>
+							<th class="desc-col">{t('rapor.keterangan')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -225,7 +226,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						{/each}
 						{#if !(rapor.subject_grades || []).some((s: any) => s.na_pengetahuan != null)}
 							<tr>
-								<td class="empty-col" colspan="6">Belum ada data pengetahuan</td>
+								<td class="empty-col" colspan="6">{t('rapor.belum_ada_pengetahuan')}</td>
 							</tr>
 						{/if}
 					</tbody>
@@ -235,17 +236,17 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- B. KETERAMPILAN -->
 		<div class="section">
-			<h3 class="section-title">B. KETERAMPILAN</h3>
+			<h3 class="section-title">{t('rapor.keterampilan')}</h3>
 			<div class="table-wrapper">
 				<table class="grade-detail-table">
 					<thead>
 						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Mata Pelajaran</th>
-							<th class="score-col">NA</th>
-							<th class="pred-col">Predikat</th>
-							<th class="score-col">KKM</th>
-							<th class="desc-col">Keterangan</th>
+							<th class="no-col">{t('rapor.no')}</th>
+							<th class="mapel-col">{t('rapor.mapel')}</th>
+							<th class="score-col">{t('rapor.na')}</th>
+							<th class="pred-col">{t('rapor.predikat')}</th>
+							<th class="score-col">{t('rapor.kkm')}</th>
+							<th class="desc-col">{t('rapor.keterangan')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -267,7 +268,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						{/each}
 						{#if !(rapor.subject_grades || []).some((s: any) => s.na_keterampilan != null)}
 							<tr>
-								<td class="empty-col" colspan="6">Belum ada data keterampilan</td>
+								<td class="empty-col" colspan="6">{t('rapor.belum_ada_keterampilan')}</td>
 							</tr>
 						{/if}
 					</tbody>
@@ -277,19 +278,19 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- C. SIKAP -->
 		<div class="section">
-			<h3 class="section-title">C. SIKAP</h3>
+			<h3 class="section-title">{t('rapor.sikap')}</h3>
 			<div class="table-wrapper">
 				<table class="sikap-table">
 					<thead>
 						<tr>
-							<th class="aspek-col">Aspek</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col-wide">Deskripsi</th>
+							<th class="aspek-col">{t('rapor.aspek')}</th>
+							<th class="pred-col">{t('rapor.predikat')}</th>
+							<th class="desc-col-wide">{t('rapor.deskripsi')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td class="aspek-col">Spiritual</td>
+							<td class="aspek-col">{t('rapor.spiritual')}</td>
 							<td class="pred-col">
 								<span class="predikat" style="color: {predikatColor(rapor.attitude_spiritual)}">
 									{rapor.attitude_spiritual || '-'}
@@ -298,7 +299,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<td class="desc-col-wide">{rapor.attitude_spiritual_desc || '-'}</td>
 						</tr>
 						<tr>
-							<td class="aspek-col">Sosial</td>
+							<td class="aspek-col">{t('rapor.sosial')}</td>
 							<td class="pred-col">
 								<span class="predikat" style="color: {predikatColor(rapor.attitude_social)}">
 									{rapor.attitude_social || '-'}
@@ -313,15 +314,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- D. EKSTRAKURIKULER -->
 		<div class="section">
-			<h3 class="section-title">D. EKSTRAKURIKULER</h3>
+			<h3 class="section-title">{t('rapor.ekstrakurikuler')}</h3>
 			<div class="table-wrapper">
 				<table class="ekstra-table">
 					<thead>
 						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Kegiatan</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col-wide">Keterangan</th>
+							<th class="no-col">{t('rapor.no')}</th>
+							<th class="mapel-col">{t('rapor.kegiatan')}</th>
+							<th class="pred-col">{t('rapor.predikat')}</th>
+							<th class="desc-col-wide">{t('rapor.keterangan')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -339,7 +340,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						{/each}
 						{#if !(rapor.extracurriculars || []).length}
 							<tr>
-								<td class="empty-col" colspan="4">Tidak ada data ekstrakurikuler</td>
+								<td class="empty-col" colspan="4">{t('rapor.tidak_ada_ekstra')}</td>
 							</tr>
 						{/if}
 					</tbody>
@@ -349,18 +350,18 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- E. ABSENSI -->
 		<div class="section">
-			<h3 class="section-title">E. ABSENSI</h3>
+			<h3 class="section-title">{t('rapor.absensi')}</h3>
 			<div class="absensi-grid">
 				<div class="absensi-item">
-					<span class="absensi-label">Sakit</span>
+					<span class="absensi-label">{t('rapor.sakit')}</span>
 					<span class="absensi-value">{rapor.attendance_sick ?? 0}</span>
 				</div>
 				<div class="absensi-item">
-					<span class="absensi-label">Izin</span>
+					<span class="absensi-label">{t('rapor.izin')}</span>
 					<span class="absensi-value">{rapor.attendance_permit ?? 0}</span>
 				</div>
 				<div class="absensi-item">
-					<span class="absensi-label">Alpha</span>
+					<span class="absensi-label">{t('rapor.alpha')}</span>
 					<span class="absensi-value">{rapor.attendance_absent ?? 0}</span>
 				</div>
 			</div>
@@ -368,17 +369,17 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- F. CATATAN WALI KELAS -->
 		<div class="section">
-			<h3 class="section-title">F. CATATAN WALI KELAS</h3>
+			<h3 class="section-title">{t('rapor.catatan_wali')}</h3>
 			{#if rapor.status === 'draft'}
 				<textarea
 					class="notes-textarea"
 					bind:value={homeroomNotes}
-					placeholder="Catatan wali kelas..."
+					placeholder={t('rapor.catatan_placeholder')}
 					rows="4"
 				></textarea>
 				<div class="notes-actions">
 					<Button onclick={saveNotes} disabled={savingNote} variant="secondary" size="sm">
-						{savingNote ? '⏳ Menyimpan...' : '💾 Simpan Catatan'}
+						{savingNote ? t('nilai.menyimpan') : t('rapor.simpan_catatan')}
 					</Button>
 				</div>
 			{:else}
@@ -389,18 +390,18 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<!-- Signature Area (print only) -->
 		<div class="signature-area">
 			<div class="signature-box">
-				<p>Mengetahui,</p>
-				<p class="signature-title">Kepala Sekolah</p>
+				<p>{t('rapor.mengetahui')}</p>
+				<p class="signature-title">{t('rapor.kepala_sekolah')}</p>
 				<div class="signature-space"></div>
 				<p class="signature-name">_________________________</p>
-				<p class="signature-nip">NIP. ____________________</p>
+				<p class="signature-nip">{t('rapor.nip')}</p>
 			</div>
 			<div class="signature-box">
 				<p>{classInfo?.city || ''}, {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-				<p class="signature-title">Wali Kelas</p>
+				<p class="signature-title">{t('rapor.wali_kelas')}</p>
 				<div class="signature-space"></div>
 				<p class="signature-name">{classInfo?.homeroom_teacher_name || '_________________________'}</p>
-				<p class="signature-nip">NIP. ____________________</p>
+				<p class="signature-nip">{t('rapor.nip')}</p>
 			</div>
 		</div>
 	{/if}

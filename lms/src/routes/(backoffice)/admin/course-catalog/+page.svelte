@@ -150,10 +150,11 @@
 			cell: ({ getValue }) => `<a href="/admin/course-catalog/${getValue()}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">Detail</a>`
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Katalog Mata Kuliah — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -183,7 +184,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if matkulList.length === 0}
 		<div class="empty-state">
@@ -218,21 +219,21 @@
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field-row">
 					<div class="field">
-						<label for="mk-kode">Kode MK</label>
+						<label for="mk-kode">{t('admin.kode')}</label>
 						<input id="mk-kode" type="text" bind:value={formKode} placeholder="Cth: IF-101" />
 					</div>
 					<div class="field">
-						<label for="mk-sks">SKS</label>
+						<label for="mk-sks">{t('admin.sks')}</label>
 						<input id="mk-sks" type="number" bind:value={formSks} min="1" max="24" />
 					</div>
 				</div>
 				<div class="field">
-					<label for="mk-name">Nama Mata Kuliah</label>
+					<label for="mk-name">{t('admin.mata_kuliah')}</label>
 					<input id="mk-name" type="text" bind:value={formName} placeholder="Cth: Algoritma & Pemrograman" />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="mk-prodi">Program Studi</label>
+						<label for="mk-prodi">{t('admin.program_studi')}</label>
 						<select id="mk-prodi" bind:value={formProdiId}>
 							<option value="">— Pilih Prodi —</option>
 							{#each prodiList as p}
@@ -241,7 +242,7 @@
 						</select>
 					</div>
 					<div class="field">
-						<label for="mk-semester">Semester</label>
+						<label for="mk-semester">{t('admin.semester')}</label>
 						<select id="mk-semester" bind:value={formSemester}>
 							<option value="1">Semester 1</option>
 							<option value="2">Semester 2</option>
@@ -254,10 +255,10 @@
 						</select>
 					</div>
 					<div class="field">
-						<label for="mk-sifat">Sifat</label>
+						<label for="mk-sifat">{t('admin.sifat')}</label>
 						<select id="mk-sifat" bind:value={formSifat}>
-							<option value="wajib">Wajib</option>
-							<option value="pilihan">Pilihan</option>
+							<option value="wajib">{t('admin.wajib')}</option>
+							<option value="pilihan">{t('admin.pilihan')}</option>
 							<option value="wajib_peminatan">Wajib Peminatan</option>
 						</select>
 					</div>
@@ -268,7 +269,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

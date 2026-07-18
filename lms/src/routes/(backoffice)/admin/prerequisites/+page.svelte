@@ -115,10 +115,11 @@
 			error = e instanceof Error ? e.message : 'Network error.';
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Prerequisites — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="prereqs-page">
@@ -183,7 +184,7 @@
 						<TableHead>Prerequisite Lesson</TableHead>
 						<TableHead></TableHead>
 						<TableHead>Dependent Lesson</TableHead>
-						<TableHead>Actions</TableHead>
+						<TableHead>{t('common.action')}</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>

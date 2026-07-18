@@ -206,6 +206,7 @@
 		if (!dueDate || !sub.submitted_at) return false;
 		return new Date(sub.submitted_at) > new Date(dueDate + 'Z');
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -216,7 +217,7 @@
 	<Loading />
 {:else if error}
 	<EmptyState icon="⚠️" title="Error" description={error}>
-		<Button onclick={loadCourseDetail}>Retry</Button>
+		<Button onclick={loadCourseDetail}>{t('common.retry')}</Button>
 	</EmptyState>
 {:else if course}
 	<div class="course-page">
@@ -262,14 +263,14 @@
 						<h3>Course Details</h3>
 						<div class="info-row"><span>Course</span><span>{course.course_title}</span></div>
 						<div class="info-row"><span>Code</span><span>{course.code || '-'}</span></div>
-						<div class="info-row"><span>Status</span><Badge variant={course.status === 'active' ? 'success' : course.status === 'completed' ? 'info' : course.status === 'archived' ? 'default' : 'warning'}>{course.status}</Badge></div>
+						<div class="info-row"><span>{t('common.status')}</span><Badge variant={course.status === 'active' ? 'success' : course.status === 'completed' ? 'info' : course.status === 'archived' ? 'default' : 'warning'}>{course.status}</Badge></div>
 						<div class="info-row"><span>Start Date</span><span>{course.start_date ? formatDate(course.start_date) : '-'}</span></div>
 						<div class="info-row"><span>End Date</span><span>{course.end_date ? formatDate(course.end_date) : '-'}</span></div>
 					</div>
 					<div class="info-card">
 						<h3>Enrollment</h3>
 						<div class="info-row"><span>Active</span><span>{enrollments.filter(e => e.status === 'active').length}</span></div>
-						<div class="info-row"><span>Completed</span><span>{enrollments.filter(e => e.status === 'completed').length}</span></div>
+						<div class="info-row"><span>{t('admin.completed')}</span><span>{enrollments.filter(e => e.status === 'completed').length}</span></div>
 						<div class="info-row"><span>Dropped</span><span>{enrollments.filter(e => e.status === 'dropped').length}</span></div>
 						<div class="info-row"><span>Max Students</span><span>{course.max_students || 'Unlimited'}</span></div>
 					</div>
@@ -324,7 +325,7 @@
 										<TableHeader>
 											<TableRow>
 												<TableHead>Student</TableHead>
-												<TableHead>Status</TableHead>
+												<TableHead>{t('common.status')}</TableHead>
 												<TableHead>Submitted</TableHead>
 												<TableHead>Score</TableHead>
 												<TableHead>Feedback</TableHead>
@@ -391,9 +392,9 @@
 								<TableRow>
 									<TableHead>Name</TableHead>
 									<TableHead>Email</TableHead>
-									<TableHead>Status</TableHead>
+									<TableHead>{t('common.status')}</TableHead>
 									<TableHead>Enrolled</TableHead>
-									<TableHead>Actions</TableHead>
+									<TableHead>{t('common.action')}</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -471,7 +472,7 @@
 		{/if}
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={closeGradeModal}>Cancel</Button>
+			<Button variant="secondary" onclick={closeGradeModal}>{t('common.cancel')}</Button>
 			<Button onclick={saveGrade} disabled={savingGrade}>
 				{savingGrade ? 'Saving...' : 'Save Grade'}
 			</Button>

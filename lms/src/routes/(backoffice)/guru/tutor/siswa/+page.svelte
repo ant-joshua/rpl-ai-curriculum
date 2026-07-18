@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	type Student = {
 		id: string;
@@ -56,7 +57,7 @@
 		},
 		{
 			header: '', accessorKey: 'id', enableSorting: false,
-			cell: ({ getValue }) => `<a href="/tutor/siswa/${getValue()}" style="color:var(--accent);text-decoration:none;font-weight:500;font-size:12px">Detail →</a>`
+			cell: ({ getValue }) => `<a href="/tutor/siswa/${getValue()}" style="color:var(--accent);text-decoration:none;font-weight:500;font-size:12px">${t('common.detail')} →</a>`
 		},
 	];
 </script>
@@ -67,23 +68,23 @@
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/tutor">← Tutor Dashboard</a></div>
-		<h1>👨‍🎓 Data Siswa Privat</h1>
-		<p class="subtitle">Daftar siswa, paket, dan sisa sesi</p>
+		<div class="breadcrumb"><a href="/tutor">← {t('tutor.dashboard')}</a></div>
+		<h1>{t('tutor.data_siswa')}</h1>
+		<p class="subtitle">{t('tutor.data_siswa_desc')}</p>
 	</div>
 
 	<div class="toolbar">
-		<button class="btn btn-secondary btn-sm" onclick={loadStudents}>🔄 Refresh</button>
+		<button class="btn btn-secondary btn-sm" onclick={loadStudents}>{t('common.refresh')}</button>
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat data siswa..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if students.length === 0}
-		<EmptyState icon="👨‍🎓" title="Belum Ada Siswa" description="Belum ada siswa yang terdaftar." />
+		<EmptyState icon="👨‍🎓" title={t('tutor.belum_ada_siswa')} description={t('tutor.belum_ada_siswa_desc')} />
 	{:else}
-		<DataTable {columns} data={students} pageSize={15} showSearch={true} searchPlaceholder="Cari siswa..." />
+		<DataTable {columns} data={students} pageSize={15} showSearch={true} searchPlaceholder={t('tutor.cari_siswa')} />
 	{/if}
 </div>
 

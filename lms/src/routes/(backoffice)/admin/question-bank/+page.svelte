@@ -398,10 +398,11 @@
 			cell: (ctx: any) => formatDate(ctx.getValue()),
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Bank Soal — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -443,12 +444,12 @@
 				<thead>
 					<tr>
 						<th>Soal</th>
-						<th>Tipe</th>
-						<th>Tingkat</th>
-						<th>Status</th>
-						<th>Nilai</th>
-						<th>Dibuat</th>
-						<th>Aksi</th>
+						<th>{t('admin.tipe')}</th>
+						<th>{t('admin.tingkat')}</th>
+						<th>{t('common.status')}</th>
+						<th>{t('admin.nilai')}</th>
+						<th>{t('admin.dibuat')}</th>
+						<th>{t('common.action')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -471,8 +472,8 @@
 							<td class="cell-points">{q.points}</td>
 							<td class="cell-date">{formatDate(q.created_at)}</td>
 							<td class="cell-actions">
-								<Button variant="ghost" onclick={() => openEdit(q)} title="Edit">✏️</Button>
-								<Button variant="ghost" onclick={() => confirmDelete(q.id)} title="Hapus">🗑️</Button>
+								<Button variant="ghost" onclick={() => openEdit(q)} title={t('common.edit')}>✏️</Button>
+								<Button variant="ghost" onclick={() => confirmDelete(q.id)} title={t('common.delete')}>🗑️</Button>
 							</td>
 						</tr>
 					{/each}
@@ -483,9 +484,9 @@
 		<!-- Pagination -->
 		{#if totalPages > 1}
 			<div class="pagination">
-				<Button variant="secondary" disabled={page <= 1} onclick={() => { page--; loadData(); }}>← Prev</Button>
+				<Button variant="secondary" disabled={page <= 1} onclick={() => { page--; loadData(); }}>{t('admin.prev')}</Button>
 				<span class="page-info">Halaman {page} dari {totalPages} ({total} soal)</span>
-				<Button variant="secondary" disabled={page >= totalPages} onclick={() => { page++; loadData(); }}>Next →</Button>
+				<Button variant="secondary" disabled={page >= totalPages} onclick={() => { page++; loadData(); }}>{t('admin.next_page')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -530,7 +531,7 @@
 		{/if}
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={closeModal} disabled={submitting}>Batal</Button>
+			<Button variant="secondary" onclick={closeModal} disabled={submitting}>{t('common.cancel')}</Button>
 			<Button onclick={submitForm} disabled={submitting} loading={submitting}>
 				{editId ? 'Simpan Perubahan' : 'Simpan Soal'}
 			</Button>
@@ -561,7 +562,7 @@
 				{/each}
 			</div>
 			{#snippet footer()}
-				<Button onclick={() => showGenerateModal = false}>Tutup</Button>
+				<Button onclick={() => showGenerateModal = false}>{t('common.close')}</Button>
 			{/snippet}
 		{:else}
 			<p class="gen-desc">Pilih mata pelajaran dan atur parameter untuk generate soal otomatis menggunakan AI.</p>
@@ -581,7 +582,7 @@
 			]} bind:value={genDifficulty} />
 
 			{#snippet footer()}
-				<Button variant="secondary" onclick={() => showGenerateModal = false} disabled={genSubmitting}>Batal</Button>
+				<Button variant="secondary" onclick={() => showGenerateModal = false} disabled={genSubmitting}>{t('common.cancel')}</Button>
 				<Button onclick={doGenerate} disabled={genSubmitting} loading={genSubmitting}>
 					🤖 Generate
 				</Button>
@@ -596,7 +597,7 @@
 		<p>Soal yang dihapus tidak dapat dikembalikan.</p>
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => deleteId = null}>Batal</Button>
+			<Button variant="secondary" onclick={() => deleteId = null}>{t('common.cancel')}</Button>
 			<Button variant="danger" onclick={doDelete}>🗑️ Hapus</Button>
 		{/snippet}
 	</Modal>

@@ -4,6 +4,7 @@
 	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	type Session = {
 		id: string;
@@ -114,10 +115,10 @@
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/tutor/siswa">← Data Siswa</a></div>
+		<div class="breadcrumb"><a href="/tutor/siswa">← {t('tutor.data_siswa')}</a></div>
 
 		{#if loading}
-			<Loading message="Memuat data..." />
+			<Loading message={t('common.loading')} />
 		{:else if error}
 			<div class="error-state">{error}</div>
 		{:else if student}
@@ -125,9 +126,9 @@
 				<div class="student-info">
 					<h1>{student.name}</h1>
 					<p class="subtitle">
-						Paket: {student.package || '-'}
+						{t('tutor.paket')}: {student.package || '-'}
 						<span class="sep">·</span>
-						Sisa sesi: <strong>{student.remainingSessions}/{student.totalSessions}</strong>
+						{t('tutor.sisa_sesi')}: <strong>{student.remainingSessions}/{student.totalSessions}</strong>
 						<span class="sep">·</span>
 						<Badge variant={getStatusBadge(student.status)}>{getStatusLabel(student.status)}</Badge>
 					</p>
@@ -136,22 +137,22 @@
 
 			<div class="tabs">
 				<button class="tab" class:tab--active={activeTab === 'sessions'} onclick={() => activeTab = 'sessions'}>
-					📋 Riwayat Sesi
+					{t('tutor.riwayat_sesi')}
 				</button>
 				<button class="tab" class:tab--active={activeTab === 'notes'} onclick={() => activeTab = 'notes'}>
-					📝 Catatan Progres
+					{t('tutor.catatan_progres')}
 				</button>
 			</div>
 
 			{#if activeTab === 'sessions'}
 				{#if sessions.length === 0}
-					<EmptyState icon="📋" title="Belum Ada Sesi" description="Belum ada sesi untuk siswa ini." />
+					<EmptyState icon="📋" title={t('tutor.belum_ada_sesi')} description={t('tutor.belum_ada_sesi_desc')} />
 				{:else}
 					<DataTable columns={sessionColumns} data={sessions} pageSize={10} showSearch={false} showPagination={true} />
 				{/if}
 			{:else}
 				{#if progressNotes.length === 0}
-					<EmptyState icon="📝" title="Belum Ada Catatan" description="Belum ada catatan progres." />
+					<EmptyState icon="📝" title={t('tutor.belum_ada_catatan')} description={t('tutor.belum_ada_catatan_desc')} />
 				{:else}
 					<div class="notes-list">
 						{#each progressNotes as n}

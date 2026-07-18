@@ -98,10 +98,11 @@
 		const map: Record<string,string> = { assessment:'cat-academic', assignment:'cat-academic', attendance:'cat-attendance', payment:'cat-payment', grade:'cat-grade', system:'cat-system', announcement:'cat-announcement' };
 		return map[t] || 'cat-general';
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Notification Templates — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -118,14 +119,14 @@
 
 	<!-- Type filter -->
 	<div class="filter-bar">
-		<button class="filter-btn" class:active={typeFilter === ''} onclick={() => { typeFilter = ''; loadTemplates(); }}>Semua</button>
+		<button class="filter-btn" class:active={typeFilter === ''} onclick={() => { typeFilter = ''; loadTemplates(); }}>{t('common.all')}</button>
 		{#each types as t}
 			<button class="filter-btn" class:active={typeFilter === t} onclick={() => { typeFilter = t; loadTemplates(); }}>{t}</button>
 		{/each}
 	</div>
 
 	{#if error}
-		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadTemplates}>Coba Lagi</button></div>
+		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadTemplates}>{t('common.retry')}</button></div>
 	{/if}
 
 	<!-- Form Modal -->
@@ -147,13 +148,13 @@
 					</div>
 					<div class="form-row-2col">
 						<div>
-							<label class="form-label">Tipe</label>
+							<label class="form-label">{t('admin.tipe')}</label>
 							<select class="form-input" bind:value={formType}>
 								{#each types as t}<option value={t}>{t}</option>{/each}
 							</select>
 						</div>
 						<div>
-							<label class="form-label">Channel</label>
+							<label class="form-label">{t('admin.channel')}</label>
 							<select class="form-input" bind:value={formChannels}>
 								{#each channelOpts as c}<option value={c}>{c}</option>{/each}
 							</select>
@@ -180,7 +181,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>Batal</button>
+					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
 					<button class="btn-primary" onclick={saveTemplate} disabled={saving || !formCode || !formBody}>
 						{saving ? 'Menyimpan...' : editingId ? 'Update' : 'Buat'}
 					</button>
@@ -211,8 +212,8 @@
 						<span>{formatDate(t.created_at)}</span>
 					</div>
 					<div class="template-actions">
-						<button class="btn-text" onclick={() => openEdit(t)}>Edit</button>
-						<button class="btn-text btn-text-danger" onclick={() => deleteTemplate(t)}>Hapus</button>
+						<button class="btn-text" onclick={() => openEdit(t)}>{t('common.edit')}</button>
+						<button class="btn-text btn-text-danger" onclick={() => deleteTemplate(t)}>{t('common.delete')}</button>
 					</div>
 				</div>
 			{/each}

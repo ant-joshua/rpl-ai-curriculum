@@ -80,10 +80,11 @@
 		const d = new Date(dateStr);
 		return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Pengajuan Instruktur — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -94,9 +95,9 @@
 		</div>
 		<div class="filter-row">
 			<select class="filter-select" value={filterStatus} onchange={handleFilterChange}>
-				<option value="pending">Menunggu</option>
-				<option value="approved">Disetujui</option>
-				<option value="rejected">Ditolak</option>
+				<option value="pending">{t('admin.menunggu')}</option>
+				<option value="approved">{t('admin.disetujui')}</option>
+				<option value="rejected">{t('admin.ditolak')}</option>
 			</select>
 			<Button variant="secondary" onclick={loadApplications}>🔄 Refresh</Button>
 		</div>
@@ -109,7 +110,7 @@
 			<CardContent>
 				<div class="error-state">
 					<p class="error-text">{error}</p>
-					<Button onclick={loadApplications}>Coba Lagi</Button>
+					<Button onclick={loadApplications}>{t('common.retry')}</Button>
 				</div>
 			</CardContent>
 		</Card>

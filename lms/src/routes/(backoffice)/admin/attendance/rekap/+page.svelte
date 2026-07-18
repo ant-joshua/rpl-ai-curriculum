@@ -190,6 +190,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -242,7 +243,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadRecap}>Coba Lagi</button>
+			<button class="btn-secondary" onclick={loadRecap}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<div class="month-label">{monthName}</div>

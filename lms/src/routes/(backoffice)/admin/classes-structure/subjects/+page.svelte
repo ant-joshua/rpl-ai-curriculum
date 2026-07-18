@@ -122,10 +122,11 @@
 			cell: ({ row }) => `<a href="/admin/classes-structure/mapel/${row.original.id}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">KD</a>`
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Mata Pelajaran — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -143,10 +144,10 @@
 	<div class="filter-bar">
 		<select bind:value={filterJenis} class="filter-select">
 			<option value="">Semua Jenis</option>
-			<option value="wajib">Wajib</option>
-			<option value="peminatan">Peminatan</option>
-			<option value="muatan_lokal">Muatan Lokal</option>
-			<option value="pilihan">Pilihan</option>
+			<option value="wajib">{t('admin.wajib')}</option>
+			<option value="peminatan">{t('admin.peminatan')}</option>
+			<option value="muatan_lokal">{t('admin.muatan_lokal')}</option>
+			<option value="pilihan">{t('admin.pilihan')}</option>
 		</select>
 		<select bind:value={filterTingkat} class="filter-select">
 			<option value="">Semua Tingkat</option>
@@ -162,7 +163,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if mapelList.length === 0}
 		<div class="empty-state">
@@ -187,26 +188,26 @@
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-name">Nama Mapel</label>
+						<label for="mapel-name">{t('admin.nama_mapel')}</label>
 						<input id="mapel-name" type="text" bind:value={formName} placeholder="Cth: Matematika" />
 					</div>
 					<div class="field">
-						<label for="mapel-code">Kode</label>
+						<label for="mapel-code">{t('common.code')}</label>
 						<input id="mapel-code" type="text" bind:value={formCode} placeholder="MTK" />
 					</div>
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-type">Jenis</label>
+						<label for="mapel-type">{t('admin.jenis')}</label>
 						<select id="mapel-type" bind:value={formType}>
-							<option value="wajib">Wajib</option>
-							<option value="peminatan">Peminatan</option>
-							<option value="muatan_lokal">Muatan Lokal</option>
-							<option value="pilihan">Pilihan</option>
+							<option value="wajib">{t('admin.wajib')}</option>
+							<option value="peminatan">{t('admin.peminatan')}</option>
+							<option value="muatan_lokal">{t('admin.muatan_lokal')}</option>
+							<option value="pilihan">{t('admin.pilihan')}</option>
 						</select>
 					</div>
 					<div class="field">
-						<label for="mapel-group">Kelompok</label>
+						<label for="mapel-group">{t('admin.kelompok')}</label>
 						<input id="mapel-group" type="text" bind:value={formGroupName} placeholder="A, B, C" />
 					</div>
 				</div>
@@ -232,7 +233,7 @@
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-hours">JP per Minggu</label>
+						<label for="mapel-hours">{t('admin.jp_per_minggu')}</label>
 						<input id="mapel-hours" type="number" bind:value={formMinHours} min="1" max="40" />
 					</div>
 				</div>
@@ -242,7 +243,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

@@ -133,10 +133,11 @@
 		{ id: 'course-compare', label: 'Course Compare', icon: '🔍' },
 		{ id: 'activity', label: 'Activity', icon: '🕐' },
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>📈 Analytics — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="analytics-page">
@@ -187,7 +188,7 @@
 	{:else if error}
 		<div class="error-state">
 			<Alert variant="danger">{error}</Alert>
-			<Button onclick={loadAll}>Coba Lagi</Button>
+			<Button onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 

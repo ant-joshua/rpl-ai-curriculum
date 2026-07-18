@@ -94,6 +94,7 @@
 	];
 
 	onMount(loadStats);
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="pg-dashboard">
@@ -108,7 +109,7 @@
 		<div class="pg-error">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
 			<p>{error}</p>
-			<button class="pg-btn pg-btn-ghost" onclick={loadStats}>Coba Lagi</button>
+			<button class="pg-btn pg-btn-ghost" onclick={loadStats}>{t('common.retry')}</button>
 		</div>
 	{:else if stats}
 		<div class="pg-stats-grid">

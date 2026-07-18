@@ -91,13 +91,14 @@
 		{
 			header: 'Aksi',
 			accessorKey: 'id',
-			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?jurusan=${getValue()}" class="btn-small">Lihat Kelas</a>`
+			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?jurusan=${getValue()}" class="btn-small">{t('admin.lihat_kelas')}</a>`
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Jurusan — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -117,7 +118,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if jurusanList.length === 0}
 		<div class="empty-state">
@@ -153,7 +154,7 @@
 					<input id="jurusan-code" type="text" bind:value={formCode} placeholder="RPL" />
 				</div>
 				<div class="field">
-					<label for="jurusan-type">Tipe</label>
+					<label for="jurusan-type">{t('admin.tipe')}</label>
 					<select id="jurusan-type" bind:value={formType}>
 						<option value="umum">Umum</option>
 						<option value="keahlian">Keahlian</option>
@@ -164,7 +165,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

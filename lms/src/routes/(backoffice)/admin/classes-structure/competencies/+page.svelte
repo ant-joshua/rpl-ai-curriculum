@@ -122,6 +122,7 @@
 		if (val) params.set('type', val); else params.delete('type');
 		goto(`/admin/classes-structure/kd?${params.toString()}`);
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="page-header">
@@ -158,9 +159,9 @@
 			<form onsubmit={(e) => { e.preventDefault(); save(); }}>
 				<div class="form-grid">
 					<div class="form-group">
-						<label>Mata Pelajaran</label>
+						<label>{t('admin.mapel')}</label>
 						<select bind:value={form.subject_id} required>
-							<option value="">Pilih</option>
+							<option value="">{t('admin.pilih')}</option>
 							{#each data.subjects as s}
 								<option value={s.id}>{s.name}</option>
 							{/each}
@@ -178,7 +179,7 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label>Tipe</label>
+						<label>{t('admin.tipe')}</label>
 						<select bind:value={form.type}>
 							<option value="umum">Umum</option>
 							<option value="inti">Inti</option>
@@ -186,11 +187,11 @@
 						</select>
 					</div>
 					<div class="form-group full-width">
-						<label>Deskripsi</label>
+						<label>{t('common.description')}</label>
 						<textarea bind:value={form.description} required rows="3"></textarea>
 					</div>
 					<div class="form-group">
-						<label>Semester</label>
+						<label>{t('admin.semester')}</label>
 						<select bind:value={form.semester}>
 							<option value="">—</option>
 							<option value="1">1</option>
@@ -203,7 +204,7 @@
 					</div>
 				</div>
 				<div class="modal-actions">
-					<button type="button" class="btn" onclick={closeForm}>Batal</button>
+					<button type="button" class="btn" onclick={closeForm}>{t('common.cancel')}</button>
 					<button type="submit" class="btn btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
 				</div>
 			</form>

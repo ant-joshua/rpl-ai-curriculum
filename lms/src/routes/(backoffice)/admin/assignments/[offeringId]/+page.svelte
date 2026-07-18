@@ -189,6 +189,7 @@
 			(s.email || '').toLowerCase().includes(q)
 		);
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -255,12 +256,12 @@
 											<thead>
 												<tr>
 													<th>Mahasiswa</th>
-													<th>Status</th>
+													<th>{t('common.status')}</th>
 													<th>Submission</th>
 													<th>Score</th>
 													<th>Submitted</th>
 													<th>Feedback</th>
-													<th>Aksi</th>
+													<th>{t('common.action')}</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -272,7 +273,7 @@
 														<td>
 															<span class="status-badge {statusBadge(sub.status)}">{statusLabel(sub.status)}</span>
 															{#if isLate(sub, a.due_date)}
-																<span class="late-badge">Terlambat</span>
+																<span class="late-badge">{t('admin.terlambat')}</span>
 															{/if}
 														</td>
 														<td>
@@ -368,7 +369,7 @@
 				{/if}
 
 				<div class="modal-section">
-					<label for="grade-score">Nilai</label>
+					<label for="grade-score">{t('admin.nilai')}</label>
 					<div class="score-input-row">
 						<input
 							id="grade-score"
@@ -401,7 +402,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn--cancel" onclick={closeGradeModal}>Batal</button>
+				<button class="btn btn--cancel" onclick={closeGradeModal}>{t('common.cancel')}</button>
 				<button class="btn btn--save" onclick={saveGrade} disabled={savingGrade}>
 					{savingGrade ? 'Menyimpan...' : 'Simpan Nilai'}
 				</button>

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	type SemesterTranskrip = {
 		semester: string;
@@ -68,7 +69,7 @@
 
 	const courseColumns: ColumnDef<any, any>[] = [
 		{
-			header: 'Kode',
+			header: t('transkrip.col_code'),
 			accessorKey: 'kode',
 			cell: ({ getValue }) => {
 				const v = getValue();
@@ -76,17 +77,17 @@
 			}
 		},
 		{
-			header: 'Mata Kuliah',
+			header: t('transkrip.col_course'),
 			accessorKey: 'nama',
 			cell: ({ getValue }) => `<span style="font-weight:500">${getValue() || '—'}</span>`
 		},
 		{
-			header: 'SKS',
+			header: t('transkrip.col_sks'),
 			accessorKey: 'sks',
 			cell: ({ getValue }) => `<span style="text-align:center">${getValue() ?? '—'}</span>`
 		},
 		{
-			header: 'Nilai',
+			header: t('transkrip.col_grade'),
 			accessorKey: 'nilai_huruf',
 			cell: ({ getValue, row }) => {
 				const nh = getValue() as string || nilaiHuruf(row.original.nilai_angka);
@@ -95,7 +96,7 @@
 			}
 		},
 		{
-			header: 'Mutu',
+			header: t('transkrip.col_quality'),
 			accessorKey: 'mutu',
 			cell: ({ getValue }) => `<span style="text-align:center">${getValue() ?? '—'}</span>`
 		},
@@ -103,14 +104,14 @@
 </script>
 
 <svelte:head>
-	<title>Transkrip — Mahasiswa</title>
+	<title>{t('transkrip.title')}</title>
 </svelte:head>
 
 <div class="page">
 	<div class="header">
 		<div>
-			<h1>📜 Transkrip Akademik</h1>
-			<p class="subtitle">Nilai dan prestasi akademik</p>
+			<h1>{t('transkrip.heading')}</h1>
+			<p class="subtitle">{t('transkrip.subtitle')}</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={loadData}>🔄</button>
@@ -120,26 +121,26 @@
 	<div class="ipk-card">
 		<div class="ipk-row">
 			<div class="ipk-item">
-				<span class="ipk-label">IPK</span>
+				<span class="ipk-label">{t('transkrip.gpa')}</span>
 				<span class="ipk-value">{ipk.toFixed(2)}</span>
 			</div>
 			<div class="ipk-item">
-				<span class="ipk-label">Total SKS</span>
+				<span class="ipk-label">{t('transkrip.total_credits')}</span>
 				<span class="ipk-value sks-value">{totalSksKumulatif}</span>
 			</div>
 		</div>
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data...</div>
+		<div class="loading">{t('common.loading')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if transkrip.length === 0}
 		<div class="empty-state">
-			<p>Belum ada data transkrip</p>
+			<p>{t('transkrip.no_data')}</p>
 		</div>
 	{:else}
 		{#each transkrip as sem}
@@ -150,7 +151,7 @@
 						<span class="semester-tahun">{sem.tahun_ajaran || ''}</span>
 					</div>
 					<div class="semester-ip">
-						<span class="ip-label">IP</span>
+						<span class="ip-label">{t('transkrip.gpa_semester')}</span>
 						<span class="ip-value">{(sem.ip ?? 0).toFixed(2)}</span>
 					</div>
 				</div>
@@ -159,7 +160,7 @@
 					data={sem.courses}
 					showSearch={false}
 					showPagination={false}
-					emptyMessage="Tidak ada mata kuliah"
+					emptyMessage={t('transkrip.empty_courses')}
 				/>
 			</div>
 		{/each}

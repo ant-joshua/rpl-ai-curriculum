@@ -120,13 +120,14 @@
 		},
 		{
 			header: 'Aksi', id: 'aksi',
-			cell: ({ row }) => `<button class="btn-edit" onclick="window.__openEditProdi(${JSON.stringify(row.original).replace(/"/g, '&quot;')})">Edit</button>`
+			cell: ({ row }) => `<button class="btn-edit" onclick="window.__openEditProdi(${JSON.stringify(row.original).replace(/"/g, '&quot;')})">{t('common.edit')}</button>`
 		},
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Prodi — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -156,7 +157,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if prodiList.length === 0}
 		<div class="empty-state">
@@ -180,12 +181,12 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="prodi-name">Nama Program Studi</label>
+					<label for="prodi-name">{t('admin.prodi')}</label>
 					<input id="prodi-name" type="text" bind:value={formName} placeholder="Cth: Teknik Informatika" />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="prodi-code">Kode</label>
+						<label for="prodi-code">{t('common.code')}</label>
 						<input id="prodi-code" type="text" bind:value={formCode} placeholder="IF" />
 					</div>
 					<div class="field">
@@ -212,7 +213,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>
@@ -233,12 +234,12 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="prodi-edit-name">Nama Program Studi</label>
+					<label for="prodi-edit-name">{t('admin.prodi')}</label>
 					<input id="prodi-edit-name" type="text" bind:value={formName} />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="prodi-edit-code">Kode</label>
+						<label for="prodi-edit-code">{t('common.code')}</label>
 						<input id="prodi-edit-code" type="text" bind:value={formCode} />
 					</div>
 					<div class="field">
@@ -265,7 +266,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

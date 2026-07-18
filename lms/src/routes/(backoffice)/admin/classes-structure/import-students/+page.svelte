@@ -111,10 +111,11 @@
 		error = '';
 		selectedKelas = '';
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Import Siswa — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -194,7 +195,7 @@
 			<div class="card-header">
 				<h2>Pratinjau Data ({previewData.length} baris)</h2>
 				<div class="card-header-actions">
-					<button class="btn-cancel" onclick={() => step = 'upload'}>Kembali</button>
+					<button class="btn-cancel" onclick={() => step = 'upload'}>{t('common.back')}</button>
 					<button class="btn-primary" onclick={doImport} disabled={importing || previewData.length === 0}>
 						{importing ? 'Mengimport...' : '✅ Import ke Kelas'}
 					</button>
@@ -213,20 +214,20 @@
 	{:else if step === 'result'}
 		<div class="card result-card">
 			<div class="result-icon">✅</div>
-			<h2>Import Berhasil</h2>
+			<h2>{t('admin.import_berhasil')}</h2>
 
 			<div class="result-stats">
 				<div class="rstat">
 					<span class="rstat-value">{importResult?.imported ?? importResult?.success ?? 0}</span>
-					<span class="rstat-label">Berhasil</span>
+					<span class="rstat-label">{t('common.berhasil')}</span>
 				</div>
 				<div class="rstat">
 					<span class="rstat-value rstat-error">{importResult?.errors ?? importResult?.failed ?? 0}</span>
-					<span class="rstat-label">Gagal</span>
+					<span class="rstat-label">{t('common.gagal')}</span>
 				</div>
 				<div class="rstat">
 					<span class="rstat-value">{importResult?.total ?? previewData.length}</span>
-					<span class="rstat-label">Total</span>
+					<span class="rstat-label">{t('common.total')}</span>
 				</div>
 			</div>
 
@@ -242,8 +243,8 @@
 			{/if}
 
 			<div class="actions">
-				<button class="btn-primary" onclick={reset}>Import Lagi</button>
-				<a href="/admin/classes-structure/kelas/{selectedKelas}" class="btn-cancel">Lihat Kelas</a>
+				<button class="btn-primary" onclick={reset}>{t('admin.import_lagi')}</button>
+				<a href="/admin/classes-structure/kelas/{selectedKelas}" class="btn-cancel">{t('admin.lihat_kelas')}</a>
 			</div>
 		</div>
 	{/if}

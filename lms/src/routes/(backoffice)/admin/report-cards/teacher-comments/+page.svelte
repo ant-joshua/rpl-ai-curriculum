@@ -183,10 +183,11 @@
 	}
 
 	function cancelDelete() { deletingId = null; }
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Teacher Comments — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="comments-page">
@@ -257,7 +258,7 @@
 		<Textarea label="Comment" bind:value={formComment} placeholder="Write teacher comment..." rows={5} />
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showModal = false} disabled={submitting}>Cancel</Button>
+			<Button variant="secondary" onclick={() => showModal = false} disabled={submitting}>{t('common.cancel')}</Button>
 			<Button onclick={saveComment} disabled={submitting}>
 				{submitting ? 'Saving...' : editingId ? '💾 Update' : '💾 Save'}
 			</Button>
@@ -268,9 +269,9 @@
 <!-- Delete Confirmation -->
 {#if deletingId}
 	<Modal open={!!deletingId} title="Delete Comment?" onclose={cancelDelete}>
-		<p>This action cannot be undone.</p>
+		<p>{t('common.confirm_action')}</p>
 		{#snippet footer()}
-			<Button variant="secondary" onclick={cancelDelete}>Cancel</Button>
+			<Button variant="secondary" onclick={cancelDelete}>{t('common.cancel')}</Button>
 			<Button variant="danger" onclick={doDelete}>🗑️ Delete</Button>
 		{/snippet}
 	</Modal>

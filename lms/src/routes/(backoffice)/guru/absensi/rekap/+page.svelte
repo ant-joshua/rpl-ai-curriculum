@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	type DayRecord = {
 		date: string;
@@ -142,7 +143,7 @@
 	}
 
 	function esc(s: string): string {
-		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
 	}
 
 	// Build columns dynamically based on calendarDays
@@ -195,24 +196,24 @@
 <div class="page">
 	<div class="page-header">
 		<div>
-			<div class="breadcrumb"><a href="/guru/absensi">← Input Absensi</a></div>
-			<h1>📊 Rekap Absensi Bulanan</h1>
-			<p class="subtitle">Rekapitulasi kehadiran siswa per bulan</p>
+			<div class="breadcrumb"><a href="/guru/absensi">← {t('absensi.input')}</a></div>
+			<h1>{t('absensi.rekap_bulanan')}</h1>
+			<p class="subtitle">{t('absensi.rekap_subtitle')}</p>
 		</div>
 	</div>
 
 	<div class="filters">
 		<div class="filter-group">
-			<label for="class-select">Kelas</label>
+			<label for="class-select">{t('absensi.kelas')}</label>
 			<select id="class-select" bind:value={selectedClassId} disabled={loadingClasses}>
-				<option value="">— Pilih Kelas —</option>
+				<option value="">— {t('absensi.pilih_kelas')} —</option>
 				{#each classes as c}
 					<option value={c.id}>{c.class_name || c.name}</option>
 				{/each}
 			</select>
 		</div>
 		<div class="filter-group">
-			<label for="month-select">Bulan</label>
+			<label for="month-select">{t('absensi.bulan')}</label>
 			<select id="month-select" bind:value={selectedMonth}>
 				{#each months as m}
 					<option value={m.value}>{m.label}</option>
@@ -220,7 +221,7 @@
 			</select>
 		</div>
 		<div class="filter-group">
-			<label for="year-select">Tahun</label>
+			<label for="year-select">{t('absensi.tahun')}</label>
 			<select id="year-select" bind:value={selectedYear}>
 				{#each years as y}
 					<option value={y}>{y}</option>
@@ -228,30 +229,30 @@
 			</select>
 		</div>
 		<div class="filter-action">
-			<button class="btn-secondary" onclick={loadRecap}>🔍 Tampilkan</button>
+			<button class="btn-secondary" onclick={loadRecap}>{t('absensi.tampilkan')}</button>
 		</div>
 	</div>
 
 	{#if loadingClasses}
-		<Loading message="Memuat kelas..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if !selectedClassId}
-		<EmptyState icon="📊" title="Pilih Kelas" description="Pilih kelas dan bulan untuk melihat rekap absensi." />
+		<EmptyState icon="📊" title={t('absensi.pilih_kelas')} description={t('absensi.pilih_kelas_desc')} />
 	{:else if loading}
-		<Loading message="Memuat rekap absensi..." />
+		<Loading message={t('common.loading')} />
 	{:else if students.length === 0}
-		<EmptyState icon="📋" title="Belum Ada Data" description="Belum ada data absensi untuk kelas dan bulan ini." />
+		<EmptyState icon="📋" title={t('absensi.belum_ada_data')} description={t('absensi.belum_ada_data_desc')} />
 	{:else}
 		<div class="month-label">{monthName}</div>
 
 		<div class="legend">
-			<span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span> Hadir (H)</span>
-			<span class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span> Sakit (S)</span>
-			<span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span> Izin (I)</span>
-			<span class="legend-item"><span class="legend-dot" style="background:var(--danger)"></span> Alpha (A)</span>
-			<span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Dispensasi (D)</span>
-			<span class="legend-item"><span class="legend-dot" style="background:#f97316"></span> Terlambat (T)</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span> {t('absensi.hadir_h')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span> {t('absensi.sakit_s')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span> {t('absensi.izin_i')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--danger)"></span> {t('absensi.alpha_a')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> {t('absensi.dispensasi_d')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:#f97316"></span> {t('absensi.terlambat_t')}</span>
 		</div>
 
 		<DataTable
@@ -260,7 +261,7 @@
 			pageSize={200}
 			showSearch={false}
 			showPagination={false}
-			emptyMessage="Belum ada data absensi"
+			emptyMessage={t('absensi.belum_ada_data_tabel')}
 		/>
 	{/if}
 </div>

@@ -23,6 +23,7 @@
 		} catch { error = 'Failed to load offerings'; }
 		finally { loading = false; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -54,7 +55,7 @@
 						</Badge>
 					</div>
 					<div class="card-meta">
-						<span class="card-count">Lihat Gradebook →</span>
+						<span class="card-count">{t('admin.lihat_gradebook')}</span>
 					</div>
 				</a>
 			{/each}

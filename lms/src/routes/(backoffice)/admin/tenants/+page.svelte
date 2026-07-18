@@ -57,10 +57,11 @@
 			cell: ({ getValue }) => `<a href="/admin/tenants/${getValue()}" style="color:var(--accent);text-decoration:none;font-size:0.85rem;font-weight:500">Detail</a>`
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Tenants — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">

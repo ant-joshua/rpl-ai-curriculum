@@ -156,10 +156,11 @@
 			});
 		} catch { return d; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Report Card Templates — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="templates-page">
@@ -240,7 +241,7 @@
 		</label>
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showModal = false} disabled={submitting}>Cancel</Button>
+			<Button variant="secondary" onclick={() => showModal = false} disabled={submitting}>{t('common.cancel')}</Button>
 			<Button onclick={saveTemplate} disabled={submitting}>
 				{submitting ? 'Saving...' : editingId ? '💾 Update' : '💾 Create'}
 			</Button>
@@ -251,9 +252,9 @@
 <!-- Delete Confirmation -->
 {#if deletingId}
 	<Modal open={!!deletingId} title="Delete Template?" onclose={cancelDelete}>
-		<p>This action cannot be undone.</p>
+		<p>{t('common.confirm_action')}</p>
 		{#snippet footer()}
-			<Button variant="secondary" onclick={cancelDelete}>Cancel</Button>
+			<Button variant="secondary" onclick={cancelDelete}>{t('common.cancel')}</Button>
 			<Button variant="danger" onclick={doDelete}>🗑️ Delete</Button>
 		{/snippet}
 	</Modal>

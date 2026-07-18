@@ -396,6 +396,7 @@
 			window.open(url, '_blank');
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -520,7 +521,7 @@
 									</div>
 								</th>
 							{/each}
-							<th class="total-col">Total</th>
+							<th class="total-col">{t('common.total')}</th>
 							<th class="pct-col">%</th>
 							<th class="grade-col">Grade</th>
 						</tr>

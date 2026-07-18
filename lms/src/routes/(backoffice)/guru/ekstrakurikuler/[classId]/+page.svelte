@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let classId = $state('');
 	let className = $state('');
@@ -104,14 +105,14 @@
 				body: JSON.stringify(payload),
 			});
 			const json = await res.json();
-			if (json.success) successMsg = '✅ Nilai ekstrakurikuler berhasil disimpan!';
+			if (json.success) successMsg = t('ekstra.tersimpan');
 			else error = json.error || 'Gagal menyimpan';
 		} catch { error = 'Gagal menyimpan'; }
 		finally { saving = false; }
 	}
 
 	function esc(s: string): string {
-		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
 	}
 
 	const columns: ColumnDef<any, any>[] = [
@@ -170,23 +171,23 @@
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat data ekstrakurikuler..." />
+		<Loading message={t('common.loading')} />
 	{:else if error && !className && students.length === 0 && loading === false}
 		<div class="error-state">{error}</div>
 	{:else}
 		<div class="page-header">
 			<div>
-				<div class="breadcrumb"><a href="/guru/kelas">← Kelas Saya</a></div>
-				<h1>🏅 Ekstrakurikuler</h1>
+				<div class="breadcrumb"><a href="/guru/kelas">← {t('ekstra.kelas_saya')}</a></div>
+				<h1>{t('ekstra.judul')}</h1>
 				<p class="meta">{className}</p>
 			</div>
 			<div class="header-actions">
 				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-					<option value="1">Semester Ganjil</option>
-					<option value="2">Semester Genap</option>
+					<option value="1">{t('nilai.semester_ganjil')}</option>
+					<option value="2">{t('nilai.semester_genap')}</option>
 				</select>
 				<Button onclick={saveAll} disabled={saving} variant="secondary" size="sm">
-					{saving ? '⏳ Menyimpan...' : '💾 Simpan'}
+					{saving ? t('nilai.menyimpan') : t('nilai.simpan')}
 				</Button>
 			</div>
 		</div>
@@ -199,7 +200,7 @@
 		{/if}
 
 		{#if students.length === 0}
-			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
+			<EmptyState icon="👨‍🎓" message={t('nilai.belum_ada_siswa')} />
 		{:else}
 			<DataTable
 				{columns}
@@ -207,7 +208,7 @@
 				pageSize={200}
 				showSearch={false}
 				showPagination={false}
-				emptyMessage="Belum ada siswa"
+				emptyMessage={t('nilai.belum_ada_siswa_tabel')}
 			/>
 		{/if}
 	{/if}

@@ -269,7 +269,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			header: 'Aksi',
 			accessorKey: 'id',
 			enableSorting: false,
-			cell: ({ getValue }) => `<button onclick="window.__editXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Edit">✏️</button><button onclick="window.__deleteXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Hapus">🗑️</button>`
+			cell: ({ getValue }) => `<button onclick="window.__editXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title={t('common.edit')}>✏️</button><button onclick="window.__deleteXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Hapus">🗑️</button>`
 		}
 	];
 
@@ -334,10 +334,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			}
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>🏆 Gamification — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="gamification-page">
@@ -393,7 +394,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 										{/if}
 									</div>
 								</div>
-								<button class="delete-btn" onclick={(e) => { e.stopPropagation(); deleteBadge(b.id); }} title="Hapus">🗑️</button>
+								<button class="delete-btn" onclick={(e) => { e.stopPropagation(); deleteBadge(b.id); }} title={t('common.delete')}>🗑️</button>
 							</div>
 						</CardContent>
 					</Card>
@@ -407,11 +408,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog">
 					<h3>{badgeEditModal.id && badges.find((x: any) => x.id === badgeEditModal.id) ? 'Edit Badge' : 'Badge Baru'}</h3>
 					<div class="form-group">
-						<label>Nama</label>
+						<label>{t('common.name')}</label>
 						<Input bind:value={badgeEditModal.name} placeholder="Nama badge" />
 					</div>
 					<div class="form-group">
-						<label>Deskripsi</label>
+						<label>{t('common.description')}</label>
 						<Input bind:value={badgeEditModal.description} placeholder="Deskripsi badge" />
 					</div>
 					<div class="form-group">
@@ -437,8 +438,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						<Input type="number" value={String(badgeEditModal.xp_reward)} oninput={(e) => badgeEditModal.xp_reward = parseInt((e.target as HTMLInputElement).value) || 0} min="0" />
 					</div>
 					<div class="modal-actions">
-						<Button variant="ghost" onclick={() => badgeEditModal = null}>Batal</Button>
-						<Button variant="primary" onclick={saveBadge}>Simpan</Button>
+						<Button variant="ghost" onclick={() => badgeEditModal = null}>{t('common.cancel')}</Button>
+						<Button variant="primary" onclick={saveBadge}>{t('common.save')}</Button>
 					</div>
 				</div>
 			</div>
@@ -479,8 +480,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						<Input type="number" value={String(xpRuleEditModal.xp_amount)} oninput={(e) => xpRuleEditModal.xp_amount = parseInt((e.target as HTMLInputElement).value) || 1} min="1" />
 					</div>
 					<div class="form-group">
-						<label>Deskripsi</label>
-						<Input bind:value={xpRuleEditModal.description} placeholder="Deskripsi" />
+						<label>{t('common.description')}</label>
+						<Input bind:value={xpRuleEditModal.description} placeholder={t('common.description')} />
 					</div>
 					<div class="form-group checkbox-group">
 						<label>
@@ -489,8 +490,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						</label>
 					</div>
 					<div class="modal-actions">
-						<Button variant="ghost" onclick={() => xpRuleEditModal = null}>Batal</Button>
-						<Button variant="primary" onclick={saveXpRule}>Simpan</Button>
+						<Button variant="ghost" onclick={() => xpRuleEditModal = null}>{t('common.cancel')}</Button>
+						<Button variant="primary" onclick={saveXpRule}>{t('common.save')}</Button>
 					</div>
 				</div>
 			</div>
@@ -546,7 +547,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		{#if loading}
 			<div class="loading"><Spinner /> Memuat leaderboard...</div>
 		{:else if globalLeaderboard.length === 0}
-			<EmptyState title="Belum ada data" description="Ajak siswa untuk mulai belajar dan dapatkan XP!" />
+			<EmptyState title={t('common.no_data')} description="Ajak siswa untuk mulai belajar dan dapatkan XP!" />
 		{:else}
 			<Card>
 				<CardContent>

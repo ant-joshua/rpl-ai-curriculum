@@ -79,10 +79,11 @@
 		} catch { importError = 'Gagal mengupload file'; }
 		finally { importing = false; input.value = ''; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Migrasi Course — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">

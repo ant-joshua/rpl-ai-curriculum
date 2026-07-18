@@ -29,6 +29,7 @@
 
 	const totalStudents = $derived(courses.reduce((s, c) => s + (c.student_count || 0), 0));
 	const totalAssignments = $derived(courses.reduce((s, c) => s + (c.assignment_count || 0), 0));
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -46,7 +47,7 @@
 		<Loading />
 	{:else if error}
 		<EmptyState title="Error" description={error}>
-			<Button onclick={loadCourses}>Retry</Button>
+			<Button onclick={loadCourses}>{t('common.retry')}</Button>
 		</EmptyState>
 	{:else}
 		<!-- Stats overview -->

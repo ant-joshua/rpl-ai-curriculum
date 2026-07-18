@@ -166,10 +166,11 @@
     const d = new Date(dt + (dt.endsWith('Z') ? '' : 'Z'));
     return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   }
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-  <title>{offeringName || 'Jadwal'} — Admin</title>
+  <title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="schedules-page">
@@ -246,7 +247,7 @@
     <Input label="Lokasi" bind:value={sLocation} placeholder="e.g. Ruang 201" />
     <Input label="Meeting Link" bind:value={sMeetingLink} placeholder="https://meet.google.com/..." />
     {#snippet footer()}
-      <Button variant="secondary" onclick={() => showModal = false} disabled={sSaving}>Batal</Button>
+      <Button variant="secondary" onclick={() => showModal = false} disabled={sSaving}>{t('common.cancel')}</Button>
       <Button onclick={saveSchedule} loading={sSaving}>{editingSchedule ? 'Simpan' : 'Buat'}</Button>
     {/snippet}
   </Modal>

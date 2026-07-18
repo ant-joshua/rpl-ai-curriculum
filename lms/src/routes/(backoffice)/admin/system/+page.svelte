@@ -45,10 +45,11 @@
 	function statusBadge(ok: boolean) {
 		return ok ? 'status-ok' : 'status-err';
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>⚙️ System Admin — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="sys-page">
@@ -64,7 +65,7 @@
 	{:else if error}
 		<div class="error-state">
 			<Alert variant="danger">{error}</Alert>
-			<Button onclick={loadAll}>Retry</Button>
+			<Button onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 

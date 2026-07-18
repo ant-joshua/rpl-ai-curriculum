@@ -83,10 +83,11 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Survey — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -101,7 +102,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->

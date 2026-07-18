@@ -215,7 +215,7 @@
 				const s = row.original;
 				let html = `<a href="/admin/attendance/sessions/${s.id}" style="padding:4px 10px;background:var(--bg-secondary);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:12px;text-decoration:none">Detail</a>`;
 				if (s.status === 'active') {
-					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">Tutup</button>`;
+					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">{t('common.close')}</button>`;
 				}
 				return html;
 			}
@@ -227,6 +227,7 @@
 		(window as any).__closeSession = closeSession;
 		return () => { delete (window as any).__closeSession; };
 	});
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -249,15 +250,15 @@
 	<!-- Filters -->
 	<div class="filters">
 		<div class="filter-group">
-			<label for="filter-status">Status</label>
+			<label for="filter-status">{t('common.status')}</label>
 			<select id="filter-status" bind:value={filterStatus} onchange={loadSessions}>
-				<option value="">Semua</option>
-				<option value="active">Aktif</option>
-				<option value="closed">Selesai</option>
+				<option value="">{t('common.all')}</option>
+				<option value="active">{t('common.active')}</option>
+				<option value="closed">{t('admin.selesai')}</option>
 			</select>
 		</div>
 		<div class="filter-group">
-			<label for="filter-date">Tanggal</label>
+			<label for="filter-date">{t('admin.tanggal')}</label>
 			<input id="filter-date" type="date" bind:value={filterDate} onchange={loadSessions} />
 		</div>
 		<div class="filter-action">
@@ -277,7 +278,7 @@
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadSessions}>Coba Lagi</button>
+			<button class="btn-secondary" onclick={loadSessions}>{t('common.retry')}</button>
 		</div>
 	{:else if sessions.length === 0}
 		<div class="empty-state">
@@ -305,13 +306,13 @@
 					class="btn-outline btn-sm"
 					disabled={currentPage <= 1}
 					onclick={() => { currentPage--; loadSessions(); }}
-				>← Prev</button>
+				>{t('admin.prev')}</button>
 				<span class="page-info">Halaman {currentPage} / {Math.ceil(total / 20)}</span>
 				<button
 					class="btn-outline btn-sm"
 					disabled={currentPage * 20 >= total}
 					onclick={() => { currentPage++; loadSessions(); }}
-				>Next →</button>
+				>{t('admin.next_page')}</button>
 			</div>
 		{/if}
 	{/if}
@@ -324,7 +325,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()}>
 			<div class="modal-header">
-				<h3>Buat Sesi Presensi Baru</h3>
+				<h3>{t('admin.buat_sesi_baru')}</h3>
 				<button class="modal-close" onclick={() => showCreateModal = false}>
 					<Icon name="x" size={18} />
 				</button>
@@ -333,8 +334,8 @@
 			{#if createdSession}
 				<div class="created-success">
 					<Icon name="check-square" size={32} />
-					<h4>Sesi Berhasil Dibuat!</h4>
-					<p>QR Token untuk sesi ini:</p>
+					<h4>{t('admin.sesi_berhasil_dibuat')}</h4>
+					<p>{t('admin.qr_token')}</p>
 					<div class="qr-display">
 						<div class="qr-text">{createdSession.qr_token}</div>
 					</div>
@@ -375,17 +376,17 @@
 
 					<div class="form-row">
 						<div class="form-group">
-							<label for="cs-date">Tanggal</label>
+							<label for="cs-date">{t('admin.tanggal')}</label>
 							<input id="cs-date" type="date" bind:value={formDate} />
 						</div>
 						<div class="form-group">
-							<label for="cs-time">Waktu Mulai</label>
+							<label for="cs-time">{t('admin.waktu_mulai')}</label>
 							<input id="cs-time" type="time" bind:value={formStartTime} />
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="cs-notes">Catatan</label>
+						<label for="cs-notes">{t('admin.catatan')}</label>
 						<textarea id="cs-notes" bind:value={formNotes} rows="2" placeholder="Opsional..."></textarea>
 					</div>
 
@@ -394,7 +395,7 @@
 					{/if}
 
 					<div class="modal-actions">
-						<button type="button" class="btn-outline" onclick={() => showCreateModal = false}>Batal</button>
+						<button type="button" class="btn-outline" onclick={() => showCreateModal = false}>{t('common.cancel')}</button>
 						<button type="submit" class="btn-primary" disabled={formCreating}>
 							{formCreating ? 'Membuat...' : 'Buat Sesi'}
 						</button>

@@ -214,10 +214,11 @@
 			accessorKey: 'id',
 			enableSorting: false,
 			cell: ({ getValue }) => {
-				return `<button onclick="window.__deleteExam('${getValue()}')" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:#ef4444;font-size:12px;cursor:pointer">Hapus</button>`;
+				return `<button onclick="window.__deleteExam('${getValue()}')" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:#ef4444;font-size:12px;cursor:pointer">{t('common.delete')}</button>`;
 			}
 		}
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -245,7 +246,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadExams}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadExams}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<!-- Filters -->
@@ -258,11 +259,11 @@
 			/>
 			<select class="filter-select" bind:value={filterStatus}>
 				<option value="">Semua Status</option>
-				<option value="draft">Draft</option>
-				<option value="published">Published</option>
-				<option value="ongoing">Ongoing</option>
-				<option value="completed">Completed</option>
-				<option value="cancelled">Cancelled</option>
+				<option value="draft">{t('admin.draft')}</option>
+				<option value="published">{t('admin.published')}</option>
+				<option value="ongoing">{t('admin.ongoing')}</option>
+				<option value="completed">{t('admin.completed')}</option>
+				<option value="cancelled">{t('admin.cancelled')}</option>
 			</select>
 			<span class="filter-count">{filteredExams.length} ujian</span>
 		</div>
@@ -304,7 +305,7 @@
 						<input id="exam-name" type="text" bind:value={formName} placeholder="Cth: UTS Pemrograman Web" />
 					</div>
 					<div class="field field--full">
-						<label for="exam-desc">Deskripsi</label>
+						<label for="exam-desc">{t('common.description')}</label>
 						<input id="exam-desc" type="text" bind:value={formDescription} placeholder="Deskripsi singkat ujian" />
 					</div>
 					<div class="field">
@@ -312,7 +313,7 @@
 						<input id="exam-date" type="date" bind:value={formDate} />
 					</div>
 					<div class="field">
-						<label for="exam-type">Tipe Ujian</label>
+						<label for="exam-type">{t('admin.tipe_ujian')}</label>
 						<select id="exam-type" bind:value={formExamType}>
 							<option value="">— Pilih —</option>
 							<option value="UTS">UTS</option>
@@ -331,7 +332,7 @@
 						<input id="exam-end" type="time" bind:value={formEndTime} />
 					</div>
 					<div class="field">
-						<label for="exam-room">Ruangan</label>
+						<label for="exam-room">{t('admin.ruangan')}</label>
 						<select id="exam-room" bind:value={formRoomId}>
 							<option value="">— Pilih Ruangan —</option>
 							{#each rooms as room}
@@ -344,19 +345,19 @@
 						<input id="exam-max" type="number" bind:value={formMaxParticipants} placeholder="Opsional" min="1" />
 					</div>
 					<div class="field">
-						<label for="exam-status">Status</label>
+						<label for="exam-status">{t('common.status')}</label>
 						<select id="exam-status" bind:value={formStatus}>
-							<option value="draft">Draft</option>
-							<option value="published">Published</option>
-							<option value="ongoing">Ongoing</option>
-							<option value="completed">Completed</option>
-							<option value="cancelled">Cancelled</option>
+							<option value="draft">{t('admin.draft')}</option>
+							<option value="published">{t('admin.published')}</option>
+							<option value="ongoing">{t('admin.ongoing')}</option>
+							<option value="completed">{t('admin.completed')}</option>
+							<option value="cancelled">{t('admin.cancelled')}</option>
 						</select>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeModal}>Batal</button>
+				<button class="btn-cancel" onclick={closeModal}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitCreate} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

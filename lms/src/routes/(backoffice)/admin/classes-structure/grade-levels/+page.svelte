@@ -31,7 +31,7 @@
 		{
 			header: 'Aksi',
 			accessorKey: 'id',
-			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?tingkat=${getValue()}" class="btn-small">Lihat Kelas</a>`
+			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?tingkat=${getValue()}" class="btn-small">{t('admin.lihat_kelas')}</a>`
 		}
 	];
 
@@ -82,10 +82,11 @@
 	function generateSlug() {
 		formSlug = formName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Tingkat — Struktur Kurikulum — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -105,7 +106,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if tingkatList.length === 0}
 		<div class="empty-state">
@@ -134,15 +135,15 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="tingkat-name">Nama Tingkat</label>
+					<label for="tingkat-name">{t('admin.nama_tingkat')}</label>
 					<input id="tingkat-name" type="text" bind:value={formName} oninput={generateSlug} placeholder="Cth: Kelas X" />
 				</div>
 				<div class="field">
-					<label for="tingkat-slug">Slug</label>
+					<label for="tingkat-slug">{t('admin.slug')}</label>
 					<input id="tingkat-slug" type="text" bind:value={formSlug} placeholder="kelas-x" />
 				</div>
 				<div class="field">
-					<label for="tingkat-edu">Jenjang Pendidikan</label>
+					<label for="tingkat-edu">{t('admin.jenjang_pendidikan')}</label>
 					<select id="tingkat-edu" bind:value={formEducationLevel}>
 						<option value="sd">SD / MI</option>
 						<option value="smp">SMP / MTs</option>
@@ -152,7 +153,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

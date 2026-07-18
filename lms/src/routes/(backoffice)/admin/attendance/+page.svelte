@@ -149,6 +149,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -179,7 +180,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadStats}>Coba Lagi</button>
+			<button class="btn-secondary" onclick={loadStats}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -197,7 +198,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 				<div class="overview-card overview-present">
 					<div class="overview-bar" style="width: {presentPct}%"></div>
 					<div class="overview-info">
-						<span class="overview-label">Hadir</span>
+						<span class="overview-label">{t('admin.hadir')}</span>
 						<span class="overview-value">{stats?.present_count ?? 0}</span>
 						<span class="overview-pct">{presentPct}%</span>
 					</div>
@@ -205,7 +206,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 				<div class="overview-card overview-late">
 					<div class="overview-bar" style="width: {latePct}%"></div>
 					<div class="overview-info">
-						<span class="overview-label">Terlambat</span>
+						<span class="overview-label">{t('admin.terlambat')}</span>
 						<span class="overview-value">{stats?.late_count ?? 0}</span>
 						<span class="overview-pct">{latePct}%</span>
 					</div>
@@ -213,7 +214,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 				<div class="overview-card overview-absent">
 					<div class="overview-bar" style="width: {absentPct}%"></div>
 					<div class="overview-info">
-						<span class="overview-label">Absen</span>
+						<span class="overview-label">{t('admin.absen')}</span>
 						<span class="overview-value">{stats?.absent_count ?? 0}</span>
 						<span class="overview-pct">{absentPct}%</span>
 					</div>

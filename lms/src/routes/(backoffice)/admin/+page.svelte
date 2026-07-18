@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Card, CardContent } from '$lib/components/ui';
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Dashboard — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="dash-page">
 	<h1>Dashboard</h1>
-	<p class="subtitle">Welcome to the admin panel. Select a module from the sidebar.</p>
+	<p class="subtitle">{t('admin.welcome')}</p>
 
 	<div class="shortcut-grid">
 		<a href="/admin/attendance" class="shortcut">

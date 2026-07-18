@@ -56,10 +56,11 @@
 		} catch { exportError = 'Download failed'; }
 		finally { exporting = null; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>📤 Data Exports — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="exports-page">
@@ -72,7 +73,7 @@
 	{:else if error}
 		<div class="error-state">
 			<Alert variant="danger">{error}</Alert>
-			<Button onclick={loadCounts}>Retry</Button>
+			<Button onclick={loadCounts}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 

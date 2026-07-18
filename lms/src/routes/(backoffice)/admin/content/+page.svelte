@@ -279,10 +279,11 @@
 			alert('Gagal terhubung ke server');
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>📚 Content — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="content-page">
@@ -317,7 +318,7 @@
 									<th>#</th>
 									<th>Sesi</th>
 									<th>Content Block</th>
-									<th>Status</th>
+									<th>{t('common.status')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -372,7 +373,7 @@
 					<TableHead>Visibility</TableHead>
 					<TableHead>Linked Lesson</TableHead>
 					<TableHead>Order</TableHead>
-					<TableHead>Actions</TableHead>
+					<TableHead>{t('common.action')}</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -462,7 +463,7 @@
 				placeholder="Pilih lesson..." />
 		</label>
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showLinkModal = false} disabled={linkSubmitting}>Batal</Button>
+			<Button variant="secondary" onclick={() => showLinkModal = false} disabled={linkSubmitting}>{t('common.cancel')}</Button>
 			<Button onclick={doLink} disabled={linkSubmitting || !linkLessonId}>
 				{linkSubmitting ? 'Menyimpan...' : '🔗 Link'}
 			</Button>
@@ -511,7 +512,7 @@
 				]} />
 		</label>
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showEditModal = false} disabled={editSubmitting}>Batal</Button>
+			<Button variant="secondary" onclick={() => showEditModal = false} disabled={editSubmitting}>{t('common.cancel')}</Button>
 			<Button onclick={doEditMetadata} disabled={editSubmitting}>
 				{editSubmitting ? 'Menyimpan...' : '💾 Simpan'}
 			</Button>

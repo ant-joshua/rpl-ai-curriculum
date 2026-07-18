@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	let { data } = $props();
 
@@ -108,12 +109,12 @@
 
 	const columns: ColumnDef<any, any>[] = [
 		{
-			header: 'No',
+			header: t('dosen.col_no'),
 			accessorKey: '__no',
 			cell: ({ row }) => `<span style="text-align:center;display:block;color:var(--text-tertiary)">${row.index + 1}</span>`
 		},
 		{
-			header: 'NIM',
+			header: t('dosen.col_nim'),
 			accessorKey: 'nim',
 			cell: ({ getValue, row }) => {
 				const nim = getValue() || row.original.student_nim || '—';
@@ -121,7 +122,7 @@
 			}
 		},
 		{
-			header: 'Nama Mahasiswa',
+			header: t('dosen.col_name'),
 			accessorKey: 'name',
 			cell: ({ getValue, row }) => {
 				const name = getValue() || row.original.nama || row.original.mahasiswa_name || '—';
@@ -129,7 +130,7 @@
 			}
 		},
 		{
-			header: 'Nilai Angka',
+			header: t('dosen.col_score'),
 			accessorKey: 'nilai_angka',
 			cell: ({ getValue, row }) => {
 				const m = row.original;
@@ -143,7 +144,7 @@
 			}
 		},
 		{
-			header: 'Nilai Huruf',
+			header: t('dosen.col_grade'),
 			accessorKey: '__huruf',
 			cell: ({ row }) => {
 				const huruf = nilaiHuruf(row.original.nilai_angka);
@@ -161,8 +162,8 @@
 <div class="page">
 	<div class="page-header">
 		<div>
-			<div class="breadcrumb"><a href="/dosen/kelas">← Kelas Saya</a></div>
-			<h1>📝 Input Nilai</h1>
+			<div class="breadcrumb"><a href="/dosen/kelas">← {t('dosen.breadcrumb')}</a></div>
+			<h1>{t('dosen.heading')}</h1>
 			{#if kelasInfo}
 				<p class="subtitle">
 					{kelasInfo.nama || kelasInfo.name || kelasInfo.matkul_name || '—'}
@@ -177,29 +178,29 @@
 	</div>
 
 	{#if loading}
-		<div class="loading">Memuat data mahasiswa...</div>
+		<div class="loading">{t('dosen.loading_students')}</div>
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if mahasiswaList.length === 0}
 		<div class="empty-state">
-			<p>Belum ada mahasiswa terdaftar di kelas ini</p>
+			<p>{t('dosen.no_students')}</p>
 		</div>
 	{:else}
 		<div class="info-bar">
 			<div class="info-item">
-				<span class="info-label">Mahasiswa</span>
+				<span class="info-label">{t('dosen.students_label')}</span>
 				<span class="info-value">{mahasiswaList.length}</span>
 			</div>
 			<div class="info-item">
-				<span class="info-label">Telah Dinilai</span>
+				<span class="info-label">{t('dosen.graded_label')}</span>
 				<span class="info-value">{mahasiswaList.filter(m => m.nilai_angka !== null && m.nilai_angka >= 0).length}/{mahasiswaList.length}</span>
 			</div>
 			{#if rataRata !== null}
 				<div class="info-item">
-					<span class="info-label">Rata-rata</span>
+					<span class="info-label">{t('dosen.average_label')}</span>
 					<span class="info-value">{rataRata.toFixed(1)}</span>
 				</div>
 			{/if}
@@ -218,12 +219,12 @@
 			pageSize={200}
 			showSearch={false}
 			showPagination={false}
-			emptyMessage="Belum ada mahasiswa"
+			emptyMessage={t('dosen.empty_table')}
 		/>
 
 		<div class="actions">
 			<button class="btn-primary" onclick={simpanNilai} disabled={saving}>
-				{saving ? 'Menyimpan...' : '💾 Simpan Nilai'}
+				{saving ? t('dosen.saving') : t('dosen.save_grades')}
 			</button>
 		</div>
 	{/if}

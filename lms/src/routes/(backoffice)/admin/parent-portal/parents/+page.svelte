@@ -148,7 +148,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 		accessorKey: 'isPrimary',
 		cell: ({ getValue }) => {
 			const v = getValue() as number;
-			return v === 1 ? '<span style="color:#10b981;font-weight:600">Ya</span>' : '<span style="color:var(--text-secondary)">Tidak</span>';
+			return v === 1 ? '<span style="color:#10b981;font-weight:600">'+t('common.yes')+'</span>' : '<span style="color:var(--text-secondary)">Tidak</span>';
 		}
 	},
 	{
@@ -166,6 +166,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="pp-page">
@@ -189,7 +190,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 		<div class="pp-error">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
 			<p>{error}</p>
-			<button class="pp-btn pp-btn-ghost" onclick={loadParents}>Coba Lagi</button>
+			<button class="pp-btn pp-btn-ghost" onclick={loadParents}>{t('common.retry')}</button>
 		</div>
 	{:else if parents.length === 0}
 		<div class="pp-empty">
@@ -202,13 +203,13 @@ const parentColumns: ColumnDef<any, any>[] = [
 			<table class="pp-table">
 				<thead>
 					<tr>
-						<th>Nama</th>
+						<th>{t('common.name')}</th>
 						<th>Hubungan</th>
 						<th>Kontak</th>
 						<th>Primer</th>
 						<th>Tautan Siswa</th>
-						<th>Dibuat</th>
-						<th>Aksi</th>
+						<th>{t('admin.dibuat')}</th>
+						<th>{t('common.action')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -223,7 +224,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 							<td>{p.linkedStudents} siswa</td>
 							<td>{formatDate(p.createdAt)}</td>
 							<td>
-								<button class="pp-btn pp-btn-ghost pp-btn-sm" onclick={() => openEdit(p)}>Edit</button>
+								<button class="pp-btn pp-btn-ghost pp-btn-sm" onclick={() => openEdit(p)}>{t('common.edit')}</button>
 							</td>
 						</tr>
 					{/each}
@@ -278,7 +279,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 					</div>
 				</div>
 				<div class="pp-modal-actions">
-					<button type="button" class="pp-btn pp-btn-ghost" onclick={() => showModal = false}>Batal</button>
+					<button type="button" class="pp-btn pp-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
 					<button type="submit" class="pp-btn pp-btn-primary" disabled={saving}>
 						{saving ? 'Menyimpan...' : 'Simpan'}
 					</button>

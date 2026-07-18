@@ -102,10 +102,11 @@
 		} catch { restoreError = 'Gagal mengupload file restore'; }
 		finally { restoring = false; input.value = ''; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Export/Import Backup — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">

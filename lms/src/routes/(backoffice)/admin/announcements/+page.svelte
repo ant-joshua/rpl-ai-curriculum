@@ -156,10 +156,11 @@
 	function cancelDelete() {
 		deletingId = null;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Pengumuman — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="admin-announcements">
@@ -203,7 +204,7 @@
 								<span>🕐 {formatDate(ann.created_at)}</span>
 							</div>
 						</div>
-						<Button variant="ghost" onclick={() => confirmDelete(ann.id)} title="Hapus">🗑️</Button>
+						<Button variant="ghost" onclick={() => confirmDelete(ann.id)} title={t('common.delete')}>🗑️</Button>
 					</div>
 					<div class="ann-body">{ann.body}</div>
 				</div>
@@ -221,7 +222,7 @@
 		<Select label="Prioritas" options={priorityOptions} bind:value={createPriority} />
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showCreateModal = false} disabled={submitting}>Batal</Button>
+			<Button variant="secondary" onclick={() => showCreateModal = false} disabled={submitting}>{t('common.cancel')}</Button>
 			<Button onclick={createAnnouncement} disabled={submitting}>
 				{submitting ? 'Menyimpan...' : '📢 Publikasikan'}
 			</Button>
@@ -232,10 +233,10 @@
 <!-- Delete Confirmation -->
 {#if deletingId}
 	<Modal open={!!deletingId} title="Hapus Pengumuman?" onclose={cancelDelete}>
-		<p>Tindakan ini tidak dapat dibatalkan.</p>
+		<p>{t('common.confirm_action')}</p>
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={cancelDelete}>Batal</Button>
+			<Button variant="secondary" onclick={cancelDelete}>{t('common.cancel')}</Button>
 			<Button variant="danger" onclick={doDelete}>🗑️ Hapus</Button>
 		{/snippet}
 	</Modal>

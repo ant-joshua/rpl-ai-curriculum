@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -81,7 +82,7 @@
 				body: JSON.stringify(payload),
 			});
 			const json = await res.json();
-			if (json.success) successMsg = '✅ Nilai PAS berhasil disimpan!';
+			if (json.success) successMsg = t('nilai.pas_tersimpan');
 			else error = json.error || 'Gagal menyimpan';
 		} catch { error = 'Gagal menyimpan'; }
 		finally { saving = false; }
@@ -141,7 +142,7 @@
 
 <div class="page" oninput={handleInput}>
 	{#if loading}
-		<Loading message="Memuat data PAS..." />
+		<Loading message={t('common.loading')} />
 	{:else if error && !classSubject}
 		<div class="error-state">{error}</div>
 	{:else}
@@ -150,16 +151,16 @@
 				<div class="breadcrumb">
 					<a href="/guru/nilai/{classSubjectId}">← {classSubject?.subject_name || 'Nilai'}</a>
 				</div>
-				<h1>📋 Penilaian Akhir Semester (PAS)</h1>
+				<h1>{t('nilai.pas')}</h1>
 				<p class="meta">{classSubject?.class_name} — {classSubject?.subject_name}</p>
 			</div>
 			<div class="header-actions">
 				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-					<option value="1">Semester Ganjil</option>
-					<option value="2">Semester Genap</option>
+					<option value="1">{t('nilai.semester_ganjil')}</option>
+					<option value="2">{t('nilai.semester_genap')}</option>
 				</select>
 				<Button onclick={saveAll} disabled={saving} variant="secondary" size="sm">
-					{saving ? '⏳ Menyimpan...' : '💾 Simpan'}
+					{saving ? t('nilai.menyimpan') : t('nilai.simpan')}
 				</Button>
 			</div>
 		</div>
@@ -172,14 +173,14 @@
 		{/if}
 
 		{#if students.length === 0}
-			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
+			<EmptyState icon="👨‍🎓" message={t('nilai.belum_ada_siswa')} />
 		{:else}
 			<DataTable
 				{columns}
 				data={mergedData}
 				showSearch={false}
 				showPagination={false}
-				emptyMessage="Belum ada siswa"
+				emptyMessage={t('nilai.belum_ada_siswa_tabel')}
 			/>
 		{/if}
 	{/if}

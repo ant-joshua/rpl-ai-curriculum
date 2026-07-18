@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+import { t } from '$lib/stores/i18n.svelte';
 
 	type Invoice = {
 		id: string;
@@ -87,52 +88,52 @@
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/tutor">← Tutor Dashboard</a></div>
-		<h1>💰 Keuangan Privat</h1>
-		<p class="subtitle">Tagihan, pembayaran, dan status invoice</p>
+		<div class="breadcrumb"><a href="/tutor">← {t('tutor.dashboard')}</a></div>
+		<h1>{t('tutor.keuangan')}</h1>
+		<p class="subtitle">{t('tutor.keuangan_desc')}</p>
 	</div>
 
 	<div class="summary-grid">
 		<div class="summary-card">
 			<span class="summary-value">{formatCurrency(totals.total)}</span>
-			<span class="summary-label">Total Tagihan</span>
+			<span class="summary-label">{t('tutor.total_tagihan')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--success)">{formatCurrency(totals.paid)}</span>
-			<span class="summary-label">Sudah Dibayar</span>
+			<span class="summary-label">{t('tutor.sudah_dibayar')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--warning)">{formatCurrency(totals.unpaid)}</span>
-			<span class="summary-label">Belum Dibayar</span>
+			<span class="summary-label">{t('tutor.belum_dibayar')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--danger)">{formatCurrency(totals.overdue)}</span>
-			<span class="summary-label">Jatuh Tempo</span>
+			<span class="summary-label">{t('tutor.jatuh_tempo')}</span>
 		</div>
 	</div>
 
 	<div class="toolbar">
 		<div class="filter-group">
-			<label for="filter-status">Filter Status</label>
+			<label for="filter-status">{t('tutor.filter_status')}</label>
 			<select id="filter-status" class="filter-select" bind:value={filterStatus}>
 				{#each filterOptions as opt}
 					<option value={opt.value}>{opt.label}</option>
 				{/each}
 			</select>
 		</div>
-		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>🔄 Refresh</button>
+		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>{t('common.refresh')}</button>
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat data keuangan..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if invoices.length === 0}
-		<EmptyState icon="💰" title="Belum Ada Tagihan" description="Belum ada invoice yang tercatat." />
+		<EmptyState icon="💰" title={t('tutor.belum_ada_tagihan')} description={t('tutor.belum_ada_tagihan_desc')} />
 	{:else if filtered.length === 0}
-		<EmptyState icon="🔍" title="Tidak Ditemukan" description="Tidak ada invoice dengan filter ini." />
+		<EmptyState icon="🔍" title={t('tutor.tidak_ditemukan')} description={t('tutor.tidak_ditemukan_desc')} />
 	{:else}
-		<DataTable {columns} data={filtered} pageSize={15} showSearch={true} searchPlaceholder="Cari invoice..." />
+		<DataTable {columns} data={filtered} pageSize={15} showSearch={true} searchPlaceholder={t('tutor.cari_invoice')} />
 	{/if}
 </div>
 

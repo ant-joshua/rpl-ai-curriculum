@@ -36,6 +36,7 @@
 		{ path: '/admin/classes-structure/guru-mapel', icon: '👨‍🏫', title: 'Guru Mapel', desc: 'Atur penugasan guru per kelas-mapel' },
 		{ path: '/admin/classes-structure/import-siswa', icon: '📥', title: 'Import Siswa', desc: 'Import data siswa dari CSV' },
 	];
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
@@ -56,7 +57,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadStats}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadStats}>{t('common.retry')}</button>
 		</div>
 	{:else if stats}
 		<div class="stats-grid">

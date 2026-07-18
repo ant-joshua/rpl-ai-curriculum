@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
-	import { StatCard } from '$lib/components/ui';
+	import { DataTable, Loading, EmptyState, StatCard } from '$lib/components/ui';
+import { t } from '$lib/stores/i18n.svelte';
 
 	type DayRec = {
 		date: string;
@@ -149,14 +149,14 @@ const dayColumns: ColumnDef<any, any>[] = [
 <div class="page">
 	<div class="page-header">
 		<div>
-			<h1>📋 Absensi Saya</h1>
-			<p class="subtitle">Riwayat kehadiran Anda</p>
+			<h1>{t('siswa.absensi_saya')}</h1>
+			<p class="subtitle">{t('siswa.absensi_subtitle')}</p>
 		</div>
 	</div>
 
 	<div class="filters">
 		<div class="filter-group">
-			<label for="month-select">Bulan</label>
+			<label for="month-select">{t('absensi.bulan')}</label>
 			<select id="month-select" bind:value={selectedMonth}>
 				{#each months as m}
 					<option value={m.value}>{m.label}</option>
@@ -164,7 +164,7 @@ const dayColumns: ColumnDef<any, any>[] = [
 			</select>
 		</div>
 		<div class="filter-group">
-			<label for="year-select">Tahun</label>
+			<label for="year-select">{t('absensi.tahun')}</label>
 			<select id="year-select" bind:value={selectedYear}>
 				{#each years as y}
 					<option value={y}>{y}</option>
@@ -172,12 +172,12 @@ const dayColumns: ColumnDef<any, any>[] = [
 			</select>
 		</div>
 		<div class="filter-action">
-			<button class="btn-secondary" onclick={loadAttendance}>🔍 Tampilkan</button>
+			<button class="btn-secondary" onclick={loadAttendance}>{t('absensi.tampilkan')}</button>
 		</div>
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat data absensi..." />
+		<Loading message={t('common.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else}
@@ -195,18 +195,18 @@ const dayColumns: ColumnDef<any, any>[] = [
 		<div class="percent-cards">
 			<div class="percent-card">
 				<div class="percent-value" style="color: var(--success)">{attendancePercent}%</div>
-				<div class="percent-label">Kehadiran (Hadir)</div>
+				<div class="percent-label">{t('siswa.kehadiran_hadir')}</div>
 			</div>
 			<div class="percent-card">
 				<div class="percent-value" style="color: var(--info)">{overallPercent}%</div>
-				<div class="percent-label">Kehadiran (Hadir+S+I+D)</div>
+				<div class="percent-label">{t('siswa.kehadiran_hsipd')}</div>
 			</div>
 		</div>
 
 		{#if days.length === 0}
-			<EmptyState icon="📋" title="Belum Ada Data" description="Belum ada catatan absensi untuk bulan ini." />
+			<EmptyState icon="📋" title={t('absensi.belum_ada_data')} description={t('siswa.belum_ada_absensi_desc')} />
 		{:else}
-			<DataTable columns={dayColumns} data={days} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada data absensi" emptyIcon="📋" />
+			<DataTable columns={dayColumns} data={days} pageSize={20} showSearch={false} showPagination={false} emptyMessage={t('siswa.belum_ada_absensi_tabel')} emptyIcon="📋" />
 		{/if}
 	{/if}
 </div>
@@ -231,19 +231,6 @@ const dayColumns: ColumnDef<any, any>[] = [
 	.month-label { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
 
 	.stats-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-bottom: 16px; }
-	.stat-card {
-		display: flex; flex-direction: column; align-items: center; gap: 4px;
-		padding: 16px 12px; border-radius: 10px; border: 1px solid var(--border);
-		background: var(--surface); text-align: center;
-	}
-	.stat-number { font-size: 28px; font-weight: 700; line-height: 1; }
-	.stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
-	.stat-hadir .stat-number { color: var(--success); }
-	.stat-sakit .stat-number { color: var(--warning); }
-	.stat-izin .stat-number { color: var(--info); }
-	.stat-alpha .stat-number { color: var(--danger); }
-	.stat-dispensasi .stat-number { color: #8b5cf6; }
-	.stat-terlambat .stat-number { color: #f97316; }
 
 	.percent-cards { display: flex; gap: 12px; margin-bottom: 20px; }
 	.percent-card {
@@ -252,26 +239,6 @@ const dayColumns: ColumnDef<any, any>[] = [
 	}
 	.percent-value { font-size: 32px; font-weight: 700; }
 	.percent-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-
-	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary);
-	}
-	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-
-	.col-date { min-width: 140px; font-weight: 500; }
-	.col-status { min-width: 130px; }
-	.col-reason { color: var(--text-secondary); }
-
-	.status-badge {
-		display: inline-flex; align-items: center; gap: 5px;
-		padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
-	}
 
 	.btn-secondary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary:hover { background: var(--accent-hover); }

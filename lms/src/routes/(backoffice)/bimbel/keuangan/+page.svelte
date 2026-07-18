@@ -4,6 +4,7 @@
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	type Invoice = {
 		id: string;
@@ -22,20 +23,20 @@
 	let filterStatus = $state<string>('all');
 
 	const columns: ColumnDef<any, any>[] = [
-		{ header: 'Invoice', accessorKey: 'invoiceNumber', cell: ({ getValue }) => `<code>${getValue()}</code>` },
-		{ header: 'Siswa', accessorKey: 'studentName' },
-		{ header: 'Batch', accessorFn: (row) => row.batchName || '-' },
-		{ header: 'Jumlah', accessorKey: 'amount', cell: ({ getValue }) => formatCurrency(getValue() as number) },
+		{ header: t('finance.col_invoice'), accessorKey: 'invoiceNumber', cell: ({ getValue }) => `<code>${getValue()}</code>` },
+		{ header: t('finance.col_student'), accessorKey: 'studentName' },
+		{ header: t('finance.col_batch'), accessorFn: (row) => row.batchName || '-' },
+		{ header: t('finance.col_amount'), accessorKey: 'amount', cell: ({ getValue }) => formatCurrency(getValue() as number) },
 		{
-			header: 'Status',
+			header: t('finance.col_status'),
 			accessorKey: 'status',
 			cell: ({ getValue }) => {
 				const s = getValue() as string;
 				return `<span class="badge-inline">${getStatusLabel(s)}</span>`;
 			}
 		},
-		{ header: 'Jatuh Tempo', accessorKey: 'dueDate', cell: ({ getValue }) => formatDate(getValue() as string) },
-		{ header: 'Dibayar', accessorFn: (row) => row.paidAt ? formatDate(row.paidAt) : '-' }
+		{ header: t('finance.col_due_date'), accessorKey: 'dueDate', cell: ({ getValue }) => formatDate(getValue() as string) },
+		{ header: t('finance.col_paid_date'), accessorFn: (row) => row.paidAt ? formatDate(row.paidAt) : '-' }
 	];
 
 	onMount(() => {
@@ -85,74 +86,74 @@
 
 	function getStatusLabel(status: string) {
 		switch (status) {
-			case 'paid': return 'Lunas';
-			case 'unpaid': return 'Belum Dibayar';
-			case 'overdue': return 'Jatuh Tempo';
+			case 'paid': return t('finance.paid');
+			case 'unpaid': return t('finance.unpaid');
+			case 'overdue': return t('finance.overdue');
 			default: return status;
 		}
 	}
 
 	const filterOptions = [
-		{ value: 'all', label: 'Semua' },
-		{ value: 'unpaid', label: 'Belum Dibayar' },
-		{ value: 'paid', label: 'Lunas' },
-		{ value: 'overdue', label: 'Jatuh Tempo' },
+		{ value: 'all', label: t('finance.filter_all') },
+		{ value: 'unpaid', label: t('finance.unpaid') },
+		{ value: 'paid', label: t('finance.paid') },
+		{ value: 'overdue', label: t('finance.overdue') },
 	];
 </script>
 
 <svelte:head>
-	<title>Keuangan Bimbel — RPL AI Curriculum</title>
+	<title>{t('finance.title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/bimbel">← Bimbel Dashboard</a></div>
-		<h1>💰 Keuangan Bimbel</h1>
-		<p class="subtitle">Tagihan dan pembayaran bimbingan belajar</p>
+		<div class="breadcrumb"><a href="/bimbel">← {t('finance.breadcrumb')}</a></div>
+		<h1>{t('finance.heading')}</h1>
+		<p class="subtitle">{t('finance.subtitle')}</p>
 	</div>
 
 	<div class="summary-grid">
 		<div class="summary-card">
 			<span class="summary-value">{formatCurrency(totals.total)}</span>
-			<span class="summary-label">Total Tagihan</span>
+			<span class="summary-label">{t('finance.total_invoices')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--success)">{formatCurrency(totals.paid)}</span>
-			<span class="summary-label">Sudah Dibayar</span>
+			<span class="summary-label">{t('finance.paid')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--warning)">{formatCurrency(totals.unpaid)}</span>
-			<span class="summary-label">Belum Dibayar</span>
+			<span class="summary-label">{t('finance.unpaid')}</span>
 		</div>
 		<div class="summary-card">
 			<span class="summary-value" style="color: var(--danger)">{formatCurrency(totals.overdue)}</span>
-			<span class="summary-label">Jatuh Tempo</span>
+			<span class="summary-label">{t('finance.overdue')}</span>
 		</div>
 	</div>
 
 	<div class="toolbar">
 		<div class="filter-group">
-			<label for="filter-status">Filter Status</label>
+			<label for="filter-status">{t('common.filter_status')}</label>
 			<select id="filter-status" class="filter-select" bind:value={filterStatus}>
 				{#each filterOptions as opt}
 					<option value={opt.value}>{opt.label}</option>
 				{/each}
 			</select>
 		</div>
-		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>🔄 Refresh</button>
+		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>🔄 {t('common.refresh')}</button>
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat data keuangan..." />
+		<Loading message={t('finance.loading')} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if invoices.length === 0}
-		<EmptyState icon="💰" title="Belum Ada Tagihan" description="Belum ada invoice yang tercatat." />
+		<EmptyState icon="💰" title={t('finance.empty_title')} description={t('finance.empty_desc')} />
 	{:else if filtered.length === 0}
-		<EmptyState icon="🔍" title="Tidak Ditemukan" description="Tidak ada invoice dengan filter ini." />
+		<EmptyState icon="🔍" title={t('common.not_found')} description={t('finance.no_invoices_match')} />
 	{:else}
 		<div class="table-wrap">
-			<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari invoice..." />
+			<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder={t('finance.search_placeholder')} />
 		</div>
 	{/if}
 </div>

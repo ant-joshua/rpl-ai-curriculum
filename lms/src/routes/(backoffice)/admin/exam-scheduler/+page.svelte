@@ -41,7 +41,7 @@
 			{ header: 'Nama Ruangan', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
 			{ header: 'Kapasitas', accessorKey: 'capacity', cell: ({ getValue }) => getValue() ?? '\u2014' },
 			{ header: 'Lokasi', accessorKey: 'location', cell: ({ getValue }) => (getValue() as string) || '\u2014' },
-			{ header: 'Status', accessorKey: 'is_available', cell: ({ getValue }) => getValue() !== false ? '<span class="status-badge status-published">Tersedia</span>' : '<span class="status-badge status-cancelled">Tidak Tersedia</span>' },
+			{ header: 'Status', accessorKey: 'is_available', cell: ({ getValue }) => getValue() !== false ? '<span class="status-badge status-published">'+t('admin.tersedia')+'</span>' : '<span class="status-badge status-cancelled">Tidak Tersedia</span>' },
 		];
 
 		const typeColumns: ColumnDef<any, any>[] = [
@@ -91,10 +91,11 @@
 			return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 		} catch { return d; }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Exam Scheduler — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -109,7 +110,7 @@
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -151,10 +152,10 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Nama Ujian</th>
-									<th>Tanggal</th>
+									<th>{t('admin.nama_ujian')}</th>
+									<th>{t('admin.tanggal')}</th>
 									<th>Jam</th>
-									<th>Status</th>
+									<th>{t('common.status')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -192,10 +193,10 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Nama Ruangan</th>
-									<th>Kapasitas</th>
-									<th>Lokasi</th>
-									<th>Status</th>
+									<th>{t('admin.nama_ruangan')}</th>
+									<th>{t('admin.kapasitas')}</th>
+									<th>{t('admin.lokasi')}</th>
+									<th>{t('common.status')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -206,9 +207,9 @@
 										<td>{room.location || '—'}</td>
 										<td>
 											{#if room.is_available !== false}
-												<span class="status-badge status-published">Tersedia</span>
+												<span class="status-badge status-published">{t('admin.tersedia')}</span>
 											{:else}
-												<span class="status-badge status-cancelled">Tidak Tersedia</span>
+												<span class="status-badge status-cancelled">{t('admin.tidak_tersedia')}</span>
 											{/if}
 										</td>
 									</tr>
@@ -232,14 +233,14 @@
 			{:else}
 				<div class="card">
 					<div class="card-header">
-						<h3>Tipe Ujian</h3>
+						<h3>{t('admin.tipe_ujian')}</h3>
 					</div>
 					<div class="table-container">
 						<table>
 							<thead>
 								<tr>
 									<th>Nama Tipe</th>
-									<th>Deskripsi</th>
+									<th>{t('common.description')}</th>
 									<th>Durasi Default</th>
 								</tr>
 							</thead>

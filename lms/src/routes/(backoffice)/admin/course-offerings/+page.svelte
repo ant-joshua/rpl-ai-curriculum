@@ -78,7 +78,7 @@
 		}
 		html += `</select>`;
 		if (savingId === offering.id) {
-			html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">Menyimpan...</span>`;
+			html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">{t('common.saving')}</span>`;
 		}
 		return html;
 	}
@@ -117,7 +117,7 @@
 				}
 				html += `</select>`;
 				if (savingId === id) {
-					html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">Menyimpan...</span>`;
+					html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">{t('common.saving')}</span>`;
 				}
 				html += `</div>`;
 				return html;
@@ -144,10 +144,11 @@
 		const offeringId = target.dataset.offeringId;
 		if (offeringId) assignInstructor(offeringId, target.value);
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Course Offerings — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page" onchange={handleAssign}>
@@ -168,7 +169,7 @@
 			<CardContent>
 				<div class="error-state">
 					<p class="error-text">{error}</p>
-					<Button onclick={loadData}>Coba Lagi</Button>
+					<Button onclick={loadData}>{t('common.retry')}</Button>
 				</div>
 			</CardContent>
 		</Card>

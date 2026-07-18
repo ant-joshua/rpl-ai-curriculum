@@ -279,10 +279,11 @@
 			default: return t;
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Survey Templates — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -312,7 +313,7 @@
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadTemplates}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadTemplates}>{t('common.retry')}</button>
 		</div>
 	{/if}
 
@@ -349,7 +350,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>Batal</button>
+					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
 					<button class="btn-primary" onclick={saveTemplate} disabled={saving || !formName}>
 						{saving ? 'Menyimpan...' : editingId ? 'Update' : 'Buat Template'}
 					</button>
@@ -403,7 +404,7 @@
 					{/if}
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelQForm}>Batal</button>
+					<button class="btn-secondary" onclick={cancelQForm}>{t('common.cancel')}</button>
 					<button class="btn-primary" onclick={saveQuestion} disabled={saving || !qFormText}>
 						{saving ? 'Menyimpan...' : editingQuestionId ? 'Update' : 'Tambah'}
 					</button>
@@ -431,8 +432,8 @@
 						</div>
 						<div class="t-actions">
 							<button class="btn-small" onclick={() => openAddQuestion(t.id)}>+ Pertanyaan</button>
-							<button class="btn-small" onclick={() => openEdit(t)}>Edit</button>
-							<button class="btn-small btn-danger" onclick={() => deleteTemplate(t.id)}>Hapus</button>
+							<button class="btn-small" onclick={() => openEdit(t)}>{t('common.edit')}</button>
+							<button class="btn-small btn-danger" onclick={() => deleteTemplate(t.id)}>{t('common.delete')}</button>
 						</div>
 					</div>
 
@@ -476,7 +477,7 @@
 					<div class="template-card-footer">
 						<span class="t-date">{formatDate(t.created_at)}</span>
 						{#if selectedTemplateId === t.id}
-							<button class="btn-text" onclick={() => { selectedTemplateId = null; questions = []; }}>Tutup</button>
+							<button class="btn-text" onclick={() => { selectedTemplateId = null; questions = []; }}>{t('common.close')}</button>
 						{:else}
 							<button class="btn-text" onclick={() => { selectedTemplateId = t.id; fetchQuestions(t.id); }}>Lihat Pertanyaan</button>
 						{/if}

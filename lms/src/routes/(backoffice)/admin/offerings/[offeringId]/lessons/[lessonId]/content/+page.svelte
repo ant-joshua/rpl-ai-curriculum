@@ -280,10 +280,11 @@
 		if (mediaFiles.length === 0) loadMediaFiles();
 		showMediaModal = true;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>{lesson?.title || 'Content Editor'} — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="content-editor-page">
@@ -386,7 +387,7 @@
 		{/if}
 
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showBlockModal = false} disabled={blSaving}>Batal</Button>
+			<Button variant="secondary" onclick={() => showBlockModal = false} disabled={blSaving}>{t('common.cancel')}</Button>
 			<Button onclick={saveBlock} loading={blSaving}>{editingBlock ? 'Simpan' : 'Buat'}</Button>
 		{/snippet}
 	</Modal>
@@ -417,7 +418,7 @@
 			</div>
 		{/if}
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showMediaModal = false}>Tutup</Button>
+			<Button variant="secondary" onclick={() => showMediaModal = false}>{t('common.close')}</Button>
 		{/snippet}
 	</Modal>
 {/if}

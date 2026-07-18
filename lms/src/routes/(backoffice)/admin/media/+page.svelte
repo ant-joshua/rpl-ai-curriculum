@@ -186,10 +186,11 @@
 		if (file.url.startsWith('http')) return file.url;
 		return file.url;
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Media — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="media-page">
@@ -229,7 +230,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<Button onclick={loadFiles}>Coba Lagi</Button>
+			<Button onclick={loadFiles}>{t('common.retry')}</Button>
 		</div>
 	{:else if files.length === 0}
 		<EmptyState icon="📁" title="Belum ada file" description="Upload file pertama anda" />
@@ -266,9 +267,9 @@
 
 		{#if totalPages > 1}
 			<div class="pagination">
-				<Button size="sm" onclick={prevPage} disabled={page <= 1}>← Sebelumnya</Button>
+				<Button size="sm" onclick={prevPage} disabled={page <= 1}>{t('admin.prev')}</Button>
 				<span class="page-info">Halaman {page} dari {totalPages} ({total} total)</span>
-				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>Selanjutnya →</Button>
+				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>{t('admin.next_page')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -296,7 +297,7 @@
 				</div>
 			{/if}
 			<div class="preview-details">
-				<div class="detail-row"><span>Tipe</span><span>{previewFile.mime_type}</span></div>
+				<div class="detail-row"><span>{t('admin.tipe')}</span><span>{previewFile.mime_type}</span></div>
 				<div class="detail-row"><span>Ukuran</span><span>{formatSize(previewFile.size)}</span></div>
 				<div class="detail-row"><span>Filename</span><span class="detail-code">{previewFile.filename}</span></div>
 				<div class="detail-row"><span>Diupload</span><span>{formatDate(previewFile.created_at)}</span></div>
@@ -306,7 +307,7 @@
 			<Button variant="primary" onclick={() => copyUrl(getPreviewUrl(previewFile), previewFile.id)}>
 				{copiedId === previewFile.id ? '✅ Tersalin!' : '📋 Salin URL'}
 			</Button>
-			<Button variant="secondary" onclick={() => showPreviewModal = false}>Tutup</Button>
+			<Button variant="secondary" onclick={() => showPreviewModal = false}>{t('common.close')}</Button>
 		{/snippet}
 	</Modal>
 {/if}

@@ -191,10 +191,11 @@
 			loadData(); // revert on error
 		}
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>{offering?.name || 'Lesson Builder'} — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="lessons-page">
@@ -285,7 +286,7 @@
 			{ value: 'yes', label: 'Ya (opsional)' },
 		]} bind:value={lesOptional} />
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showLessonModal = false} disabled={lesSaving}>Batal</Button>
+			<Button variant="secondary" onclick={() => showLessonModal = false} disabled={lesSaving}>{t('common.cancel')}</Button>
 			<Button onclick={saveLesson} loading={lesSaving}>{editingLesson ? 'Simpan' : 'Buat'}</Button>
 		{/snippet}
 	</Modal>

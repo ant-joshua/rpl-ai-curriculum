@@ -4,6 +4,7 @@
 	import { DataTable, Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	type Ranking = {
 		rank: number;
@@ -76,7 +77,7 @@
 
 	const rankingColumns = $derived<ColumnDef<any, any>[]>([
 		{
-			header: 'Rank',
+			header: t('tryout.col_rank'),
 			accessorKey: 'rank',
 			cell: ({ getValue }) => {
 				const r = getValue() as number;
@@ -84,7 +85,7 @@
 			}
 		},
 		{
-			header: 'Nama',
+			header: t('tryout.col_name'),
 			accessorKey: 'name',
 			cell: ({ getValue }) => `<span style="font-weight:500;min-width:140px">${getValue()}</span>`
 		},
@@ -98,7 +99,7 @@
 			}
 		}) as ColumnDef<any, any>),
 		{
-			header: 'Total',
+			header: t('tryout.col_total'),
 			accessorKey: 'total',
 			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600">${getValue()}</span>`
 		},
@@ -106,27 +107,27 @@
 
 	const analysisColumns: ColumnDef<any, any>[] = [
 		{
-			header: 'No',
+			header: t('tryout.col_no'),
 			accessorKey: 'no',
 			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
 		},
 		{
-			header: 'Benar',
+			header: t('tryout.col_correct'),
 			accessorKey: 'correct',
 			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
 		},
 		{
-			header: 'Total',
+			header: t('tryout.col_total'),
 			accessorKey: 'total',
 			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
 		},
 		{
-			header: 'Persentase',
+			header: t('tryout.col_percentage'),
 			accessorKey: 'correctPercent',
 			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;min-width:80px">${((getValue() as number) || 0).toFixed(1)}%</span>`
 		},
 		{
-			header: 'Indikator',
+			header: t('tryout.col_indicator'),
 			accessorKey: 'correctPercent',
 			cell: ({ getValue }) => barHtml((getValue() as number) || 0)
 		},
@@ -134,15 +135,15 @@
 </script>
 
 <svelte:head>
-	<title>{tryout?.title || 'Detail Try Out'} — Bimbel — RPL AI Curriculum</title>
+	<title>{tryout?.title || t('tryout.detail')} — Bimbel — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="page">
 	<div class="page-header">
-		<div class="breadcrumb"><a href="/bimbel/tryout">← Try Out</a></div>
+		<div class="breadcrumb"><a href="/bimbel/tryout">← {t('tryout.breadcrumb')}</a></div>
 
 		{#if loading}
-			<Loading message="Memuat data..." />
+			<Loading message={t('common.loading')} />
 		{:else if error}
 			<div class="error-state">{error}</div>
 		{:else if tryout}
@@ -152,42 +153,42 @@
 					<p class="subtitle">
 						{formatDate(tryout.date)}
 						<span class="sep">·</span>
-						{tryout.participants} peserta
+						{tryout.participants} {t('tryout.participants_unit')}
 					</p>
 				</div>
 			</div>
 
 			<div class="tabs">
 				<button class="tab" class:tab--active={activeTab === 'ranking'} onclick={() => activeTab = 'ranking'}>
-					🏆 Ranking
+					{t('tryout.ranking_tab')}
 				</button>
 				<button class="tab" class:tab--active={activeTab === 'analysis'} onclick={() => activeTab = 'analysis'}>
-					📊 Analisis Soal
+					{t('tryout.analysis_tab')}
 				</button>
 			</div>
 
 			{#if activeTab === 'ranking'}
 				{#if rankings.length === 0}
-					<EmptyState icon="🏆" title="Belum Ada Ranking" description="Belum ada hasil try out." />
+					<EmptyState icon="🏆" title={t('tryout.no_ranking_title')} description={t('tryout.no_ranking_desc')} />
 				{:else}
 					<DataTable
 						columns={rankingColumns}
 						data={rankings}
 						showSearch={false}
 						showPagination={false}
-						emptyMessage="Belum ada ranking"
+						emptyMessage={t('tryout.empty_ranking')}
 					/>
 				{/if}
 			{:else}
 				{#if questionStats.length === 0}
-					<EmptyState icon="📊" title="Belum Ada Data" description="Belum ada analisis soal." />
+					<EmptyState icon="📊" title={t('tryout.no_analysis_title')} description={t('tryout.no_analysis_desc')} />
 				{:else}
 					<DataTable
 						columns={analysisColumns}
 						data={questionStats}
 						showSearch={false}
 						showPagination={false}
-						emptyMessage="Belum ada analisis"
+						emptyMessage={t('tryout.empty_analysis')}
 					/>
 				{/if}
 			{/if}

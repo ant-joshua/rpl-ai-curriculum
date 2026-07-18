@@ -140,7 +140,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 		cell: ({ getValue }) => {
 			const active = getValue();
 			return active
-				? '<span class="badge badge-active">Aktif</span>'
+				? '<span class="badge badge-active">'+t('common.active')+'</span>'
 				: '<span class="badge badge-inactive">Nonaktif</span>';
 		}
 	},
@@ -149,11 +149,12 @@ const roomColumns: ColumnDef<any, any>[] = [
 		id: 'actions',
 		cell: ({ row }) => {
 			const r = row.original;
-			return `<div style="display:flex;gap:8px"><button class="btn-sm" onclick="window.__editRoom && window.__editRoom('${r.id}')">Edit</button><button class="btn-sm btn-danger" onclick="window.__deleteRoom && window.__deleteRoom('${r.id}')">Hapus</button></div>`;
+			return `<div style="display:flex;gap:8px"><button class="btn-sm" onclick="window.__editRoom && window.__editRoom('${r.id}')">{t('common.edit')}</button><button class="btn-sm btn-danger" onclick="window.__deleteRoom && window.__deleteRoom('${r.id}')">Hapus</button></div>`;
 		}
 	},
 ];
 
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="page">
@@ -176,7 +177,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn" onclick={loadRooms}>Coba Lagi</button>
+			<button class="btn" onclick={loadRooms}>{t('common.retry')}</button>
 		</div>
 	{:else if rooms.length === 0}
 		<div class="empty-state">
@@ -204,11 +205,11 @@ const roomColumns: ColumnDef<any, any>[] = [
 						<input id="room-name" type="text" bind:value={form.name} required placeholder="Ruang Aula" />
 					</div>
 					<div class="form-group">
-						<label for="room-code">Kode</label>
+						<label for="room-code">{t('common.code')}</label>
 						<input id="room-code" type="text" bind:value={form.code} placeholder="AULA-01" />
 					</div>
 					<div class="form-group">
-						<label for="room-capacity">Kapasitas</label>
+						<label for="room-capacity">{t('admin.kapasitas')}</label>
 						<input id="room-capacity" type="number" bind:value={form.capacity} min="1" required />
 					</div>
 					<div class="form-group">
@@ -225,7 +226,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 					</div>
 				</div>
 				<div class="modal-actions">
-					<button type="button" class="btn" onclick={closeModal}>Batal</button>
+					<button type="button" class="btn" onclick={closeModal}>{t('common.cancel')}</button>
 					<button type="submit" class="btn btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
 				</div>
 			</form>

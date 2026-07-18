@@ -245,6 +245,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	];
 
 	onMount(loadInvoices);
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <div class="pg-page">
@@ -277,7 +278,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
-			<button class="pg-btn pg-btn-ghost" onclick={loadInvoices}>Coba Lagi</button>
+			<button class="pg-btn pg-btn-ghost" onclick={loadInvoices}>{t('common.retry')}</button>
 		</div>
 	{:else if invoices.length === 0}
 		<div class="pg-empty">
@@ -293,9 +294,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<!-- Pagination -->
 		{#if totalPages > 1}
 			<div class="pg-pagination">
-				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page <= 1} onclick={() => { page--; loadInvoices(); }}>Prev</button>
+				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page <= 1} onclick={() => { page--; loadInvoices(); }}>{t('admin.prev')}</button>
 				<span class="pg-page-info">Hal {page} / {totalPages}</span>
-				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page >= totalPages} onclick={() => { page++; loadInvoices(); }}>Next</button>
+				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page >= totalPages} onclick={() => { page++; loadInvoices(); }}>{t('admin.next_page')}</button>
 			</div>
 		{/if}
 	{/if}
@@ -333,7 +334,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<span class="pg-detail-value">{formatCurrency(selectedInvoice.fine || 0)}</span>
 						</div>
 						<div class="pg-detail-item">
-							<span class="pg-detail-label">Total</span>
+							<span class="pg-detail-label">{t('common.total')}</span>
 							<span class="pg-detail-value pg-bold">{formatCurrency(selectedInvoice.total_amount)}</span>
 						</div>
 						<div class="pg-detail-item">
@@ -341,7 +342,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<span class="pg-detail-value">{formatCurrency(selectedInvoice.paid_amount || 0)}</span>
 						</div>
 						<div class="pg-detail-item">
-							<span class="pg-detail-label">Status</span>
+							<span class="pg-detail-label">{t('common.status')}</span>
 							<span class="pg-badge {statusBadge(selectedInvoice.status)}">{selectedInvoice.status}</span>
 						</div>
 						<div class="pg-detail-item">
@@ -354,7 +355,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						<h3 class="pg-subsection">Item Invoice</h3>
 						<table class="pg-table pg-table-mini">
 							<thead>
-								<tr><th>Deskripsi</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr>
+								<tr><th>{t('common.description')}</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr>
 							</thead>
 							<tbody>
 								{#each selectedInvoice.items as item}
@@ -406,7 +407,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<input class="pg-input" type="number" bind:value={formFine} min="0" />
 						</div>
 						<div class="pg-field pg-field-full">
-							<label class="pg-label">Catatan</label>
+							<label class="pg-label">{t('admin.catatan')}</label>
 							<input class="pg-input" bind:value={formNotes} placeholder="Catatan opsional" />
 						</div>
 					</div>
@@ -427,7 +428,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>Batal</button>
+					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
 					<button class="pg-btn pg-btn-primary" onclick={submitInvoice} disabled={saving || !formStudentId || formItems.length === 0}>
 						{saving ? 'Menyimpan...' : 'Buat Invoice'}
 					</button>
@@ -476,13 +477,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 							<input class="pg-input" bind:value={payRef} placeholder="No. referensi" />
 						</div>
 						<div class="pg-field pg-field-full">
-							<label class="pg-label">Catatan</label>
+							<label class="pg-label">{t('admin.catatan')}</label>
 							<input class="pg-input" bind:value={payNotes} placeholder="Catatan opsional" />
 						</div>
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showPaymentModal = false}>Batal</button>
+					<button class="pg-btn pg-btn-ghost" onclick={() => showPaymentModal = false}>{t('common.cancel')}</button>
 					<button class="pg-btn pg-btn-primary" onclick={submitPayment} disabled={saving || payAmount <= 0}>
 						{saving ? 'Menyimpan...' : 'Catat Pembayaran'}
 					</button>

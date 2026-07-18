@@ -73,10 +73,11 @@
 			} else alert(json.error || 'Gagal menghapus');
 		} catch { alert('Terjadi kesalahan'); }
 	}
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>Fakultas — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -92,7 +93,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
 		</div>
 	{:else if fakultasList.length === 0}
 		<div class="empty-state">
@@ -121,8 +122,8 @@
 							<span class="cell-count">{row.prodi_count}</span>
 						{:else if column.key === 'actions'}
 							<div class="cell-actions">
-								<button class="btn-edit" onclick={() => openEdit(row)}>Edit</button>
-								<button class="btn-delete" onclick={() => deleteFakultas(row.id)}>Hapus</button>
+								<button class="btn-edit" onclick={() => openEdit(row)}>{t('common.edit')}</button>
+								<button class="btn-delete" onclick={() => deleteFakultas(row.id)}>{t('common.delete')}</button>
 							</div>
 						{/if}
 					{/snippet}
@@ -144,7 +145,7 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="fakultas-name">Nama Fakultas</label>
+					<label for="fakultas-name">{t('admin.nama_fakultas')}</label>
 					<input id="fakultas-name" type="text" bind:value={formName} placeholder="Cth: Fakultas Ilmu Komputer" />
 				</div>
 				<div class="field">
@@ -153,7 +154,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>
@@ -174,16 +175,16 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="fakultas-edit-name">Nama Fakultas</label>
+					<label for="fakultas-edit-name">{t('admin.nama_fakultas')}</label>
 					<input id="fakultas-edit-name" type="text" bind:value={formName} />
 				</div>
 				<div class="field">
-					<label for="fakultas-edit-code">Kode</label>
+					<label for="fakultas-edit-code">{t('common.code')}</label>
 					<input id="fakultas-edit-code" type="text" bind:value={formCode} />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>Batal</button>
+				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
 				<button class="btn-primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
 				</button>

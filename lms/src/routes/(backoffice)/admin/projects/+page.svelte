@@ -86,10 +86,11 @@ import { addToast } from '$lib/stores/toast.svelte';
 	}
 
 	let filtered = $derived(projects.filter(p => tab === 'all' || p.status === tab));
+  import { t } from '$lib/stores/i18n.svelte';
 </script>
 
 <svelte:head>
-	<title>🚀 Projects — Admin</title>
+	<title>{t('admin.title')}</title>
 </svelte:head>
 
 <div class="projects-page">
@@ -101,7 +102,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 	{#if loading}
 		<div class="loading">Loading projects...</div>
 	{:else if error}
-		<div class="error-state"><p>{error}</p><button onclick={loadProjects} class="btn">Retry</button></div>
+		<div class="error-state"><p>{error}</p><button onclick={loadProjects} class="btn">{t('common.retry')}</button></div>
 	{:else}
 		<div class="section-header">
 			<div class="tabs">
@@ -217,7 +218,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 				</div>
 
 				<div class="modal-actions">
-					<button onclick={() => editModal = null} class="btn">Cancel</button>
+					<button onclick={() => editModal = null} class="btn">{t('common.cancel')}</button>
 					<button onclick={() => d.key ? updateProject(d.key, {
 						title: d.title,
 						description: d.description,
@@ -235,7 +236,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 						timeEstimate: d.timeEstimate,
 						steps: d.steps,
 						status: d.status,
-					})} class="btn btn-primary">Save</button>
+					})} class="btn btn-primary">{t('common.save')}</button>
 				</div>
 			</div>
 		</div>
