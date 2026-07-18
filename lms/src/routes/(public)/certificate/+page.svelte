@@ -166,8 +166,10 @@
 
 	.not-eligible h1 {
 		font-size: 28px;
-		font-weight: 700;
+		font-weight: 590;
 		margin-bottom: 12px;
+		font-family: inherit;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.not-eligible-desc {
@@ -304,12 +306,12 @@
 		border-radius: 20px;
 		padding: 4px;
 		box-shadow:
-			0 0 40px rgba(212, 160, 23, 0.15),
+			0 0 40px rgba(245, 158, 11, 0.15),
 			0 8px 32px rgba(0, 0, 0, 0.3);
 	}
 
 	.cert-border-inner {
-		background: linear-gradient(160deg, #1a1a2e, #16213e, #1a1a2e);
+		background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04), rgba(255,255,255,0.02));
 		border-radius: 17px;
 		padding: 48px 40px 40px;
 		position: relative;
@@ -385,11 +387,13 @@
 
 	.cert-label {
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 590;
 		letter-spacing: 0.25em;
 		color: #f59e0b;
 		text-transform: uppercase;
 		margin-bottom: 12px;
+		font-family: inherit;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.cert-divider {
@@ -421,13 +425,15 @@
 
 	.cert-name {
 		font-size: 36px;
-		font-weight: 800;
+		font-weight: 590;
 		background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 		margin-bottom: 16px;
 		line-height: 1.2;
+		font-family: inherit;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.cert-body {

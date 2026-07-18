@@ -319,7 +319,7 @@
 
   .try-info { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
   .try-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
-  .try-badge.best { background: rgba(212, 160, 23, 0.1); color: #d4a017; border-color: rgba(212, 160, 23, 0.3); }
+  .try-badge.best { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
 
   .results-list { text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
   .result-item { padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); }
