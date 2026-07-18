@@ -143,7 +143,7 @@
 
 	.shortcut-hint {
 		font-size: 12px;
-		color: var(--text-secondary, #666);
+		color: var(--text-secondary, #8a8f98);
 		text-align: center;
 		margin: 0;
 	}

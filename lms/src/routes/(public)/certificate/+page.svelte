@@ -300,7 +300,7 @@
 	}
 
 	.cert-border-outer {
-		background: linear-gradient(135deg, #d4a017, #f0d060, #d4a017);
+		background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
 		border-radius: 20px;
 		padding: 4px;
 		box-shadow:
@@ -321,7 +321,7 @@
 		position: absolute;
 		width: 40px;
 		height: 40px;
-		border-color: #d4a017;
+		border-color: #f59e0b;
 		border-style: solid;
 		opacity: 0.6;
 	}
@@ -361,7 +361,7 @@
 	}
 
 	.star {
-		color: #d4a017;
+		color: #f59e0b;
 		margin: 0 4px;
 		display: inline-block;
 		animation: twinkle 2s ease-in-out infinite;
@@ -387,7 +387,7 @@
 		font-size: 14px;
 		font-weight: 700;
 		letter-spacing: 0.25em;
-		color: #d4a017;
+		color: #f59e0b;
 		text-transform: uppercase;
 		margin-bottom: 12px;
 	}
@@ -404,11 +404,11 @@
 		display: block;
 		width: 80px;
 		height: 1px;
-		background: linear-gradient(90deg, transparent, #d4a017, transparent);
+		background: linear-gradient(90deg, transparent, #f59e0b, transparent);
 	}
 
 	.divider-diamond {
-		color: #d4a017;
+		color: #f59e0b;
 		font-size: 10px;
 	}
 
@@ -422,7 +422,7 @@
 	.cert-name {
 		font-size: 36px;
 		font-weight: 800;
-		background: linear-gradient(135deg, #d4a017, #f0d060, #d4a017);
+		background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -439,7 +439,7 @@
 	}
 
 	.cert-body strong {
-		color: #d4a017;
+		color: #f59e0b;
 	}
 
 	.cert-footer {
@@ -508,7 +508,7 @@
 		left: 0;
 		right: 0;
 		height: 4px;
-		background: linear-gradient(90deg, transparent, #d4a017, #f0d060, #d4a017, transparent);
+		background: linear-gradient(90deg, transparent, #f59e0b, #fbbf24, #f59e0b, transparent);
 	}
 
 	/* ===== Print styles ===== */

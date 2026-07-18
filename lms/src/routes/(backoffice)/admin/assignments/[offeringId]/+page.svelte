@@ -564,7 +564,7 @@
 	}
 	.submissions-table tr:hover td { background: var(--hover); }
 	.submissions-table tr:last-child td { border-bottom: none; }
-	.row--late { background: rgba(231, 76, 60, 0.03); }
+	.row--late { background: rgba(239, 68, 68, 0.03); }
 
 	.student-name { font-weight: 600; font-size: 13px; }
 

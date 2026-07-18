@@ -216,7 +216,7 @@
 	.preview-label {
 		font-size: 11px;
 		font-weight: 600;
-		color: #666;
+		color: #8a8f98;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 	}
