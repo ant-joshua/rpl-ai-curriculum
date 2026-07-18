@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let semesterList: any[] = $state([]);
 	let loading = $state(true);
@@ -39,10 +41,8 @@
 		if (!formTahunAjaran.trim()) { saveError = 'Tahun ajaran wajib diisi'; return; }
 		saving = true; saveError = '';
 		try {
-			const method = 'POST';
-			const url = '/api/admin/academic-semesters';
-			const res = await fetch(url, {
-				method,
+			const res = await fetch('/api/admin/academic-semesters', {
+				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: formName.trim(),
@@ -75,6 +75,62 @@
 		if (s === '2') return 'Genap';
 		return s;
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Nama Semester',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+		},
+		{
+			header: 'Kode',
+			accessorKey: 'code',
+			cell: ({ getValue }) => {
+				const code = getValue() as string;
+				return code ? `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${code}</code>` : '<span>—</span>';
+			}
+		},
+		{
+			header: 'Tahun Ajaran',
+			accessorKey: 'tahun_ajaran',
+			cell: ({ getValue, row }) => {
+				const val = getValue() as string || row.original.academic_year;
+				return val || '—';
+			}
+		},
+		{
+			header: 'Semester',
+			accessorKey: 'semester',
+			cell: ({ getValue, row }) => {
+				const val = (getValue() as string) || row.original.semester_value || '';
+				return getSemesterLabel(val);
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'is_active',
+			cell: ({ getValue }) => {
+				const active = getValue() as boolean;
+				if (active) {
+					return '<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(16,185,129,0.1);color:#10b981">Aktif</span>';
+				}
+				return '<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(98,102,109,0.1);color:var(--text-quaternary)">Tidak Aktif</span>';
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ getValue, row }) => {
+				const id = getValue() as string;
+				if (row.original.is_active) return '<span style="color:var(--text-quaternary);font-size:12px">—</span>';
+				return `<button onclick="window.__semSetActive('${id}')" style="padding:4px 10px;border:1px solid rgba(16,185,129,0.3);border-radius:6px;background:rgba(16,185,129,0.1);color:#10b981;font-size:12px;cursor:pointer">Set Aktif</button>`;
+			}
+		}
+	];
+
+	$effect(() => {
+		(window as any).__semSetActive = setActive;
+	});
 </script>
 
 <svelte:head>
@@ -108,42 +164,13 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Semester</th>
-							<th>Kode</th>
-							<th>Tahun Ajaran</th>
-							<th>Semester</th>
-							<th>Status</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each semesterList as s}
-							<tr>
-								<td class="cell-name">{s.name}</td>
-								<td><code>{s.code || '—'}</code></td>
-								<td>{s.tahun_ajaran || s.academic_year || '—'}</td>
-								<td>{getSemesterLabel(s.semester || s.semester_value || '')}</td>
-								<td>
-									{#if s.is_active}
-										<span class="status-active">Aktif</span>
-									{:else}
-										<span class="status-inactive">Tidak Aktif</span>
-									{/if}
-								</td>
-								<td class="cell-actions">
-									{#if !s.is_active}
-										<button class="btn-activate" onclick={() => setActive(s.id)}>Set Aktif</button>
-									{:else}
-										<span class="text-muted">—</span>
-									{/if}
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable
+					{columns}
+					data={semesterList}
+					pageSize={20}
+					showSearch={false}
+					emptyMessage="Belum ada semester"
+				/>
 			</div>
 		</div>
 	{/if}
@@ -202,10 +229,7 @@
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
-	.btn-activate { padding: 4px 10px; border: 1px solid rgba(16,185,129,0.3); border-radius: 6px; background: rgba(16,185,129,0.1); color: #10b981; font-size: 12px; cursor: pointer; }
-	.btn-activate:hover { background: rgba(16,185,129,0.2); }
 	.btn-cancel { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
-	.text-muted { color: var(--text-quaternary); font-size: 12px; }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 40px; }
@@ -214,15 +238,6 @@
 	.empty-state p { margin-bottom: 16px; }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-actions { white-space: nowrap; }
-	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.status-active { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-inactive { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(98, 102, 109, 0.1); color: var(--text-quaternary); }
 
 	.field-row { display: flex; gap: 12px; }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }

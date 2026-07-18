@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, SearchBar, PageHeader, EmptyState } from '$lib/components/ui';
+	import { Button, Badge, Card, CardContent, SearchBar, PageHeader, EmptyState, DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let enrollments: any[] = $state([]);
 	let offerings: any[] = $state([]);
@@ -137,6 +138,9 @@
 		offerings.map(o => ({ value: o.id, label: `${o.name} (${o.code || '-'})` }))
 	);
 
+	// Force DataTable re-render when confirmDelete changes by tagging each row
+	const tableData = $derived(enrollments.map(e => ({ ...e, _cd: confirmDelete })));
+
 	function formatDate(d: string | null): string {
 		if (!d) return '-';
 		try { return new Date(d + 'Z').toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }); }
@@ -152,6 +156,84 @@
 		const map: Record<string, string> = { active: 'Aktif', completed: 'Selesai', dropped: 'Drop Out', pending: 'Menunggu' };
 		return map[s] || s;
 	}
+
+	function statusBadgeHtml(s: string): string {
+		const colors: Record<string, { bg: string; color: string }> = {
+			active: { bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
+			completed: { bg: 'rgba(59,130,246,0.12)', color: '#3b82f6' },
+			dropped: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444' },
+			pending: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
+		};
+		const c = colors[s] || { bg: 'rgba(156,163,175,0.12)', color: '#9ca3af' };
+		return `<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${c.bg};color:${c.color}">${statusLabel(s)}</span>`;
+	}
+
+	// Expose delete handler for inline HTML buttons
+	$effect(() => {
+		(window as any).__confirmDeleteEnrollment = (id: string) => { confirmDelete = id; };
+		(window as any).__deleteEnrollment = handleDelete;
+		(window as any).__cancelDelete = () => { confirmDelete = null; };
+		return () => {
+			delete (window as any).__confirmDeleteEnrollment;
+			delete (window as any).__deleteEnrollment;
+			delete (window as any).__cancelDelete;
+		};
+	});
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Siswa',
+			accessorKey: 'user_name',
+			cell: ({ row }) => {
+				const e = row.original;
+				return `<span style="font-weight:600">${e.user_name || e.username || '-'}</span>`;
+			}
+		},
+		{
+			header: 'Email',
+			accessorKey: 'user_email',
+			cell: ({ getValue }) => `<span style="color:var(--text-secondary);font-size:13px">${(getValue() as string) || '-'}</span>`
+		},
+		{
+			header: 'Kursus',
+			accessorKey: 'offering_name',
+			cell: ({ row }) => {
+				const e = row.original;
+				let html = `<span style="font-weight:500">${e.offering_name || '-'}</span>`;
+				if (e.offering_code) {
+					html += `<br><span style="font-size:11px;color:var(--text-secondary)">${e.offering_code}</span>`;
+				}
+				return html;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => statusBadgeHtml(getValue() as string)
+		},
+		{
+			header: 'Tanggal Daftar',
+			accessorKey: 'enrolled_at',
+			cell: ({ getValue }) => `<span style="color:var(--text-secondary);font-size:13px">${formatDate(getValue() as string)}</span>`
+		},
+		{
+			header: 'Total Pendaftaran',
+			accessorKey: 'user_enrollment_count',
+			cell: ({ getValue }) => `<span style="text-align:center">${(getValue() as number) || 0}</span>`
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			enableSorting: false,
+			cell: ({ row }) => {
+				const e = row.original;
+				if (confirmDelete === e.id) {
+					return `<span style="display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:12px;color:#ef4444;font-weight:600">Hapus?</span><button onclick="window.__deleteEnrollment('${e.id}')" style="padding:4px 10px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">${deleting ? '...' : 'Ya'}</button><button onclick="window.__cancelDelete()" style="padding:4px 10px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Batal</button></span>`;
+				}
+				return `<button onclick="window.__confirmDeleteEnrollment('${e.id}')" style="padding:4px 10px;background:transparent;border:none;font-size:14px;cursor:pointer">🗑️</button>`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -188,53 +270,13 @@
 		<EmptyState icon="📋" title="Belum ada enrollment" description="Belum ada data pendaftaran." />
 	{:else}
 		<div class="table-wrapper">
-			<table class="enroll-table">
-				<thead>
-					<tr>
-						<th>Siswa</th>
-						<th>Email</th>
-						<th>Kursus</th>
-						<th>Status</th>
-						<th>Tanggal Daftar</th>
-						<th>Total Pendaftaran</th>
-						<th>Aksi</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each enrollments as e}
-						<tr>
-							<td class="user-cell">
-								<span class="user-name">{e.user_name || e.username || '-'}</span>
-							</td>
-							<td class="email-cell">{e.user_email || '-'}</td>
-							<td>
-								<span class="course-name">{e.offering_name || '-'}</span>
-								{#if e.offering_code}
-									<span class="course-code">{e.offering_code}</span>
-								{/if}
-							</td>
-							<td>
-								<Badge variant={statusBadge(e.status)}>{statusLabel(e.status)}</Badge>
-							</td>
-							<td class="date-cell">{formatDate(e.enrolled_at)}</td>
-							<td class="center-cell">{e.user_enrollment_count || 0}</td>
-							<td class="actions-cell">
-								{#if confirmDelete === e.id}
-									<div class="confirm-delete">
-										<span class="confirm-text">Hapus?</span>
-										<Button variant="danger" size="sm" onclick={() => handleDelete(e.id)} disabled={deleting}>
-											{deleting ? '...' : 'Ya'}
-										</Button>
-										<Button variant="ghost" size="sm" onclick={() => confirmDelete = null}>Batal</Button>
-									</div>
-								{:else}
-									<Button variant="ghost" size="sm" onclick={() => confirmDelete = e.id}>🗑️</Button>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+			<DataTable
+				{columns}
+				data={enrollments}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Tidak ada data"
+			/>
 		</div>
 
 		<!-- Pagination -->
@@ -319,29 +361,6 @@
 	.table-wrapper {
 		overflow-x: auto; border: 1px solid var(--border); border-radius: 10px;
 	}
-	.enroll-table {
-		width: 100%; border-collapse: collapse; font-size: 14px;
-	}
-	.enroll-table th {
-		padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600;
-		color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;
-		background: var(--surface); border-bottom: 1px solid var(--border);
-	}
-	.enroll-table td {
-		padding: 10px 12px; border-bottom: 1px solid var(--border);
-	}
-	.enroll-table tr:last-child td { border-bottom: none; }
-	.enroll-table tr:hover { background: rgba(255,255,255,0.02); }
-
-	.user-name { font-weight: 600; }
-	.email-cell { color: var(--text-secondary); font-size: 13px; }
-	.course-name { font-weight: 500; }
-	.course-code { display: block; font-size: 11px; color: var(--text-secondary); }
-	.date-cell { color: var(--text-secondary); font-size: 13px; }
-	.center-cell { text-align: center; }
-	.actions-cell { white-space: nowrap; }
-	.confirm-delete { display: flex; align-items: center; gap: 6px; }
-	.confirm-text { font-size: 12px; color: var(--danger); font-weight: 600; }
 
 	.pagination {
 		display: flex; justify-content: center; align-items: center;

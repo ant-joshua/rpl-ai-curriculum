@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Session = {
 		id: string;
@@ -156,6 +158,75 @@
 		formError = '';
 		createdSession = null;
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Tanggal',
+			accessorKey: 'session_date',
+			cell: ({ row }) => formatDate(row.original.session_date)
+		},
+		{
+			header: 'Kelas',
+			accessorKey: 'class_name',
+			cell: ({ getValue }) => `<span style="font-weight:600">${(getValue() as string) || '—'}</span>`
+		},
+		{
+			header: 'Mata Kuliah',
+			accessorKey: 'subject_name',
+			cell: ({ getValue }) => (getValue() as string) || '—'
+		},
+		{
+			header: 'Waktu',
+			accessorKey: 'start_time',
+			cell: ({ row }) => {
+				const s = row.original;
+				return `<span style="font-family:monospace;font-size:12px">${s.start_time}${s.end_time ? ` - ${s.end_time}` : ''}</span>`;
+			}
+		},
+		{
+			header: 'Pembuat',
+			accessorKey: 'creator_name',
+			cell: ({ getValue }) => (getValue() as string) || '—'
+		},
+		{
+			header: 'QR Token',
+			accessorKey: 'qr_token',
+			cell: ({ getValue }) => {
+				const token = getValue() as string;
+				return `<span style="font-family:monospace;font-size:11px;color:var(--text-secondary)">${token?.slice(0, 8)}...</span>`;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const status = getValue() as string;
+				const isActive = status === 'active';
+				const bg = isActive ? 'rgba(34,197,94,0.12)' : 'rgba(156,163,175,0.12)';
+				const color = isActive ? '#22c55e' : '#9ca3af';
+				const label = isActive ? '🟢 Aktif' : '⚫ Selesai';
+				return `<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ row }) => {
+				const s = row.original;
+				let html = `<a href="/admin/attendance/sessions/${s.id}" style="padding:4px 10px;background:var(--bg-secondary);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:12px;text-decoration:none">Detail</a>`;
+				if (s.status === 'active') {
+					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">Tutup</button>`;
+				}
+				return html;
+			}
+		}
+	];
+
+	// Expose closeSession for inline HTML buttons
+	$effect(() => {
+		(window as any).__closeSession = closeSession;
+		return () => { delete (window as any).__closeSession; };
+	});
 </script>
 
 <svelte:head>
@@ -218,51 +289,13 @@
 		</div>
 	{:else}
 		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Tanggal</th>
-						<th>Kelas</th>
-						<th>Mata Kuliah</th>
-						<th>Waktu</th>
-						<th>Pembuat</th>
-						<th>QR Token</th>
-						<th>Status</th>
-						<th>Aksi</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each sessions as session}
-						<tr>
-							<td>{formatDate(session.session_date)}</td>
-							<td class="cell-bold">{session.class_name || '—'}</td>
-							<td>{session.subject_name || '—'}</td>
-							<td class="cell-mono">{session.start_time}{session.end_time ? ` - ${session.end_time}` : ''}</td>
-							<td>{session.creator_name || '—'}</td>
-							<td class="cell-mono cell-small">{session.qr_token?.slice(0, 8)}...</td>
-							<td>
-								<span class="badge {session.status === 'active' ? 'badge-active' : 'badge-closed'}">
-									{session.status === 'active' ? '🟢 Aktif' : '⚫ Selesai'}
-								</span>
-							</td>
-							<td>
-								<div class="actions">
-									<a href="/admin/attendance/sessions/{session.id}" class="btn-sm">Detail</a>
-									{#if session.status === 'active'}
-										<button
-											class="btn-sm btn-close"
-											onclick={() => closeSession(session.id)}
-											disabled={closingId === session.id}
-										>
-											{closingId === session.id ? '...' : 'Tutup'}
-										</button>
-									{/if}
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+			<DataTable
+				{columns}
+				data={sessions}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Tidak ada sesi"
+			/>
 		</div>
 
 		<!-- Pagination -->
@@ -430,26 +463,6 @@
 		overflow-x: auto; border: 1px solid var(--border);
 		border-radius: 10px; background: var(--surface);
 	}
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; white-space: nowrap; background: var(--bg-secondary);
-	}
-	td { padding: 10px 12px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-
-	.cell-bold { font-weight: 600; }
-	.cell-mono { font-family: monospace; font-size: 12px; }
-	.cell-small { font-size: 11px; color: var(--text-secondary); }
-
-	.badge {
-		display: inline-block; padding: 3px 8px; border-radius: 6px;
-		font-size: 11px; font-weight: 600;
-	}
-	.badge-active { background: rgba(34,197,94,0.12); color: #22c55e; }
-	.badge-closed { background: rgba(156,163,175,0.12); color: #9ca3af; }
 
 	.actions { display: flex; gap: 6px; align-items: center; }
 	.btn-sm {

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
+
 	let logs: any[] = $state([]);
 	let loading = $state(true);
 	let page = $state(1);
@@ -40,16 +43,76 @@
 
 	function levelBadge(level: string) {
 		const colors: Record<string, string> = {
-			error: 'bg-red-500',
-			warning: 'bg-yellow-500',
-			critical: 'bg-red-700',
+			error: 'background:#ef4444;color:#fff',
+			warning: 'background:#eab308;color:#fff',
+			critical: 'background:#b91c1c;color:#fff',
 		};
-		return colors[level] || 'bg-gray-400';
+		return colors[level] || 'background:#6b7280;color:#fff';
 	}
 
 	function copyText(text: string) {
 		navigator.clipboard.writeText(text);
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Time',
+			accessorKey: 'created_at',
+			cell: ({ getValue }) => {
+				const d = getValue() as string;
+				return `<span style="font-size:12px;color:var(--text-secondary);white-space:nowrap">${formatDate(d)}</span>`;
+			}
+		},
+		{
+			header: 'Level',
+			accessorKey: 'level',
+			cell: ({ getValue }) => {
+				const level = getValue() as string;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;${levelBadge(level)}">${level}</span>`;
+			}
+		},
+		{
+			header: 'Message',
+			accessorKey: 'message',
+			cell: ({ getValue }) => {
+				const msg = getValue() as string;
+				return `<span style="font-size:12px;font-family:monospace;color:var(--text-primary);max-width:300px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(msg || '').replace(/"/g, '&quot;')}">${msg || '-'}</span>`;
+			}
+		},
+		{
+			header: 'URL',
+			accessorKey: 'url',
+			cell: ({ getValue }) => {
+				const url = getValue() as string;
+				return `<span style="font-size:12px;font-family:monospace;color:var(--text-secondary);max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(url || '').replace(/"/g, '&quot;')}">${url || '-'}</span>`;
+			}
+		},
+		{
+			header: 'Method',
+			accessorKey: 'method',
+			cell: ({ getValue }) => {
+				const m = getValue() as string;
+				return `<span style="font-size:12px;font-family:monospace;color:var(--text-secondary)">${m || '-'}</span>`;
+			}
+		},
+		{
+			header: 'User',
+			accessorKey: 'username',
+			cell: ({ getValue, row }) => {
+				const u = getValue() as string || row.original.user_name || row.original.user_id;
+				return `<span style="font-size:12px;color:var(--text-secondary)">${u || '-'}</span>`;
+			}
+		},
+		{
+			header: 'Stack',
+			accessorKey: 'stack',
+			cell: ({ getValue }) => {
+				const stack = getValue() as string;
+				if (!stack) return '<span style="font-size:12px;color:var(--text-muted)">-</span>';
+				return `<button onclick="navigator.clipboard.writeText(this.dataset.stack)" data-stack="${stack.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="padding:2px 8px;border-radius:6px;font-size:12px;background:var(--bg-secondary);color:var(--text-muted);border:1px solid var(--border);cursor:pointer">Copy</button>`;
+			}
+		}
+	];
 
 	$effect(() => { load(); });
 </script>
@@ -80,61 +143,27 @@
 		<button onclick={applyFilter} class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90">Apply</button>
 	</div>
 
-	<!-- Table -->
-	<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
-		<table class="w-full text-sm">
-			<thead class="bg-[var(--bg-secondary)] text-[var(--text-muted)]">
-				<tr>
-					<th class="px-4 py-3 text-left font-medium">Time</th>
-					<th class="px-4 py-3 text-left font-medium">Level</th>
-					<th class="px-4 py-3 text-left font-medium">Message</th>
-					<th class="px-4 py-3 text-left font-medium">URL</th>
-					<th class="px-4 py-3 text-left font-medium">Method</th>
-					<th class="px-4 py-3 text-left font-medium">User</th>
-					<th class="px-4 py-3 text-left font-medium">Stack</th>
-				</tr>
-			</thead>
-			<tbody class="divide-y divide-[var(--border)]">
-				{#if loading}
-					<tr><td colspan="7" class="px-4 py-8 text-center text-[var(--text-muted)]">Loading...</td></tr>
-				{:else if logs.length === 0}
-					<tr><td colspan="7" class="px-4 py-8 text-center text-[var(--text-muted)]">No errors yet. System is running clean! 🎉</td></tr>
-				{:else}
-					{#each logs as log}
-						<tr class="hover:bg-[var(--bg-secondary)] transition-colors">
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] whitespace-nowrap text-xs">{formatDate(log.created_at)}</td>
-							<td class="px-4 py-2.5">
-								<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium text-white {levelBadge(log.level)}">
-									{log.level}
-								</span>
-							</td>
-							<td class="px-4 py-2.5 text-[var(--text-primary)] text-xs max-w-[300px] truncate font-mono" title={log.message}>{log.message}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] font-mono text-xs max-w-[200px] truncate" title={log.url}>{log.url || '-'}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] font-mono text-xs">{log.method || '-'}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] text-xs">{log.username || log.user_name || log.user_id || '-'}</td>
-							<td class="px-4 py-2.5">
-								{#if log.stack}
-									<button onclick={() => copyText(log.stack)}
-										class="px-2 py-0.5 rounded text-xs bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border)] hover:text-[var(--accent)] transition-colors"
-										title="Copy stack trace">
-										Copy
-									</button>
-								{:else}
-									<span class="text-[var(--text-muted)] text-xs">-</span>
-								{/if}
-							</td>
-						</tr>
-						{#if log.stack}
-							<tr class="bg-[var(--bg-secondary)]/50">
-								<td colspan="7" class="px-4 py-2">
-									<pre class="text-xs text-[var(--text-muted)] font-mono whitespace-pre-wrap max-h-32 overflow-y-auto">{log.stack}</pre>
-								</td>
-							</tr>
-						{/if}
-					{/each}
-				{/if}
-			</tbody>
-		</table>
+	<!-- DataTable -->
+	<div class="card">
+		{#if loading}
+			<div class="skeleton-list">
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+			</div>
+		{:else}
+			<DataTable
+				{columns}
+				data={logs}
+				pageSize={50}
+				showPagination={false}
+				showSearch={false}
+				emptyMessage="No errors yet. System is running clean! 🎉"
+				emptyIcon=""
+			/>
+		{/if}
 	</div>
 
 	<!-- Pagination -->
@@ -150,3 +179,10 @@
 		</button>
 	</div>
 </div>
+
+<style>
+	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	.skeleton-list { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
+	.skeleton-row { height: 3rem; background: var(--bg-secondary); border-radius: 8px; animation: pulse 1.5s ease-in-out infinite; }
+	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+</style>

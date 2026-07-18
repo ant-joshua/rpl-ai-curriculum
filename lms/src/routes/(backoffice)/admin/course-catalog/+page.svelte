@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let matkulList: any[] = $state([]);
 	let prodiList: any[] = $state([]);
@@ -86,15 +88,68 @@
 	}
 
 	const sifatLabels: Record<string, string> = {
-		wajib: 'Wajib',
-		pilihan: 'Pilihan',
-		wajib_peminatan: 'Wajib Peminatan',
+		wajib: 'Wajib', pilihan: 'Pilihan', wajib_peminatan: 'Wajib Peminatan',
 	};
 	const sifatColors: Record<string, string> = {
 		wajib: 'background:rgba(94,106,210,0.1);color:#5e6ad2',
 		pilihan: 'background:rgba(16,185,129,0.1);color:#10b981',
 		wajib_peminatan: 'background:rgba(245,158,11,0.1);color:#f59e0b',
 	};
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Kode',
+			accessorKey: 'kode',
+			cell: ({ getValue, row }) => {
+				const val = getValue() as string || row.original.code;
+				return val ? `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${val}</code>` : '<span>—</span>';
+			}
+		},
+		{
+			header: 'Nama Mata Kuliah',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+		},
+		{
+			header: 'SKS',
+			accessorKey: 'sks',
+			cell: ({ getValue, row }) => {
+				const val = getValue() ?? row.original.credits;
+				return `<span style="text-align:center">${val ?? '—'}</span>`;
+			}
+		},
+		{
+			header: 'Program Studi',
+			accessorKey: 'prodi_id',
+			cell: ({ getValue, row }) => {
+				const id = getValue() as string || row.original.major_id;
+				return getProdiName(id);
+			}
+		},
+		{
+			header: 'Semester',
+			accessorKey: 'semester',
+			cell: ({ getValue, row }) => {
+				const val = getValue() ?? row.original.semester_value;
+				return `<span style="text-align:center">${val ?? '—'}</span>`;
+			}
+		},
+		{
+			header: 'Sifat',
+			accessorKey: 'sifat',
+			cell: ({ getValue, row }) => {
+				const sifat = (getValue() as string) || row.original.type || 'wajib';
+				const style = sifatColors[sifat] || sifatColors.wajib;
+				const label = sifatLabels[sifat] || sifat;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;${style}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ getValue }) => `<a href="/admin/course-catalog/${getValue()}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">Detail</a>`
+		}
+	];
 </script>
 
 <svelte:head>
@@ -138,38 +193,13 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Kode</th>
-							<th>Nama Mata Kuliah</th>
-							<th>SKS</th>
-							<th>Program Studi</th>
-							<th>Semester</th>
-							<th>Sifat</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filtered as m}
-							<tr>
-								<td><code>{m.kode || m.code || '—'}</code></td>
-								<td class="cell-name">{m.name}</td>
-								<td class="cell-num">{m.sks ?? m.credits ?? '—'}</td>
-								<td>{getProdiName(m.prodi_id || m.major_id)}</td>
-								<td class="cell-num">{m.semester ?? m.semester_value ?? '—'}</td>
-								<td>
-									<span class="sifat-badge" style={sifatColors[m.sifat || m.type || 'wajib']}>
-										{sifatLabels[m.sifat || m.type || 'wajib']}
-									</span>
-								</td>
-								<td>
-									<a href="/admin/course-catalog/{m.id}" class="btn-small">Detail</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable
+					{columns}
+					data={filtered}
+					pageSize={20}
+					showSearch={false}
+					emptyMessage="Belum ada mata kuliah"
+				/>
 			</div>
 		</div>
 	{/if}
@@ -257,7 +287,6 @@
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
-	.btn-small { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
 	.btn-cancel { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
 
 	.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -271,14 +300,6 @@
 	.empty-state p { margin-bottom: 16px; }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-num { text-align: center; }
-	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.sifat-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
 
 	.field-row { display: flex; gap: 12px; }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }

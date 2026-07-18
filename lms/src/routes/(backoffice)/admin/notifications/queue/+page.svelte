@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -43,8 +45,8 @@
 			const json = await res.json();
 			if (json.success) await loadQueue();
 			else error = json.error || 'Gagal retry';
-		} catch { error = 'Gagal terhubung ke server';
-		} finally { retrying = false; }
+		} catch { error = 'Gagal terhubung ke server'; }
+		finally { retrying = false; }
 	}
 
 	function statusColor(s: string): string {
@@ -52,10 +54,85 @@
 		return map[s] || 'status-yellow';
 	}
 
+	function statusBadgeHtml(s: string): string {
+		const colors: Record<string, { bg: string; color: string }> = {
+			sent: { bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
+			delivered: { bg: 'rgba(16,185,129,0.1)', color: '#10b981' },
+			failed: { bg: 'rgba(239,68,68,0.1)', color: '#ef4444' },
+			pending: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
+			queued: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
+			processing: { bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
+		};
+		const c = colors[s] || { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' };
+		return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;background:${c.bg};color:${c.color}">${s}</span>`;
+	}
+
 	function formatDate(d: string): string {
 		if (!d) return '—';
 		try { return new Date(d).toLocaleString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }); } catch { return d; }
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'User',
+			accessorKey: 'user_id',
+			cell: ({ getValue }) => {
+				const id = getValue() as string;
+				return `<span style="font-family:monospace;font-size:12px">${id ? id.slice(0,8) + '...' : '—'}</span>`;
+			}
+		},
+		{
+			header: 'Channel',
+			accessorKey: 'channel',
+			cell: ({ getValue }) => {
+				const ch = getValue() as string;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;background:rgba(98,102,109,0.15);color:#8a8f98">${ch}</span>`;
+			}
+		},
+		{
+			header: 'Subject',
+			accessorKey: 'subject',
+			cell: ({ getValue }) => {
+				const val = getValue() as string;
+				return `<span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">${val || '—'}</span>`;
+			}
+		},
+		{
+			header: 'Body',
+			accessorKey: 'body',
+			cell: ({ getValue }) => {
+				const body = getValue() as string;
+				const truncated = body?.length > 60 ? body.slice(0,60) + '...' : body || '—';
+				return `<span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">${truncated}</span>`;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => statusBadgeHtml(getValue() as string)
+		},
+		{
+			header: 'Attempts',
+			accessorKey: 'attempts',
+			cell: ({ row }) => {
+				const n = row.original;
+				return `<span style="text-align:center">${n.attempts}/${n.max_attempts}</span>`;
+			}
+		},
+		{
+			header: 'Error',
+			accessorKey: 'last_error',
+			cell: ({ getValue }) => {
+				const err = getValue() as string;
+				return `<span style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;color:var(--text-secondary);font-size:12px">${err || '—'}</span>`;
+			}
+		},
+		{
+			header: 'Dibuat',
+			accessorKey: 'created_at',
+			cell: ({ getValue }) => formatDate(getValue() as string)
+		}
+	];
 </script>
 
 <svelte:head>
@@ -101,36 +178,13 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>User</th>
-							<th>Channel</th>
-							<th>Subject</th>
-							<th>Body</th>
-							<th>Status</th>
-							<th>Attempts</th>
-							<th>Error</th>
-							<th>Dibuat</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each items as n}
-							<tr>
-								<td class="cell-mono">{n.user_id ? n.user_id.slice(0,8) + '...' : '—'}</td>
-								<td>
-									<span class="channel-badge">{n.channel}</span>
-								</td>
-								<td class="cell-maxwidth">{n.subject || '—'}</td>
-								<td class="cell-maxwidth">{n.body?.length > 60 ? n.body.slice(0,60) + '...' : n.body || '—'}</td>
-								<td><span class="status-badge {statusColor(n.status)}">{n.status}</span></td>
-								<td class="cell-center">{n.attempts}/{n.max_attempts}</td>
-								<td class="cell-error">{n.last_error || '—'}</td>
-								<td>{formatDate(n.created_at)}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable
+					{columns}
+					data={items}
+					showSearch={false}
+					showPagination={false}
+					emptyMessage="Tidak ada data"
+				/>
 			</div>
 		</div>
 
@@ -164,23 +218,6 @@
 
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover td { background: var(--hover); }
-	.cell-mono { font-family: monospace; font-size: 12px; }
-	.cell-center { text-align: center; }
-	.cell-maxwidth { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-	.cell-error { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: 12px; }
-
-	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
-	.status-blue { background: rgba(59,130,246,0.1); color: #3b82f6; }
-	.status-green { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-red { background: rgba(239,68,68,0.1); color: #ef4444; }
-	.status-yellow { background: rgba(245,158,11,0.1); color: #f59e0b; }
-
-	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(98,102,109,0.15); color: #8a8f98; }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 20px; }

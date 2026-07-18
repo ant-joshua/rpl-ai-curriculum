@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
+
 	let logs: any[] = $state([]);
 	let loading = $state(true);
 	let page = $state(1);
@@ -35,17 +38,79 @@
 
 	function actionBadge(action: string) {
 		const colors: Record<string, string> = {
-			read: 'bg-blue-500', create: 'bg-green-500', update: 'bg-yellow-500',
-			delete: 'bg-red-500', login: 'bg-indigo-500', logout: 'bg-gray-500',
-			error: 'bg-red-700',
+			read: 'background:#3b82f6;color:#fff', create: 'background:#22c55e;color:#fff',
+			update: 'background:#eab308;color:#fff', delete: 'background:#ef4444;color:#fff',
+			login: 'background:#6366f1;color:#fff', logout: 'background:#6b7280;color:#fff',
+			error: 'background:#b91c1c;color:#fff',
 		};
-		return colors[action] || 'bg-gray-400';
+		return colors[action] || 'background:#6b7280;color:#fff';
 	}
 
 	function getEntityLabel(log: any): string {
 		const parts = [log.entity_type, log.entity_id].filter(Boolean);
 		return parts.length ? parts.join(' #') : '-';
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Time',
+			accessorKey: 'created_at',
+			cell: ({ getValue }) => `<span style="font-size:12px;color:var(--text-secondary);white-space:nowrap">${formatDate(getValue() as string)}</span>`
+		},
+		{
+			header: 'User',
+			accessorKey: 'username',
+			cell: ({ getValue }) => `<span style="font-weight:500;color:var(--text-primary)">${getValue() || '-'}</span>`
+		},
+		{
+			header: 'Action',
+			accessorKey: 'action',
+			cell: ({ getValue }) => {
+				const action = getValue() as string;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;${actionBadge(action)}">${action}</span>`;
+			}
+		},
+		{
+			header: 'Method',
+			accessorKey: 'method',
+			cell: ({ getValue }) => `<span style="font-size:12px;font-family:monospace;color:var(--text-secondary)">${getValue() || '-'}</span>`
+		},
+		{
+			header: 'Path',
+			accessorKey: 'path',
+			cell: ({ getValue }) => {
+				const path = getValue() as string;
+				return `<span style="font-size:12px;font-family:monospace;color:var(--text-secondary);max-width:300px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(path || '').replace(/"/g, '&quot;')}">${path || '-'}</span>`;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status_code',
+			cell: ({ getValue }) => {
+				const code = getValue() as number;
+				const color = code && code >= 400 ? '#f87171' : '#4ade80';
+				return `<span style="font-family:monospace;font-size:12px;color:${color}">${code || '-'}</span>`;
+			}
+		},
+		{
+			header: 'Duration',
+			accessorKey: 'duration_ms',
+			cell: ({ getValue }) => {
+				const ms = getValue() as number;
+				return `<span style="font-size:12px;color:var(--text-secondary)">${ms ? ms + 'ms' : '-'}</span>`;
+			}
+		},
+		{
+			header: 'Entity',
+			accessorKey: 'entity_type',
+			cell: ({ getValue, row }) => `<span style="font-size:12px;color:var(--text-secondary)">${getEntityLabel(row.original)}</span>`
+		},
+		{
+			header: 'IP',
+			accessorKey: 'ip_address',
+			cell: ({ getValue }) => `<span style="font-size:12px;font-family:monospace;color:var(--text-secondary)">${getValue() || '-'}</span>`
+		}
+	];
 
 	$effect(() => { load(); });
 </script>
@@ -72,52 +137,27 @@
 		<button onclick={applyFilter} class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90">Apply</button>
 	</div>
 
-	<!-- Table -->
-	<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
-		<table class="w-full text-sm">
-			<thead class="bg-[var(--bg-secondary)] text-[var(--text-muted)]">
-				<tr>
-					<th class="px-4 py-3 text-left font-medium">Time</th>
-					<th class="px-4 py-3 text-left font-medium">User</th>
-					<th class="px-4 py-3 text-left font-medium">Action</th>
-					<th class="px-4 py-3 text-left font-medium">Method</th>
-					<th class="px-4 py-3 text-left font-medium">Path</th>
-					<th class="px-4 py-3 text-left font-medium">Status</th>
-					<th class="px-4 py-3 text-left font-medium">Duration</th>
-					<th class="px-4 py-3 text-left font-medium">Entity</th>
-					<th class="px-4 py-3 text-left font-medium">IP</th>
-				</tr>
-			</thead>
-			<tbody class="divide-y divide-[var(--border)]">
-				{#if loading}
-					<tr><td colspan="9" class="px-4 py-8 text-center text-[var(--text-muted)]">Loading...</td></tr>
-				{:else if logs.length === 0}
-					<tr><td colspan="9" class="px-4 py-8 text-center text-[var(--text-muted)]">No logs yet</td></tr>
-				{:else}
-					{#each logs as log}
-						<tr class="hover:bg-[var(--bg-secondary)] transition-colors">
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] whitespace-nowrap text-xs">{formatDate(log.created_at)}</td>
-							<td class="px-4 py-2.5">
-								<div class="text-[var(--text-primary)] font-medium">{log.username || '-'}</div>
-							</td>
-							<td class="px-4 py-2.5">
-								<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium text-white {actionBadge(log.action)}">
-									{log.action}
-								</span>
-							</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] font-mono text-xs">{log.method || '-'}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] font-mono text-xs max-w-[300px] truncate" title={log.path}>{log.path || '-'}</td>
-							<td class="px-4 py-2.5">
-								<span class="font-mono text-xs {log.status_code && log.status_code >= 400 ? 'text-red-400' : 'text-green-400'}">{log.status_code || '-'}</span>
-							</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] text-xs">{log.duration_ms ? `${log.duration_ms}ms` : '-'}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] text-xs">{getEntityLabel(log)}</td>
-							<td class="px-4 py-2.5 text-[var(--text-secondary)] text-xs font-mono">{log.ip_address || '-'}</td>
-						</tr>
-					{/each}
-				{/if}
-			</tbody>
-		</table>
+	<!-- DataTable -->
+	<div class="card">
+		{#if loading}
+			<div class="skeleton-list">
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+				<div class="skeleton-row"></div>
+			</div>
+		{:else}
+			<DataTable
+				{columns}
+				data={logs}
+				pageSize={50}
+				showPagination={false}
+				showSearch={false}
+				emptyMessage="No logs yet"
+				emptyIcon=""
+			/>
+		{/if}
 	</div>
 
 	<!-- Pagination -->
@@ -133,3 +173,10 @@
 		</button>
 	</div>
 </div>
+
+<style>
+	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	.skeleton-list { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
+	.skeleton-row { height: 3rem; background: var(--bg-secondary); border-radius: 8px; animation: pulse 1.5s ease-in-out infinite; }
+	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+</style>
