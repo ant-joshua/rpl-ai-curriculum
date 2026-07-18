@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { invalidateCache } from '$lib/server/cache';
 
 /** POST /api/my/courses/[offeringId]/complete — mark course completed (checks all required lessons done) */
 export async function POST({ request, platform, params }: { request: Request; platform: App.Platform; params: Record<string, string> }): Promise<Response> {
@@ -103,8 +104,10 @@ export async function POST({ request, platform, params }: { request: Request; pl
     const now = new Date().toISOString();
 
     await db.prepare(
-      'INSERT INTO course_completions (id, user_id, course_offering_id, completed_at, certificate_id) VALUES (?, ?, ?, ?, ?)'
+    	'INSERT INTO course_completions (id, user_id, course_offering_id, completed_at, certificate_id) VALUES (?, ?, ?, ?, ?)'
     ).bind(completionId, userId, offeringId, now, certId).run();
+
+    invalidateCache();
 
     return jsonResponse({
       success: true,

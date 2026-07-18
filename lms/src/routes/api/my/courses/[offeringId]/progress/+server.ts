@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { cachedDbQuery } from '$lib/server/cache';
 
 export async function GET({ params, request, platform }: {
 	params: { offeringId: string };
@@ -17,26 +18,32 @@ export async function GET({ params, request, platform }: {
 		const offeringId = params.offeringId;
 
 		// Get all lessons for this offering
-		const { results: lessons } = await db.prepare(
+		const { results: lessons } = await cachedDbQuery<any>(
+			db,
 			`SELECT id, title, slug, order_index, duration_minutes, is_optional
 			 FROM lessons
 			 WHERE course_offering_id = ? AND status = 'published'
-			 ORDER BY order_index ASC`
-		).bind(offeringId).all<any>();
+			 ORDER BY order_index ASC`,
+			[offeringId]
+		);
 
 		// Get lesson completions
-		const { results: completions } = await db.prepare(
+		const { results: completions } = await cachedDbQuery<any>(
+			db,
 			`SELECT lc.* FROM lesson_completions lc
 			 JOIN lessons l ON l.id = lc.lesson_id
-			 WHERE lc.user_id = ? AND l.course_offering_id = ?`
-		).bind(userId, offeringId).all<any>();
+			 WHERE lc.user_id = ? AND l.course_offering_id = ?`,
+			[userId, offeringId]
+		);
 
 		// Get progress table as fallback
-		const { results: progressRows } = await db.prepare(
+		const { results: progressRows } = await cachedDbQuery<any>(
+			db,
 			`SELECT session_id, completed, completed_at, time_spent
 			 FROM progress
-			 WHERE user_id = ? AND module_slug = ? AND completed = 1`
-		).bind(userId, offeringId).all<any>();
+			 WHERE user_id = ? AND module_slug = ? AND completed = 1`,
+			[userId, offeringId]
+		);
 
 		const completedLessonIds = new Set(completions?.map(c => c.lesson_id) || []);
 		const completedSlugs = new Set(progressRows?.map(p => p.session_id) || []);

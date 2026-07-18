@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
+import { cachedDbQuery, cachedDbFirst } from '$lib/server/cache';
 
 export async function load({ params, request, platform, url }: {
 	params: Record<string, string>;
@@ -27,13 +28,15 @@ export async function load({ params, request, platform, url }: {
 	const offeringId = params.offeringId;
 
 	// Load offering with course info
-	const offering = await db.prepare(
+	const offering = await cachedDbFirst<any>(
+		db,
 		`SELECT co.*, c.title AS course_title, c.description AS course_description,
 		        c.icon AS course_icon, c.category, c.level, c.slug AS course_slug
 		 FROM course_offerings co
 		 JOIN courses c ON c.id = co.course_id
-		 WHERE co.id = ?`
-	).bind(offeringId).first<any>();
+		 WHERE co.id = ?`,
+		[offeringId]
+	);
 
 	if (!offering) {
 		throw redirect(302, '/learn');
@@ -42,24 +45,30 @@ export async function load({ params, request, platform, url }: {
 	// Load instructor info
 	let instructor = null;
 	if (offering.instructor_id) {
-		instructor = await db.prepare(
-			'SELECT id, display_name, email, avatar_url FROM users WHERE id = ?'
-		).bind(offering.instructor_id).first<any>();
+		instructor = await cachedDbFirst<any>(
+			db,
+			'SELECT id, display_name, email, avatar_url FROM users WHERE id = ?',
+			[offering.instructor_id]
+		);
 	}
 
 	// Load enrollment
-	const enrollment = await db.prepare(
-		'SELECT * FROM enrollments WHERE user_id = ? AND course_offering_id = ?'
-	).bind(userId, offeringId).first<any>();
+	const enrollment = await cachedDbFirst<any>(
+		db,
+		'SELECT * FROM enrollments WHERE user_id = ? AND course_offering_id = ?',
+		[userId, offeringId]
+	);
 
 	// Load content_blocks tree
-	const { results: treeBlocks } = await db.prepare(
+	const { results: treeBlocks } = await cachedDbQuery<any>(
+		db,
 		`SELECT id, type, title, subtitle, slug, parent_id, order_index,
 		        duration_min, is_optional, unlock_days, visibility
 		 FROM content_blocks
 		 WHERE course_offering_id = ?
-		 ORDER BY order_index ASC`
-	).bind(offeringId).all<any>();
+		 ORDER BY order_index ASC`,
+		[offeringId]
+	);
 
 	// Build tree
 	function buildTree(blocks: any[], parentId: string | null = null): any[] {
@@ -75,18 +84,22 @@ export async function load({ params, request, platform, url }: {
 	const tree = buildTree(treeBlocks || []);
 
 	// Completed lessons — query both old progress table and new lesson_completions
-	const { results: completed } = await db.prepare(
+	const { results: completed } = await cachedDbQuery<{ session_id: string; completed: number }>(
+		db,
 		`SELECT session_id, completed
 		 FROM progress
-		 WHERE user_id = ? AND module_slug = ? AND completed = 1`
-	).bind(userId, offeringId).all<{ session_id: string; completed: number }>();
+		 WHERE user_id = ? AND module_slug = ? AND completed = 1`,
+		[userId, offeringId]
+	);
 
-	const { results: lcLessons } = await db.prepare(
+	const { results: lcLessons } = await cachedDbQuery<{ slug: string }>(
+		db,
 		`SELECT l.slug
 		 FROM lesson_completions lc
 		 JOIN lessons l ON l.id = lc.lesson_id
-		 WHERE lc.user_id = ? AND lc.course_offering_id = ?`
-	).bind(userId, offeringId).all<{ slug: string }>();
+		 WHERE lc.user_id = ? AND lc.course_offering_id = ?`,
+		[userId, offeringId]
+	);
 
 	const completedSlugs = new Set((completed || []).map((c: any) => c.session_id));
 	(lcLessons || []).forEach((l: any) => completedSlugs.add(l.slug));
@@ -122,28 +135,34 @@ export async function load({ params, request, platform, url }: {
 	const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
 	// Assessments & assignments quick links
-	const { results: assessments } = await db.prepare(
+	const { results: assessments } = await cachedDbQuery<any>(
+		db,
 		`SELECT id, title, type, max_score, due_date
 		 FROM assessments
 		 WHERE course_offering_id = ? AND status = 'published'
-		 ORDER BY due_date ASC LIMIT 5`
-	).bind(offeringId).all<any>();
+		 ORDER BY due_date ASC LIMIT 5`,
+		[offeringId]
+	);
 
-	const { results: assignments } = await db.prepare(
+	const { results: assignments } = await cachedDbQuery<any>(
+		db,
 		`SELECT id, title, submission_type, max_score, due_date
 		 FROM assignments
 		 WHERE course_offering_id = ? AND status = 'published'
-		 ORDER BY due_date ASC LIMIT 5`
-	).bind(offeringId).all<any>();
+		 ORDER BY due_date ASC LIMIT 5`,
+		[offeringId]
+	);
 
 	// Last completed lesson for "continue" link
-	const { results: lastCompleted } = await db.prepare(
+	const { results: lastCompleted } = await cachedDbQuery<any>(
+		db,
 		`SELECT p.session_id, l.title
 		 FROM progress p
 		 JOIN lessons l ON l.slug = p.session_id
 		 WHERE p.user_id = ? AND l.course_offering_id = ? AND p.completed = 1
-		 ORDER BY p.updated_at DESC LIMIT 1`
-	).bind(userId, offeringId).all<any>();
+		 ORDER BY p.updated_at DESC LIMIT 1`,
+		[userId, offeringId]
+	);
 
 	// Find next uncompleted lesson
 	let nextLessonSlug: string | null = null;

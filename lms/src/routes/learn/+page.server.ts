@@ -1,5 +1,6 @@
 import { getDB } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
+import { cachedDbQuery } from '$lib/server/cache';
 import { redirect } from '@sveltejs/kit';
 
 export async function load({ platform, request, url }: {
@@ -17,9 +18,9 @@ export async function load({ platform, request, url }: {
 	const userId = session.user.id;
 
 	// Get all active offerings + enrollment status + instructor + student count + featured
-	const { results: offerings } = await db
-		.prepare(`
-			SELECT co.id, co.name, co.code, co.start_date, co.end_date, co.status,
+	const { results: offerings } = await cachedDbQuery<any>(
+		db,
+		`SELECT co.id, co.name, co.code, co.start_date, co.end_date, co.status,
 			       c.id AS course_id, c.title AS course_title, c.description AS course_description,
 			       c.short_description, c.icon AS course_icon, c.category, c.level,
 			       c.featured,
@@ -30,10 +31,9 @@ export async function load({ platform, request, url }: {
 			JOIN courses c ON c.id = co.course_id
 			LEFT JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
 			LEFT JOIN users u ON u.id = co.instructor_id
-			ORDER BY c.featured DESC, co.start_date DESC
-		`)
-		.bind(userId)
-		.all<any>();
+			ORDER BY c.featured DESC, co.start_date DESC`,
+		[userId]
+	);
 
 	return {
 		offerings: (offerings || []).map((o: any) => ({

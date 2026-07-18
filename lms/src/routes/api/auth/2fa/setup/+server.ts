@@ -1,11 +1,11 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
-import { generateSecret, getOTPAuthURL } from '$lib/server/totp';
+import { generateSecret, getOTPAuthURL, generateRecoveryCodes, hashRecoveryCode } from '$lib/server/totp';
 
 /**
  * GET /api/auth/2fa/setup
- * Auth required. Generates TOTP secret, stores it in DB (not yet verified).
- * Returns { secret, otpauth_url }
+ * Auth required. Generates TOTP secret + recovery codes, stores both in DB.
+ * Returns { secret, otpauth_url, recovery_codes } (plaintext codes shown once).
  */
 export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -25,12 +25,21 @@ export async function GET({ request, platform }: { request: Request; platform: A
 		const secret = generateSecret();
 		const otpauthUrl = getOTPAuthURL(secret, user.username || user.name || 'user');
 
-		// Store secret, mark as not yet verified
-		await db.prepare('UPDATE users SET totp_secret = ?, totp_verified = 0 WHERE id = ?')
-			.bind(secret, user.id)
-			.run();
+		// Generate recovery codes
+		const plainCodes = generateRecoveryCodes(8);
+		const hashedCodes: string[] = await Promise.all(plainCodes.map(hashRecoveryCode));
 
-		return jsonResponse({ success: true, secret, otpauth_url: otpauthUrl });
+		// Store secret and hashed recovery codes, mark as not yet verified
+		await db.prepare(
+			'UPDATE users SET totp_secret = ?, totp_verified = 0, recovery_codes = ?, used_recovery_codes = ? WHERE id = ?'
+		).bind(secret, JSON.stringify(hashedCodes), '[]', user.id).run();
+
+		return jsonResponse({
+			success: true,
+			secret,
+			otpauth_url: otpauthUrl,
+			recovery_codes: plainCodes, // displayed to user once
+		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

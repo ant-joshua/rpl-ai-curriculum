@@ -101,3 +101,32 @@ export function getOTPAuthURL(secret: string, username: string): string {
 	const encodedSecret = encodeURIComponent(secret);
 	return `otpauth://totp/${encodedUser}?secret=${encodedSecret}&issuer=RPL%20AI`;
 }
+
+/**
+ * Generate N random alphanumeric recovery codes (10 chars each).
+ */
+export function generateRecoveryCodes(count: number = 8): string[] {
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	const codes: string[] = [];
+	for (let i = 0; i < count; i++) {
+		let code = '';
+		const buf = new Uint8Array(10);
+		crypto.getRandomValues(buf);
+		for (let j = 0; j < 10; j++) {
+			code += chars[buf[j] % chars.length];
+		}
+		codes.push(code);
+	}
+	return codes;
+}
+
+/**
+ * SHA-256 hash a string (for recovery code matching).
+ */
+export async function hashRecoveryCode(code: string): Promise<string> {
+	const encoder = new TextEncoder();
+	const data = encoder.encode(code);
+	const hash = await crypto.subtle.digest('SHA-256', data);
+	const hashArray = Array.from(new Uint8Array(hash));
+	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}

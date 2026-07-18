@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
+import { cachedDbQuery } from '$lib/server/cache';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request, platform, url }) => {
@@ -16,7 +17,8 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	const db = getDB(platform);
 
 	// --- Courses taught by this instructor ---
-	const { results: courses } = await db.prepare(
+	const { results: courses } = await cachedDbQuery<any>(
+		db,
 		`SELECT co.id, co.name AS offering_name, co.status,
 		        c.title AS course_title, c.icon AS course_icon,
 		        (SELECT COUNT(*) FROM enrollments e WHERE e.course_offering_id = co.id AND e.status = 'active') AS active_enrollments,
@@ -24,8 +26,9 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 FROM course_offerings co
 		 JOIN courses c ON c.id = co.course_id
 		 WHERE co.instructor_id = ? AND co.status != 'archived'
-		 ORDER BY co.name ASC`
-	).bind(userId).all<any>();
+		 ORDER BY co.name ASC`,
+		[userId]
+	);
 
 	const courseList = (courses || []).map(c => ({
 		id: c.id,
@@ -44,33 +47,41 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	if (offeringIds.length > 0) {
 		for (const oid of offeringIds) {
 			// Avg grade from gradebook
-			const { results: gradeRows } = await db.prepare(
+			const { results: gradeRows } = await cachedDbQuery<any>(
+				db,
 				`SELECT AVG(score / max_score) * 100 as avg_grade
 				 FROM gradebook
-				 WHERE course_offering_id = ? AND score IS NOT NULL AND max_score > 0`
-			).bind(oid).all<any>();
+				 WHERE course_offering_id = ? AND score IS NOT NULL AND max_score > 0`,
+				[oid]
+			);
 			const avgGrade = Math.round(gradeRows?.[0]?.avg_grade || 0);
 
 			// Completion rate: completed enrollments / total
-			const { results: compRows } = await db.prepare(
+			const { results: compRows } = await cachedDbQuery<any>(
+				db,
 				`SELECT
 					COUNT(*) as total,
 					SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
-				 FROM enrollments WHERE course_offering_id = ?`
-			).bind(oid).all<any>();
+				 FROM enrollments WHERE course_offering_id = ?`,
+				[oid]
+			);
 			const totalEnr = compRows?.[0]?.total || 0;
 			const completedEnr = compRows?.[0]?.completed || 0;
 			const completionRate = totalEnr > 0 ? Math.round((completedEnr / totalEnr) * 100) : 0;
 
 			// Attendance rate
-			const { results: attSessions } = await db.prepare(
-				`SELECT COUNT(*) as total FROM attendance_sessions WHERE course_offering_id = ?`
-			).bind(oid).all<any>();
-			const { results: attPresent } = await db.prepare(
+			const { results: attSessions } = await cachedDbQuery<any>(
+				db,
+				`SELECT COUNT(*) as total FROM attendance_sessions WHERE course_offering_id = ?`,
+				[oid]
+			);
+			const { results: attPresent } = await cachedDbQuery<any>(
+				db,
 				`SELECT COUNT(*) as total FROM attendance_records ar
 				 JOIN attendance_sessions a_s ON a_s.id = ar.session_id
-				 WHERE a_s.course_offering_id = ? AND ar.status = 'present'`
-			).bind(oid).all<any>();
+				 WHERE a_s.course_offering_id = ? AND ar.status = 'present'`,
+				[oid]
+			);
 			const totalAtt = attSessions?.[0]?.total || 0;
 			const totalPrs = attPresent?.[0]?.total || 0;
 			const attendanceRate = totalAtt > 0 ? Math.round((totalPrs / totalAtt) * 100) : 0;
@@ -80,7 +91,8 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	}
 
 	// --- Recent submissions needing grading ---
-	const { results: pendingSubmissions } = await db.prepare(
+	const { results: pendingSubmissions } = await cachedDbQuery<any>(
+		db,
 		`SELECT asub.id, asub.submitted_at, asub.user_id,
 		        a.title AS assessment_title, a.id AS assessment_id,
 		        co.name AS offering_name, co.id AS offering_id,
@@ -92,10 +104,12 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 WHERE asub.status = 'submitted'
 		   AND co.instructor_id = ?
 		 ORDER BY asub.submitted_at ASC
-		 LIMIT 20`
-	).bind(userId).all<any>();
+		 LIMIT 20`,
+		[userId]
+	);
 
-	const { results: pendingAssignments } = await db.prepare(
+	const { results: pendingAssignments } = await cachedDbQuery<any>(
+		db,
 		`SELECT asub.id, asub.submitted_at, asub.user_id,
 		        a.title AS assignment_title, a.id AS assignment_id,
 		        co.name AS offering_name, co.id AS offering_id,
@@ -107,13 +121,15 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 WHERE asub.status = 'submitted'
 		   AND co.instructor_id = ?
 		 ORDER BY asub.submitted_at ASC
-		 LIMIT 20`
-	).bind(userId).all<any>();
+		 LIMIT 20`,
+		[userId]
+	);
 
 	const pendingCount = (pendingSubmissions?.length || 0) + (pendingAssignments?.length || 0);
 
 	// --- Upcoming deadlines ---
-	const { results: upcomingDeadlines } = await db.prepare(
+	const { results: upcomingDeadlines } = await cachedDbQuery<any>(
+		db,
 		`SELECT a.id, a.title, a.due_date, 'assessment' AS kind,
 		        co.name AS offering_name, co.id AS offering_id
 		 FROM assessments a
@@ -128,8 +144,9 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 WHERE co.instructor_id = ? AND a.due_date IS NOT NULL
 		   AND a.due_date >= DATE('now') AND a.status = 'published'
 		 ORDER BY due_date ASC
-		 LIMIT 10`
-	).bind(userId, userId).all<any>();
+		 LIMIT 10`,
+		[userId, userId]
+	);
 
 	return {
 		courses: courseList,

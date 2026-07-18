@@ -1,4 +1,5 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { cachedDbQuery } from '$lib/server/cache';
 
 interface SearchResultItem {
 	type: 'lesson' | 'course' | 'offering';
@@ -43,13 +44,15 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 
 		// Search courses
 		if (type === 'all' || type === 'courses') {
-			const { results: courses } = await db.prepare(
+			const { results: courses } = await cachedDbQuery<any>(
+				db,
 				`SELECT id, title, slug, description, icon
 				 FROM courses
 				 WHERE title LIKE ? OR description LIKE ?
 				 ORDER BY title ASC
-				 LIMIT ?`
-			).bind(likeParam, likeParam, limit).all<any>();
+				 LIMIT ?`,
+				[likeParam, likeParam, limit]
+			);
 
 			for (const c of courses) {
 				results.push({
@@ -64,14 +67,16 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 
 		// Search course_offerings
 		if (type === 'all' || type === 'offerings') {
-			const { results: offerings } = await db.prepare(
+			const { results: offerings } = await cachedDbQuery<any>(
+				db,
 				`SELECT co.id, co.name, co.code, c.title AS course_title, c.slug AS course_slug
 				 FROM course_offerings co
 				 JOIN courses c ON c.id = co.course_id
 				 WHERE co.name LIKE ? OR co.code LIKE ?
 				 ORDER BY co.name ASC
-				 LIMIT ?`
-			).bind(likeParam, likeParam, limit).all<any>();
+				 LIMIT ?`,
+				[likeParam, likeParam, limit]
+			);
 
 			for (const o of offerings) {
 				results.push({
@@ -87,7 +92,8 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 		// Search lessons + their content blocks
 		if (type === 'all' || type === 'lessons') {
 			// First: lessons with title match
-			const { results: lessons } = await db.prepare(
+			const { results: lessons } = await cachedDbQuery<any>(
+				db,
 				`SELECT l.id, l.title, l.slug, l.course_offering_id,
 				        co.course_id, c.slug AS course_slug, c.title AS course_title
 				 FROM lessons l
@@ -95,8 +101,9 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 				 JOIN courses c ON c.id = co.course_id
 				 WHERE l.title LIKE ?
 				 ORDER BY l.title ASC
-				 LIMIT ?`
-			).bind(likeParam, limit).all<any>();
+				 LIMIT ?`,
+				[likeParam, limit]
+			);
 
 			for (const l of lessons) {
 				results.push({
@@ -111,7 +118,8 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 			// Then: content_blocks with body_html match (joined to lessons)
 			if (results.length < limit) {
 				const remaining = limit - results.length;
-				const { results: blocks } = await db.prepare(
+				const { results: blocks } = await cachedDbQuery<any>(
+					db,
 					`SELECT cb.id, cb.title AS block_title, cb.body_html,
 					        l.id AS lesson_id, l.title AS lesson_title, l.slug AS lesson_slug,
 					        l.course_offering_id
@@ -119,8 +127,9 @@ export async function GET({ url, platform }: { url: URL; platform: App.Platform 
 					 JOIN lessons l ON l.content_block_id = cb.id
 					 WHERE cb.body_html LIKE ?
 					 ORDER BY cb.title ASC
-					 LIMIT ?`
-				).bind(likeParam, remaining).all<any>();
+					 LIMIT ?`,
+					[likeParam, remaining]
+				);
 
 				for (const b of blocks) {
 					// Strip HTML tags for snippet

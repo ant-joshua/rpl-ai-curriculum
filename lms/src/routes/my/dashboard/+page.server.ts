@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
+import { cachedDbQuery, cachedDbFirst } from '$lib/server/cache';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ request, platform, url }) => {
@@ -22,22 +23,26 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	const db = getDB(platform);
 
 	// Fetch user display info
-	const user = await db.prepare(
+	const user = await cachedDbFirst<any>(
+		db,
 		`SELECT display_name, avatar_url
-		 FROM users WHERE id = ?`
-	).bind(userId).first<any>();
+		 FROM users WHERE id = ?`,
+		[userId]
+	);
 
 	const displayName = user?.display_name || session.user.name || session.user.email?.split('@')[0] || 'Siswa';
 	const avatarUrl = user?.avatar_url || '';
 
 	// --- Current streak ---
 	const today = new Date().toISOString().slice(0, 10);
-	const { results: activityDays } = await db.prepare(
+	const { results: activityDays } = await cachedDbQuery<{ day: string }>(
+		db,
 		`SELECT DISTINCT DATE(created_at) as day
 		 FROM user_activity_log
 		 WHERE user_id = ? AND created_at >= DATE('now', '-60 days')
-		 ORDER BY day DESC`
-	).bind(userId).all<{ day: string }>();
+		 ORDER BY day DESC`,
+		[userId]
+	);
 
 	let currentStreak = 0;
 	if (activityDays && activityDays.length > 0) {
@@ -54,7 +59,8 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	}
 
 	// --- Enrollments with course info ---
-	const { results: enrollments } = await db.prepare(
+	const { results: enrollments } = await cachedDbQuery<any>(
+		db,
 		`SELECT e.course_offering_id, e.status AS enrollment_status,
 		        co.id AS offering_id, co.name AS offering_name,
 		        c.id AS course_id, c.title AS course_title, c.slug AS course_slug, c.icon AS course_icon
@@ -62,8 +68,9 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 JOIN course_offerings co ON co.id = e.course_offering_id
 		 JOIN courses c ON c.id = co.course_id
 		 WHERE e.user_id = ?
-		 ORDER BY e.enrolled_at DESC`
-	).bind(userId).all<any>();
+		 ORDER BY e.enrolled_at DESC`,
+		[userId]
+	);
 
 	const offeringIds = (enrollments || []).map(e => e.course_offering_id);
 
@@ -71,12 +78,14 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	let lessonsByOffering = new Map<string, any[]>();
 	if (offeringIds.length > 0) {
 		const placeholders = offeringIds.map(() => '?').join(',');
-		const { results: lessons } = await db.prepare(
+		const { results: lessons } = await cachedDbQuery<any>(
+			db,
 			`SELECT id, title, slug, course_offering_id
 			 FROM lessons
 			 WHERE course_offering_id IN (${placeholders}) AND status = 'published'
-			 ORDER BY order_index ASC`
-		).bind(...offeringIds).all<any>();
+			 ORDER BY order_index ASC`,
+			[...offeringIds]
+		);
 
 		for (const lesson of (lessons || [])) {
 			const list = lessonsByOffering.get(lesson.course_offering_id) || [];
@@ -86,12 +95,14 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	}
 
 	// --- Progress for this user ---
-	const { results: progressRows } = await db.prepare(
+	const { results: progressRows } = await cachedDbQuery<any>(
+		db,
 		`SELECT p.session_id, p.completed, l.course_offering_id, l.title AS lesson_title
 		 FROM progress p
 		 JOIN lessons l ON l.slug = p.session_id
-		 WHERE p.user_id = ? AND p.completed = 1`
-	).bind(userId).all<any>();
+		 WHERE p.user_id = ? AND p.completed = 1`,
+		[userId]
+	);
 
 	const completedMap = new Map<string, Set<string>>();
 	const lastLessonByOffering = new Map<string, { title: string; slug: string }>();
@@ -147,7 +158,8 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	const averageProgress = enrollmentCount > 0 ? Math.round(totalProgressSum / enrollmentCount) : 0;
 
 	// --- Upcoming deadlines (assessments + assignments with due_date) ---
-	const { results: upcomingDeadlines } = await db.prepare(
+	const { results: upcomingDeadlines } = await cachedDbQuery<any>(
+		db,
 		`SELECT a.id, a.title, a.due_date, a.type AS type, 'assessment' AS kind,
 		        co.id AS offering_id, co.name AS offering_name
 		 FROM assessments a
@@ -164,11 +176,13 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 WHERE a.due_date IS NOT NULL AND a.due_date >= DATE('now')
 		   AND a.status = 'published'
 		 ORDER BY due_date ASC
-		 LIMIT 10`
-	).bind(userId, userId).all<any>();
+		 LIMIT 10`,
+		[userId, userId]
+	);
 
 	// --- Upcoming schedule events (next 5) ---
-	const { results: upcomingSchedules } = await db.prepare(
+	const { results: upcomingSchedules } = await cachedDbQuery<any>(
+		db,
 		`SELECT cs.id, cs.title, cs.description, cs.start_time, cs.end_time, cs.location, cs.meeting_link,
 		        cs.course_offering_id, co.name AS offering_name, c.icon AS course_icon
 		 FROM course_schedules cs
@@ -177,38 +191,45 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
 		 WHERE cs.start_time >= datetime('now')
 		 ORDER BY cs.start_time ASC
-		 LIMIT 5`
-	).bind(userId).all<any>();
+		 LIMIT 5`,
+		[userId]
+	);
 
 	// --- Recent announcements ---
-	const { results: recentAnnouncements } = await db.prepare(
+	const { results: recentAnnouncements } = await cachedDbQuery<any>(
+		db,
 		`SELECT a.id, a.title, a.body, a.created_at, a.course_offering_id,
 		        co.name AS offering_name
 		 FROM announcements a
 		 JOIN course_offerings co ON co.id = a.course_offering_id
 		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
 		 ORDER BY a.created_at DESC
-		 LIMIT 5`
-	).bind(userId).all<any>();
+		 LIMIT 5`,
+		[userId]
+	);
 
 	// --- Completed course count & total lessons done ---
 	const completedCourseCount = (enrollments || []).filter(e => e.enrollment_status === 'completed').length;
 	const totalLessonsDone = (progressRows || []).length;
 
 	// --- XP ---
-	const { results: xpRows } = await db.prepare(
-		`SELECT total_xp FROM user_xp WHERE user_id = ?`
-	).bind(userId).all<any>();
+	const { results: xpRows } = await cachedDbQuery<any>(
+		db,
+		`SELECT total_xp FROM user_xp WHERE user_id = ?`,
+		[userId]
+	);
 	const totalXp = xpRows?.[0]?.total_xp || 0;
 
 	// --- Recent activity (last 5) ---
-	const { results: recentActivity } = await db.prepare(
+	const { results: recentActivity } = await cachedDbQuery<any>(
+		db,
 		`SELECT action, entity_type, entity_id, metadata, created_at
 		 FROM user_activity_log
 		 WHERE user_id = ?
 		 ORDER BY created_at DESC
-		 LIMIT 5`
-	).bind(userId).all<any>();
+		 LIMIT 5`,
+		[userId]
+	);
 
 	return {
 		displayName,

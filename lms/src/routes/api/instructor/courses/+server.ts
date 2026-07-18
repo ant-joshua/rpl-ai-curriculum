@@ -1,4 +1,5 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { cachedDbQuery } from '$lib/server/cache';
 
 /**
  * GET /api/instructor/courses
@@ -33,7 +34,7 @@ export async function GET({ platform, locals }: { platform: App.Platform; locals
 			params = [user.id];
 		}
 
-		const { results } = await db.prepare(query).bind(...params).all<any>();
+		const { results } = await cachedDbQuery<any>(db, query, params);
 		return jsonResponse({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';

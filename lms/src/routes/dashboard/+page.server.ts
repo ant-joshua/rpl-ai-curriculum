@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { cachedDbQuery, cachedDbFirst } from '$lib/server/cache';
 
 export async function load({ request, platform }) {
 	const token = getBearerToken(request);
@@ -34,8 +35,8 @@ export async function load({ request, platform }) {
 	const userId = session.user.id;
 
 	// ─── Gamification stats ───
-	const xpRow = await db.prepare('SELECT * FROM user_xp WHERE user_id = ?').bind(userId).first<any>();
-	const streakRow = await db.prepare('SELECT * FROM user_streaks WHERE user_id = ?').bind(userId).first<any>();
+	const xpRow = await cachedDbFirst<any>(db, 'SELECT * FROM user_xp WHERE user_id = ?', [userId]);
+	const streakRow = await cachedDbFirst<any>(db, 'SELECT * FROM user_streaks WHERE user_id = ?', [userId]);
 
 	const totalXp = xpRow?.total_xp ?? 0;
 	const level = xpRow?.level ?? 1;
@@ -55,7 +56,8 @@ export async function load({ request, platform }) {
 	};
 
 	// ─── Enrollments with progress ───
-	const { results: enrollments } = await db.prepare(
+	const { results: enrollments } = await cachedDbQuery<any>(
+		db,
 		`SELECT e.id AS enrollment_id, e.course_offering_id, e.status AS enrollment_status,
 		        co.id AS offering_id, co.name AS offering_name, co.code AS offering_code,
 		        c.id AS course_id, c.title AS course_title, c.slug AS course_slug,
@@ -64,16 +66,18 @@ export async function load({ request, platform }) {
 		 JOIN course_offerings co ON co.id = e.course_offering_id
 		 JOIN courses c ON c.id = co.course_id
 		 WHERE e.user_id = ?
-		 ORDER BY e.enrolled_at DESC`
-	).bind(userId).all<any>();
+		 ORDER BY e.enrolled_at DESC`,
+		[userId]
+	);
 
 	// ─── All published lessons for progress calc ───
-	const { results: allLessons } = await db.prepare(
+	const { results: allLessons } = await cachedDbQuery<any>(
+		db,
 		`SELECT id, title, slug, course_offering_id
 		 FROM lessons
 		 WHERE status = 'published'
 		 ORDER BY order_index ASC`
-	).all<any>();
+	);
 
 	const lessonsByOffering = new Map<string, any[]>();
 	for (const lesson of (allLessons || [])) {
@@ -83,13 +87,15 @@ export async function load({ request, platform }) {
 	}
 
 	// ─── Progress data ───
-	const { results: progressRows } = await db.prepare(
+	const { results: progressRows } = await cachedDbQuery<any>(
+		db,
 		`SELECT p.*, l.title AS lesson_title, l.course_offering_id
 		 FROM progress p
 		 JOIN lessons l ON l.slug = p.session_id
 		 WHERE p.user_id = ? AND p.completed = 1
-		 ORDER BY p.updated_at DESC`
-	).bind(userId).all<any>();
+		 ORDER BY p.updated_at DESC`,
+		[userId]
+	);
 
 	const progressByOffering = new Map<string, { completed: number; total: number; lastLessonTitle: string | null; nextLessonSlug: string | null; pct: number }>();
 	const completedPerOffering = new Map<string, string[]>();
@@ -150,7 +156,8 @@ export async function load({ request, platform }) {
 	const averageProgress = nonZeroCount > 0 ? Math.round(totalProgressSum / nonZeroCount) : 0;
 
 	// ─── Upcoming deadlines ───
-	const { results: upcomingDeadlines } = await db.prepare(
+	const { results: upcomingDeadlines } = await cachedDbQuery<any>(
+		db,
 		`SELECT a.id, a.title, a.due_date, a.type AS assessment_type, 'assessment' AS kind,
 		        co.id AS offering_id, co.name AS offering_name
 		 FROM assessments a
@@ -165,19 +172,22 @@ export async function load({ request, platform }) {
 		 JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
 		 WHERE a.due_date IS NOT NULL AND a.due_date >= DATE('now')
 		 ORDER BY due_date ASC
-		 LIMIT 10`
-	).bind(userId, userId).all<any>();
+		 LIMIT 10`,
+		[userId, userId]
+	);
 
 	// ─── Recent activity ───
-	const { results: recentActivity } = await db.prepare(
+	const { results: recentActivity } = await cachedDbQuery<any>(
+		db,
 		`SELECT af.*, u.display_name, u.avatar_url, co.name as offering_name
 		 FROM activity_feed af
 		 LEFT JOIN users u ON u.id = af.user_id
 		 LEFT JOIN course_offerings co ON co.id = af.offering_id
 		 WHERE af.user_id = ?
 		 ORDER BY af.created_at DESC
-		 LIMIT 10`
-	).bind(userId).all<any>();
+		 LIMIT 10`,
+		[userId]
+	);
 
 	const parsedActivity = (recentActivity || []).map((r: any) => ({
 		...r,

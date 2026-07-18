@@ -1,4 +1,5 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { invalidateCache } from '$lib/server/cache';
 
 /**
  * PUT /api/instructor/courses/[offeringId]/enrollments/[id]
@@ -47,6 +48,7 @@ export async function PUT({ request, params, platform, locals }: {
 		).run();
 
 		const updated = await db.prepare('SELECT * FROM enrollments WHERE id = ?').bind(params.id).first<any>();
+		invalidateCache();
 		return jsonResponse({ success: true, data: updated });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -80,6 +82,7 @@ export async function DELETE({ params, platform, locals }: {
 		}
 
 		await db.prepare('DELETE FROM enrollments WHERE id = ?').bind(params.id).run();
+		invalidateCache();
 		return jsonResponse({ success: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';

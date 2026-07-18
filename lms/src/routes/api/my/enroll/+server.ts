@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getSession, getBearerToken } from '$lib/server/auth';
+import { invalidateCache } from '$lib/server/cache';
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -86,6 +87,8 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			)
 			.bind(enrollmentId, userId, body.offeringId, now)
 			.run();
+
+		invalidateCache();
 
 		return jsonResponse({
 			success: true,

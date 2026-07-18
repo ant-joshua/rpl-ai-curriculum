@@ -1,11 +1,13 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
 import bcrypt from 'bcryptjs';
+import { send2FADisabledEmail } from '$lib/server/email';
 
 /**
  * POST /api/auth/2fa/disable
  * Auth required. Body: { password }
- * Verifies password first, then clears totp_secret and sets totp_verified = 0.
+ * Verifies password first, then clears totp_secret, recovery_codes and sets totp_verified = 0.
+ * Sends email notification on successful disable.
  */
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -35,7 +37,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		}
 
 		// Fetch user to verify password
-		const userRow = await db.prepare('SELECT password_hash FROM users WHERE id = ?')
+		const userRow = await db.prepare('SELECT password_hash, email FROM users WHERE id = ?')
 			.bind(user.id)
 			.first<any>();
 
@@ -48,10 +50,14 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'Invalid password' }, 401);
 		}
 
-		// Clear TOTP
-		await db.prepare('UPDATE users SET totp_secret = NULL, totp_verified = 0 WHERE id = ?')
-			.bind(user.id)
-			.run();
+		// Clear TOTP and recovery codes
+		await db.prepare(
+			'UPDATE users SET totp_secret = NULL, totp_verified = 0, recovery_codes = NULL, used_recovery_codes = ? WHERE id = ?'
+		).bind('[]', user.id).run();
+
+		// Send email notification (fire-and-forget)
+		const userEmail = userRow.email || user.email || '';
+		send2FADisabledEmail(userEmail).catch(() => {});
 
 		return jsonResponse({ success: true });
 	} catch (e: unknown) {

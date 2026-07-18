@@ -37,6 +37,9 @@
 	let qrCanvas = $state<HTMLCanvasElement | null>(null);
 	let setupError = $state('');
 	let setupStep = $state<'idle' | 'show_qr' | 'verified'>('idle');
+	let recoveryCodes = $state<string[]>([]);
+	let showingRecoveryCodes = $state(false);
+	let regeneratingCodes = $state(false);
 
 	$effect(() => {
 		if (qrCanvas && totpAuthUrl && setupStep === 'show_qr') {
@@ -166,8 +169,10 @@
 		try {
 			const res = await api('/api/auth/2fa/setup');
 			if (res.success) {
-				totpSecret = res.secret;
-				totpAuthUrl = res.otpauth_url;
+				totpSecret = (res as any).secret;
+				totpAuthUrl = (res as any).otpauth_url;
+				recoveryCodes = (res as any).recovery_codes || [];
+				showingRecoveryCodes = true;
 				setupStep = 'show_qr';
 			} else {
 				setupError = res.error || 'Gagal memulai setup 2FA';
@@ -198,6 +203,7 @@
 				totpVerified = true;
 				setupStep = 'verified';
 				settingUp2FA = false;
+				showingRecoveryCodes = true; // keep showing codes until dismissed
 				addToast('2FA berhasil diaktifkan!', 'success');
 			} else {
 				setupError = res.error || 'Kode verifikasi salah';
@@ -232,6 +238,8 @@
 				totpAuthUrl = '';
 				verifyCode = '';
 				disablePassword = '';
+				recoveryCodes = [];
+				showingRecoveryCodes = false;
 				addToast('2FA berhasil dinonaktifkan', 'success');
 			} else {
 				setupError = res.error || 'Gagal menonaktifkan 2FA';
@@ -252,6 +260,31 @@
 		totpAuthUrl = '';
 		verifyCode = '';
 		setupError = '';
+		recoveryCodes = [];
+		showingRecoveryCodes = false;
+	}
+
+	function dismissRecoveryCodes() {
+		showingRecoveryCodes = false;
+		recoveryCodes = [];
+	}
+
+	async function regenerateRecoveryCodes() {
+		regeneratingCodes = true;
+		try {
+			const res = await api('/api/auth/2fa/recovery-codes', { method: 'POST' });
+			if (res.success) {
+				recoveryCodes = (res as any).recovery_codes || [];
+				showingRecoveryCodes = true;
+				addToast('Kode pemulihan baru telah dibuat!', 'success');
+			} else {
+				addToast(res.error || 'Gagal membuat kode pemulihan', 'error');
+			}
+		} catch {
+			addToast('Network error', 'error');
+		} finally {
+			regeneratingCodes = false;
+		}
 	}
 </script>
 
@@ -388,6 +421,20 @@
 								onclick={() => { navigator.clipboard.writeText(totpSecret); addToast('Kode rahasia disalin', 'info'); }}
 							>📋 Salin</button>
 						</div>
+
+						{#if showingRecoveryCodes && recoveryCodes.length > 0}
+							<div class="fa-recovery-section">
+								<p class="fa-setup-step">🔐 Kode Pemulihan (simpan di tempat aman!)</p>
+								<p class="fa-recovery-warning">Kode ini hanya ditampilkan sekali. Gunakan untuk masuk jika kehilangan akses ke aplikasi authenticator.</p>
+								<div class="fa-recovery-grid">
+									{#each recoveryCodes as rc}
+										<code class="fa-recovery-code">{rc}</code>
+									{/each}
+								</div>
+								<Button onclick={dismissRecoveryCodes}>Saya sudah menyimpannya</Button>
+							</div>
+						{/if}
+
 						<p class="fa-setup-step">3. Masukkan kode 6 digit dari aplikasi authenticator untuk verifikasi:</p>
 						<div class="fa-verify-row">
 							<input
@@ -412,12 +459,45 @@
 				{#if setupStep === 'verified'}
 					<div class="fa-success">
 						<p class="fa-success-text">✅ 2FA berhasil diaktifkan!</p>
+						{#if showingRecoveryCodes && recoveryCodes.length > 0}
+							<div class="fa-recovery-section">
+								<p class="fa-setup-step">🔐 Kode Pemulihan</p>
+								<p class="fa-recovery-warning">Simpan kode berikut di tempat aman. Kode ini hanya ditampilkan sekali.</p>
+								<div class="fa-recovery-grid">
+									{#each recoveryCodes as rc}
+										<code class="fa-recovery-code">{rc}</code>
+									{/each}
+								</div>
+								<Button onclick={dismissRecoveryCodes}>Saya sudah menyimpannya</Button>
+							</div>
+						{/if}
 					</div>
 				{/if}
 			{:else}
 				<!-- 2FA Already Active: Disable -->
 				<div class="fa-active">
 					<p class="fa-active-badge">✅ 2FA aktif</p>
+
+					<!-- Recovery Codes section -->
+					<div class="fa-recovery-manage">
+						<p class="fa-disable-label">🔐 Kode Pemulihan</p>
+						<p class="fa-recovery-desc">Gunakan kode pemulihan untuk masuk jika kehilangan akses ke aplikasi authenticator.</p>
+						<Button onclick={regenerateRecoveryCodes} disabled={regeneratingCodes}>
+							{regeneratingCodes ? 'Memproses...' : '📋 Tampilkan / Regenerasi Kode Pemulihan'}
+						</Button>
+						{#if showingRecoveryCodes && recoveryCodes.length > 0}
+							<div class="fa-recovery-section">
+								<p class="fa-recovery-warning">Kode ini hanya ditampilkan sekali. Simpan di tempat aman.</p>
+								<div class="fa-recovery-grid">
+									{#each recoveryCodes as rc}
+										<code class="fa-recovery-code">{rc}</code>
+									{/each}
+								</div>
+								<Button onclick={dismissRecoveryCodes}>Saya sudah menyimpannya</Button>
+							</div>
+						{/if}
+					</div>
+
 					<div class="fa-disable-section">
 						<p class="fa-disable-label">Nonaktifkan 2FA</p>
 						<div class="fa-disable-row">
@@ -885,5 +965,61 @@
 	.fa-password-input:focus {
 		border-color: var(--accent);
 		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+	}
+
+	/* Recovery Codes */
+	.fa-recovery-section {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.fa-recovery-warning {
+		font-size: 12px;
+		color: #ef4444;
+		margin: 0;
+		font-weight: 500;
+	}
+
+	.fa-recovery-desc {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin: 0;
+	}
+
+	.fa-recovery-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 6px;
+	}
+
+	.fa-recovery-code {
+		font-size: 13px;
+		font-family: monospace;
+		background: var(--bg);
+		padding: 6px 10px;
+		border-radius: 4px;
+		letter-spacing: 1px;
+		text-align: center;
+		color: var(--accent);
+		border: 1px solid var(--border);
+	}
+
+	.fa-recovery-manage {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 12px 0;
+		border-top: 1px solid var(--border);
+	}
+
+	@media (max-width: 480px) {
+		.fa-recovery-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

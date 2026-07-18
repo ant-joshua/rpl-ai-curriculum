@@ -1,11 +1,13 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
 import { verifyTOTP } from '$lib/server/totp';
+import { send2FAEnabledEmail } from '$lib/server/email';
 
 /**
  * POST /api/auth/2fa/verify
  * Auth required. Body: { code }
  * Verifies TOTP against stored secret, marks totp_verified = 1 on success.
+ * Sends email notification on successful enable.
  */
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -35,7 +37,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		}
 
 		// Fetch stored secret
-		const userRow = await db.prepare('SELECT totp_secret FROM users WHERE id = ?')
+		const userRow = await db.prepare('SELECT totp_secret, email FROM users WHERE id = ?')
 			.bind(user.id)
 			.first<any>();
 
@@ -51,6 +53,10 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		await db.prepare('UPDATE users SET totp_verified = 1 WHERE id = ?')
 			.bind(user.id)
 			.run();
+
+		// Send email notification (fire-and-forget)
+		const userEmail = userRow.email || user.email || '';
+		send2FAEnabledEmail(userEmail).catch(() => {});
 
 		return jsonResponse({ success: true });
 	} catch (e: unknown) {

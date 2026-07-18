@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { invalidateCache } from '$lib/server/cache';
 
 export async function POST({ params, request, platform }: {
 	params: { lessonId: string };
@@ -67,6 +68,8 @@ export async function POST({ params, request, platform }: {
 			 VALUES (?, ?, 'complete_lesson', 'lesson', ?, ?, ?)`
 		).bind(crypto.randomUUID(), userId, params.lessonId, JSON.stringify({ title: lesson.title, offeringId: lesson.course_offering_id }), now).run();
 
+		invalidateCache();
+
 		return jsonResponse({ success: true, data: { completedAt: now } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -100,6 +103,8 @@ export async function DELETE({ params, request, platform }: {
 			`UPDATE progress SET completed = 0, completed_at = NULL, updated_at = ?
 			 WHERE user_id = ? AND module_slug = ? AND session_id = ?`
 		).bind(new Date().toISOString(), userId, lesson.course_offering_id, lesson.slug).run();
+
+		invalidateCache();
 
 		return jsonResponse({ success: true });
 	} catch (e: unknown) {
