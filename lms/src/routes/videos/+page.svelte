@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { onMount } from 'svelte';
 
@@ -21,7 +22,7 @@
 			const json = await res.json();
 			videosJson = json.modules || {};
 		} catch {
-			errorMsg = 'Gagal memuat data video.';
+			errorMsg = t('videos.error');
 		}
 		loading = false;
 	});
@@ -95,36 +96,35 @@
 </script>
 
 <svelte:head>
-	<title>Video Pembelajaran — RPL AI</title>
+	<title>{t('videos.page_title')} — RPL AI</title>
 </svelte:head>
 
 <div class="video-page">
 	<header class="page-header">
-		<h1>🎬 Video Pembelajaran</h1>
+		<h1>{t('videos.page_title')}</h1>
 		<p class="subtitle">
-			Koleksi video pembelajaran RPL AI Curriculum.
-			{totalModules} modul &middot; {totalVideos} video
+			{t('videos.subtitle', { modules: totalModules, videos: totalVideos })}
 		</p>
 	</header>
 
 	<div class="filters">
 		<select bind:value={filterModule}>
-			<option value="">Semua Modul</option>
+			<option value="">{t('videos.filter_module')}</option>
 			{#each modules as mod}
 				<option value={mod.slug}>{mod.title}</option>
 			{/each}
 		</select>
 
 		<select bind:value={filterLevel}>
-			<option value="">Semua Level</option>
-			<option value="Beginner">🔵 Beginner</option>
-			<option value="Intermediate">🟡 Intermediate</option>
-			<option value="Advanced">🟣 Advanced</option>
+			<option value="">{t('videos.filter_level')}</option>
+			<option value="Beginner">{t('videos.level_beginner')}</option>
+			<option value="Intermediate">{t('videos.level_intermediate')}</option>
+			<option value="Advanced">{t('videos.level_advanced')}</option>
 		</select>
 
 		<input
 			type="search"
-			placeholder="Cari video..."
+			placeholder="{t('videos.search')}"
 			bind:value={searchQuery}
 			class="search-input"
 		/>
@@ -132,7 +132,7 @@
 
 	{#if loading}
 		<div class="loading">
-			<p>Memuat video...</p>
+			<p>{t('videos.loading')}</p>
 		</div>
 	{:else if errorMsg}
 		<div class="empty">
@@ -140,7 +140,7 @@
 		</div>
 	{:else if flatVideos.length === 0}
 		<div class="empty">
-			<p>Tidak ada video ditemukan.</p>
+			<p>{t('videos.empty')}</p>
 		</div>
 	{:else}
 		<div class="video-grid">
@@ -210,7 +210,7 @@
 			</div>
 			{#if selectedVideo.playlistUrl}
 				<a href={selectedVideo.playlistUrl} target="_blank" class="playlist-link">
-					📺 Lihat Playlist Lengkap &rarr;
+					{t('videos.playlist_link')}
 				</a>
 			{/if}
 		</div>

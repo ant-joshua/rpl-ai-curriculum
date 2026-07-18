@@ -160,7 +160,7 @@
 </script>
 
 <svelte:head>
-	<title>{t('admin.title')}</title>
+	<title>${t('admin.title')}</title>
 </svelte:head>
 
 <div class="course-detail-page">
@@ -294,7 +294,7 @@
 			{ value: 'archived', label: 'Archived' },
 		]} bind:value={ofStatus} />
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showOfferingModal = false} disabled={ofSaving}>{t('common.cancel')}</Button>
+			<Button variant="secondary" onclick={() => showOfferingModal = false} disabled={ofSaving}>${t('common.cancel')}</Button>
 			<Button onclick={saveOffering} loading={ofSaving}>{editingOffering ? 'Simpan' : 'Buat'}</Button>
 		{/snippet}
 	</Modal>
@@ -311,7 +311,7 @@
 			label: `${c.icon || '📚'} ${c.title} (/${c.slug})`,
 		}))} bind:value={selectedPrereqCourseId} />
 		{#snippet footer()}
-			<Button variant="secondary" onclick={() => showPrereqModal = false}>{t('common.cancel')}</Button>
+			<Button variant="secondary" onclick={() => showPrereqModal = false}>${t('common.cancel')}</Button>
 			<Button loading={prereqLoading} onclick={async () => {
 				if (!selectedPrereqCourseId) return;
 				prereqLoading = true;

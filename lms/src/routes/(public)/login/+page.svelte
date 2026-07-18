@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { user } from '$lib/stores/user.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
@@ -72,7 +73,7 @@
 		e.preventDefault();
 		const trimmed = code.trim();
 		if (!trimmed || trimmed.length !== 6) {
-			error = 'Masukkan kode 6 digit dari aplikasi authenticator';
+			error = ''+t('login.signin')+'kan kode 6 digit dari aplikasi authenticator';
 			addToast('Kode 6 digit diperlukan', 'warning');
 			return;
 		}

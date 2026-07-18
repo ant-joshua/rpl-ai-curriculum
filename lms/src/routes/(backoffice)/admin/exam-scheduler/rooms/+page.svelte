@@ -149,7 +149,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 		id: 'actions',
 		cell: ({ row }) => {
 			const r = row.original;
-			return `<div style="display:flex;gap:8px"><button class="btn-sm" onclick="window.__editRoom && window.__editRoom('${r.id}')">{t('common.edit')}</button><button class="btn-sm btn-danger" onclick="window.__deleteRoom && window.__deleteRoom('${r.id}')">Hapus</button></div>`;
+			return `<div style="display:flex;gap:8px"><button class="btn-sm" onclick="window.__editRoom && window.__editRoom('${r.id}')">$'+t('common.edit')+'</button><button class="btn-sm btn-danger" onclick="window.__deleteRoom && window.__deleteRoom('${r.id}')">Hapus</button></div>`;
 		}
 	},
 ];

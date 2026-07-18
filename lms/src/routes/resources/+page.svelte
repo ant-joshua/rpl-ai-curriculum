@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { modules } from '$lib/stores/modules';
 
 	let pdfFiles = $state<
@@ -44,26 +45,26 @@
 </script>
 
 <svelte:head>
-	<title>PDF Resources — RPL AI</title>
+	<title>{t('resources.title')} — RPL AI</title>
 </svelte:head>
 
 <div class="resources-page">
-	<h1>PDF Resources</h1>
-	<p class="subtitle">Download semua modul sebagai PDF — offline-friendly, printable, shareable.</p>
+	<h1>{t('resources.title')}</h1>
+	<p class="subtitle">{t('resources.subtitle')}</p>
 
 	<div class="search-bar">
 		<span class="search-icon">🔍</span>
 		<input
 			type="text"
-			placeholder="Cari modul..."
+			placeholder="{t('resources.search')}"
 			bind:value={searchQuery}
 		/>
 	</div>
 
 	{#if !loaded}
-		<div class="loading">Memuat...</div>
+		<div class="loading">{t('resources.loading')}</div>
 	{:else if filtered.length === 0}
-		<div class="empty">Tidak ada PDF yang cocok.</div>
+		<div class="empty">{t('resources.empty')}</div>
 	{:else}
 		<div class="pdf-list">
 			{#each filtered as file (file.dirName)}
@@ -85,7 +86,7 @@
 						class="pdf-dl-btn"
 						download
 					>
-						⬇ Download
+						{t('resources.download')}
 					</a>
 				</div>
 			{/each}

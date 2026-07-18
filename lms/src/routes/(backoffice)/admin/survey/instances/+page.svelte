@@ -137,7 +137,7 @@
 </script>
 
 <svelte:head>
-	<title>{t('admin.title')}</title>
+	<title>${t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">
@@ -208,7 +208,7 @@
 							<input class="form-input" type="date" bind:value={formStartDate} />
 						</div>
 						<div>
-							<label class="form-label">{t('admin.selesai')}</label>
+							<label class="form-label">${t('admin.selesai')}</label>
 							<input class="form-input" type="date" bind:value={formEndDate} />
 						</div>
 					</div>
@@ -261,7 +261,7 @@
 							<Button variant="primary" class="btn-small -small" onclick={() => updateStatus(inst.id, 'active')}>Aktifkan</Button>
 						{/if}
 						{#if inst.status === 'active'}
-							<Button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>{t('common.close')}</Button>
+							<Button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>${t('common.close')}</Button>
 							<a href={`/api/admin/survey/instances/${inst.id}/analytics`} target="_blank" class="btn-small">Analytics</a>
 						{/if}
 						{#if inst.status === 'closed'}

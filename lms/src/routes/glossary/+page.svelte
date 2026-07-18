@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { parseMarkdown } from '$lib/utils/markdown';
 
@@ -21,7 +22,7 @@
 			const json = await res.json();
 			items = json.items || [];
 		} catch (e) {
-			errorMsg = 'Gagal memuat data glossary';
+			errorMsg = t('glossary.error_load');
 		} finally {
 			loading = false;
 		}
@@ -34,8 +35,8 @@
 
 <div class="reference-page">
 	<header class="page-header">
-		<h1>📖 Glossary</h1>
-		<p class="page-desc">Istilah-istilah penting seputar web development, JavaScript, TypeScript, database, DevOps, AI, dan framework.</p>
+		<h1>{t('glossary.title')}</h1>
+		<p class="page-desc">{t('glossary.desc')}</p>
 	</header>
 
 	<div class="layout">
@@ -43,7 +44,7 @@
 			<div class="search-box">
 				<input
 					type="text"
-					placeholder="Cari istilah..."
+					placeholder="{t('glossary.search')}"
 					bind:value={searchQuery}
 				/>
 			</div>
@@ -61,13 +62,13 @@
 				{/each}
 			</ul>
 			{#if filteredItems.length === 0 && !loading}
-				<p class="empty">Tidak ada hasil</p>
+				<p class="empty">{t('glossary.no_results')}</p>
 			{/if}
 		</aside>
 
 		<main class="content-area">
 			{#if loading}
-				<div class="loading">Memuat...</div>
+				<div class="loading">{t('glossary.loading')}</div>
 			{:else if errorMsg}
 				<div class="error"><p>{errorMsg}</p></div>
 			{:else if activeSlug}
@@ -79,7 +80,7 @@
 				{/if}
 			{:else}
 				<div class="placeholder">
-					<p>Pilih istilah dari daftar di samping untuk melihat penjelasan.</p>
+					<p>{t('glossary.select_hint')}</p>
 				</div>
 			{/if}
 		</main>

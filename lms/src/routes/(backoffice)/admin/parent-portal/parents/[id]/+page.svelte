@@ -143,7 +143,7 @@ const linkColumns: ColumnDef<any, any>[] = [
 	{
 		header: 'Aksi',
 		id: 'actions',
-		cell: ({ row }) => `<button class="pp-btn pp-btn-ghost pp-btn-sm pp-btn-danger" onclick="window.__removeLink && window.__removeLink('${row.original.id}')">{t('common.delete')}</button>`
+		cell: ({ row }) => `<button class="pp-btn pp-btn-ghost pp-btn-sm pp-btn-danger" onclick="window.__removeLink && window.__removeLink('${row.original.id}')">$'+t('common.delete')+'</button>`
 	},
 ];
 

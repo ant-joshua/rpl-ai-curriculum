@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { dailyGoal } from '$lib/stores/daily-goal.svelte';
@@ -188,28 +189,28 @@
 	function testNotification() {
 		reminders.requestPermission().then(granted => {
 			if (granted) {
-				reminders.showNotification('Test Notifikasi', 'Notifikasi berhasil! 🔔');
+				reminders.showNotification(t('study.notification_test_title'), t('study.notification_test_body'));
 			} else {
-				alert('Izin notifikasi belum diberikan. Periksa pengaturan browser.');
+				alert(''+t('study.notification_denied')+'');
 			}
 		});
 	}
 
-	const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+	const dayLabels = [t('study.day_min'), t('study.day_mon'), t('study.day_tue'), t('study.day_wed'), t('study.day_thu'), t('study.day_fri'), t('study.day_sat')];
 </script>
 
 <div class="study-page">
-	<h1>🔬 Study Tools</h1>
-	<p class="subtitle">Alat bantu belajar untuk meningkatkan fokus dan produktivitas</p>
+	<h1>{t('study.page_title')}</h1>
+	<p class="subtitle">{t('study.page_subtitle')}</p>
 
 	<div class="tools-grid">
 		<!-- Pomodoro Timer -->
 		<section class="tool-card pomodoro-card" in:fade={{ duration: 300 }}>
-			<h2>🍅 Pomodoro Timer</h2>
-			<p class="tool-desc">{focusMinutes} menit fokus / {breakMinutes} menit istirahat</p>
+			<h2>{t('study.pomodoro_title')}</h2>
+			<p class="tool-desc">{t('study.pomodoro_desc', { focus: focusMinutes, break: breakMinutes })}</p>
 
 			<div class="pomodoro-presets">
-				<span class="preset-label">Durasi Fokus:</span>
+				<span class="preset-label">{t('study.pomodoro_focus_duration')}</span>
 				{#each FOCUS_OPTIONS as opt}
 					<button
 						class="preset-btn"
@@ -237,22 +238,22 @@
 					<span class="pomodoro-seconds">{String(seconds).padStart(2, '0')}</span>
 				</div>
 				<div class="pomodoro-mode">
-					{timerMode === 'focus' ? '🎯 Fokus' : '☕ Istirahat'}
+					{timerMode === 'focus' ? t('study.pomodoro_focus') : t('study.pomodoro_break')}
 				</div>
 			</div>
 
 			<div class="pomodoro-actions">
 				{#if !isRunning}
 					<button class="pomodoro-btn primary" onclick={startTimer}>
-						▶ Mulai
+						{t('study.pomodoro_start')}
 					</button>
 				{:else}
 					<button class="pomodoro-btn" onclick={pauseTimer}>
-						⏸ Jeda
+						{t('study.pomodoro_pause')}
 					</button>
 				{/if}
 				<button class="pomodoro-btn" onclick={resetTimer}>
-					↺ Reset
+					{t('study.pomodoro_reset')}
 				</button>
 			</div>
 
@@ -273,18 +274,18 @@
 
 			{#if pomodoroCount > 0}
 				<div class="pomodoro-stats" in:fade={{ duration: 200 }}>
-					🍅 {pomodoroCount} pomodoro selesai
+					{t('study.pomodoro_completed', { count: pomodoroCount })}
 				</div>
 			{/if}
 		</section>
 
 		<!-- Study Reminders -->
 		<section class="tool-card reminder-card" in:fade={{ duration: 300, delay: 50 }}>
-			<h2>🔔 Reminder</h2>
-			<p class="tool-desc">Atur pengingat belajar harian</p>
+			<h2>{t('study.reminder_title')}</h2>
+			<p class="tool-desc">{t('study.reminder_desc')}</p>
 
 			<div class="reminder-toggle-row">
-				<label class="reminder-label" for="reminder-toggle">Aktifkan Reminder</label>
+				<label class="reminder-label" for="reminder-toggle">{t('study.reminder_toggle')}</label>
 				<button
 					id="reminder-toggle"
 					class="toggle-switch"
@@ -298,7 +299,7 @@
 			</div>
 
 			<div class="reminder-field">
-				<label for="reminder-time">Waktu</label>
+				<label for="reminder-time">{t('study.reminder_time')}</label>
 				<input
 					id="reminder-time"
 					type="time"
@@ -308,7 +309,7 @@
 			</div>
 
 			<div class="reminder-field">
-				<label>Hari</label>
+				<label>{t('study.reminder_days')}</label>
 				<div class="reminder-days">
 					{#each dayLabels as label, i}
 						<button
@@ -322,25 +323,25 @@
 
 			<div class="reminder-actions">
 				<button class="reminder-save-btn" onclick={saveReminder}>
-					{reminderSaved ? '✓ Tersimpan' : 'Simpan'}
+					{reminderSaved ? t('study.reminder_saved') : t('study.reminder_save')}
 				</button>
 				<button class="reminder-test-btn" onclick={testNotification}>
-					Test Notification
+					{t('study.reminder_test')}
 				</button>
 			</div>
 		</section>
 
 		<!-- Quick Links -->
 		<section class="tool-card quick-links-card" in:fade={{ duration: 300, delay: 150 }}>
-			<h2>🔗 Akses Cepat</h2>
-			<p class="tool-desc">Lompat ke alat belajar lainnya</p>
+			<h2>{t('study.quick_links')}</h2>
+			<p class="tool-desc">{t('study.quick_links_desc')}</p>
 
 			<div class="quick-links">
 				<a href="/flashcards" class="quick-link">
 					<span class="ql-icon">🃏</span>
 					<span class="ql-text">
 						<span class="ql-title">Flashcards</span>
-						<span class="ql-desc">{flashcardCounts.dueToday} kartu hari ini</span>
+						<span class="ql-desc">{t('study.flashcards_today', { count: flashcardCounts.dueToday })}</span>
 					</span>
 					<span class="ql-badge" class:has-items={flashcardCounts.dueToday > 0}>
 						{flashcardCounts.dueToday}
@@ -350,14 +351,14 @@
 					<span class="ql-icon">🤖</span>
 					<span class="ql-text">
 						<span class="ql-title">AI Tutor</span>
-						<span class="ql-desc">Tanya materi RPL</span>
+						<span class="ql-desc">{t('study.ai_tutor_desc')}</span>
 					</span>
 					<span class="ql-arrow">→</span>
 				</a>
 			</div>
 
 			<div class="daily-goal-compact">
-				<h3>🎯 Target Harian</h3>
+				<h3>{t('study.daily_goal')}</h3>
 				<div class="daily-goal-progress">
 					<div class="dgp-bar">
 						<div class="dgp-fill" style="width: {todayProgress.pct}%"></div>
@@ -366,25 +367,25 @@
 						<span class="dgp-done">{todayProgress.completed}</span>
 						<span class="dgp-sep">/</span>
 						<span class="dgp-target">{todayProgress.target}</span>
-						<span class="dgp-label">sesi</span>
+						<span class="dgp-label">{t('study.goal_sessions')}</span>
 					</div>
 				</div>
 
 				{#if showGoalInput}
 					<div class="goal-edit-row">
 						<input type="number" min="1" max="20" bind:value={editTarget} class="goal-input" />
-						<button class="goal-save-btn" onclick={saveDailyTarget}>Simpan</button>
-						<button class="goal-cancel-btn" onclick={() => showGoalInput = false}>Batal</button>
+						<button class="goal-save-btn" onclick={saveDailyTarget}>{t('study.goal_save')}</button>
+						<button class="goal-cancel-btn" onclick={() => showGoalInput = false}>{t('study.goal_cancel')}</button>
 					</div>
 				{:else}
 					<button class="change-goal-btn" onclick={() => { editTarget = dailyTarget; showGoalInput = true; }}>
-						Ubah target ({dailyTarget} sesi/hari)
+						{t('study.goal_change', { target: dailyTarget })}
 					</button>
 				{/if}
 
 				{#if todayProgress.completed >= todayProgress.target && todayProgress.target > 0}
 					<div class="goal-achieved" in:fade={{ duration: 200 }}>
-						🎉 Target hari ini tercapai!
+						{t('study.goal_achieved')}
 					</div>
 				{/if}
 			</div>
@@ -392,15 +393,15 @@
 
 		<!-- Study Streak Calendar -->
 		<section class="tool-card streak-card" in:fade={{ duration: 300, delay: 100 }}>
-			<h2>📅 Streak Kalender</h2>
-			<p class="tool-desc">30 hari terakhir — 🔥 {streak} hari streak</p>
+			<h2>{t('study.streak_calendar')}</h2>
+			<p class="tool-desc">{t('study.streak_desc', { streak })}</p>
 
 			<div class="streak-calendar">
 				{#each streakCalendar as day}
 					<div
 						class="streak-day"
 						class:active={day.active}
-						title="{day.date}: {day.active ? 'Aktif' : 'Tidak aktif'}"
+						title="{day.date}: {day.active ? t('study.streak_active') : t('study.streak_inactive')}"
 					>
 						{day.day}
 					</div>
@@ -418,37 +419,37 @@
 
 		<!-- Study Stats -->
 		<section class="tool-card stats-card" in:fade={{ duration: 300, delay: 200 }}>
-			<h2>📊 Statistik Belajar</h2>
-			<p class="tool-desc">Rangkuman progress belajarmu</p>
+			<h2>{t('study.stats_title')}</h2>
+			<p class="tool-desc">{t('study.stats_desc')}</p>
 
 			<div class="stats-grid">
-			<StatCard icon="✅" value="{completedSessions}/{totalSessions}" label="Sesi selesai" />
-			<StatCard icon="📊" value="{overallPct}%" label="Progress total" />
-			<StatCard icon="🔥" value={streak} label="Streak (hari)" />
-			<StatCard icon="📅" value={todayCompletions} label="Sesi hari ini" />
-			<StatCard icon="📦" value={totalModules} label="Total modul" />
-			<StatCard icon="⏱️" value="~{estimatedMinutes}" label="Menit belajar" />
+			<StatCard icon="✅" value="{completedSessions}/{totalSessions}" label="{t('study.stats_sessions_completed')}" />
+			<StatCard icon="📊" value="{overallPct}%" label="{t('study.stats_total_progress')}" />
+			<StatCard icon="🔥" value={streak} label="{t('study.stats_streak')}" />
+			<StatCard icon="📅" value={todayCompletions} label="{t('study.stats_today_sessions')}" />
+			<StatCard icon="📦" value={totalModules} label="{t('study.stats_total_modules')}" />
+			<StatCard icon="⏱️" value="~{estimatedMinutes}" label="{t('study.stats_minutes_studied')}" />
 			</div>
 		</section>
 	</div>
 
 	<!-- Google Calendar Sync -->
 	<section class="tool-card calendar-card">
-		<h2>📅 Google Calendar</h2>
-		<p class="tool-desc">Sinkronkan jadwal belajar ke Google Calendar</p>
-		<p class="calendar-info">Download file .ics untuk diimpor ke Google Calendar, Apple Calendar, atau Outlook.</p>
+		<h2>{t('study.calendar_title')}</h2>
+		<p class="tool-desc">{t('study.calendar_desc')}</p>
+		<p class="calendar-info">{t('study.calendar_info')}</p>
 		<a href="/api/export/ical" class="calendar-btn" target="_blank" download="calendar.ics">
-			📥 Sync ke Google Calendar
+			{t('study.calendar_sync')}
 		</a>
 	</section>
 
 	<!-- Discord Notification -->
 	<section class="tool-card discord-card">
-		<h2>🔔 Discord</h2>
-		<p class="tool-desc">Notifikasi belajar via Discord webhook</p>
+		<h2>{t('study.discord_title')}</h2>
+		<p class="tool-desc">{t('study.discord_desc')}</p>
 		<div class="discord-info">
-			<p>Notifikasi Discord akan dikirim untuk pengingat belajar, streak, dan pencapaian.</p>
-			<p class="discord-note">Konfigurasi webhook URL melalui environment variable <code>DISCORD_WEBHOOK_URL</code>.</p>
+			<p>{t('study.discord_info')}</p>
+			<p class="discord-note">{t('study.discord_note')} <code>DISCORD_WEBHOOK_URL</code>.</p>
 		</div>
 	</section>
 </div>

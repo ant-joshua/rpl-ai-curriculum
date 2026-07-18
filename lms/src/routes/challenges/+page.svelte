@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { parseMarkdown } from '$lib/utils/markdown';
 
@@ -6,6 +7,7 @@
 	let activeSlug = $state<string | null>(null);
 	let loading = $state(true);
 	let errorMsg = $state('');
+	let _ = $derived(t(''));
 	let searchQuery = $state('');
 
 	let filteredItems = $derived(
@@ -17,7 +19,7 @@
 	onMount(async () => {
 		try {
 			const res = await fetch('/content/references/challenges.json');
-			if (!res.ok) throw new Error('Gagal memuat challenges');
+			if (!res.ok) throw new Error(''+t('challenges.error_load')+'');
 			const json = await res.json();
 			items = json.items || [];
 		} catch (e) {
@@ -34,8 +36,8 @@
 
 <div class="reference-page">
 	<header class="page-header">
-		<h1>🏋️ Daily Challenges</h1>
-		<p class="page-desc">Latihan coding harian dari level dasar sampai mahir. Klik tantangan untuk melihat soal dan coba selesaikan.</p>
+		<h1>{t('challenges.title')}</h1>
+		<p class="page-desc">{t('challenges.desc')}</p>
 	</header>
 
 	<div class="layout">
@@ -43,7 +45,7 @@
 			<div class="search-box">
 				<input
 					type="text"
-					placeholder="Cari tantangan..."
+					placeholder="{t('challenges.search')}"
 					bind:value={searchQuery}
 				/>
 			</div>
@@ -61,13 +63,13 @@
 				{/each}
 			</ul>
 			{#if filteredItems.length === 0 && !loading}
-				<p class="empty">Tidak ada hasil</p>
+				<p class="empty">{t('challenges.no_results')}</p>
 			{/if}
 		</aside>
 
 		<main class="content-area">
 			{#if loading}
-				<div class="loading">Memuat...</div>
+				<div class="loading">{t('challenges.loading')}</div>
 			{:else if errorMsg}
 				<div class="error"><p>{errorMsg}</p></div>
 			{:else if activeSlug}
@@ -79,7 +81,7 @@
 				{/if}
 			{:else}
 				<div class="placeholder">
-					<p>Pilih tantangan dari daftar di samping untuk melihat soal.</p>
+					<p>{t('challenges.select_hint')}</p>
 				</div>
 			{/if}
 		</main>

@@ -78,7 +78,7 @@
 		}
 		html += `</select>`;
 		if (savingId === offering.id) {
-			html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">{t('common.saving')}</span>`;
+			html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">$'+t('common.saving')+'</span>`;
 		}
 		return html;
 	}
@@ -117,7 +117,7 @@
 				}
 				html += `</select>`;
 				if (savingId === id) {
-					html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">{t('common.saving')}</span>`;
+					html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">$'+t('common.saving')+'</span>`;
 				}
 				html += `</div>`;
 				return html;

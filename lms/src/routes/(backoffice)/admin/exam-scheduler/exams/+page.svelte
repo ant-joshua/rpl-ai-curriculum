@@ -214,7 +214,7 @@
 			accessorKey: 'id',
 			enableSorting: false,
 			cell: ({ getValue }) => {
-				return `<button onclick="window.__deleteExam('${getValue()}')" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:#ef4444;font-size:12px;cursor:pointer">{t('common.delete')}</button>`;
+				return `<button onclick="window.__deleteExam('${getValue()}')" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:#ef4444;font-size:12px;cursor:pointer">$'+t('common.delete')+'</button>`;
 			}
 		}
 	];

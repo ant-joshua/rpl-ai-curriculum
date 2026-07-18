@@ -57,7 +57,7 @@ import { t } from '$lib/stores/i18n.svelte';
 		},
 		{
 			header: '', accessorKey: 'id', enableSorting: false,
-			cell: ({ getValue }) => `<a href="/tutor/siswa/${getValue()}" style="color:var(--accent);text-decoration:none;font-weight:500;font-size:12px">${t('common.detail')} →</a>`
+			cell: ({ getValue }) => `<a href="/tutor/siswa/${getValue()}" style="color:var(--accent);text-decoration:none;font-weight:500;font-size:12px">$$'+t('common.detail')+' →</a>`
 		},
 	];
 </script>

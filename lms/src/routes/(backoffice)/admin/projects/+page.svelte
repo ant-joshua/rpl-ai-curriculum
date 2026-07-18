@@ -90,7 +90,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 </script>
 
 <svelte:head>
-	<title>{t('admin.title')}</title>
+	<title>${t('admin.title')}</title>
 </svelte:head>
 
 <div class="projects-page">

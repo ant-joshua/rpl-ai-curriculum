@@ -283,7 +283,7 @@
 </script>
 
 <svelte:head>
-	<title>{t('admin.title')}</title>
+	<title>${t('admin.title')}</title>
 </svelte:head>
 
 <div class="content-page">
@@ -373,7 +373,7 @@
 					<TableHead>Visibility</TableHead>
 					<TableHead>Linked Lesson</TableHead>
 					<TableHead>Order</TableHead>
-					<TableHead>{t('common.action')}</TableHead>
+					<TableHead>${t('common.action')}</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>

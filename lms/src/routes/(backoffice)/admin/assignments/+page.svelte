@@ -266,7 +266,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
   import { t } from '$lib/stores/i18n.svelte';
 </script>
 
-<svelte:head><title>{t('admin.title')}</title></svelte:head>
+<svelte:head><title>${t('admin.title')}</title></svelte:head>
 
 <div class="page">
 	<div class="stats-row">

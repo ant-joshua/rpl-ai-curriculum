@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 
@@ -17,7 +18,7 @@
 		error = '';
 
 		if (!name.trim()) { error = 'Nama wajib diisi'; return; }
-		if (!email.trim()) { error = 'Email wajib diisi'; return; }
+		if (!email.trim()) { error = ''+t('register.email')+' wajib diisi'; return; }
 		if (!password) { error = 'Password wajib diisi'; return; }
 		if (password.length < 6) { error = 'Password minimal 6 karakter'; return; }
 		if (password !== confirmPassword) { error = 'Password tidak cocok'; return; }
@@ -50,7 +51,7 @@
 </script>
 
 <svelte:head>
-	<title>Daftar Instruktur — RPL AI Curriculum</title>
+	<title>{t('register.register_btn')} {t('register.role_instructor')} — RPL AI Curriculum</title>
 	<meta name="description" content="Daftar sebagai instruktur untuk mengajar kursus AI di RPL AI Curriculum." />
 </svelte:head>
 
@@ -76,7 +77,7 @@
 				{/if}
 
 				<div class="form-group">
-					<label for="name">Nama Lengkap</label>
+					<label for="name">{t('register.fullname')}</label>
 					<input
 						id="name"
 						type="text"
@@ -124,7 +125,7 @@
 				</div>
 
 				<div class="form-group">
-					<label for="bio">Bio / Pengalaman</label>
+					<label for="bio">{t('register.bio')}</label>
 					<textarea
 						id="bio"
 						bind:value={bio}
@@ -146,11 +147,11 @@
 				</div>
 
 				<button type="submit" class="btn btn-primary btn-lg btn-full" disabled={loading}>
-					{loading ? 'Mendaftarkan...' : 'Daftar sebagai Instruktur'}
+					{loading ? 'Mendaftarkan...' : t('register.as_instructor')}
 				</button>
 
 				<p class="login-link">
-					Sudah punya akun? <a href="/login">Login</a>
+					{t('register.have_account')} <a href="/login">Login</a>
 				</p>
 			</form>
 		{/if}

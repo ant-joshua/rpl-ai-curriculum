@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { user } from '$lib/stores/user.svelte';
 	import { api } from '$lib/utils/api';
@@ -57,7 +58,7 @@
 			code = '';
 			await loadRequests();
 		} else {
-			submitError = res.error || 'Gagal mengirim';
+			submitError = res.error || '$'+t('reviews.error_submit')+'';
 		}
 	}
 
@@ -90,35 +91,35 @@
 </script>
 
 <div class="reviews-page">
-	<h1>🔍 Peer Code Review</h1>
-	<p class="subtitle">Minta review kode atau review kode teman</p>
+	<h1>{t('reviews.title')}</h1>
+	<p class="subtitle">{t('reviews.subtitle')}</p>
 
 	<div class="tab-bar">
 		<button class="tab-btn" class:active={tab === 'request'} onclick={() => switchTab('request')}>
-			📝 Minta Review
+			{t('reviews.tab_request')}
 		</button>
 		<button class="tab-btn" class:active={tab === 'review'} onclick={() => switchTab('review')}>
-			👀 Review Teman
+			{t('reviews.tab_review')}
 		</button>
 	</div>
 
 	{#if showDetail && selectedRequest}
 		<div class="detail-view">
-			<button class="back-btn" onclick={() => { showDetail = false; selectedRequest = null; }}>← Kembali</button>
+			<button class="back-btn" onclick={() => { showDetail = false; selectedRequest = null; }}>{t('reviews.back')}</button>
 			<div class="code-display">
 				<h3>📁 {selectedRequest.exercise_slug}</h3>
-				<p class="author-label">oleh {selectedRequest.author_name || selectedRequest.user_id?.slice(0, 8)}</p>
+				<p class="author-label">{t('reviews.by_author', { author: selectedRequest.author_name || selectedRequest.user_id?.slice(0, 8) })}</p>
 				<pre class="code-block"><code>{selectedRequest.code}</code></pre>
 			</div>
 
 			{#if selectedRequest.reviews && selectedRequest.reviews.length > 0}
 				<div class="existing-reviews">
-					<h4>Review yang sudah diberikan</h4>
+					<h4>{t('reviews.existing_reviews')}</h4>
 					{#each selectedRequest.reviews as rev}
 						<div class="review-card">
 							<div class="review-header">
 								<span class="reviewer">{rev.reviewer_name || rev.reviewer_id?.slice(0, 8)}</span>
-								<span class="review-score">Nilai: {rev.score ?? '-'}/10</span>
+								<span class="review-score">{t('reviews.score', { score: rev.score ?? '-' })}</span>
 							</div>
 							<p class="review-feedback">{rev.feedback}</p>
 						</div>
@@ -126,18 +127,18 @@
 				</div>
 			{:else if tab === 'review'}
 				<div class="review-form">
-					<h4>Beri Review</h4>
+					<h4>{t('reviews.give_review')}</h4>
 					<div class="form-field">
-						<label for="feedback">Feedback</label>
-						<textarea id="feedback" bind:value={feedback} placeholder="Tulis review konstruktif..."></textarea>
+						<label for="feedback">{t('reviews.feedback_label')}</label>
+						<textarea id="feedback" bind:value={feedback} placeholder="{t('reviews.feedback_placeholder')}"></textarea>
 					</div>
 					<div class="form-field">
-						<label for="score">Nilai (1-10)</label>
+						<label for="score">{t('reviews.score_label')}</label>
 						<input id="score" type="range" min="1" max="10" bind:value={score} />
 						<span class="score-value">{score}/10</span>
 					</div>
 					<button class="submit-btn" onclick={submitReview} disabled={reviewSubmitting || !feedback.trim()}>
-						{reviewSubmitting ? 'Mengirim...' : 'Kirim Review'}
+						{reviewSubmitting ? t('reviews.submitting_review') : t('reviews.submit_review')}
 					</button>
 				</div>
 			{/if}
@@ -145,45 +146,45 @@
 	{:else if tab === 'request'}
 		<div class="request-section">
 			<div class="submit-form">
-				<h3>Kirim Kode untuk Review</h3>
+				<h3>{t('reviews.submit_code')}</h3>
 				<div class="form-field">
-					<label for="ex-slug">Exercise</label>
+					<label for="ex-slug">{t('reviews.exercise_label')}</label>
 					<select id="ex-slug" bind:value={exerciseSlug}>
-						<option value="">Pilih exercise...</option>
+						<option value="">{t('reviews.select_exercise')}</option>
 						{#each exercises as ex}
 							<option value={ex}>{ex}</option>
 						{/each}
 					</select>
 				</div>
 				<div class="form-field">
-					<label for="code-input">Kode</label>
-					<textarea id="code-input" bind:value={code} placeholder="Tempel kode kamu di sini..." rows="8"></textarea>
+					<label for="code-input">{t('reviews.code_label')}</label>
+					<textarea id="code-input" bind:value={code} placeholder="{t('reviews.code_placeholder')}" rows="8"></textarea>
 				</div>
 				{#if submitError}
 					<p class="form-error">{submitError}</p>
 				{/if}
 				<button class="submit-btn" onclick={handleSubmit} disabled={submitting || !exerciseSlug || !code.trim()}>
-					{submitting ? 'Mengirim...' : 'Kirim'}
+					{submitting ? 'Mengirim...' : t('reviews.submit')}
 				</button>
 			</div>
 
 			<div class="my-requests">
-				<h3>Review Saya</h3>
+				<h3>{t('reviews.my_reviews')}</h3>
 				{#if loading}
-					<p class="loading-text">Memuat...</p>
+					<p class="loading-text">{t('reviews.loading')}</p>
 				{:else if requests.length === 0}
-					<p class="empty-state">Belum ada permintaan review.</p>
+					<p class="empty-state">{t('reviews.empty_requests')}</p>
 				{:else}
 					{#each requests as req}
 						<div class="request-card" onclick={() => openDetail(req)}>
 							<div class="req-info">
 								<span class="req-exercise">📁 {req.exercise_slug}</span>
 								<span class="req-status" class:open={req.status === 'open'} class:closed={req.status === 'closed'}>
-									{req.status === 'open' ? '⏳ Open' : '✅ Closed'}
+									{req.status === 'open' ? t('reviews.status_open') : t('reviews.status_closed')}
 								</span>
 							</div>
 							{#if req.review_count > 0}
-								<span class="req-count">{req.review_count} review</span>
+								<span class="req-count">{t('reviews.review_count', { count: req.review_count })}</span>
 							{/if}
 						</div>
 					{/each}
@@ -195,7 +196,7 @@
 			{#if loading}
 				<p class="loading-text">Memuat...</p>
 			{:else if requests.length === 0}
-				<p class="empty-state">Belum ada permintaan review dari teman.</p>
+				<p class="empty-state">{t('reviews.empty_reviews')}</p>
 			{:else}
 				{#each requests as req}
 					<div class="request-card" onclick={() => openDetail(req)}>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { certificate } from '$lib/stores/certificate.svelte';
@@ -28,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Sertifikat — RPL AI Curriculum</title>
+	<title>{t('certificate.title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="cert-page">
@@ -66,7 +67,7 @@
 		<!-- Eligible: show beautiful certificate -->
 		<div class="cert-actions no-print">
 			<button onclick={handlePrint} class="print-btn">
-				⬇️ Download / Cetak Sertifikat
+				⬇️ Download / {t('certificate.print')} Sertifikat
 			</button>
 			<ShareButton
 				title="Sertifikat RPL AI Curriculum"
@@ -120,7 +121,7 @@
 
 						<div class="cert-footer">
 							<div class="cert-date">
-								<span class="footer-label">Tanggal Kelulusan</span>
+								<span class="footer-label">{t('certificate.date')} Kelulusan</span>
 								<span class="footer-value">{completedDate}</span>
 							</div>
 							<div class="cert-seal">🏅</div>

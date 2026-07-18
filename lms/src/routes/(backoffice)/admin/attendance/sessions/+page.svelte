@@ -215,7 +215,7 @@
 				const s = row.original;
 				let html = `<a href="/admin/attendance/sessions/${s.id}" style="padding:4px 10px;background:var(--bg-secondary);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:12px;text-decoration:none">Detail</a>`;
 				if (s.status === 'active') {
-					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">{t('common.close')}</button>`;
+					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">$'+t('common.close')+'</button>`;
 				}
 				return html;
 			}

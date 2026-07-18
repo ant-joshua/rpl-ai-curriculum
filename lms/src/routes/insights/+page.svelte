@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
@@ -83,7 +84,7 @@
         recentActivity = localActivity.sort((a: any, b: any) => b.timestamp - a.timestamp).slice(0, 20);
       }
     } catch {
-      error = 'Gagal memuat insights';
+      error = t('insights.error');
     } finally {
       loading = false;
     }
@@ -113,31 +114,31 @@
 
 <div class="insights-page">
   {#if loading}
-    <div class="loading">Memuat insights...</div>
+    <div class="loading">{t('insights.loading')}</div>
   {:else if error}
     <div class="error-card">{error}</div>
   {:else}
     <div in:fade={{ duration: 300 }}>
-      <h1 class="page-title">📊 Learning Insights</h1>
-      <p class="page-subtitle">Wawasan belajar dan analisis progress</p>
+      <h1 class="page-title">{t('insights.title')}</h1>
+      <p class="page-subtitle">{t('insights.subtitle')}</p>
 
       <!-- Top Stats Row -->
       <section class="stats-row">
-        <StatCard icon="⏱️" value={totalStudyTime} label="Total Aktivitas" />
-        <StatCard icon="✅" value={sessionsDone} label="Sesi Selesai" />
-        <StatCard icon="🔥" value={streak} label="Streak (hari)" />
-        <StatCard icon="📅" value={dailyAverage} label="Rata-rata Harian" />
+        <StatCard icon="⏱️" value={totalStudyTime} label="{t('insights.total_activity')}" />
+        <StatCard icon="✅" value={sessionsDone} label="{t('insights.sessions_done')}" />
+        <StatCard icon="🔥" value={streak} label="{t('insights.streak_days')}" />
+        <StatCard icon="📅" value={dailyAverage} label="{t('insights.daily_avg')}" />
       </section>
 
       <!-- Activity Heatmap -->
       <section class="section-card">
-        <h2>🔥 Activity Heatmap</h2>
+        <h2>{t('insights.heatmap')}</h2>
         <ActivityHeatmap dayCounts={heatmapData} />
       </section>
 
       <!-- Time Breakdown -->
       <section class="section-card">
-        <h2>⏰ Waktu Belajar per Jam</h2>
+        <h2>{t('insights.time_per_hour')}</h2>
         <div class="bar-chart">
           {#each hourData as count, i}
             <div class="bar-column">
@@ -145,7 +146,7 @@
                 <div
                   class="bar-fill"
                   style="height: {(count / maxHour) * 100}%"
-                  title="{count} aktivitas jam {i}:00"
+                  title={t('insights.tooltip_activity', { count, hour: i })}
                 ></div>
               </div>
               <span class="bar-label">{i}</span>
@@ -157,7 +158,7 @@
       <!-- Weak Topics -->
       {#if weakTopics.length > 0}
         <section class="section-card">
-          <h2>⚠️ Topik Lemah (&lt;50% completion)</h2>
+          <h2>{t('insights.weak_topics')}</h2>
           <div class="weak-list">
             {#each weakTopics as topic}
               <a href="/module/{topic.slug}" class="weak-item">
@@ -166,19 +167,19 @@
               </a>
             {/each}
           </div>
-          <p class="weak-hint">Selesaikan modul-modul ini untuk memperkuat pemahamanmu.</p>
+          <p class="weak-hint">{t('insights.weak_hint')}</p>
         </section>
       {/if}
 
       <!-- Predictions -->
       <section class="section-card">
-        <h2>📈 Prediksi Penyelesaian</h2>
+        <h2>{t('insights.predictions')}</h2>
         {#if predictions.length > 0}
           <div class="prediction-controls">
-            <label>Jika kamu belajar</label>
+            <label>{t('insights.pred_if_study')}</label>
             <input type="number" min="1" max="20" bind:value={customSessions} class="pred-input" />
-            <label>sesi/hari</label>
-            <button class="pred-btn" onclick={computeCustomPredictions}>Hitung</button>
+            <label>{t('insights.pred_sessions_per_day')}</label>
+            <button class="pred-btn" onclick={computeCustomPredictions}>{t('insights.pred_calculate')}</button>
           </div>
           <div class="prediction-list">
             {#each (customPredictions.length ? customPredictions : predictions.slice(0, 5)) as pred}
@@ -186,7 +187,7 @@
                 <span class="pred-icon">{getPathIcon(pred.slug)}</span>
                 <div class="pred-info">
                   <span class="pred-title">{pred.title}</span>
-                  <span class="pred-progress">{pred.sessionsDone}/{pred.totalSessions} sesi</span>
+                  <span class="pred-progress">{t('insights.pred_sessions_progress', { done: pred.sessionsDone, total: pred.totalSessions })}</span>
                 </div>
                 <span class="pred-date">
                   🎯 {(customPredictions.length ? (pred as any).completionDate : pred.estimatedCompletion) || '—'}
@@ -195,13 +196,13 @@
             {/each}
           </div>
         {:else}
-          <p class="empty-text">Belum cukup data untuk prediksi. Mulai belajar!</p>
+          <p class="empty-text">{t('insights.pred_no_data')}</p>
         {/if}
       </section>
 
       <!-- Recent Activity -->
       <section class="section-card">
-        <h2>📜 Aktivitas Terbaru</h2>
+        <h2>{t('insights.recent_activity')}</h2>
         {#if recentActivity.length > 0}
           <div class="activity-feed">
             {#each recentActivity.slice(0, 10) as entry}
@@ -220,7 +221,7 @@
             {/each}
           </div>
         {:else}
-          <p class="empty-text">Belum ada aktivitas tercatat.</p>
+          <p class="empty-text">{t('insights.no_activity')}</p>
         {/if}
       </section>
     </div>

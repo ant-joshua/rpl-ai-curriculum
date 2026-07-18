@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import type { PageData } from './$types';
 	import WelcomeCard from '$lib/components/dashboard/WelcomeCard.svelte';
 	import ContinueLearning from '$lib/components/dashboard/ContinueLearning.svelte';

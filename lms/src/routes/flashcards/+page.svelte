@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
   import { flashcards } from '$lib/stores/flashcards.svelte';
-  import type { DeckMeta } from '$lib/stores/flashcards.svelte';
+  import type { FlashcardDeckMeta } from '$lib/stores/flashcards.svelte';
   import { modules } from '$lib/stores/modules';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
@@ -55,7 +56,9 @@
   }
 
   function deleteDeckCards(slug: string) {
-    if (!confirm(`Hapus semua kartu dari deck "${slug}"?`)) return;
+    if (!confirm(`Hapus semua kartu dari deck ${slug}?`)) {
+      return;
+    }
     const cards = flashcards.getCardsByDeck(slug);
     for (const c of cards) flashcards.deleteCard(c.id);
     refresh();
@@ -63,47 +66,47 @@
 </script>
 
 <div class="page">
-  <h1>🃏 Flashcards</h1>
-  <p class="subtitle">Kartu belajar dengan sistem pengulangan terjadwal (spaced repetition)</p>
+  <h1>{t('flashcards.page_title')}</h1>
+  <p class="subtitle">{t('flashcards.subtitle')}</p>
 
   <!-- Stats Dashboard -->
   <div class="stats-grid">
-    <StatCard icon="📅" value={counts.dueToday} label="Jatuh Tempo Hari Ini" color="var(--accent)" />
-    <StatCard icon="🎴" value={counts.total} label="Total Kartu" />
-    <StatCard icon="✅" value={counts.known} label="Diketahui" color="#22c55e" />
-    <StatCard icon="📖" value={counts.learning} label="Sedang Dipelajari" color="#f59e0b" />
-    <StatCard icon="🆕" value={counts.newCards} label="Kartu Baru" color="#3b82f6" />
+    <StatCard icon="📅" value={counts.dueToday} label="{t('flashcards.due_today')}" color="var(--accent)" />
+    <StatCard icon="🎴" value={counts.total} label="{t('flashcards.total_cards')}" />
+    <StatCard icon="✅" value={counts.known} label="{t('flashcards.known')}" color="#22c55e" />
+    <StatCard icon="📖" value={counts.learning} label="{t('flashcards.learning')}" color="#f59e0b" />
+    <StatCard icon="🆕" value={counts.newCards} label="{t('flashcards.new_cards')}" color="#3b82f6" />
     <StatCard icon="📂" value={counts.decks} label="Deck" color="#8a8f98" />
   </div>
 
   <!-- Review Stats -->
   {#if reviewStats.totalReviewed > 0}
     <div class="review-stats">
-      <span class="rs-item">✅ {reviewStats.totalCorrect} benar</span>
-      <span class="rs-item">📊 {counts.total > 0 ? Math.round((reviewStats.totalCorrect / Math.max(reviewStats.totalReviewed, 1)) * 100) : 0}% akurasi</span>
-      <span class="rs-item">🔥 Streak: {reviewStats.streak} (rekor: {reviewStats.bestStreak})</span>
-      <span class="rs-item">📅 Total review: {reviewStats.totalReviewed}</span>
+      <span class="rs-item">✅ {reviewStats.totalCorrect} {t('flashcards.correct')}</span>
+      <span class="rs-item">📊 {t('flashcards.accuracy', { pct: counts.total > 0 ? Math.round((reviewStats.totalCorrect / Math.max(reviewStats.totalReviewed, 1)) * 100) : 0 })}</span>
+      <span class="rs-item">{t('flashcards.streak', { streak: reviewStats.streak, best: reviewStats.bestStreak })}</span>
+      <span class="rs-item">{t('flashcards.total_reviewed', { count: reviewStats.totalReviewed })}</span>
     </div>
   {/if}
 
   <!-- Deck Categories -->
   {#if decks.length > 0}
     <div class="decks-section">
-      <h2>📂 Deck Berdasarkan Modul</h2>
+      <h2>{t('flashcards.decks_by_module')}</h2>
       <div class="decks-grid">
         {#each decks as deck}
           <div class="deck-card">
             <div class="deck-header">
               <span class="deck-title">{deck.title}</span>
-              <span class="deck-count">{deck.cardCount} kartu</span>
+              <span class="deck-count">{t('flashcards.cards_count', { count: deck.cardCount })}</span>
             </div>
             <div class="deck-category">
               {#if deck.category === 'quiz'}
-                <span class="cat-badge quiz">📝 Quiz</span>
+                <span class="cat-badge quiz">{t('flashcards.cat_quiz')}</span>
               {:else if deck.category === 'summary'}
-                <span class="cat-badge summary">📖 Ringkasan</span>
+                <span class="cat-badge summary">{t('flashcards.cat_summary')}</span>
               {:else}
-                <span class="cat-badge custom">✏️ Custom</span>
+                <span class="cat-badge custom">{t('flashcards.cat_custom')}</span>
               {/if}
             </div>
             <div class="deck-actions">
@@ -122,12 +125,12 @@
 
   <!-- Actions -->
   <div class="actions-card">
-    <h2>⚙️ Kelola Flashcards</h2>
+    <h2>{t('flashcards.manage_title')}</h2>
 
     <div class="generate-section">
-      <label for="module-select">Pilih Modul:</label>
+      <label for="module-select">{t('flashcards.select_module')}</label>
       <select id="module-select" bind:value={selectedModule}>
-        <option value="">-- Pilih Modul --</option>
+        <option value="">{t('flashcards.select_placeholder')}</option>
         {#each modules as mod}
           <option value={mod.slug}>{mod.title}</option>
         {/each}
@@ -137,20 +140,20 @@
         onclick={generateFlashcards}
         disabled={!selectedModule || isGenerating}
       >
-        {isGenerating ? '⏳ Membuat...' : '🎴 Generate Flashcards'}
+        {isGenerating ? t('flashcards.generating') : t('flashcards.generate_btn')}
       </button>
     </div>
 
     {#if generationResult}
       <div class="result-banner">
-        ✅ {generationResult.count} kartu baru dibuat!
+        {t('flashcards.generated', { count: generationResult.count })}
       </div>
     {/if}
 
     {#if counts.total > 0}
       <div class="review-section">
         <button class="btn big primary" onclick={startReview}>
-          🚀 Mulai Review ({counts.dueToday} kartu jatuh tempo)
+          {t('flashcards.start_review', { count: counts.dueToday })}
         </button>
       </div>
     {/if}

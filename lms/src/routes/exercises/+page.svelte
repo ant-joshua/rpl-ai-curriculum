@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { adaptive } from '$lib/stores/adaptive.svelte';
 	import { onMount } from 'svelte';
@@ -80,57 +81,57 @@
 </script>
 
 <svelte:head>
-	<title>🏋️ Latihan Soal — RPL AI Curriculum</title>
+	<title>{t('exercises.page_title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="exercises-page">
 	<header class="page-header">
-		<h1>🏋️ Latihan Soal</h1>
-		<p class="page-desc">Latihan interaktif untuk setiap modul — tambah pemahaman sebelum lanjut.</p>
+		<h1>{t('exercises.page_title')}</h1>
+		<p class="page-desc">{t('exercises.page_desc')}</p>
 	</header>
 
 	{#if loading}
-		<div class="loading">Memuat latihan...</div>
+		<div class="loading">{t('exercises.loading')}</div>
 	{:else if !exercisesData}
-		<div class="error">Gagal memuat data latihan.</div>
+		<div class="error">{t('exercises.error')}</div>
 	{:else}
 		<div class="controls">
 			<div class="search-box">
 				<span class="search-icon">🔍</span>
 				<input
 					type="text"
-					placeholder="Cari latihan..."
+					placeholder="{t('exercises.search')}"
 					bind:value={searchQuery}
 				/>
 			</div>
 			<select bind:value={filterDifficulty}>
-				<option value="">Semua Level</option>
+				<option value="">{t('exercises.all_levels')}</option>
 				{#each difficulties as d}
 					<option value={d}>{d}</option>
 				{/each}
 			</select>
 			<select bind:value={filterType}>
-				<option value="">Semua Tipe</option>
+				<option value="">{t('exercises.all_types')}</option>
 				{#each types as t}
 					<option value={t}>{typeLabels[t] || t}</option>
 				{/each}
 			</select>
-			<span class="count">{filtered.length} dari {exercisesData.exercises.length} latihan</span>
+			<span class="count">{t('exercises.count', { filtered: filtered.length, total: exercisesData.exercises.length })} latihan</span>
 		</div>
 
 		<!-- Adaptive difficulty recommendation -->
 		<div class="adaptive-recommendation">
-			<h2>🎯 Rekomendasi untukmu (level {adaptive.difficulty})</h2>
+			<h2>{t('exercises.recommendation_title', { level: adaptive.difficulty })}</h2>
 			<p class="rec-desc">
-				{adaptive.level === 'beginner' ? 'Mulai dengan latihan dasar untuk membangun fondasi.' : ''}
-				{adaptive.level === 'intermediate' ? 'Kamu sudah siap untuk latihan tingkat menengah. Terus tingkatkan!' : ''}
-				{adaptive.level === 'advanced' ? 'Kamu sudah mahir! Coba latihan tingkat lanjut.' : ''}
+				{adaptive.level === 'beginner' ? t('exercises.rec_beginner') : ''}
+				{adaptive.level === 'intermediate' ? t('exercises.rec_intermediate') : ''}
+				{adaptive.level === 'advanced' ? t('exercises.rec_advanced') : ''}
 			</p>
 			<div class="grid">
 				{#each filtered.filter(e => e.difficulty?.toLowerCase() === adaptive.difficulty).slice(0, 3) as exercise}
 					<a href="/exercises/{exercise.slug}" class="card">
 						<div class="card-header">
-							<span class="badge rec-badge">🎯 Rekomendasi</span>
+							<span class="badge rec-badge">{t('exercises.rec_badge')}</span>
 							<span
 								class="badge difficulty"
 								style="background: {difficultyColors[exercise.difficulty] || '#888'}22; color: {difficultyColors[exercise.difficulty] || '#888'}; border-color: {difficultyColors[exercise.difficulty] || '#888'}44"
@@ -139,7 +140,7 @@
 							</span>
 						</div>
 						<h3 class="card-title">{exercise.title}</h3>
-						<p class="card-desc">{exercise.description || 'Tidak ada deskripsi.'}</p>
+						<p class="card-desc">{exercise.description || t('exercises.no_desc')}</p>
 						{#if exercise.moduleSlug}
 							<span class="module-context">📦 {exercise.moduleSlug}</span>
 						{/if}
@@ -147,14 +148,14 @@
 				{/each}
 			</div>
 			{#if filtered.filter(e => e.difficulty?.toLowerCase() === adaptive.difficulty).length === 0}
-				<p class="empty-rec">Tidak ada latihan untuk level ini. Coba filter lain.</p>
+				<p class="empty-rec">{t('exercises.empty_rec')}</p>
 			{/if}
 		</div>
 
 		<hr class="section-sep" />
 
 		{#if filtered.length === 0}
-			<div class="empty">Tidak ada latihan yang cocok dengan filter.</div>
+			<div class="empty">{t('exercises.empty_filtered')}</div>
 		{:else}
 			<div class="grid">
 				{#each filtered as exercise}

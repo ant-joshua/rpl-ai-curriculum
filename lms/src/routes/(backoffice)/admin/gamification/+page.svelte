@@ -269,7 +269,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			header: 'Aksi',
 			accessorKey: 'id',
 			enableSorting: false,
-			cell: ({ getValue }) => `<button onclick="window.__editXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title={t('common.edit')}>✏️</button><button onclick="window.__deleteXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Hapus">🗑️</button>`
+			cell: ({ getValue }) => `<button onclick="window.__editXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title=$'+t('common.edit')+'>✏️</button><button onclick="window.__deleteXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Hapus">🗑️</button>`
 		}
 	];
 

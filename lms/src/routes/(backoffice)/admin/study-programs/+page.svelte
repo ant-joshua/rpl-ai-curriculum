@@ -120,7 +120,7 @@
 		},
 		{
 			header: 'Aksi', id: 'aksi',
-			cell: ({ row }) => `<button class="btn-edit" onclick="window.__openEditProdi(${JSON.stringify(row.original).replace(/"/g, '&quot;')})">{t('common.edit')}</button>`
+			cell: ({ row }) => `<button class="btn-edit" onclick="window.__openEditProdi(${JSON.stringify(row.original).replace(/"/g, '&quot;')})">$'+t('common.edit')+'</button>`
 		},
 	];
   import { t } from '$lib/stores/i18n.svelte';

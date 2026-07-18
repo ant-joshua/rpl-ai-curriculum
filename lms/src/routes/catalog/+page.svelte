@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
   import { fade } from 'svelte/transition';
   import { addToast } from '$lib/stores/toast.svelte';
   import { auth } from '$lib/stores/auth.svelte';

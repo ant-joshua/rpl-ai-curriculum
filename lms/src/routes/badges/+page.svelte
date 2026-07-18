@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { onMount } from 'svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
@@ -32,22 +33,22 @@
 </script>
 
 <svelte:head>
-	<title>🏆 Badges — RPL AI Curriculum</title>
+	<title>{t('badges.page_title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="badges-page">
-	<h1>🏆 Badges</h1>
+	<h1>{t('badges.page_title')}</h1>
 
-	<!-- Level Card -->
+	<!-- {t('badges.level')} Card -->
 	<div class="level-card">
 		<div class="level-info">
 			<span class="level-number">Level {level.level}</span>
-			<span class="badge-count">{totalUnlocked}/{totalBadges} badges unlocked</span>
+			<span class="badge-count">{totalUnlocked}/{totalBadges} {t('badges.unlocked_count', { unlocked: totalUnlocked, total: totalBadges })}</span>
 		</div>
 		<div class="share-row">
 			<ShareButton
-				title="Badges RPL AI - {totalUnlocked} badges"
-				text="Aku sudah membuka {totalUnlocked} dari {totalBadges} badges di RPL AI Curriculum! 🏆"
+				title={t('badges.share_title', { count: totalUnlocked })}
+				text={t('badges.share_text', { unlocked: totalUnlocked, total: totalBadges })}
 				url={typeof window !== 'undefined' ? window.location.href : ''}
 			/>
 		</div>
@@ -64,11 +65,11 @@
 				<div class="badge-icon">{isUnlocked(badge.id) ? badge.icon : '🔒'}</div>
 				<div class="badge-name">{isUnlocked(badge.id) ? badge.name : '???'}</div>
 				<div class="badge-desc">
-					{isUnlocked(badge.id) ? badge.description : 'Selesaikan tantangan untuk membuka'}
+					{isUnlocked(badge.id) ? badge.description : t('badges.locked_hint')}
 				</div>
 				{#if isUnlocked(badge.id)}
 					<div class="badge-date">
-						Diraih: {formatDate(getUnlockDate(badge.id)!)}
+						{t('badges.earned_on')} {formatDate(getUnlockDate(badge.id)!)}
 					</div>
 				{/if}
 			</div>

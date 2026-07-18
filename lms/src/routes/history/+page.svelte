@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { activity, type ActivityEntry } from '$lib/stores/activity.svelte';
 	import { modules } from '$lib/stores/modules';
@@ -10,13 +11,13 @@
 	function relativeTime(ts: number): string {
 		const diff = Date.now() - ts;
 		const sec = Math.floor(diff / 1000);
-		if (sec < 60) return 'baru saja';
+		if (sec < 60) return t('history.time_just_now');
 		const min = Math.floor(sec / 60);
-		if (min < 60) return `${min} menit lalu`;
+		if (min < 60) return t('history.time_min_ago', { min });
 		const hour = Math.floor(min / 60);
-		if (hour < 24) return `${hour} jam lalu`;
+		if (hour < 24) return t('history.time_hour_ago', { hour });
 		const day = Math.floor(hour / 24);
-		return `${day} hari lalu`;
+		return t('history.time_day_ago', { day });
 	}
 
 	function actionIcon(action: ActivityEntry['action']): string {
@@ -26,9 +27,9 @@
 	}
 
 	function actionLabel(action: ActivityEntry['action']): string {
-		if (action === 'view') return 'Melihat';
-		if (action === 'complete') return 'Menyelesaikan';
-		return 'Mengerjakan Quiz';
+		if (action === 'view') return t('history.action_view');
+		if (action === 'complete') return t('history.action_complete');
+		return t('history.action_quiz');
 	}
 
 	function moduleName(slug: string): string {
@@ -71,10 +72,10 @@
 
 <div class="history-page">
 	<div class="history-header">
-		<h1>📜 Riwayat Aktivitas</h1>
+		<h1>{t('history.title')}</h1>
 		{#if entries.length > 0}
 			<button class="clear-btn" onclick={() => showConfirm = true}>
-				🗑️ Hapus Riwayat
+				{t('history.clear')}
 			</button>
 		{/if}
 	</div>
@@ -84,26 +85,26 @@
 			class="filter-tab"
 			class:active={filter === 'all'}
 			onclick={() => filter = 'all'}
-		>Semua</button>
+		>{t('history.filter_all')}</button>
 		<button
 			class="filter-tab"
 			class:active={filter === 'view'}
 			onclick={() => filter = 'view'}
-		>👁️ Dilihat</button>
+		>{t('history.filter_viewed')}</button>
 		<button
 			class="filter-tab"
 			class:active={filter === 'complete'}
 			onclick={() => filter = 'complete'}
-		>✅ Selesai</button>
+		>{t('history.filter_completed')}</button>
 	</div>
 
 	{#if showConfirm}
 		<div class="confirm-overlay" onclick={() => showConfirm = false} role="button" tabindex="-1"></div>
 		<div class="confirm-dialog">
-			<p>Hapus seluruh riwayat aktivitas?</p>
+			<p>{t('history.confirm_clear')}</p>
 			<div class="confirm-actions">
-				<button class="confirm-cancel" onclick={() => showConfirm = false}>Batal</button>
-				<button class="confirm-yes" onclick={handleClear}>Ya, Hapus</button>
+				<button class="confirm-cancel" onclick={() => showConfirm = false}>{t('history.confirm_cancel')}</button>
+				<button class="confirm-yes" onclick={handleClear}>{t('history.confirm_yes')}</button>
 			</div>
 		</div>
 	{/if}
@@ -112,7 +113,7 @@
 		{#if filtered.length === 0}
 			<div class="empty-state">
 				<span class="empty-icon">📭</span>
-				<p>Belum ada aktivitas</p>
+				<p>{t('history.empty')}</p>
 			</div>
 		{:else}
 			{#each filtered as entry (entry.id)}

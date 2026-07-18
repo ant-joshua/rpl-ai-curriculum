@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { modules, type Module, type Session } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { paths, computePathProgress } from '$lib/stores/paths';
@@ -96,12 +97,12 @@
 			class="tab-btn"
 			class:active={activeTab === 'paths'}
 			onclick={() => activeTab = 'paths'}
-		>🗺️ Learning Paths</button>
+		>{t('path.tab_paths')}</button>
 		<button
 			class="tab-btn"
 			class:active={activeTab === 'timeline'}
 			onclick={() => activeTab = 'timeline'}
-		>📋 Module Timeline</button>
+		>{t('path.tab_timeline')}</button>
 	</div>
 
 	{#if activeTab === 'paths'}
@@ -110,13 +111,13 @@
 		<!-- Header with stats -->
 		<header class="paths-header">
 			<div class="paths-header-text">
-				<h1>🗺️ Learning Paths</h1>
-				<p>Pilih jalur belajar yang sesuai dengan tujuan karirmu</p>
+				<h1>{t('path.header_title')}</h1>
+				<p>{t('path.header_desc')}</p>
 			</div>
 			<div class="paths-header-stats">
 				<StatCard icon="🗺️" value={paths.length} label="Path" />
 				<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Modul" />
-				<StatCard icon="📝" value={totalSessions} label="Sesi" />
+				<StatCard icon="📝" value={totalSessions} label="{t('path.stat_session')}" />
 			</div>
 		</header>
 
@@ -137,9 +138,9 @@
 					<h3 class="path-card-title">{path.title}</h3>
 					<p class="path-card-desc">{path.description}</p>
 					<div class="path-card-meta">
-						<span class="path-card-sessions">{path.estimatedSessions} sesi</span>
+						<span class="path-card-sessions">{path.estimatedSessions} {t('path.sessions_unit')}</span>
 						{#if path.prerequisites && path.prerequisites.length > 0}
-							<span class="path-card-prereq">📌 Prasyarat</span>
+							<span class="path-card-prereq">{t('path.prereq')}</span>
 						{/if}
 					</div>
 					<div class="path-card-progress">
@@ -153,7 +154,7 @@
 					</div>
 					{#if pp.completed > 0 && pp.pct < 100}
 						<div class="path-card-footer">
-							<span class="continue-path-btn" style="color: {path.color}">Lanjutkan &rarr;</span>
+							<span class="continue-path-btn" style="color: {path.color}">{t('path.continue')}</span>
 						</div>
 					{/if}
 				</button>
@@ -176,10 +177,10 @@
 							<h2 class="level-name">{stat.level}</h2>
 							<div class="level-meta">
 								<span class="level-stat">
-									<strong>{stat.count}</strong> modul
+									<strong>{stat.count}</strong> {t('path.module_count', { count: stat.count })}
 								</span>
 								<span class="level-stat">
-									<strong>{stat.sessions}</strong> sesi
+									<strong>{stat.sessions}</strong> {t('path.session_count', { count: stat.sessions })}
 								</span>
 							</div>
 						</div>
@@ -195,12 +196,12 @@
 			</div>
 		</section>
 
-		<!-- Module Timeline -->
+		<!-- {t('path.timeline_title')} -->
 		<section class="module-timeline">
 			<h2 class="section-title">
 				<span class="section-icon">📋</span>
 				Module Timeline
-				<span class="section-badge">{totalModules} modul</span>
+				<span class="section-badge">{t('path.timeline_badge', { count: totalModules })}</span>
 			</h2>
 
 			<div class="timeline-track">
@@ -231,7 +232,7 @@
 								<span class="timeline-level-badge" style="background: {levelMeta.color}">
 									{levelMeta.icon} {mod.level}
 								</span>
-								<span class="timeline-sessions">{mod.sessions.length} sesi</span>
+								<span class="timeline-sessions">{t('path.session_count', { count: mod.sessions.length })}</span>
 							</div>
 							<h3 class="timeline-title">{mod.title}</h3>
 							<div class="timeline-progress">
@@ -251,10 +252,10 @@
 
 		<!-- Stats Footer -->
 		<section class="stats-footer">
-		<StatCard icon="📦" value={totalModules} label="Total Modul" />
-		<StatCard icon="📝" value={totalSessions} label="Total Sesi" />
-		<StatCard icon="⏱️" value={estimatedMinutes} label="Perkiraan Menit" />
-		<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Modul Selesai" />
+		<StatCard icon="📦" value={totalModules} label="{t('path.total_modules')}" />
+		<StatCard icon="📝" value={totalSessions} label="{t('path.total_sessions')}" />
+		<StatCard icon="⏱️" value={estimatedMinutes} label="{t('path.est_minutes')}" />
+		<StatCard icon="✅" value="{completedModules}/{totalModules}" label="{t('path.modules_completed')}" />
 		</section>
 	{/if}
 </div>

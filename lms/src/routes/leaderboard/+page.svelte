@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { user } from '$lib/stores/user.svelte';
 	import { fade } from 'svelte/transition';
@@ -52,23 +53,23 @@
 	}
 
 	function formatUserId(id: string): string {
-		if (id === currentUserId) return 'Kamu';
+		if (id === currentUserId) return t('leaderboard.you');
 		return id.slice(0, 12) + '...';
 	}
 </script>
 
 <svelte:head>
-	<title>🏆 Papan Peringkat — RPL AI Curriculum</title>
+	<title>{t('leaderboard.page_title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="leaderboard-page">
-	<h1 class="page-title">🏆 Papan Peringkat</h1>
-	<p class="page-subtitle">Top users ranked by XP — terus belajar untuk naik peringkat!</p>
+	<h1 class="page-title">{t('leaderboard.page_title')}</h1>
+	<p class="page-subtitle">{t('leaderboard.subtitle')}</p>
 
 	<div class="share-row">
 		<ShareButton
 			title="Leaderboard RPL AI"
-			text="Lihat papan peringkat RPL AI Curriculum! 🏆"
+			text={t('leaderboard.share_text')}
 			url={typeof window !== 'undefined' ? window.location.href : ''}
 		/>
 	</div>
@@ -78,18 +79,18 @@
 			class="tab"
 			class:active={activeTab === 'global'}
 			onclick={() => { activeTab = 'global'; }}
-		>🌍 Global</button>
+		>{t('leaderboard.global_tab')}</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'path'}
 			onclick={() => { activeTab = 'path'; }}
-		>📚 Per Path</button>
+		>{t('leaderboard.path_tab')}</button>
 	</div>
 
 	{#if activeTab === 'path'}
 		<div class="path-selector">
 			<select bind:value={pathSlug} onchange={() => { if (pathSlug) activeTab = 'path'; }}>
-				<option value="">Pilih Path</option>
+				<option value="">{t('leaderboard.select_path')}</option>
 				{#each paths as p}
 					<option value={p.slug}>{p.title}</option>
 				{/each}
@@ -115,8 +116,8 @@
 		{:else if entries.length === 0}
 			<div class="empty-state">
 				<span class="empty-icon">🏆</span>
-				<p>Belum ada data peringkat.</p>
-				<p class="empty-hint">Selesaikan sesi untuk mendapat XP dan muncul di papan peringkat!</p>
+				<p>{t('leaderboard.empty')}</p>
+				<p class="empty-hint">{t('leaderboard.empty_hint')}</p>
 			</div>
 		{:else}
 			<div class="leaderboard-list">
@@ -137,20 +138,20 @@
 								<span class="user-name">
 									{formatUserId(entry.user_id)}
 									{#if entry.user_id === currentUserId}
-										<span class="you-badge">Kamu</span>
+										<span class="you-badge">{t('leaderboard.you_badge')}</span>
 									{/if}
 								</span>
-								<span class="user-level">Level {entry.level}</span>
+								<span class="user-level">{t('leaderboard.level', { level: entry.level })}</span>
 							</div>
 						</div>
 						<div class="stats-cell">
 							<span class="stat-xp">
 								<span class="stat-value">{entry.xp.toLocaleString()}</span>
-								<span class="stat-label">XP</span>
+								<span class="stat-label">{t('leaderboard.stat_xp')}</span>
 							</span>
 							<span class="stat-badges">
 								<span class="stat-value">{entry.badge_count}</span>
-								<span class="stat-label">Badges</span>
+								<span class="stat-label">{t('leaderboard.stat_badges')}</span>
 							</span>
 						</div>
 					</div>

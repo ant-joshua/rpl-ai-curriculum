@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
@@ -74,7 +75,7 @@
         newTitle = '';
         newContent = '';
         newPathSlug = '';
-        message = '✓ Pengumuman berhasil dibuat';
+        message = '✓ '+t('announcements.title')+' berhasil dibuat';
       } else {
         message = '✗ ' + (json.error || 'Gagal');
       }
@@ -144,7 +145,7 @@
     {#if loading}
       <div class="empty">Memuat...</div>
     {:else if announcements.length === 0}
-      <div class="empty">Belum ada pengumuman.</div>
+      <div class="empty">{t('announcements.empty')}</div>
     {:else}
       {#each announcements as ann (ann.id)}
         <div class="announcement-card" transition:fade={{ duration: 200 }}>

@@ -31,7 +31,7 @@
 		{
 			header: 'Aksi',
 			accessorKey: 'id',
-			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?tingkat=${getValue()}" class="btn-small">{t('admin.lihat_kelas')}</a>`
+			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?tingkat=${getValue()}" class="btn-small">$'+t('admin.lihat_kelas')+'</a>`
 		}
 	];
 

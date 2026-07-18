@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { projectsStore, type Project } from '$lib/stores/projects.svelte';
 	import { browser } from '$app/environment';
@@ -52,30 +53,30 @@
 </script>
 
 <div class="projects-page">
-	<h1>🚀 Project Studio</h1>
-	<p class="subtitle">Belajar dengan bikin project nyata, step-by-step. Pilih project, ikuti instruksi, verifikasi kode, dapatkan XP!</p>
+	<h1>{t('projects.title')}</h1>
+	<p class="subtitle">{t('projects.subtitle')}</p>
 
 	<div class="filter-bar">
 		<button
 			class="filter-btn"
 			class:active={filterDifficulty === 'all'}
 			onclick={() => (filterDifficulty = 'all')}
-		>Semua</button>
+		>{t('projects.filter_all')}</button>
 		<button
 			class="filter-btn"
 			class:active={filterDifficulty === 'beginner'}
 			onclick={() => (filterDifficulty = 'beginner')}
-		>🌱 Pemula</button>
+		>{t('projects.filter_beginner')}</button>
 		<button
 			class="filter-btn"
 			class:active={filterDifficulty === 'intermediate'}
 			onclick={() => (filterDifficulty = 'intermediate')}
-		>📐 Menengah</button>
+		>{t('projects.filter_intermediate')}</button>
 		<button
 			class="filter-btn"
 			class:active={filterDifficulty === 'advanced'}
 			onclick={() => (filterDifficulty = 'advanced')}
-		>🚀 Mahir</button>
+		>{t('projects.filter_advanced')}</button>
 	</div>
 
 	{#if loading}
@@ -96,16 +97,16 @@
 	{:else if filteredProjects.length === 0}
 		<div class="empty-state">
 			<span class="empty-icon">📭</span>
-			<h2>Tidak ada project ditemukan</h2>
+			<h2>{t('projects.empty_title')}</h2>
 			<p>
 				{#if filterDifficulty !== 'all'}
-					Tidak ada project dengan tingkat <strong>{filterDifficulty}</strong>. Coba pilih filter lain.
+					{t('projects.empty_desc_filtered', { level: filterDifficulty })}
 				{:else}
-					Belum ada project yang tersedia. Silakan cek lagi nanti.
+					{t('projects.empty_desc_generic')}
 				{/if}
 			</p>
 			{#if filterDifficulty !== 'all'}
-				<button class="empty-cta" onclick={() => (filterDifficulty = 'all')}>Lihat Semua Project</button>
+				<button class="empty-cta" onclick={() => (filterDifficulty = 'all')}>{t('projects.empty_cta')}</button>
 			{/if}
 		</div>
 	{:else}
@@ -130,7 +131,7 @@
 							<div class="meta-row">
 								<span class="difficulty {project.difficulty}">{project.difficulty}</span>
 								<span class="time">⏱ {project.timeEstimate}</span>
-								<span class="steps-count">{project.steps.length} langkah</span>
+								<span class="steps-count">{t('projects.steps_count', { count: project.steps.length })}</span>
 							</div>
 						</div>
 					</a>

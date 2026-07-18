@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
@@ -91,9 +92,9 @@
 
 	function typeLabel(type: string): string {
 		const labels: Record<string, string> = {
-			lesson: 'Pelajaran',
-			course: 'Kursus',
-			offering: 'Kelas',
+			lesson: ''+t('search.lessons')+'',
+			course: ''+t('search.courses')+'',
+			offering: ''+t('search.classes')+'',
 		};
 		return labels[type] || type;
 	}
@@ -132,7 +133,7 @@
 </script>
 
 <svelte:head>
-	<title>Cari — RPL AI Curriculum</title>
+	<title>{t('search.title')} — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="search-page">
@@ -151,7 +152,7 @@
 		{#if loading}
 			<div class="search-state" in:fade={{ duration: 150 }}>
 				<div class="spinner"></div>
-				<p>Mencari...</p>
+				<p>{t('search.loading')}</p>
 			</div>
 		{:else if hasSearched && total > 0}
 			<p class="result-count">Hasil untuk "<strong>{query}</strong>" — {total} hasil</p>

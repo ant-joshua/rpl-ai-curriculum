@@ -95,7 +95,7 @@
 </script>
 
 <svelte:head>
-	<title>{t('admin.title')}</title>
+	<title>${t('admin.title')}</title>
 </svelte:head>
 
 <div class="page">

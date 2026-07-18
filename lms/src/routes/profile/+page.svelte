@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { progress } from '$lib/stores/progress.svelte';
@@ -53,9 +54,9 @@
 			const d = new Date(iso + 'Z');
 			const now = new Date();
 			const diff = now.getTime() - d.getTime();
-			if (diff < 60000) return 'baru saja';
-			if (diff < 3600000) return `${Math.floor(diff / 60000)}m lalu`;
-			if (diff < 86400000) return `${Math.floor(diff / 3600000)}j lalu`;
+			if (diff < 60000) return ''+t('profile.time_just_now')+'';
+			if (diff < 3600000) return `{t('profile.time_min_ago', { m: Math.floor(diff / 60000) })}`;
+			if (diff < 86400000) return `{t('profile.time_hour_ago', { j: Math.floor(diff / 3600000) })}`;
 			return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 		} catch {
 			return iso;
@@ -71,7 +72,7 @@
 
 <div class="profile-page">
 	{#if loading}
-		<div class="loading-state">Memuat profil...</div>
+		<div class="loading-state">{t('profile.loading')}</div>
 	{:else}
 		<!-- User Stats Card -->
 		<div class="stats-card">
@@ -80,9 +81,9 @@
 					{(userData?.username || getDeviceId()).charAt(0).toUpperCase()}
 				</div>
 				<div class="profile-info">
-					<h1>{userData?.username || 'Pengguna'}</h1>
+					<h1>{userData?.username || t('profile.default_name')}</h1>
 					<p class="profile-device">📱 {getDeviceId().slice(0, 12)}...</p>
-					<p class="profile-joined">Bergabung {userData?.created_at ? formatDate(userData.created_at) : '—'}</p>
+					<p class="profile-joined">{t('profile.joined', { date: userData?.created_at ? formatDate(userData.created_at) : '—' })}</p>
 				</div>
 				<div class="level-badge">
 					<span class="level-number">Lv.{levelInfo.level}</span>
@@ -90,22 +91,22 @@
 				</div>
 			</div>
 			<div class="stats-grid">
-				<StatCard icon="✅" value={stats.completedSessions} label="Sesi Selesai" />
-				<StatCard icon="📋" value={stats.totalSessions} label="Total Sesi" />
-				<StatCard icon="📦" value="{stats.modulesCompleted}/{modules.length}" label="Modul Selesai" />
-				<StatCard icon="🔥" value={stats.streak} label="Daily Streak" />
-				<StatCard icon="📅" value={stats.daysActive} label="Hari Aktif" />
-				<StatCard icon="✨" value={gamification.xp} label="Total XP" />
+				<StatCard icon="✅" value={stats.completedSessions} label="{t('profile.sessions_completed')}" />
+				<StatCard icon="📋" value={stats.totalSessions} label="{t('profile.total_sessions')}" />
+				<StatCard icon="📦" value="{stats.modulesCompleted}/{modules.length}" label="{t('profile.modules_completed')}" />
+				<StatCard icon="🔥" value={stats.streak} label="{t('profile.daily_streak')}" />
+				<StatCard icon="📅" value={stats.daysActive} label="{t('profile.active_days')}" />
+				<StatCard icon="✨" value={gamification.xp} label="{t('profile.total_xp')}" />
 			</div>
 		</div>
 
 		<!-- Progress Summary -->
 		<div class="section-card">
-			<h2>📊 Progress</h2>
+			<h2>{t('profile.progress')}</h2>
 			<div class="share-row">
 				<ShareButton
-					title="Progres RPL AI - {userData?.username || 'Pengguna'}"
-					text="Aku sudah menyelesaikan {stats.completedSessions} sesi di RPL AI Curriculum! 🎯"
+					title={t('profile.share_title', { name: userData?.username || t('profile.default_name') })}
+					text={t('profile.share_text', { count: stats.completedSessions })}
 					url={typeof window !== 'undefined' ? window.location.href : ''}
 				/>
 			</div>
@@ -113,19 +114,19 @@
 				<div class="completion-bar">
 					<div class="completion-fill" style="width: {completionPct}%"></div>
 				</div>
-				<span class="completion-label">{completionPct}% selesai</span>
+				<span class="completion-label">{t('profile.pct_complete', { pct: completionPct })}</span>
 			</div>
 			<div class="mini-stats">
-				<span>✅ {stats.completedSessions} sesi dari {stats.totalSessions}</span>
-				<span>📦 {stats.modulesCompleted} modul dari {modules.length}</span>
+				<span>{t('profile.sessions_of_total', { done: stats.completedSessions, total: stats.totalSessions })}</span>
+				<span>{t('profile.modules_of_total', { done: stats.modulesCompleted, total: modules.length })}</span>
 			</div>
 		</div>
 
 		<!-- Badge Showcase -->
 		<div class="section-card">
-			<h2>🏅 Badge ({badges.length})</h2>
+			<h2>{t('profile.badges_section', { count: badges.length })}</h2>
 			{#if badges.length === 0}
-				<p class="empty-state">Selesaikan sesi untuk membuka badge!</p>
+				<p class="empty-state">{t('profile.badges_empty')}</p>
 			{:else}
 				<div class="badge-grid">
 					{#each badges as badge}
@@ -140,16 +141,16 @@
 
 		<!-- Activity Timeline -->
 		<div class="section-card">
-			<h2>📜 Aktivitas Terakhir</h2>
+			<h2>{t('profile.recent_activity')}</h2>
 			{#if activityData.length === 0}
-				<p class="empty-state">Belum ada aktivitas</p>
+				<p class="empty-state">{t('profile.no_activity')}</p>
 			{:else}
 				<div class="timeline">
 					{#each activityData.filter(a => a.action === 'complete') as act}
 						<div class="timeline-item">
 							<div class="timeline-dot complete"></div>
 							<div class="timeline-content">
-								<span class="timeline-action">✅ Menyelesaikan sesi</span>
+								<span class="timeline-action">{t('profile.action_complete')}</span>
 								<span class="timeline-module">{getModuleTitle(act.module_slug)}</span>
 								<span class="timeline-time">{timeAgo(act.created_at)}</span>
 							</div>
@@ -159,7 +160,7 @@
 						<div class="timeline-item">
 							<div class="timeline-dot view"></div>
 							<div class="timeline-content">
-								<span class="timeline-action">📖 Melihat</span>
+								<span class="timeline-action">{t('profile.action_view')}</span>
 								<span class="timeline-module">{getModuleTitle(act.module_slug)}</span>
 								<span class="timeline-time">{timeAgo(act.created_at)}</span>
 							</div>
@@ -172,9 +173,9 @@
 		<!-- Motivational Message -->
 		<div class="motivation-card">
 			{#if isOnTrack}
-				<p>✅ Semua baik! Kamu on track dengan progress belajar. Tetap semangat! 🚀</p>
+				<p>{t('profile.motivation_ontrack')}</p>
 			{:else}
-				<p>💪 Yuk lanjutkan belajar! Setiap sesi membawamu lebih dekat ke tujuan. 🎯</p>
+				<p>{t('profile.motivation_offtrack')}</p>
 			{/if}
 		</div>
 	{/if}
