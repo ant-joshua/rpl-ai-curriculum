@@ -25,3 +25,5 @@ vite.config.ts.timestamp-*
 # Generated content (prebuilt at build time)
 /static/content/
 ux-audit-report.json
+lms@0.0.1
+node

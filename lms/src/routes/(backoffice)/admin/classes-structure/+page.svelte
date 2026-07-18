@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	let stats: any = $state(null);
 	let loading = $state(true);
@@ -59,36 +60,12 @@
 		</div>
 	{:else if stats}
 		<div class="stats-grid">
-			<div class="stat-card">
-				<span class="stat-icon">🏫</span>
-				<span class="stat-value">{stats.tingkat ?? '—'}</span>
-				<span class="stat-label">Tingkat</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📐</span>
-				<span class="stat-value">{stats.jurusan ?? '—'}</span>
-				<span class="stat-label">Jurusan</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">🏠</span>
-				<span class="stat-value">{stats.kelas ?? '—'}</span>
-				<span class="stat-label">Kelas</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📖</span>
-				<span class="stat-value">{stats.mapel ?? '—'}</span>
-				<span class="stat-label">Mapel</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">👨‍🏫</span>
-				<span class="stat-value">{stats.guru_mapel ?? '—'}</span>
-				<span class="stat-label">Guru Mapel</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">👨‍🎓</span>
-				<span class="stat-value">{stats.siswa ?? '—'}</span>
-				<span class="stat-label">Siswa</span>
-			</div>
+			<StatCard icon="🏫" value={stats.tingkat ?? '—'} label="Tingkat" />
+			<StatCard icon="📐" value={stats.jurusan ?? '—'} label="Jurusan" />
+			<StatCard icon="🏠" value={stats.kelas ?? '—'} label="Kelas" />
+			<StatCard icon="📖" value={stats.mapel ?? '—'} label="Mapel" />
+			<StatCard icon="👨‍🏫" value={stats.guru_mapel ?? '—'} label="Guru Mapel" />
+			<StatCard icon="👨‍🎓" value={stats.siswa ?? '—'} label="Siswa" />
 		</div>
 	{/if}
 
@@ -120,10 +97,6 @@
 	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 
 	.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
-	.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-	.stat-icon { font-size: 22px; }
-	.stat-value { font-size: 22px; font-weight: 700; color: var(--accent); }
-	.stat-label { font-size: 11px; color: var(--text-secondary); }
 
 	.section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 	.section-card {

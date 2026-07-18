@@ -19,15 +19,15 @@
 
 		<p class="error-message">
 			{#if is404}
-				Halaman yang kamu cari tidak ada atau sudah dipindahkan.
+				Materi yang kamu cari tidak ada atau sudah dipindahkan.
 			{:else if message}
 				{message}
 			{:else}
-				Terjadi kesalahan yang tidak terduga. Silakan coba lagi.
+				Terjadi kesalahan saat memuat materi. Silakan coba lagi.
 			{/if}
 		</p>
 
-		<a href="/" class="btn-accent">Kembali ke beranda</a>
+		<a href="/learn" class="btn-accent">Kembali ke beranda</a>
 
 		{#if dev && message}
 			<details class="error-details">

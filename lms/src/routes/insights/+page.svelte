@@ -5,6 +5,7 @@
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
   import { api } from '$lib/utils/api';
+  import { StatCard } from '$lib/components/ui';
   import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 
   let loading = $state(true);
@@ -122,34 +123,10 @@
 
       <!-- Top Stats Row -->
       <section class="stats-row">
-        <div class="stat-card">
-          <span class="stat-icon">⏱️</span>
-          <div>
-            <span class="stat-value">{totalStudyTime}</span>
-            <span class="stat-label">Total Aktivitas</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">✅</span>
-          <div>
-            <span class="stat-value">{sessionsDone}</span>
-            <span class="stat-label">Sesi Selesai</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">🔥</span>
-          <div>
-            <span class="stat-value">{streak}</span>
-            <span class="stat-label">Streak (hari)</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">📅</span>
-          <div>
-            <span class="stat-value">{dailyAverage}</span>
-            <span class="stat-label">Rata-rata Harian</span>
-          </div>
-        </div>
+        <StatCard icon="⏱️" value={totalStudyTime} label="Total Aktivitas" />
+        <StatCard icon="✅" value={sessionsDone} label="Sesi Selesai" />
+        <StatCard icon="🔥" value={streak} label="Streak (hari)" />
+        <StatCard icon="📅" value={dailyAverage} label="Rata-rata Harian" />
       </section>
 
       <!-- Activity Heatmap -->
@@ -301,29 +278,6 @@
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
     margin-bottom: 16px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .stat-icon { font-size: 22px; }
-  .stat-value {
-    display: block;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .stat-label {
-    display: block;
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 500;
   }
 
   /* Section Card */

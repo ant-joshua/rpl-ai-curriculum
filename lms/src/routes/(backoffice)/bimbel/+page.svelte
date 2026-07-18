@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading } from '$lib/components/ui/index.js';
+	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -49,22 +50,10 @@
 		</div>
 	{:else}
 		<div class="stats-grid">
-			<div class="stat-card">
-				<span class="stat-value">{stats.activeBatches}</span>
-				<span class="stat-label">Batch Aktif</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.totalStudents}</span>
-				<span class="stat-label">Total Siswa</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.upcomingTryouts}</span>
-				<span class="stat-label">Try Out Mendatang</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.unpaidInvoices}</span>
-				<span class="stat-label">Tagihan Belum Dibayar</span>
-			</div>
+			<StatCard icon="📦" value={stats.activeBatches} label="Batch Aktif" />
+			<StatCard icon="👥" value={stats.totalStudents} label="Total Siswa" />
+			<StatCard icon="📝" value={stats.upcomingTryouts} label="Try Out Mendatang" />
+			<StatCard icon="💰" value={stats.unpaidInvoices} label="Tagihan Belum Dibayar" />
 		</div>
 	{/if}
 
@@ -91,13 +80,6 @@
 	.error-state p { margin: 0; }
 
 	.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 32px; }
-	.stat-card {
-		display: flex; flex-direction: column; align-items: center; gap: 6px;
-		padding: 20px 16px; border-radius: 12px; border: 1px solid var(--border);
-		background: var(--surface); text-align: center;
-	}
-	.stat-value { font-size: 32px; font-weight: 700; color: var(--accent); line-height: 1; }
-	.stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
 
 	.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 	.nav-card {

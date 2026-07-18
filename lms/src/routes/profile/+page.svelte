@@ -5,6 +5,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { api, getDeviceId } from '$lib/utils/api';
+	import { StatCard } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let userData = $state<{ username: string; created_at: string } | null>(null);
@@ -89,30 +90,12 @@
 				</div>
 			</div>
 			<div class="stats-grid">
-				<div class="stat-item">
-					<span class="stat-value">{stats.completedSessions}</span>
-					<span class="stat-label">Sesi Selesai</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{stats.totalSessions}</span>
-					<span class="stat-label">Total Sesi</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{stats.modulesCompleted}/{modules.length}</span>
-					<span class="stat-label">Modul Selesai</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{stats.streak} 🔥</span>
-					<span class="stat-label">Daily Streak</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{stats.daysActive}</span>
-					<span class="stat-label">Hari Aktif</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{gamification.xp} ✨</span>
-					<span class="stat-label">Total XP</span>
-				</div>
+				<StatCard icon="✅" value={stats.completedSessions} label="Sesi Selesai" />
+				<StatCard icon="📋" value={stats.totalSessions} label="Total Sesi" />
+				<StatCard icon="📦" value="{stats.modulesCompleted}/{modules.length}" label="Modul Selesai" />
+				<StatCard icon="🔥" value={stats.streak} label="Daily Streak" />
+				<StatCard icon="📅" value={stats.daysActive} label="Hari Aktif" />
+				<StatCard icon="✨" value={gamification.xp} label="Total XP" />
 			</div>
 		</div>
 
@@ -277,24 +260,6 @@
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 12px;
-	}
-
-	.stat-item {
-		text-align: center;
-		padding: 12px;
-		background: var(--bg-secondary);
-		border-radius: 10px;
-	}
-	.stat-value {
-		display: block;
-		font-size: 20px;
-		font-weight: 700;
-		color: var(--accent);
-	}
-	.stat-label {
-		font-size: 11px;
-		color: var(--text-secondary);
-		margin-top: 2px;
 	}
 
 	.section-card {

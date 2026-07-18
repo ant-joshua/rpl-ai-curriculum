@@ -4,6 +4,7 @@
   import { modules } from '$lib/stores/modules';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { StatCard } from '$lib/components/ui';
 
   let selectedModule = $state('');
   let selectedDifficulty = $state<string>('all');
@@ -67,30 +68,12 @@
 
   <!-- Stats Dashboard -->
   <div class="stats-grid">
-    <div class="stat-card accent">
-      <span class="stat-value">{counts.dueToday}</span>
-      <span class="stat-label">Jatuh Tempo Hari Ini</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-value">{counts.total}</span>
-      <span class="stat-label">Total Kartu</span>
-    </div>
-    <div class="stat-card success">
-      <span class="stat-value">{counts.known}</span>
-      <span class="stat-label">Diketahui</span>
-    </div>
-    <div class="stat-card warn">
-      <span class="stat-value">{counts.learning}</span>
-      <span class="stat-label">Sedang Dipelajari</span>
-    </div>
-    <div class="stat-card info">
-      <span class="stat-value">{counts.newCards}</span>
-      <span class="stat-label">Kartu Baru</span>
-    </div>
-    <div class="stat-card neutral">
-      <span class="stat-value">{counts.decks}</span>
-      <span class="stat-label">Deck</span>
-    </div>
+    <StatCard icon="📅" value={counts.dueToday} label="Jatuh Tempo Hari Ini" color="var(--accent)" />
+    <StatCard icon="🎴" value={counts.total} label="Total Kartu" />
+    <StatCard icon="✅" value={counts.known} label="Diketahui" color="#22c55e" />
+    <StatCard icon="📖" value={counts.learning} label="Sedang Dipelajari" color="#f59e0b" />
+    <StatCard icon="🆕" value={counts.newCards} label="Kartu Baru" color="#3b82f6" />
+    <StatCard icon="📂" value={counts.decks} label="Deck" color="#8a8f98" />
   </div>
 
   <!-- Review Stats -->
@@ -184,35 +167,6 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 12px;
     margin-bottom: 20px;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-  }
-  .stat-card.accent { border-color: var(--accent); }
-  .stat-card.success { border-color: #22c55e; }
-  .stat-card.warn { border-color: #f59e0b; }
-  .stat-card.info { border-color: #3b82f6; }
-  .stat-card.neutral { border-color: var(--text-secondary); }
-  .stat-value {
-    display: block;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .stat-card.accent .stat-value { color: var(--accent); }
-  .stat-card.success .stat-value { color: #22c55e; }
-  .stat-card.warn .stat-value { color: #f59e0b; }
-  .stat-card.info .stat-value { color: #3b82f6; }
-  .stat-card.neutral .stat-value { color: var(--text-secondary); }
-  .stat-label {
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 500;
   }
 
   /* Review stats bar */
