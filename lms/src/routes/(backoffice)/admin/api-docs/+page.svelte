@@ -12,6 +12,9 @@
 </script>
 
 <script lang="ts">
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
+
 	let { data } = $props();
 	let spec = $state(data.spec);
 
@@ -34,6 +37,34 @@
 	}
 
 	let groups = $derived(groupByTag(spec?.paths));
+
+	const paramColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Name',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span class="font-mono text-xs">${getValue()}</span>`
+		},
+		{
+			header: 'In',
+			accessorKey: 'in',
+			cell: ({ getValue }) => `<span class="text-xs" style="color:var(--text-muted)">${getValue()}</span>`
+		},
+		{
+			header: 'Type',
+			accessorKey: 'schema',
+			cell: ({ getValue }) => `<span class="text-xs" style="color:var(--text-muted)">${(getValue() as any)?.type || 'string'}</span>`
+		},
+		{
+			header: 'Required',
+			accessorKey: 'required',
+			cell: ({ getValue }) => `<span class="text-xs">${getValue() ? 'Yes' : 'No'}</span>`
+		},
+		{
+			header: 'Description',
+			accessorKey: 'description',
+			cell: ({ getValue }) => `<span class="text-xs" style="color:var(--text-muted)">${getValue() || '-'}</span>`
+		},
+	];
 </script>
 
 <div class="p-6">
@@ -67,30 +98,13 @@
 
 								{#if ep.parameters?.length}
 									<h4 class="text-sm font-medium text-[var(--text-primary)] mb-2">Parameters</h4>
-									<div class="overflow-x-auto mb-4">
-										<table class="w-full text-xs">
-											<thead class="bg-[var(--bg-secondary)]">
-												<tr>
-													<th class="px-3 py-1.5 text-left font-medium">Name</th>
-													<th class="px-3 py-1.5 text-left font-medium">In</th>
-													<th class="px-3 py-1.5 text-left font-medium">Type</th>
-													<th class="px-3 py-1.5 text-left font-medium">Required</th>
-													<th class="px-3 py-1.5 text-left font-medium">Description</th>
-												</tr>
-											</thead>
-											<tbody class="divide-y divide-[var(--border)]">
-												{#each ep.parameters as param}
-													<tr>
-														<td class="px-3 py-1.5 font-mono">{param.name}</td>
-														<td class="px-3 py-1.5 text-[var(--text-muted)]">{param.in}</td>
-														<td class="px-3 py-1.5 text-[var(--text-muted)]">{param.schema?.type || 'string'}</td>
-														<td class="px-3 py-1.5">{param.required ? 'Yes' : 'No'}</td>
-														<td class="px-3 py-1.5 text-[var(--text-muted)]">{param.description || '-'}</td>
-													</tr>
-												{/each}
-											</tbody>
-										</table>
-									</div>
+									<DataTable
+										columns={paramColumns}
+										data={ep.parameters}
+										showSearch={false}
+										showPagination={false}
+										emptyMessage="No parameters"
+									/>
 								{/if}
 
 								{#if ep.requestBody?.content?.['application/json']?.schema}

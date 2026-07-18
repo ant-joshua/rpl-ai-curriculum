@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, EmptyState, Loading, Select } from '$lib/components/ui';
+	import { DataTable, Button, Card, CardContent, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let offerings: any[] = $state([]);
 	let instructors: any[] = $state([]);
@@ -43,7 +44,6 @@
 			});
 			const json = await res.json();
 			if (json.success) {
-				// Update local state
 				offerings = offerings.map(o =>
 					o.id === offeringId ? { ...o, instructor_id: instructorId || null } : o
 				);
@@ -67,19 +67,98 @@
 		{ value: '', label: '— Pilih Instruktur —' },
 		...instructors.map(i => ({ value: i.id, label: `${i.name} (${i.email})` })),
 	]);
+
+	function renderAssignSelect(offering: any): string {
+		const current = offering.instructor_id || '';
+		let html = `<select class="instructor-select" data-offering-id="${offering.id}" style="padding:6px 10px;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none;min-width:200px;cursor:pointer">`;
+		html += `<option value="">— Pilih Instruktur —</option>`;
+		for (const inst of instructors) {
+			const sel = inst.id === current ? ' selected' : '';
+			html += `<option value="${inst.id}"${sel}>${inst.name} (${inst.email})</option>`;
+		}
+		html += `</select>`;
+		if (savingId === offering.id) {
+			html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">Menyimpan...</span>`;
+		}
+		return html;
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Nama',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+		},
+		{
+			header: 'Kode',
+			accessorKey: 'code',
+			cell: ({ getValue }) => {
+				const code = getValue() as string;
+				return code ? `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${code}</code>` : '<span>—</span>';
+			}
+		},
+		{
+			header: 'Instruktur Saat Ini',
+			accessorKey: 'instructor_id',
+			cell: ({ getValue }) => `<span style="font-size:13px;color:var(--text-secondary)">${getInstructorName(getValue() as string)}</span>`
+		},
+		{
+			header: 'Atur Instruktur',
+			accessorKey: 'id',
+			cell: ({ getValue, row }) => {
+				const id = getValue() as string;
+				const current = row.original.instructor_id || '';
+				let html = `<div style="display:flex;align-items:center;gap:8px">`;
+				html += `<select class="dt-instructor-select" data-offering-id="${id}" style="padding:6px 10px;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none;min-width:200px;cursor:pointer">`;
+				html += `<option value="">— Pilih Instruktur —</option>`;
+				for (const inst of instructors) {
+					const sel = inst.id === current ? ' selected' : '';
+					html += `<option value="${inst.id}"${sel}>${inst.name} (${inst.email})</option>`;
+				}
+				html += `</select>`;
+				if (savingId === id) {
+					html += `<span style="font-size:12px;color:var(--accent);white-space:nowrap">Menyimpan...</span>`;
+				}
+				html += `</div>`;
+				return html;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const status = (getValue() as string) || '—';
+				const colors: Record<string, string> = {
+					active: 'background:rgba(16,185,129,0.1);color:#10b981',
+					draft: 'background:rgba(98,102,109,0.1);color:var(--text-quaternary)',
+				};
+				const style = colors[status] || 'background:rgba(245,158,11,0.1);color:#f59e0b';
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;${style}">${status}</span>`;
+			}
+		},
+	];
+
+	function handleAssign(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		if (!target.matches('.dt-instructor-select')) return;
+		const offeringId = target.dataset.offeringId;
+		if (offeringId) assignInstructor(offeringId, target.value);
+	}
 </script>
 
 <svelte:head>
 	<title>Course Offerings — Admin</title>
 </svelte:head>
 
-<div class="page">
+<div class="page" onchange={handleAssign}>
 	<div class="page-header">
 		<div>
 			<h1>Course Offerings</h1>
 			<p class="subtitle">Atur instruktur untuk setiap course offering</p>
 		</div>
-		<Button variant="secondary" onclick={loadData}>🔄 Refresh</Button>
+		<div class="header-actions">
+			<button class="btn-refresh" onclick={loadData}>🔄 Refresh</button>
+		</div>
 	</div>
 
 	{#if loading}
@@ -96,181 +175,24 @@
 	{:else if offerings.length === 0}
 		<EmptyState icon="📚" title="Tidak ada course offerings" description="Belum ada course offerings yang tersedia." />
 	{:else}
-		<div class="table-wrapper">
-			<table class="offerings-table">
-				<thead>
-					<tr>
-						<th>Nama</th>
-						<th>Kode</th>
-						<th>Instruktur Saat Ini</th>
-						<th>Atur Instruktur</th>
-						<th>Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each offerings as offering}
-						<tr>
-							<td class="cell-name">{offering.name}</td>
-							<td class="cell-code">{offering.code || '—'}</td>
-							<td>
-								<span class="current-instructor">{getInstructorName(offering.instructor_id)}</span>
-							</td>
-							<td>
-								<div class="assign-cell">
-									<select
-										class="instructor-select"
-										value={offering.instructor_id || ''}
-										disabled={savingId === offering.id}
-										onchange={(e) => {
-											const val = (e.target as HTMLSelectElement).value;
-											assignInstructor(offering.id, val);
-										}}
-									>
-										<option value="">— Pilih Instruktur —</option>
-										{#each instructors as inst}
-											<option
-												value={inst.id}
-												selected={inst.id === offering.instructor_id}
-											>{inst.name} ({inst.email})</option>
-										{/each}
-									</select>
-									{#if savingId === offering.id}
-										<span class="saving-indicator">Menyimpan...</span>
-									{/if}
-								</div>
-							</td>
-							<td>
-								<Badge variant={offering.status === 'active' ? 'success' : offering.status === 'draft' ? 'default' : 'warning'}>
-									{offering.status || '—'}
-								</Badge>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<DataTable
+			{columns}
+			data={offerings}
+			showSearch={false}
+			showPagination={false}
+			emptyMessage="Tidak ada course offerings"
+		/>
 	{/if}
 </div>
 
 <style>
 	.page { max-width: 1100px; }
-
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 24px;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
-
-	.page-header h1 {
-		font-size: 24px;
-		font-weight: 700;
-		margin: 0 0 4px;
-	}
-
-	.subtitle {
-		color: var(--text-secondary);
-		font-size: 14px;
-		margin: 0;
-	}
-
-	.error-state {
-		text-align: center;
-		padding: 20px;
-	}
-
-	.error-text {
-		color: #ef4444;
-		margin-bottom: 12px;
-		font-size: 14px;
-	}
-
-	.table-wrapper {
-		overflow-x: auto;
-	}
-
-	.offerings-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 14px;
-	}
-
-	.offerings-table th {
-		text-align: left;
-		padding: 10px 12px;
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		border-bottom: 1px solid var(--border);
-		white-space: nowrap;
-	}
-
-	.offerings-table td {
-		padding: 12px;
-		border-bottom: 1px solid var(--border);
-		color: var(--text);
-		vertical-align: middle;
-	}
-
-	.cell-name {
-		font-weight: 500;
-		min-width: 180px;
-	}
-
-	.cell-code {
-		font-family: monospace;
-		font-size: 13px;
-		color: var(--text-secondary);
-	}
-
-	.current-instructor {
-		font-size: 13px;
-		color: var(--text-secondary);
-	}
-
-	.assign-cell {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.instructor-select {
-		padding: 6px 10px;
-		font-size: 13px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		color: var(--text);
-		outline: none;
-		min-width: 200px;
-		cursor: pointer;
-	}
-
-	.instructor-select:focus {
-		border-color: #5e6ad2;
-	}
-
-	.instructor-select:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.saving-indicator {
-		font-size: 12px;
-		color: var(--accent);
-		white-space: nowrap;
-	}
-
-	@media (max-width: 768px) {
-		.instructor-select {
-			min-width: 140px;
-		}
-		.offerings-table {
-			font-size: 13px;
-		}
-	}
+	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
+	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 0; }
+	.header-actions { display: flex; gap: 8px; }
+	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
+	.btn-refresh:hover { background: var(--surface-hover); }
+	.error-state { text-align: center; padding: 20px; }
+	.error-text { color: #ef4444; margin-bottom: 12px; font-size: 14px; }
 </style>

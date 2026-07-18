@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Button, Badge, Card } from '$lib/components/ui/index.js';
+	import { Button, Badge, DataTable } from '$lib/components/ui';
 	import type { PageData } from './$types';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let { data }: { data: PageData } = $props();
 
@@ -36,6 +37,70 @@
 	function handlePrint() {
 		window.print();
 	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	// Build dynamic columns from assessmentItems + assignmentItems
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'No',
+			accessorKey: '__no',
+			cell: ({ row }) => `<span style="font-weight:600;font-size:12px;text-align:center;display:block">${row.original.rank}</span>`
+		},
+		{
+			header: 'Nama Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:600">${esc(getValue() as string)}</span>`
+		},
+		{
+			header: 'Email',
+			accessorKey: 'email',
+			cell: ({ getValue }) => `<span style="font-size:12px;color:var(--text-secondary)">${esc(getValue() as string)}</span>`
+		},
+		...data.assessmentItems.map((item: any): ColumnDef<any, any> => ({
+			header: `${item.title} /${item.max_score}`,
+			accessorKey: `__assess_${item.id}`,
+			cell: ({ row }) => {
+				const g = (row.original.assessment_grades || []).find((x: any) => x.assessment_item_id === item.id);
+				const score = g?.score;
+				const style = score === null ? 'opacity:0.5;color:var(--text-secondary)' : 'font-weight:600';
+				return `<span style="text-align:center;display:block;${style}">${score != null ? score : '-'}</span>`;
+			}
+		})),
+		...data.assignmentItems.map((item: any): ColumnDef<any, any> => ({
+			header: `${item.title} /${item.max_score}`,
+			accessorKey: `__assign_${item.id}`,
+			cell: ({ row }) => {
+				const g = (row.original.assignment_grades || []).find((x: any) => x.assignment_item_id === item.id);
+				const score = g?.score;
+				const style = score === null ? 'opacity:0.5;color:var(--text-secondary)' : 'font-weight:600';
+				return `<span style="text-align:center;display:block;${style}">${score != null ? score : '-'}</span>`;
+			}
+		})),
+		{
+			header: 'Nilai Akhir',
+			accessorKey: 'final_grade',
+			cell: ({ getValue, row }) => {
+				const pct = getValue() as number | null;
+				const color = finalGradeColor(pct);
+				const letter = letterGrade(pct);
+				if (pct != null) {
+					return `<div style="text-align:center">
+						<span style="font-weight:700;font-size:14px;color:${color}">${Math.round(pct)}%</span>
+						<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;background:var(--bg-secondary);border:1px solid ${color};color:${color};margin-left:4px">${letter}</span>
+					</div>`;
+				}
+				return `<span style="color:var(--text-secondary);text-align:center;display:block">-</span>`;
+			}
+		},
+		{
+			header: 'Peringkat',
+			accessorKey: 'rank',
+			cell: ({ getValue }) => `<span style="font-weight:600;font-size:12px;text-align:center;display:block">${getValue()}</span>`
+		}
+	];
 </script>
 
 <svelte:head>
@@ -77,59 +142,14 @@
 	</div>
 
 	<!-- Table -->
-	<div class="table-wrapper">
-		<table class="rapor-table">
-			<thead>
-				<tr>
-					<th class="rank-col">No</th>
-					<th class="name-col">Nama Siswa</th>
-					<th class="email-col">Email</th>
-					{#each data.assessmentItems as item}
-						<th class="score-col" title="{item.title} (max: {item.max_score})">
-							<span class="item-title">{item.title}</span>
-							<span class="item-max">/{item.max_score}</span>
-						</th>
-					{/each}
-					{#each data.assignmentItems as item}
-						<th class="score-col" title="{item.title} (max: {item.max_score})">
-							<span class="item-title">{item.title}</span>
-							<span class="item-max">/{item.max_score}</span>
-						</th>
-					{/each}
-					<th class="final-col">Nilai Akhir</th>
-					<th class="rank-col">Peringkat</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.students as student}
-					<tr>
-						<td class="rank-col">{student.rank}</td>
-						<td class="name-col">{student.name}</td>
-						<td class="email-col">{student.email}</td>
-						{#each student.assessment_grades as g}
-							<td class="score-col" class:score-null={g.score === null}>
-								{g.score != null ? g.score : '-'}
-							</td>
-						{/each}
-						{#each student.assignment_grades as g}
-							<td class="score-col" class:score-null={g.score === null}>
-								{g.score != null ? g.score : '-'}
-							</td>
-						{/each}
-						<td class="final-col" style="color: {finalGradeColor(student.final_grade)}">
-							{#if student.final_grade != null}
-								<span class="final-value">{Math.round(student.final_grade)}%</span>
-								<span class="letter-grade-badge">{letterGrade(student.final_grade)}</span>
-							{:else}
-								<span class="final-na">-</span>
-							{/if}
-						</td>
-						<td class="rank-col">{student.rank}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+	<DataTable
+		{columns}
+		data={data.students}
+		pageSize={200}
+		showSearch={false}
+		showPagination={false}
+		emptyMessage="Belum ada data siswa"
+	/>
 
 	<!-- Footer -->
 	<div class="rapor-footer">
@@ -182,121 +202,6 @@
 	/* ── Print-only header ── */
 	.print-header {
 		display: none;
-	}
-
-	/* ── Table ── */
-	.table-wrapper {
-		overflow-x: auto;
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		background: var(--surface);
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.rapor-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 13px;
-		min-width: 600px;
-	}
-
-	.rapor-table th {
-		text-align: left;
-		padding: 10px 8px;
-		border-bottom: 2px solid var(--border);
-		color: var(--text-secondary);
-		font-weight: 600;
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		white-space: nowrap;
-		background: var(--surface);
-	}
-
-	.rapor-table th.score-col {
-		min-width: 80px;
-		max-width: 120px;
-		text-align: center;
-	}
-
-	.rapor-table th .item-title {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		display: block;
-		max-width: 90px;
-	}
-
-	.rapor-table th .item-max {
-		font-weight: 400;
-		font-size: 10px;
-		color: var(--text-secondary);
-	}
-
-	.rapor-table td {
-		padding: 8px;
-		border-bottom: 1px solid var(--border);
-		vertical-align: middle;
-	}
-
-	.rank-col {
-		text-align: center;
-		min-width: 40px;
-		width: 40px;
-		font-weight: 600;
-		font-size: 12px;
-	}
-
-	.name-col {
-		min-width: 160px;
-		font-weight: 600;
-	}
-
-	.email-col {
-		min-width: 140px;
-		font-size: 12px;
-		color: var(--text-secondary);
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.score-col {
-		text-align: center;
-		font-weight: 600;
-		font-size: 12px;
-		min-width: 60px;
-	}
-
-	.score-null {
-		color: var(--text-secondary) !important;
-		opacity: 0.5;
-	}
-
-	.final-col {
-		text-align: center;
-		font-weight: 700;
-		font-size: 14px;
-		min-width: 80px;
-		padding: 8px 12px;
-	}
-
-	.final-value {
-		display: inline-block;
-		margin-right: 4px;
-	}
-
-	.letter-grade-badge {
-		display: inline-block;
-		padding: 2px 8px;
-		border-radius: 12px;
-		font-size: 11px;
-		font-weight: 700;
-		background: var(--bg-secondary);
-		border: 1px solid currentColor;
-	}
-
-	.final-na {
-		color: var(--text-secondary);
 	}
 
 	/* ── Footer ── */
@@ -387,17 +292,6 @@
 			text-align: right;
 		}
 
-		.table-wrapper {
-			border: 1px solid #ccc;
-			border-radius: 4px;
-			background: white;
-			overflow: visible;
-		}
-
-		.rapor-table {
-			font-size: 10px;
-		}
-
 		.rapor-table th {
 			background: #f5f5f5 !important;
 			color: #333 !important;
@@ -415,14 +309,6 @@
 			border-bottom: none;
 		}
 
-		.email-col {
-			color: #666 !important;
-		}
-
-		.score-null {
-			color: #aaa !important;
-		}
-
 		.letter-grade-badge {
 			background: #eee;
 			border-color: #999;
@@ -433,10 +319,6 @@
 		.rapor-footer {
 			border-top-color: #ccc;
 			color: #666;
-		}
-
-		.final-value {
-			font-weight: 700;
 		}
 	}
 </style>

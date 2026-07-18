@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let grades: any[] = $state([]);
 	let studentInfo: any = $state(null);
@@ -41,6 +42,67 @@
 		if (val === null || val === undefined) return '-';
 		return Number(val).toFixed(1);
 	}
+
+	function fmtColored(val: number | null): string {
+		return `<span style="color:${gradeColor(val)};font-weight:600;font-size:13px;text-align:center">${formatPct(val)}</span>`;
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Mata Pelajaran',
+			accessorKey: 'subject_name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() as string || row.original.subject;
+				return `<span style="font-weight:600;font-size:13px">${name}</span>`;
+			}
+		},
+		{
+			header: 'Kelas',
+			accessorKey: 'class_name',
+			cell: ({ getValue, row }) => `<span style="text-align:center;font-size:13px">${getValue() || row.original.class || '-'}</span>`
+		},
+		{
+			header: 'Rata PH',
+			accessorKey: 'rata_ph',
+			cell: ({ getValue }) => fmtColored(getValue() as number | null)
+		},
+		{
+			header: 'PTS',
+			accessorKey: 'pts',
+			cell: ({ getValue }) => fmtColored(getValue() as number | null)
+		},
+		{
+			header: 'PAS',
+			accessorKey: 'pas',
+			cell: ({ getValue }) => fmtColored(getValue() as number | null)
+		},
+		{
+			header: 'NA Pengetahuan',
+			accessorKey: 'na_pengetahuan',
+			cell: ({ getValue }) => fmtColored(getValue() as number | null)
+		},
+		{
+			header: 'Predikat',
+			accessorKey: 'predikat_pengetahuan',
+			cell: ({ getValue }) => {
+				const v = getValue() as string;
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(94,106,210,0.1);color:#5e6ad2">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+			}
+		},
+		{
+			header: 'Rata Keterampilan',
+			accessorKey: 'rata_keterampilan',
+			cell: ({ getValue }) => fmtColored(getValue() as number | null)
+		},
+		{
+			header: 'Predikat',
+			accessorKey: 'predikat_keterampilan',
+			cell: ({ getValue }) => {
+				const v = getValue() as string;
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(94,106,210,0.1);color:#5e6ad2">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+			}
+		},
+	];
 </script>
 
 <svelte:head>
@@ -74,52 +136,13 @@
 	{:else if grades.length === 0}
 		<EmptyState icon="📊" message="Belum ada data nilai untuk ditampilkan." description="Nilai akan muncul setelah guru menginputnya." />
 	{:else}
-		<div class="table-wrapper">
-			<table class="grade-table">
-				<thead>
-					<tr>
-						<th class="subject-col">Mata Pelajaran</th>
-						<th class="num-col">Kelas</th>
-						<th class="num-col">Rata PH</th>
-						<th class="num-col">PTS</th>
-						<th class="num-col">PAS</th>
-						<th class="num-col">NA Pengetahuan</th>
-						<th class="pred-col">Predikat</th>
-						<th class="num-col">Rata Keterampilan</th>
-						<th class="pred-col">Predikat</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each grades as g}
-						<tr>
-							<td class="subject-col">
-								<span class="subject-name">{g.subject_name || g.subject}</span>
-							</td>
-							<td class="num-cell">{g.class_name || g.class || '-'}</td>
-							<td class="num-cell" style="color: {gradeColor(g.rata_ph)}">{formatPct(g.rata_ph)}</td>
-							<td class="num-cell" style="color: {gradeColor(g.pts)}">{formatPct(g.pts)}</td>
-							<td class="num-cell" style="color: {gradeColor(g.pas)}">{formatPct(g.pas)}</td>
-							<td class="num-cell" style="color: {gradeColor(g.na_pengetahuan)}">{formatPct(g.na_pengetahuan)}</td>
-							<td class="pred-cell">
-								{#if g.predikat_pengetahuan}
-									<Badge variant="primary">{g.predikat_pengetahuan}</Badge>
-								{:else}
-									<span class="na">-</span>
-								{/if}
-							</td>
-							<td class="num-cell" style="color: {gradeColor(g.rata_keterampilan)}">{formatPct(g.rata_keterampilan)}</td>
-							<td class="pred-cell">
-								{#if g.predikat_keterampilan}
-									<Badge variant="primary">{g.predikat_keterampilan}</Badge>
-								{:else}
-									<span class="na">-</span>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<DataTable
+			{columns}
+			data={grades}
+			showSearch={false}
+			showPagination={false}
+			emptyMessage="Belum ada data nilai"
+		/>
 	{/if}
 </div>
 
@@ -131,16 +154,4 @@
 	.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 	.sem-select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; }
 	.error-state { padding: 40px 20px; text-align: center; color: var(--danger); }
-
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.grade-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
-	.grade-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.grade-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-	.subject-col { min-width: 160px; }
-	.subject-name { font-weight: 600; font-size: 13px; }
-	.num-col { text-align: center; min-width: 65px; }
-	.num-cell { text-align: center; font-weight: 600; font-size: 13px; }
-	.pred-cell { text-align: center; }
-	.pred-col { text-align: center; min-width: 55px; }
-	.na { color: var(--text-quaternary); }
 </style>

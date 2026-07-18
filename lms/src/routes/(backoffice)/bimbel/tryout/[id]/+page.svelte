@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable, Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Ranking = {
 		rank: number;
@@ -60,6 +61,76 @@
 		if (rankings.length === 0) return [];
 		return Object.keys(rankings[0].subjectScores || {});
 	});
+
+	function rankLabel(r: number): string {
+		if (r === 1) return '🥇';
+		if (r === 2) return '🥈';
+		if (r === 3) return '🥉';
+		return String(r);
+	}
+
+	function barHtml(pct: number): string {
+		const cls = pct < 40 ? 'background:var(--danger)' : pct < 70 ? 'background:var(--warning)' : 'background:var(--success)';
+		return `<div style="width:120px;height:20px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;min-width:2px;width:${pct}%;${cls}"></div></div>`;
+	}
+
+	const rankingColumns = $derived<ColumnDef<any, any>[]>([
+		{
+			header: 'Rank',
+			accessorKey: 'rank',
+			cell: ({ getValue }) => {
+				const r = getValue() as number;
+				return `<span style="font-size:16px;text-align:center">${rankLabel(r)}</span>`;
+			}
+		},
+		{
+			header: 'Nama',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:500;min-width:140px">${getValue()}</span>`
+		},
+		...subjects().map(subj => ({
+			header: subj,
+			accessorKey: `subjectScores.${subj}`,
+			id: `subj_${subj}`,
+			cell: ({ row }: { row: any }) => {
+				const v = row.original.subjectScores[subj];
+				return `<span style="text-align:center;color:var(--text-secondary)">${v ?? '-'}</span>`;
+			}
+		}) as ColumnDef<any, any>),
+		{
+			header: 'Total',
+			accessorKey: 'total',
+			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600">${getValue()}</span>`
+		},
+	]);
+
+	const analysisColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'No',
+			accessorKey: 'no',
+			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
+		},
+		{
+			header: 'Benar',
+			accessorKey: 'correct',
+			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
+		},
+		{
+			header: 'Total',
+			accessorKey: 'total',
+			cell: ({ getValue }) => `<span style="text-align:center">${getValue()}</span>`
+		},
+		{
+			header: 'Persentase',
+			accessorKey: 'correctPercent',
+			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;min-width:80px">${((getValue() as number) || 0).toFixed(1)}%</span>`
+		},
+		{
+			header: 'Indikator',
+			accessorKey: 'correctPercent',
+			cell: ({ getValue }) => barHtml((getValue() as number) || 0)
+		},
+	];
 </script>
 
 <svelte:head>
@@ -99,77 +170,25 @@
 				{#if rankings.length === 0}
 					<EmptyState icon="🏆" title="Belum Ada Ranking" description="Belum ada hasil try out." />
 				{:else}
-					<div class="table-wrap">
-						<table>
-							<thead>
-								<tr>
-									<th>Rank</th>
-									<th>Nama</th>
-									{#each subjects() as subj}
-										<th class="col-subject">{subj}</th>
-									{/each}
-									<th>Total</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each rankings as r}
-									<tr class:rank-top3={r.rank <= 3}>
-										<td class="col-rank">
-											{#if r.rank === 1}🥇
-											{:else if r.rank === 2}🥈
-											{:else if r.rank === 3}🥉
-											{:else}{r.rank}
-											{/if}
-										</td>
-										<td class="col-name">{r.name}</td>
-										{#each subjects() as subj}
-											<td class="col-score">{r.subjectScores[subj] ?? '-'}</td>
-										{/each}
-										<td class="col-total"><strong>{r.total}</strong></td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+					<DataTable
+						columns={rankingColumns}
+						data={rankings}
+						showSearch={false}
+						showPagination={false}
+						emptyMessage="Belum ada ranking"
+					/>
 				{/if}
 			{:else}
 				{#if questionStats.length === 0}
 					<EmptyState icon="📊" title="Belum Ada Data" description="Belum ada analisis soal." />
 				{:else}
-					<div class="table-wrap">
-						<table>
-							<thead>
-								<tr>
-									<th>No</th>
-									<th>Benar</th>
-									<th>Total</th>
-									<th>Persentase</th>
-									<th>Indikator</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each questionStats as q}
-									<tr>
-										<td class="col-qno">{q.no}</td>
-										<td class="col-correct">{q.correct}</td>
-										<td class="col-total">{q.total}</td>
-										<td class="col-pct">{(q.correctPercent || 0).toFixed(1)}%</td>
-										<td class="col-bar">
-											<div class="bar-track">
-												<div
-													class="bar-fill"
-													style="width: {q.correctPercent || 0}%"
-													class:bar-low={(q.correctPercent || 0) < 40}
-													class:bar-mid={(q.correctPercent || 0) >= 40 && (q.correctPercent || 0) < 70}
-													class:bar-high={(q.correctPercent || 0) >= 70}
-												></div>
-											</div>
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+					<DataTable
+						columns={analysisColumns}
+						data={questionStats}
+						showSearch={false}
+						showPagination={false}
+						emptyMessage="Belum ada analisis"
+					/>
 				{/if}
 			{/if}
 		{/if}
@@ -196,32 +215,4 @@
 	}
 	.tab:hover { color: var(--text); }
 	.tab--active { color: var(--accent); border-bottom-color: var(--accent); }
-
-	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); margin-bottom: 16px; }
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary);
-	}
-	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-	tr.rank-top3 { background: rgba(255,215,0,0.03); }
-
-	.col-rank { width: 50px; font-size: 16px; text-align: center; }
-	.col-name { font-weight: 500; min-width: 140px; }
-	.col-subject { text-align: center; min-width: 70px; }
-	.col-score { text-align: center; color: var(--text-secondary); }
-	.col-total { text-align: center; font-weight: 600; }
-
-	.col-qno { width: 50px; text-align: center; }
-	.col-correct { text-align: center; }
-	.col-pct { text-align: center; font-weight: 600; min-width: 80px; }
-
-	.bar-track { width: 120px; height: 20px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-	.bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; min-width: 2px; }
-	.bar-low { background: var(--danger); }
-	.bar-mid { background: var(--warning); }
-	.bar-high { background: var(--success); }
 </style>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type SemesterTranskrip = {
 		semester: string;
@@ -63,6 +65,41 @@
 			default: return 'transparent; color: var(--text-quaternary)';
 		}
 	}
+
+	const courseColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Kode',
+			accessorKey: 'kode',
+			cell: ({ getValue }) => {
+				const v = getValue();
+				return v ? `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${v}</code>` : '<span>—</span>';
+			}
+		},
+		{
+			header: 'Mata Kuliah',
+			accessorKey: 'nama',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue() || '—'}</span>`
+		},
+		{
+			header: 'SKS',
+			accessorKey: 'sks',
+			cell: ({ getValue }) => `<span style="text-align:center">${getValue() ?? '—'}</span>`
+		},
+		{
+			header: 'Nilai',
+			accessorKey: 'nilai_huruf',
+			cell: ({ getValue, row }) => {
+				const nh = getValue() as string || nilaiHuruf(row.original.nilai_angka);
+				const style = nilaiWarna(nh);
+				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:700;min-width:32px;text-align:center;background:${style}">${nh}</span>`;
+			}
+		},
+		{
+			header: 'Mutu',
+			accessorKey: 'mutu',
+			cell: ({ getValue }) => `<span style="text-align:center">${getValue() ?? '—'}</span>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -117,36 +154,13 @@
 						<span class="ip-value">{(sem.ip ?? 0).toFixed(2)}</span>
 					</div>
 				</div>
-				<div class="card">
-					<div class="table-container">
-						<table>
-							<thead>
-								<tr>
-									<th>Kode</th>
-									<th>Mata Kuliah</th>
-									<th>SKS</th>
-									<th>Nilai</th>
-									<th>Mutu</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each sem.courses as c}
-									<tr>
-										<td><code>{c.kode || '—'}</code></td>
-										<td class="cell-name">{c.nama || '—'}</td>
-										<td class="cell-num">{c.sks ?? '—'}</td>
-										<td>
-											<span class="nilai-badge" style={nilaiWarna(c.nilai_huruf || nilaiHuruf(c.nilai_angka))}>
-												{c.nilai_huruf || nilaiHuruf(c.nilai_angka)}
-											</span>
-										</td>
-										<td class="cell-num">{c.mutu ?? '—'}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
-				</div>
+				<DataTable
+					columns={courseColumns}
+					data={sem.courses}
+					showSearch={false}
+					showPagination={false}
+					emptyMessage="Tidak ada mata kuliah"
+				/>
 			</div>
 		{/each}
 	{/if}
@@ -181,15 +195,4 @@
 	.semester-ip { display: flex; align-items: center; gap: 6px; background: var(--bg-secondary); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); }
 	.ip-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
 	.ip-value { font-size: 16px; font-weight: 700; color: var(--accent); }
-
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 10px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-num { text-align: center; }
-	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.nilai-badge { display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; min-width: 32px; text-align: center; }
 </style>

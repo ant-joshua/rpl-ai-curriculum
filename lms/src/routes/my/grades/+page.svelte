@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { api } from '$lib/utils/api';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let offerings: any[] = $state([]);
 	let loading = $state(true);
@@ -28,9 +30,9 @@
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 80) return 'var(--color-green, #22c55e)';
-		if (pct >= 60) return 'var(--color-yellow, #f59e0b)';
-		return 'var(--color-red, #ef4444)';
+		if (pct >= 80) return '#22c55e';
+		if (pct >= 60) return '#f59e0b';
+		return '#ef4444';
 	}
 
 	function statusLabel(status: string): string {
@@ -48,6 +50,178 @@
 		try {
 			return new Date(d + 'Z').toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
 		} catch { return d; }
+	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	function buildAssessmentColumns(): ColumnDef<any, any>[] {
+		return [
+			{
+				header: 'Assessment',
+				accessorKey: 'title',
+				cell: ({ getValue }) => `<span style="font-weight:500">${esc(getValue() as string)}</span>`
+			},
+			{
+				header: 'Type',
+				accessorKey: 'type',
+				cell: ({ getValue }) => {
+					const type = getValue() as string;
+					return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:510;background:var(--bg-secondary)">${esc(type)}</span>`;
+				}
+			},
+			{
+				header: 'Score',
+				accessorKey: '__score',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return sub?.score != null ? String(sub.score) : '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: 'Max',
+				accessorKey: 'passing_score',
+				cell: ({ getValue }) => {
+					const v = getValue();
+					return v != null ? String(v) : '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: '%',
+				accessorKey: '__pct',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					const a = row.original;
+					if (sub?.score != null && a.passing_score) {
+						const pct = Math.round(sub.score / a.passing_score * 100);
+						const color = gradeColor(pct);
+						return `<span style="color:${color};font-weight:600">${pct}%</span>`;
+					}
+					return '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: 'Status',
+				accessorKey: '__status',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					const status = sub?.status || 'pending';
+					const label = statusLabel(status);
+					let bg = 'var(--bg-secondary)';
+					let color = 'var(--text-secondary)';
+					if (status === 'graded') { bg = '#22c55e33'; color = '#22c55e'; }
+					else if (status === 'submitted') { bg = '#3b82f633'; color = '#3b82f6'; }
+					else if (status === 'returned') { bg = '#f59e0b33'; color = '#f59e0b'; }
+					return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:510;background:${bg};color:${color}">${esc(label)}</span>`;
+				}
+			},
+			{
+				header: 'Submitted',
+				accessorKey: '__submitted',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return `<span style="color:var(--text-secondary);font-size:12px">${esc(formatDate(sub?.submitted_at))}</span>`;
+				}
+			},
+			{
+				header: 'Feedback',
+				accessorKey: '__feedback',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return `<span style="color:var(--text-secondary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${esc(sub?.feedback) || '-'}</span>`;
+				}
+			}
+		];
+	}
+
+	function buildAssignmentColumns(): ColumnDef<any, any>[] {
+		return [
+			{
+				header: 'Assignment',
+				accessorKey: 'title',
+				cell: ({ getValue, row }) => {
+					const title = esc(getValue() as string);
+					const id = row.original.id;
+					return `<a href="/my/assignments/${id}" style="color:var(--accent);text-decoration:none;font-weight:500">${title}</a>`;
+				}
+			},
+			{
+				header: 'Score',
+				accessorKey: '__score',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return sub?.score != null ? String(sub.score) : '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: 'Max',
+				accessorKey: 'max_score',
+				cell: ({ getValue }) => {
+					const v = getValue();
+					return v != null ? String(v) : '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: '%',
+				accessorKey: '__pct',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					const a = row.original;
+					if (sub?.score != null && a.max_score) {
+						const pct = Math.round(sub.score / a.max_score * 100);
+						const color = gradeColor(pct);
+						return `<span style="color:${color};font-weight:600">${pct}%</span>`;
+					}
+					return '<span style="color:var(--text-secondary)">-</span>';
+				}
+			},
+			{
+				header: 'Status',
+				accessorKey: '__status',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					const status = sub?.status || 'pending';
+					const label = statusLabel(status);
+					let bg = 'var(--bg-secondary)';
+					let color = 'var(--text-secondary)';
+					if (status === 'graded') { bg = '#22c55e33'; color = '#22c55e'; }
+					else if (status === 'submitted') { bg = '#3b82f633'; color = '#3b82f6'; }
+					else if (status === 'returned') { bg = '#f59e0b33'; color = '#f59e0b'; }
+					return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:510;background:${bg};color:${color}">${esc(label)}</span>`;
+				}
+			},
+			{
+				header: 'Submitted',
+				accessorKey: '__submitted',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return `<span style="color:var(--text-secondary);font-size:12px">${esc(formatDate(sub?.submitted_at))}</span>`;
+				}
+			},
+			{
+				header: 'Feedback',
+				accessorKey: '__feedback',
+				cell: ({ row }) => {
+					const sub = row.original.__sub;
+					return `<span style="color:var(--text-secondary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${esc(sub?.feedback) || '-'}</span>`;
+				}
+			}
+		];
+	}
+
+	function prepareAssessments(offering: any): any[] {
+		return (offering.assessments || []).map((a: any) => ({
+			...a,
+			__sub: offering.assessmentSubmissions?.find((s: any) => s.assessment_id === a.id)
+		}));
+	}
+
+	function prepareAssignments(offering: any): any[] {
+		return (offering.assignments || []).map((a: any) => ({
+			...a,
+			__sub: offering.assignmentSubmissions?.find((s: any) => s.assignment_id === a.id)
+		}));
 	}
 </script>
 
@@ -91,73 +265,27 @@
 				</div>
 
 				{#if offering.assessments.length > 0}
-					<div class="table-wrap">
-					<table class="grade-table">
-						<thead>
-							<tr>
-								<th>Assessment</th>
-								<th>Type</th>
-								<th>Score</th>
-								<th>Max</th>
-								<th>%</th>
-								<th>Status</th>
-								<th>Submitted</th>
-								<th>Feedback</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each offering.assessments as a}
-								{@const sub = offering.assessmentSubmissions?.find((s: any) => s.assessment_id === a.id)}
-								<tr>
-									<td>{a.title}</td>
-									<td><span class="badge badge--{a.type}">{a.type}</span></td>
-									<td>{sub?.score ?? '-'}</td>
-									<td>{a.passing_score ?? '-'}</td>
-									<td style="color: {gradeColor(sub?.score != null && a.passing_score ? (sub.score / a.passing_score * 100) : null)}">
-										{sub?.score != null && a.passing_score ? Math.round(sub.score / a.passing_score * 100) + '%' : '-'}
-									</td>
-									<td><span class="status status--{sub?.status || 'pending'}">{statusLabel(sub?.status) || 'Pending'}</span></td>
-									<td>{formatDate(sub?.submitted_at)}</td>
-									<td class="feedback-cell">{sub?.feedback || '-'}</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-					</div>
+					<h3 class="table-sub-header">Assessments</h3>
+					<DataTable
+						columns={buildAssessmentColumns()}
+						data={prepareAssessments(offering)}
+						pageSize={20}
+						showSearch={false}
+						showPagination={false}
+						emptyMessage="Tidak ada assessment"
+					/>
 				{/if}
 
 				{#if offering.assignments.length > 0}
-					<div class="table-wrap">
-					<table class="grade-table">
-						<thead>
-							<tr>
-								<th>Assignment</th>
-								<th>Score</th>
-								<th>Max</th>
-								<th>%</th>
-								<th>Status</th>
-								<th>Submitted</th>
-								<th>Feedback</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each offering.assignments as a}
-								{@const sub = offering.assignmentSubmissions?.find((s: any) => s.assignment_id === a.id)}
-								<tr>
-									<td><a href="/my/assignments/{a.id}" class="assign-link">{a.title}</a></td>
-									<td>{sub?.score ?? '-'}</td>
-									<td>{a.max_score ?? '-'}</td>
-									<td style="color: {gradeColor(sub?.score != null && a.max_score ? (sub.score / a.max_score * 100) : null)}">
-										{sub?.score != null && a.max_score ? Math.round(sub.score / a.max_score * 100) + '%' : '-'}
-									</td>
-									<td><span class="status status--{sub?.status || 'pending'}">{statusLabel(sub?.status) || 'Pending'}</span></td>
-									<td>{formatDate(sub?.submitted_at)}</td>
-									<td class="feedback-cell">{sub?.feedback || '-'}</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-					</div>
+					<h3 class="table-sub-header">Assignments</h3>
+					<DataTable
+						columns={buildAssignmentColumns()}
+						data={prepareAssignments(offering)}
+						pageSize={20}
+						showSearch={false}
+						showPagination={false}
+						emptyMessage="Tidak ada assignment"
+					/>
 				{/if}
 
 				{#if offering.assessments.length === 0 && offering.assignments.length === 0}
@@ -231,7 +359,8 @@
 		margin-bottom: 16px;
 	}
 
-	.offering-info h2 { font-feature-settings: 'cv01', 'ss03';
+	.offering-info h2 {
+		font-feature-settings: 'cv01', 'ss03';
 		font-size: 18px;
 		margin: 0 0 4px 0;
 	}
@@ -256,58 +385,13 @@
 		margin-top: 2px;
 	}
 
-	.grade-table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-top: 8px;
-		font-size: 14px;
-	}
-
-	.grade-table th {
-		text-align: left;
-		padding: 8px 10px;
-		border-bottom: 2px solid var(--border);
+	.table-sub-header {
+		font-size: 13px;
+		font-weight: 600;
 		color: var(--text-secondary);
-		font-weight: 510;
-		font-size: 12px;
 		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.grade-table td {
-		padding: 8px 10px;
-		border-bottom: 1px solid var(--border);
-		vertical-align: middle;
-	}
-
-	.badge {
-		display: inline-block;
-		padding: 2px 8px;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 510;
-		background: var(--bg-secondary);
-	}
-
-	.status {
-		display: inline-block;
-		padding: 2px 8px;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 510;
-	}
-
-	.status--graded { background: #22c55e33; color: #22c55e; }
-	.status--submitted { background: #3b82f633; color: #3b82f6; }
-	.status--returned { background: #f59e0b33; color: #f59e0b; }
-	.status--draft, .status--pending { background: var(--bg-secondary); color: var(--text-secondary); }
-
-	.feedback-cell {
-		max-width: 200px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		color: var(--text-secondary);
+		letter-spacing: 0.04em;
+		margin: 16px 0 8px;
 	}
 
 	.no-items {
@@ -325,18 +409,5 @@
 		.offering-header { flex-direction: column; align-items: flex-start; gap: 8px; }
 		.offering-summary { text-align: left; }
 		.total-pct { font-size: 24px; }
-		.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
-		.grade-table { font-size: 12px; min-width: 560px; }
-		.grade-table th, .grade-table td { padding: 6px 6px; }
-		.feedback-cell { max-width: 100px; }
-	}
-
-	.assign-link {
-		color: var(--accent);
-		text-decoration: none;
-		font-weight: 500;
-	}
-	.assign-link:hover {
-		text-decoration: underline;
 	}
 </style>

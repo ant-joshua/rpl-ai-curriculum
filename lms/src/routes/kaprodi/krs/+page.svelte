@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let pendingList: any[] = $state([]);
 	let riwayatList: any[] = $state([]);
@@ -69,6 +71,70 @@
 	function getSemesterName(id: string) {
 		return semesterList.find(s => s.id === id)?.name || '—';
 	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	const riwayatColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Mahasiswa',
+			accessorKey: 'mahasiswa_name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() || row.original.student_name || '—';
+				return `<span style="font-weight:500">${esc(name)}</span>`;
+			}
+		},
+		{
+			header: 'NIM',
+			accessorKey: 'nim',
+			cell: ({ getValue, row }) => {
+				const nim = getValue() || row.original.student_nim || '—';
+				return `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${esc(nim)}</code>`;
+			}
+		},
+		{
+			header: 'Semester',
+			accessorKey: 'semester_id',
+			cell: ({ getValue, row }) => {
+				const id = getValue() || row.original.semesterId;
+				return esc(getSemesterName(id));
+			}
+		},
+		{
+			header: 'SKS',
+			accessorKey: 'total_sks',
+			cell: ({ getValue, row }) => {
+				const v = getValue() ?? row.original.totalSks ?? 0;
+				return `<span style="text-align:center;display:block">${v}</span>`;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const status = (getValue() as string) || '—';
+				const approved = status === 'disetujui' || status === 'approved';
+				const rejected = status === 'ditolak' || status === 'rejected';
+				let bg = 'rgba(98,102,109,0.1)';
+				let color = 'var(--text-quaternary)';
+				let label = status;
+				if (approved) { bg = 'rgba(16,185,129,0.1)'; color = '#10b981'; label = 'Disetujui'; }
+				else if (rejected) { bg = 'rgba(239,68,68,0.1)'; color = '#ef4444'; label = 'Ditolak'; }
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Tanggal',
+			accessorKey: 'updated_at',
+			cell: ({ getValue }) => {
+				const d = getValue() as string;
+				if (!d) return '<span style="color:var(--text-tertiary);font-size:12px">—</span>';
+				const date = new Date(d).toLocaleDateString('id-ID');
+				return `<span style="color:var(--text-tertiary);font-size:12px">${esc(date)}</span>`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -145,38 +211,14 @@
 				{#if riwayatList.length === 0}
 					<div class="empty-subtle">Belum ada riwayat</div>
 				{:else}
-					<div class="card">
-						<div class="table-container">
-							<table>
-								<thead>
-									<tr>
-										<th>Mahasiswa</th>
-										<th>NIM</th>
-										<th>Semester</th>
-										<th>SKS</th>
-										<th>Status</th>
-										<th>Tanggal</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each riwayatList as krs}
-										<tr>
-											<td class="cell-name">{krs.mahasiswa_name || krs.student_name || '—'}</td>
-											<td><code>{krs.nim || krs.student_nim || '—'}</code></td>
-											<td>{getSemesterName(krs.semester_id || krs.semesterId)}</td>
-											<td class="cell-num">{krs.total_sks ?? krs.totalSks ?? 0}</td>
-											<td>
-												<span class="status-badge" class:status-approved={krs.status === 'disetujui' || krs.status === 'approved'} class:status-rejected={krs.status === 'ditolak' || krs.status === 'rejected'}>
-													{krs.status === 'disetujui' || krs.status === 'approved' ? 'Disetujui' : krs.status === 'ditolak' || krs.status === 'rejected' ? 'Ditolak' : krs.status || '—'}
-												</span>
-											</td>
-											<td class="cell-date">{krs.updated_at ? new Date(krs.updated_at).toLocaleDateString('id-ID') : '—'}</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					</div>
+					<DataTable
+						columns={riwayatColumns}
+						data={riwayatList}
+						pageSize={50}
+						showSearch={false}
+						showPagination={false}
+						emptyMessage="Belum ada riwayat"
+					/>
 				{/if}
 			{/if}
 		</section>
@@ -221,17 +263,5 @@
 	.course-chip { padding: 3px 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--text-secondary); }
 	.krs-actions { display: flex; gap: 8px; }
 
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-num { text-align: center; }
-	.cell-date { color: var(--text-tertiary); font-size: 12px; }
 	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(98,102,109,0.1); color: var(--text-quaternary); }
-	.status-approved { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-rejected { background: rgba(239,68,68,0.1); color: #ef4444; }
 </style>

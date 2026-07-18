@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -86,13 +87,60 @@
 		} catch { error = 'Gagal menyimpan'; }
 		finally { saving = false; }
 	}
+
+	const mergedData = $derived(
+		students.map(s => {
+			const sid = s.id || s.user_id;
+			return { ...s, _sid: sid, _score: getScore(sid) };
+		})
+	);
+
+	function handleInput(e: Event) {
+		const input = e.target as HTMLInputElement;
+		if (!input.matches('.dt-pts-input')) return;
+		const sid = input.dataset.sid;
+		if (sid) setScore(sid, input.value);
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'No',
+			accessorKey: '_sid',
+			cell: ({ row }) => `<span style="color:var(--text-quaternary);font-size:13px">${row.index + 1}</span>`
+		},
+		{
+			header: 'Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue, row }) => `<span style="font-weight:600;font-size:13px">${getValue() || row.original.display_name || 'Siswa'}</span>`
+		},
+		{
+			header: 'Nilai PTS',
+			accessorKey: '_score',
+			cell: ({ getValue, row }) => {
+				const score = getValue();
+				const sid = row.original._sid;
+				const filled = score !== null && score !== undefined;
+				return `<input
+					type="number"
+					step="0.5"
+					min="0"
+					max="100"
+					class="dt-pts-input"
+					data-sid="${sid}"
+					value="${score ?? ''}"
+					placeholder="-"
+					style="width:72px;padding:6px 8px;border:1px solid ${filled ? 'rgba(255,255,255,0.12)' : 'var(--border)'};border-radius:6px;background:var(--bg);color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:inherit;outline:none"
+				/>`;
+			}
+		},
+	];
 </script>
 
 <svelte:head>
 	<title>PTS — {classSubject?.subject_name || 'Nilai'} — Guru — RPL AI Curriculum</title>
 </svelte:head>
 
-<div class="page">
+<div class="page" oninput={handleInput}>
 	{#if loading}
 		<Loading message="Memuat data PTS..." />
 	{:else if error && !classSubject}
@@ -127,41 +175,13 @@
 		{#if students.length === 0}
 			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
 		{:else}
-			<div class="table-wrapper">
-				<table class="pts-table">
-					<thead>
-						<tr>
-							<th class="sticky-col">No</th>
-							<th class="sticky-col name-col">Siswa</th>
-							<th>Nilai PTS</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each students as student, i}
-							{@const sid = student.id || student.user_id}
-							<tr>
-								<td class="sticky-col num-col">{i + 1}</td>
-								<td class="sticky-col name-col">
-									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
-								</td>
-								<td class="score-col">
-									<input
-										type="number"
-										step="0.5"
-										min="0"
-										max="100"
-										class="score-input"
-										class:score-input--filled={getScore(sid) !== null}
-										value={getScore(sid) ?? ''}
-										oninput={(e) => setScore(sid, (e.target as HTMLInputElement).value)}
-										placeholder="-"
-									/>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable
+				{columns}
+				data={mergedData}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Belum ada siswa"
+			/>
 		{/if}
 	{/if}
 </div>
@@ -180,16 +200,4 @@
 	.toast { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 12px; }
 	.toast--success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); color: #10b981; }
 	.toast--error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; }
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.pts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	.pts-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.pts-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-	.sticky-col { position: sticky; left: 0; background: var(--surface); z-index: 2; }
-	.name-col { min-width: 160px; }
-	.num-col { width: 40px; text-align: center; color: var(--text-quaternary); }
-	.student-name { font-weight: 600; font-size: 13px; }
-	.score-col { text-align: center; }
-	.score-input { width: 72px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px; font-weight: 600; text-align: center; font-family: inherit; outline: none; transition: all 0.1s; }
-	.score-input:focus { border-color: var(--accent); }
-	.score-input--filled { border-color: rgba(255,255,255,0.12); }
 </style>

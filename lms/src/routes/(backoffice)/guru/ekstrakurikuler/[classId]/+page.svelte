@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let classId = $state('');
 	let className = $state('');
@@ -28,6 +29,8 @@
 	onMount(() => {
 		if (!browser) return;
 		loadAll();
+		(window as any).__ekstraNilai = (sid: string, val: string) => updateNilai(sid, val);
+		(window as any).__ekstraField = (sid: string, field: string, val: string) => updateField(sid, field, val);
 	});
 
 	async function loadAll() {
@@ -35,7 +38,6 @@
 		loading = true;
 		error = '';
 		try {
-			// Get class info + students + existing scores
 			const [clsRes, stRes, ekRes] = await Promise.all([
 				fetch(`/api/guru/kelas/info/${classId}`),
 				fetch(`/api/guru/kelas/${classId}/siswa?semester=${selectedSemester}`),
@@ -107,6 +109,59 @@
 		} catch { error = 'Gagal menyimpan'; }
 		finally { saving = false; }
 	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() || row.original.display_name || 'Siswa';
+				return `<span style="font-weight:600;font-size:13px">${esc(name)}</span>`;
+			}
+		},
+		{
+			header: 'Nilai',
+			accessorKey: '__nilai',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const e = getEkstra(sid);
+				const filled = e.nilai !== null ? 'border-color:var(--accent)' : '';
+				return `<input type="number" min="0" max="100" step="0.5"
+					style="width:64px;padding:6px 4px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;font-weight:600;text-align:center;font-family:inherit;outline:none;${filled}"
+					value="${e.nilai ?? ''}" placeholder="-"
+					oninput="window.__ekstraNilai('${esc(sid)}', this.value)" />`;
+			}
+		},
+		{
+			header: 'Predikat',
+			accessorKey: '__predikat',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const e = getEkstra(sid);
+				const opts = predikatOptions.map(p =>
+					`<option value="${p}"${p === e.predikat ? ' selected' : ''}>${p === '-' ? '-' : p}</option>`
+				).join('');
+				return `<select style="padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer"
+					onchange="window.__ekstraField('${esc(sid)}', 'predikat', this.value)">${opts}</select>`;
+			}
+		},
+		{
+			header: 'Deskripsi',
+			accessorKey: '__deskripsi',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const e = getEkstra(sid);
+				return `<input type="text" placeholder="Deskripsi..."
+					style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;font-family:inherit;outline:none;box-sizing:border-box"
+					value="${esc(e.deskripsi)}"
+					oninput="window.__ekstraField('${esc(sid)}', 'deskripsi', this.value)" />`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -146,51 +201,14 @@
 		{#if students.length === 0}
 			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
 		{:else}
-			<div class="table-wrapper">
-				<table class="ekstra-table">
-					<thead>
-						<tr>
-							<th class="sticky-col name-col">Siswa</th>
-							<th class="num-col">Nilai</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col">Deskripsi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each students as student}
-							{@const sid = student.id || student.user_id}
-							{@const e = getEkstra(sid)}
-							<tr>
-								<td class="sticky-col name-col">
-									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
-								</td>
-								<td class="score-cell">
-									<input type="number" min="0" max="100" step="0.5"
-										class="score-input" class:score-input--filled={e.nilai !== null}
-										value={e.nilai ?? ''}
-										oninput={(ev) => updateNilai(sid, (ev.target as HTMLInputElement).value)}
-										placeholder="-"
-									/>
-								</td>
-								<td class="pred-cell">
-									<select class="pred-select" value={e.predikat}
-										onchange={(ev) => updateField(sid, 'predikat', (ev.target as HTMLSelectElement).value)}>
-										{#each predikatOptions as p}
-											<option value={p}>{p === '-' ? '-' : p}</option>
-										{/each}
-									</select>
-								</td>
-								<td class="desc-cell">
-									<input type="text" class="desc-input" placeholder="Deskripsi..."
-										value={e.deskripsi}
-										oninput={(ev) => updateField(sid, 'deskripsi', (ev.target as HTMLInputElement).value)}
-									/>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable
+				{columns}
+				data={students}
+				pageSize={200}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Belum ada siswa"
+			/>
 		{/if}
 	{/if}
 </div>
@@ -209,23 +227,4 @@
 	.toast { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 12px; }
 	.toast--success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); color: #10b981; }
 	.toast--error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; }
-
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.ekstra-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-	.ekstra-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.ekstra-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-	.sticky-col { position: sticky; left: 0; background: var(--surface); z-index: 2; }
-	.name-col { min-width: 160px; }
-	.student-name { font-weight: 600; font-size: 13px; }
-	.num-col { text-align: center; min-width: 60px; }
-	.pred-col { text-align: center; min-width: 70px; }
-	.desc-col { min-width: 200px; }
-	.score-cell { text-align: center; }
-	.score-input { width: 64px; padding: 6px 4px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 13px; font-weight: 600; text-align: center; font-family: inherit; outline: none; }
-	.score-input:focus { border-color: var(--accent); }
-	.score-input--filled { border-color: rgba(255,255,255,0.12); }
-	.pred-cell { text-align: center; }
-	.pred-select { padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
-	.desc-input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 12px; font-family: inherit; outline: none; box-sizing: border-box; }
-	.desc-input:focus { border-color: var(--accent); }
 </style>

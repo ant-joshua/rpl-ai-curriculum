@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -30,6 +31,7 @@
 	onMount(() => {
 		if (!browser) return;
 		loadAll();
+		(window as any).__updateSikap = (sid: string, field: string, val: string) => updateSikap(sid, field, val);
 	});
 
 	async function loadAll() {
@@ -101,6 +103,72 @@
 		} catch { error = 'Gagal menyimpan'; }
 		finally { saving = false; }
 	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	function predikatSelect(sid: string, field: string, current: string): string {
+		const opts = predikatOptions.map(p =>
+			`<option value="${p}"${p === current ? ' selected' : ''}>${p === '-' ? '-' : p}</option>`
+		).join('');
+		return `<select style="padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer"
+			onchange="window.__updateSikap('${esc(sid)}', '${field}', this.value)">${opts}</select>`;
+	}
+
+	function descInput(sid: string, field: string, current: string): string {
+		return `<input type="text" placeholder="Deskripsi..."
+			style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;font-family:inherit;outline:none;box-sizing:border-box"
+			value="${esc(current)}"
+			oninput="window.__updateSikap('${esc(sid)}', '${field}', this.value)" />`;
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() || row.original.display_name || 'Siswa';
+				return `<span style="font-weight:600;font-size:13px">${esc(name)}</span>`;
+			}
+		},
+		{
+			header: 'Spiritual Predikat',
+			accessorKey: '__sp_pred',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const s = getSikap(sid);
+				return predikatSelect(sid, 'spiritual_predikat', s.spiritual_predikat);
+			}
+		},
+		{
+			header: 'Spiritual Deskripsi',
+			accessorKey: '__sp_desc',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const s = getSikap(sid);
+				return descInput(sid, 'spiritual_desc', s.spiritual_desc);
+			}
+		},
+		{
+			header: 'Sosial Predikat',
+			accessorKey: '__so_pred',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const s = getSikap(sid);
+				return predikatSelect(sid, 'sosial_predikat', s.sosial_predikat);
+			}
+		},
+		{
+			header: 'Sosial Deskripsi',
+			accessorKey: '__so_desc',
+			cell: ({ row }) => {
+				const sid = row.original.id || row.original.user_id;
+				const s = getSikap(sid);
+				return descInput(sid, 'sosial_desc', s.sosial_desc);
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -142,60 +210,14 @@
 		{#if students.length === 0}
 			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." />
 		{:else}
-			<div class="table-wrapper">
-				<table class="sikap-table">
-					<thead>
-						<tr>
-							<th class="sticky-col name-col" rowspan="2">Siswa</th>
-							<th colspan="2" class="section-header">Spiritual</th>
-							<th colspan="2" class="section-header">Sosial</th>
-						</tr>
-						<tr>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col">Deskripsi</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col">Deskripsi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each students as student}
-							{@const sid = student.id || student.user_id}
-							{@const s = getSikap(sid)}
-							<tr>
-								<td class="sticky-col name-col">
-									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
-								</td>
-								<td class="pred-cell">
-									<select class="pred-select" value={s.spiritual_predikat}
-										onchange={(e) => updateSikap(sid, 'spiritual_predikat', (e.target as HTMLSelectElement).value)}>
-										{#each predikatOptions as p}
-											<option value={p}>{p === '-' ? '-' : p}</option>
-										{/each}
-									</select>
-								</td>
-								<td class="desc-cell">
-									<input type="text" class="desc-input" placeholder="Deskripsi spiritual..."
-										value={s.spiritual_desc}
-										oninput={(e) => updateSikap(sid, 'spiritual_desc', (e.target as HTMLInputElement).value)} />
-								</td>
-								<td class="pred-cell">
-									<select class="pred-select" value={s.sosial_predikat}
-										onchange={(e) => updateSikap(sid, 'sosial_predikat', (e.target as HTMLSelectElement).value)}>
-										{#each predikatOptions as p}
-											<option value={p}>{p === '-' ? '-' : p}</option>
-										{/each}
-									</select>
-								</td>
-								<td class="desc-cell">
-									<input type="text" class="desc-input" placeholder="Deskripsi sosial..."
-										value={s.sosial_desc}
-										oninput={(e) => updateSikap(sid, 'sosial_desc', (e.target as HTMLInputElement).value)} />
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable
+				{columns}
+				data={students}
+				pageSize={200}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Belum ada siswa"
+			/>
 		{/if}
 	{/if}
 </div>
@@ -214,19 +236,4 @@
 	.toast { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 12px; }
 	.toast--success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); color: #10b981; }
 	.toast--error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; }
-
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.sikap-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-	.sikap-table th { padding: 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); text-align: center; }
-	.sikap-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-	.section-header { background: rgba(94, 106, 210, 0.04); }
-	.sticky-col { position: sticky; left: 0; background: var(--surface); z-index: 2; }
-	.name-col { min-width: 150px; }
-	.student-name { font-weight: 600; font-size: 13px; }
-	.pred-col { min-width: 80px; text-align: center; }
-	.desc-col { min-width: 180px; }
-	.pred-cell { text-align: center; }
-	.pred-select { padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
-	.desc-input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 12px; font-family: inherit; outline: none; box-sizing: border-box; }
-	.desc-input:focus { border-color: var(--accent); }
 </style>

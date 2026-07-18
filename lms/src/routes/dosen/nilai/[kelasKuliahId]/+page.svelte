@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let { data } = $props();
 
@@ -20,6 +21,13 @@
 		if (!browser) return;
 		loadData();
 	});
+
+	if (browser) {
+		(window as any).__updNilai = (id: string, val: string) => {
+			const m = mahasiswaList.find((x: any) => (x.id || x.mahasiswa_id || x.student_id) === id);
+			if (m) updateNilai(m, val === '' ? null : Math.min(100, Math.max(0, Number(val))));
+		};
+	}
 
 	async function loadData() {
 		loading = true; error = '';
@@ -49,18 +57,17 @@
 
 	function nilaiWarna(huruf: string): string {
 		switch (huruf) {
-			case 'A': case 'A-': return 'rgba(16,185,129,0.1); color: #10b981';
-			case 'B+': case 'B': case 'B-': return 'rgba(94,106,210,0.1); color: #5e6ad2';
-			case 'C+': case 'C': return 'rgba(245,158,11,0.1); color: #f59e0b';
-			case 'D': return 'rgba(239,68,68,0.1); color: #ef4444';
-			case 'E': return 'rgba(239,68,68,0.2); color: #dc2626';
-			default: return 'transparent; color: var(--text-quaternary)';
+			case 'A': case 'A-': return 'background:rgba(16,185,129,0.1);color:#10b981';
+			case 'B+': case 'B': case 'B-': return 'background:rgba(94,106,210,0.1);color:#5e6ad2';
+			case 'C+': case 'C': return 'background:rgba(245,158,11,0.1);color:#f59e0b';
+			case 'D': return 'background:rgba(239,68,68,0.1);color:#ef4444';
+			case 'E': return 'background:rgba(239,68,68,0.2);color:#dc2626';
+			default: return 'background:transparent;color:var(--text-quaternary)';
 		}
 	}
 
 	function updateNilai(m: any, nilai: number | null) {
 		m.nilai_angka = nilai;
-		// computed nilai_huruf will be derived
 	}
 
 	let allFilled = $derived(
@@ -94,6 +101,57 @@
 		} catch { saveError = 'Terjadi kesalahan'; }
 		finally { saving = false; }
 	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'No',
+			accessorKey: '__no',
+			cell: ({ row }) => `<span style="text-align:center;display:block;color:var(--text-tertiary)">${row.index + 1}</span>`
+		},
+		{
+			header: 'NIM',
+			accessorKey: 'nim',
+			cell: ({ getValue, row }) => {
+				const nim = getValue() || row.original.student_nim || '—';
+				return `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${esc(nim)}</code>`;
+			}
+		},
+		{
+			header: 'Nama Mahasiswa',
+			accessorKey: 'name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() || row.original.nama || row.original.mahasiswa_name || '—';
+				return `<span style="font-weight:500">${esc(name)}</span>`;
+			}
+		},
+		{
+			header: 'Nilai Angka',
+			accessorKey: 'nilai_angka',
+			cell: ({ getValue, row }) => {
+				const m = row.original;
+				const val = getValue() as number | null | undefined;
+				const filled = val !== null && val !== undefined && val >= 0 ? 'border-color:var(--accent)' : '';
+				return `<input type="number" min="0" max="100" placeholder="0-100"
+					style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-secondary);color:var(--text);font-size:14px;font-weight:600;text-align:center;font-family:inherit;outline:none;${filled}"
+					value="${val ?? ''}"
+					oninput="window.__updNilai('${esc(m.id || m.mahasiswa_id || m.student_id)}', this.value)"
+					onfocus="this.dataset.idx='${row.index}'" />`;
+			}
+		},
+		{
+			header: 'Nilai Huruf',
+			accessorKey: '__huruf',
+			cell: ({ row }) => {
+				const huruf = nilaiHuruf(row.original.nilai_angka);
+				const style = nilaiWarna(huruf);
+				return `<span style="display:inline-block;padding:3px 12px;border-radius:6px;font-size:13px;font-weight:700;min-width:36px;text-align:center;${style}">${huruf}</span>`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -154,51 +212,14 @@
 			<div class="error-msg">{saveError}</div>
 		{/if}
 
-		<div class="card">
-			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>No</th>
-							<th>NIM</th>
-							<th>Nama Mahasiswa</th>
-							<th>Nilai Angka</th>
-							<th>Nilai Huruf</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each mahasiswaList as m, i}
-							{@const huruf = nilaiHuruf(m.nilai_angka)}
-							<tr>
-								<td class="cell-num">{i + 1}</td>
-								<td><code>{m.nim || m.student_nim || '—'}</code></td>
-								<td class="cell-name">{m.name || m.nama || m.mahasiswa_name || '—'}</td>
-								<td>
-									<input
-										type="number"
-										class="nilai-input"
-										class:input-filled={m.nilai_angka !== null && m.nilai_angka >= 0}
-										value={m.nilai_angka ?? ''}
-										oninput={(e) => {
-											const val = (e.target as HTMLInputElement).value;
-											updateNilai(m, val === '' ? null : Math.min(100, Math.max(0, Number(val))));
-										}}
-										min="0"
-										max="100"
-										placeholder="0-100"
-									/>
-								</td>
-								<td>
-									<span class="nilai-badge" style={nilaiWarna(huruf)}>
-										{huruf}
-									</span>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<DataTable
+			{columns}
+			data={mahasiswaList}
+			pageSize={200}
+			showSearch={false}
+			showPagination={false}
+			emptyMessage="Belum ada mahasiswa"
+		/>
 
 		<div class="actions">
 			<button class="btn-primary" onclick={simpanNilai} disabled={saving}>
@@ -219,7 +240,7 @@
 	.subtitle code { background: var(--bg-secondary); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 	.meta-semester { color: var(--text-tertiary); }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 10px 24px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+	.btn-primary { padding: 10px 24px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; }
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
@@ -237,23 +258,6 @@
 	.error-msg { color: #ef4444; margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 10px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.01); }
-	.cell-name { font-weight: 500; }
-	.cell-num { text-align: center; color: var(--text-tertiary); }
 	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-
-	.nilai-input { width: 80px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 14px; font-weight: 600; text-align: center; }
-	.nilai-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
-	.nilai-input.input-filled { border-color: var(--accent); }
-	.nilai-input::placeholder { color: var(--text-quaternary); font-weight: 400; }
-
-	.nilai-badge { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 13px; font-weight: 700; min-width: 36px; text-align: center; }
-
 	.actions { display: flex; justify-content: flex-end; margin-top: 20px; }
 </style>

@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Loading, EmptyState, Badge, Button } from '$lib/components/ui/index.js';
+	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let classId = $state('');
 	let classInfo: any = $state(null);
@@ -26,6 +27,7 @@
 	onMount(() => {
 		if (!browser) return;
 		loadAll();
+		if (browser) (window as any).__genRapor = generateRapor;
 	});
 
 	async function loadAll() {
@@ -91,17 +93,54 @@
 		return s === '1' ? 'Ganjil' : s === '2' ? 'Genap' : s;
 	}
 
-	function statusVariant(status: string): 'default' | 'primary' | 'accent' | 'success' | 'warning' | 'danger' | 'info' | 'outline' {
-		if (status === 'finalized') return 'success';
-		if (status === 'printed') return 'primary';
-		return 'outline';
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 
-	function getStatusLabel(status: string): string {
-		if (status === 'finalized') return 'Finalized';
-		if (status === 'printed') return 'Printed';
-		return 'Draft';
-	}
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'No',
+			accessorKey: '__no',
+			cell: ({ row }) => `<span style="font-weight:600;font-size:12px;color:var(--text-secondary);text-align:center;display:block">${row.index + 1}</span>`
+		},
+		{
+			header: 'Nama Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue, row }) => {
+				const name = getValue() || row.original.display_name || 'Siswa';
+				return `<span style="font-weight:600;font-size:13px">${esc(name)}</span>`;
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'rapor_status',
+			cell: ({ getValue }) => {
+				const status = (getValue() as string) || 'draft';
+				const isFinalized = status === 'finalized';
+				const isPrinted = status === 'printed';
+				const bg = isFinalized ? 'rgba(16,185,129,0.1)' : isPrinted ? 'rgba(94,106,210,0.1)' : 'rgba(98,102,109,0.1)';
+				const color = isFinalized ? '#10b981' : isPrinted ? '#5e6ad2' : 'var(--text-quaternary)';
+				const label = isFinalized ? 'Finalized' : isPrinted ? 'Printed' : 'Draft';
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ getValue, row }) => {
+				const studentId = getValue() || row.original.user_id;
+				const isDraft = !row.original.rapor_status || row.original.rapor_status === 'draft';
+				const genBtn = isDraft
+					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;background:rgba(255,255,255,0.04);color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
+					: '';
+				const prevHref = `/guru/rapor/${classId}/${studentId}?semester=${selectedSemester}`;
+				const prevStyle = isDraft
+					? 'padding:4px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;background:transparent;color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
+					: 'padding:4px 12px;border:1px solid rgba(94,106,210,0.3);border-radius:6px;background:rgba(94,106,210,0.1);color:#5e6ad2;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
+				return `<div style="display:flex;gap:6px;justify-content:flex-end">${genBtn}<a href="${prevHref}" style="${prevStyle}">Preview</a></div>`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -133,56 +172,23 @@
 					<option value="1">Semester Ganjil</option>
 					<option value="2">Semester Genap</option>
 				</select>
-				<Button onclick={generateAll} disabled={generating || students.length === 0} variant="secondary" size="sm">
+				<button class="btn-secondary" onclick={generateAll} disabled={generating || students.length === 0}>
 					{generating ? '⏳ Generating...' : '⚡ Generate All'}
-				</Button>
+				</button>
 			</div>
 		</div>
 
 		{#if students.length === 0}
 			<EmptyState icon="👨‍🎓" message="Belum ada siswa di kelas ini." description="Tambahkan siswa terlebih dahulu pada menu struktur kelas." />
 		{:else}
-			<div class="table-wrapper">
-				<table class="rapor-table">
-					<thead>
-						<tr>
-							<th class="rank-col">No</th>
-							<th class="name-col">Nama Siswa</th>
-							<th class="status-col">Status</th>
-							<th class="action-col">Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each students as student, i}
-							<tr>
-								<td class="rank-col">{i + 1}</td>
-								<td class="name-col">
-									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
-								</td>
-								<td class="status-col">
-									<Badge variant={statusVariant(student.rapor_status || 'draft')}>
-										{getStatusLabel(student.rapor_status || 'draft')}
-									</Badge>
-								</td>
-								<td class="action-col">
-									<div class="action-group">
-										{#if !student.rapor_status || student.rapor_status === 'draft'}
-											<Button onclick={() => generateRapor(student.id || student.user_id)} variant="secondary" size="sm">
-												Generate
-											</Button>
-										{/if}
-										<a href="/guru/rapor/{classId}/{student.id || student.user_id}?semester={selectedSemester}" class="preview-link">
-											<Button variant={student.rapor_status === 'draft' ? 'outline' : 'primary'} size="sm">
-												Preview
-											</Button>
-										</a>
-									</div>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable
+				{columns}
+				data={students}
+				pageSize={200}
+				showSearch={false}
+				showPagination={false}
+				emptyMessage="Belum ada siswa"
+			/>
 		{/if}
 	{/if}
 </div>
@@ -199,18 +205,7 @@
 	.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 	.sem-select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; }
 	.error-state { padding: 40px 20px; text-align: center; color: var(--danger); }
-
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.rapor-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-	.rapor-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.rapor-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-
-	.rank-col { text-align: center; min-width: 36px; width: 36px; font-weight: 600; font-size: 12px; color: var(--text-secondary); }
-	.name-col { min-width: 180px; }
-	.student-name { font-weight: 600; font-size: 13px; }
-	.status-col { text-align: center; min-width: 90px; }
-	.action-col { text-align: right; min-width: 170px; }
-
-	.action-group { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
-	.preview-link { text-decoration: none; }
+	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; font-family: inherit; }
+	.btn-secondary:hover { background: var(--surface-hover); }
+	.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>

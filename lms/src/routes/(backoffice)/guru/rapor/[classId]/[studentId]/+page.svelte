@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Loading, Badge, Button } from '$lib/components/ui/index.js';
+	import { Loading, Badge, Button, DataTable } from '$lib/components/ui/index.js';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let classId = $state('');
 	let studentId = $state('');

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type DayRecord = {
 		date: string;
@@ -104,18 +105,6 @@
 		return rec?.status || '';
 	}
 
-	function getStatusClass(status: string): string {
-		switch (status) {
-			case 'hadir': return 'cell-hadir';
-			case 'sakit': return 'cell-sakit';
-			case 'izin': return 'cell-izin';
-			case 'alpha': return 'cell-alpha';
-			case 'dispensasi': return 'cell-dispensasi';
-			case 'terlambat': return 'cell-terlambat';
-			default: return 'cell-empty';
-		}
-	}
-
 	function getStatusLetter(status: string): string {
 		switch (status) {
 			case 'hadir': return 'H';
@@ -139,6 +128,64 @@
 			default: return 'transparent';
 		}
 	}
+
+	function getStatusBg(status: string): string {
+		switch (status) {
+			case 'hadir': return 'rgba(16,185,129,0.06)';
+			case 'sakit': return 'rgba(245,158,11,0.06)';
+			case 'izin': return 'rgba(94,106,210,0.06)';
+			case 'alpha': return 'rgba(239,68,68,0.06)';
+			case 'dispensasi': return 'rgba(139,92,246,0.06)';
+			case 'terlambat': return 'rgba(249,115,22,0.06)';
+			default: return '';
+		}
+	}
+
+	function esc(s: string): string {
+		return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	// Build columns dynamically based on calendarDays
+	let columns = $derived<ColumnDef<any, any>[]>([
+		{
+			header: 'Nama Siswa',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:600;font-size:13px">${esc(getValue() as string)}</span>`
+		},
+		...calendarDays.map((day): ColumnDef<any, any> => ({
+			header: String(day),
+			accessorKey: `__day_${day}`,
+			cell: ({ row }) => {
+				const student = row.original as StudentRecap;
+				const status = getStatusForDay(student, day);
+				const letter = getStatusLetter(status);
+				const color = getStatusColor(status);
+				const bg = getStatusBg(status);
+				if (!status) return '<span style="color:transparent">·</span>';
+				return `<span style="color:${color};font-weight:700;font-size:11px;display:block;text-align:center;background:${bg};border-radius:4px;padding:2px 0">${letter}</span>`;
+			}
+		})),
+		{
+			header: 'H',
+			accessorKey: 'totalHadir',
+			cell: ({ getValue }) => `<span style="color:var(--success);font-weight:700;font-size:12px;display:block;text-align:center;border-left:1px solid var(--border);padding-left:8px">${getValue()}</span>`
+		},
+		{
+			header: 'S',
+			accessorKey: 'totalSakit',
+			cell: ({ getValue }) => `<span style="color:var(--warning);font-weight:700;font-size:12px;display:block;text-align:center">${getValue()}</span>`
+		},
+		{
+			header: 'I',
+			accessorKey: 'totalIzin',
+			cell: ({ getValue }) => `<span style="color:var(--info);font-weight:700;font-size:12px;display:block;text-align:center">${getValue()}</span>`
+		},
+		{
+			header: 'A',
+			accessorKey: 'totalAlpha',
+			cell: ({ getValue }) => `<span style="color:var(--danger);font-weight:700;font-size:12px;display:block;text-align:center">${getValue()}</span>`
+		}
+	]);
 </script>
 
 <svelte:head>
@@ -207,39 +254,14 @@
 			<span class="legend-item"><span class="legend-dot" style="background:#f97316"></span> Terlambat (T)</span>
 		</div>
 
-		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th class="col-name">Nama Siswa</th>
-						{#each calendarDays as day}
-							<th class="col-day">{day}</th>
-						{/each}
-						<th class="col-summary">H</th>
-						<th class="col-summary">S</th>
-						<th class="col-summary">I</th>
-						<th class="col-summary">A</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each students as student}
-						<tr>
-							<td class="col-name">{student.name}</td>
-							{#each calendarDays as day}
-								{@const status = getStatusForDay(student, day)}
-								<td class="col-day {getStatusClass(status)}" title={status || '-'}>
-									{getStatusLetter(status)}
-								</td>
-							{/each}
-							<td class="col-summary summary-hadir">{student.totalHadir}</td>
-							<td class="col-summary summary-sakit">{student.totalSakit}</td>
-							<td class="col-summary summary-izin">{student.totalIzin}</td>
-							<td class="col-summary summary-alpha">{student.totalAlpha}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<DataTable
+			{columns}
+			data={students}
+			pageSize={200}
+			showSearch={false}
+			showPagination={false}
+			emptyMessage="Belum ada data absensi"
+		/>
 	{/if}
 </div>
 
@@ -268,34 +290,6 @@
 	.legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
 	.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
 	.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-
-	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	table { width: 100%; border-collapse: collapse; min-width: 600px; }
-	th {
-		text-align: center; padding: 8px 4px; font-size: 10px; text-transform: uppercase;
-		letter-spacing: 0.04em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary); position: sticky; top: 0;
-	}
-	td { text-align: center; padding: 6px 4px; font-size: 12px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-
-	.col-name { text-align: left; min-width: 160px; padding: 8px 12px; font-weight: 500; position: sticky; left: 0; background: var(--surface); z-index: 1; }
-	.col-day { min-width: 28px; max-width: 28px; font-weight: 500; font-size: 10px; padding: 4px 2px; }
-
-	.cell-hadir { color: var(--success); font-weight: 700; background: rgba(16,185,129,0.06); }
-	.cell-sakit { color: var(--warning); font-weight: 700; background: rgba(245,158,11,0.06); }
-	.cell-izin { color: var(--info); font-weight: 700; background: rgba(94,106,210,0.06); }
-	.cell-alpha { color: var(--danger); font-weight: 700; background: rgba(239,68,68,0.06); }
-	.cell-dispensasi { color: #8b5cf6; font-weight: 700; background: rgba(139,92,246,0.06); }
-	.cell-terlambat { color: #f97316; font-weight: 700; background: rgba(249,115,22,0.06); }
-	.cell-empty { color: transparent; }
-
-	.col-summary { min-width: 30px; font-size: 11px; font-weight: 700; border-left: 1px solid var(--border); }
-	.summary-hadir { color: var(--success); }
-	.summary-sakit { color: var(--warning); }
-	.summary-izin { color: var(--info); }
-	.summary-alpha { color: var(--danger); }
 
 	.btn-secondary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary:hover { background: var(--accent-hover); }
