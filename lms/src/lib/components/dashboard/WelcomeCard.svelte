@@ -192,7 +192,7 @@
 	.xp-next {
 		font-size: 11px;
 		font-weight: 400;
-		color: #6b7280;
+		color: #8a8f98;
 	}
 
 	.stats-cards {

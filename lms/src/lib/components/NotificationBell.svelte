@@ -218,7 +218,7 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		background: #e74c3c;
+		background: #ef4444;
 		color: #fff;
 		font-size: 10px;
 		font-weight: 700;

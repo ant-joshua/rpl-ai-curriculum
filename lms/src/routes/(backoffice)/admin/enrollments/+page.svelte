@@ -378,5 +378,5 @@
 	.form-group { margin-bottom: 16px; }
 	.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 	.form-group .select-input { width: 100%; padding: 8px 12px; }
-	.submit-error { padding: 8px 12px; background: var(--danger-bg, rgba(231,76,60,0.1)); color: #e74c3c; border-radius: 8px; font-size: 13px; }
+	.submit-error { padding: 8px 12px; background: var(--danger-bg, rgba(231,76,60,0.1)); color: #ef4444; border-radius: 8px; font-size: 13px; }
 </style>

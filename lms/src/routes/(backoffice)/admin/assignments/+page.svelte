@@ -469,5 +469,5 @@
 	.form-row { display: flex; gap: 12px; }
 	.form-row .form-group { flex: 1; }
 	.checkbox-group label { display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer; }
-	.submit-error { padding: 8px 12px; background: rgba(231,76,60,0.1); color: #e74c3c; border-radius: 8px; font-size: 13px; }
+	.submit-error { padding: 8px 12px; background: rgba(231,76,60,0.1); color: #ef4444; border-radius: 8px; font-size: 13px; }
 </style>

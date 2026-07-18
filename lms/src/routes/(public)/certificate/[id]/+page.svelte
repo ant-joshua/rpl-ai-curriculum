@@ -271,7 +271,7 @@
 	.verify-text {
 		font-size: 12px;
 		font-weight: 600;
-		color: #2ecc71;
+		color: #22c55e;
 	}
 
 	/* ===== Certificate design ===== */

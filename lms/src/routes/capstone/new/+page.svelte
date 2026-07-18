@@ -186,7 +186,7 @@
 		background: rgba(231, 76, 60, 0.1);
 		border: 1px solid rgba(231, 76, 60, 0.3);
 		border-radius: 8px;
-		color: #e74c3c;
+		color: #ef4444;
 		font-size: 13px;
 	}
 

@@ -617,8 +617,8 @@
 		font-size: 9px;
 		padding: 1px 5px;
 		border-radius: 4px;
-		background: #e74c3c33;
-		color: #e74c3c;
+		background: #ef444433;
+		color: #ef4444;
 		font-weight: 700;
 		letter-spacing: 0.05em;
 	}
@@ -635,8 +635,8 @@
 
 	.action-msg {
 		padding: 8px 12px;
-		background: #2ecc7133;
-		color: #2ecc71;
+		background: #22c55e33;
+		color: #22c55e;
 		border-radius: 8px;
 		font-size: 13px;
 		margin-bottom: 12px;
@@ -657,7 +657,7 @@
 	.modal-files { display: flex; flex-direction: column; gap: 4px; }
 	.file-link { font-size: 13px; color: var(--accent); text-decoration: none; }
 	.file-link:hover { text-decoration: underline; }
-	.grade-error { color: #e74c3c; font-size: 13px; padding: 8px; background: #e74c3c15; border-radius: 8px; }
+	.grade-error { color: #ef4444; font-size: 13px; padding: 8px; background: #ef444415; border-radius: 8px; }
 
 	@media (max-width: 768px) {
 		.info-grid { grid-template-columns: 1fr; }

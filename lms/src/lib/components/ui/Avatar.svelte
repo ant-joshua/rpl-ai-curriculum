@@ -87,6 +87,6 @@
 	}
 
 	.avatar-fallback {
-		color: var(--muted, #6b7280);
+		color: var(--muted, #8a8f98);
 	}
 </style>

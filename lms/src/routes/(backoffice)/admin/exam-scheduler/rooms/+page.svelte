@@ -235,7 +235,7 @@
 	code { font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
 	.badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
 	.badge-active { background: rgba(16,185,129,0.15); color: #10b981; }
-	.badge-inactive { background: rgba(107,114,128,0.15); color: #6b7280; }
+	.badge-inactive { background: rgba(107,114,128,0.15); color: #8a8f98; }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 	.modal { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 	.modal h3 { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: var(--text-primary); }

@@ -12,9 +12,9 @@
 	let error = $state('');
 
 	const predikatColors: Record<string, string> = {
-		A: '#2ecc71', 'A-': '#27ae60', 'B+': '#5dade2',
-		B: '#3498db', 'B-': '#85c1e9', 'C+': '#f39c12',
-		C: '#e67e22', 'C-': '#d35400', 'D+': '#e74c3c',
+		A: '#22c55e', 'A-': '#27ae60', 'B+': '#5dade2',
+		B: '#3b82f6', 'B-': '#85c1e9', 'C+': '#f59e0b',
+		C: '#f59e0b', 'C-': '#d35400', 'D+': '#ef4444',
 		D: '#c0392b', E: '#922b21',
 	};
 

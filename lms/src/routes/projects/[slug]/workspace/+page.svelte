@@ -498,7 +498,7 @@
 		display: flex; align-items: center; gap: 0.4rem;
 	}
 	.verify-result.passed { background: #1b4332; color: #27ae60; }
-	.verify-result.failed { background: #4a1a1a; color: #e74c3c; }
+	.verify-result.failed { background: #4a1a1a; color: #ef4444; }
 	.save-status { font-size: 0.8rem; color: var(--muted); }
 	.footer-actions { display: flex; gap: 0.5rem; }
 	.verify-btn, .next-btn {

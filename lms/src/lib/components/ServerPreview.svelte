@@ -377,10 +377,10 @@
 		text-align: center;
 	}
 
-	.method-get { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+	.method-get { background: rgba(52, 152, 219, 0.15); color: #3b82f6; }
 	.method-post { background: rgba(39, 174, 96, 0.15); color: #27ae60; }
-	.method-put { background: rgba(241, 196, 15, 0.15); color: #f39c12; }
-	.method-delete { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+	.method-put { background: rgba(241, 196, 15, 0.15); color: #f59e0b; }
+	.method-delete { background: rgba(231, 76, 60, 0.15); color: #ef4444; }
 
 	.endpoint-path {
 		font-size: 0.82rem;

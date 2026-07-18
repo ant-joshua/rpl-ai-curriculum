@@ -158,13 +158,13 @@
 	.activity-course {
 		font-size: 11px;
 		font-weight: 400;
-		color: #6b7280;
+		color: #8a8f98;
 	}
 
 	.activity-time {
 		font-size: 11px;
 		font-weight: 400;
-		color: #6b7280;
+		color: #8a8f98;
 		flex-shrink: 0;
 		white-space: nowrap;
 	}

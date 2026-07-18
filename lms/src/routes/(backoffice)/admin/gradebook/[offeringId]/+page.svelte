@@ -110,9 +110,9 @@
 	}
 
 	function weightColor(pct: number): string {
-		if (pct >= 80) return '#2ecc71';
+		if (pct >= 80) return '#22c55e';
 		if (pct >= 60) return '#f1c40f';
-		return '#e74c3c';
+		return '#ef4444';
 	}
 
 	async function saveWeightConfig() {
@@ -184,20 +184,20 @@
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 85) return '#2ecc71';
+		if (pct >= 85) return '#22c55e';
 		if (pct >= 70) return '#27ae60';
 		if (pct >= 55) return '#f1c40f';
-		if (pct >= 45) return '#e67e22';
-		return '#e74c3c';
+		if (pct >= 45) return '#f59e0b';
+		return '#ef4444';
 	}
 
 	function letterGradeColor(letter: string | null): string {
 		if (!letter) return 'var(--text-secondary)';
-		if (letter === 'A' || letter === 'AB') return '#2ecc71';
+		if (letter === 'A' || letter === 'AB') return '#22c55e';
 		if (letter === 'B' || letter === 'BC') return '#27ae60';
 		if (letter === 'C') return '#f1c40f';
-		if (letter === 'D') return '#e67e22';
-		return '#e74c3c';
+		if (letter === 'D') return '#f59e0b';
+		return '#ef4444';
 	}
 
 	function filteredEnrollments(): any[] {
@@ -667,7 +667,7 @@
 		max-width: 1200px;
 	}
 
-	.error { color: #e74c3c; }
+	.error { color: #ef4444; }
 
 	.page-header {
 		display: flex;
@@ -804,15 +804,15 @@
 		gap: 12px;
 	}
 	.weight-warning {
-		color: #e67e22;
+		color: #f59e0b;
 		font-size: 12px;
 	}
 
 	/* ── Recalculate Result ── */
 	.recalc-result {
-		background: #2ecc7133;
-		border: 1px solid #2ecc71;
-		color: #2ecc71;
+		background: #22c55e33;
+		border: 1px solid #22c55e;
+		color: #22c55e;
 		padding: 10px 16px;
 		border-radius: 8px;
 		margin-bottom: 16px;
@@ -1098,7 +1098,7 @@
 		position: fixed;
 		bottom: 24px;
 		right: 24px;
-		background: #e74c3c;
+		background: #ef4444;
 		color: #fff;
 		padding: 12px 20px;
 		border-radius: 8px;

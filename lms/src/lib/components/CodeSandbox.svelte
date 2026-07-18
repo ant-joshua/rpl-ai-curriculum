@@ -265,8 +265,8 @@
 	}
 
 	.run-btn:hover {
-		background: #2ecc71;
-		border-color: #2ecc71;
+		background: #22c55e;
+		border-color: #22c55e;
 		color: #fff;
 	}
 
@@ -385,7 +385,7 @@
 
 	.entry-error {
 		background: rgba(231, 76, 60, 0.1);
-		border-left-color: #e74c3c;
+		border-left-color: #ef4444;
 	}
 
 	.entry-warn {
@@ -394,7 +394,7 @@
 	}
 
 	.entry-info {
-		border-left-color: #3498db;
+		border-left-color: #3b82f6;
 	}
 
 	.entry-header {

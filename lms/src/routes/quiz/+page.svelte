@@ -238,7 +238,7 @@
 
 	.status-done {
 		font-size: 13px;
-		color: #2ecc71;
+		color: #22c55e;
 		font-weight: 500;
 	}
 

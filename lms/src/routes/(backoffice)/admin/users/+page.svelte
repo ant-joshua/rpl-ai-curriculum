@@ -20,11 +20,11 @@
 	const VALID_ROLES = ['superadmin', 'admin', 'instructor', 'ta', 'student'];
 
 	const roleColors: Record<string, string> = {
-		superadmin: 'var(--color-red, #e74c3c)',
-		admin: 'var(--color-purple, #9b59b6)',
-		instructor: 'var(--color-blue, #3498db)',
-		ta: 'var(--color-green, #2ecc71)',
-		student: 'var(--color-gray, #95a5a6)',
+		superadmin: 'var(--color-red, #ef4444)',
+		admin: 'var(--color-purple, #5e6ad2)',
+		instructor: 'var(--color-blue, #3b82f6)',
+		ta: 'var(--color-green, #22c55e)',
+		student: 'var(--color-gray, #8a8f98)',
 	};
 
 	onMount(() => {
@@ -276,7 +276,7 @@
 
 <style>
 	.users-page { max-width: 1200px; }
-	h1 { font-size: 26px; font-weight: 700; }
+	h1 { font-size: 26px; font-weight: 590; }
 	.error-state { text-align: center; padding: 60px; color: var(--text-secondary); }
 
 	.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -319,11 +319,11 @@
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
-		background: var(--color-gray, #95a5a6);
+		background: var(--color-gray, #8a8f98);
 	}
 	.status-dot.active {
-		background: var(--color-green, #2ecc71);
-		box-shadow: 0 0 6px var(--color-green, #2ecc71);
+		background: var(--color-green, #22c55e);
+		box-shadow: 0 0 6px var(--color-green, #22c55e);
 	}
 
 	/* Bulk section */
@@ -391,9 +391,9 @@
 	select.input { cursor: pointer; }
 	.save-error {
 		padding: 8px 12px;
-		background: var(--color-red, #e74c3c)15;
-		border: 1px solid var(--color-red, #e74c3c)30;
-		color: var(--color-red, #e74c3c);
+		background: rgba(239, 68, 68, 0.08);
+		border: 1px solid rgba(239, 68, 68, 0.19);
+		color: var(--color-red, #ef4444);
 		border-radius: 8px;
 		font-size: 13px;
 	}

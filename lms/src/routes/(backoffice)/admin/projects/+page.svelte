@@ -262,7 +262,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 	.card-title { font-weight: 600; font-size: 14px; }
 	.card-status { font-size: 10px; padding: 2px 10px; border-radius: 10px; font-weight: 600; text-transform: uppercase; }
 	.card-status.published { background: #d1fae5; color: #065f46; }
-	.card-status.draft { background: #f3f4f6; color: #6b7280; }
+	.card-status.draft { background: #f3f4f6; color: #8a8f98; }
 	.card-desc { font-size: 12px; color: var(--text-secondary); }
 	.card-meta { display: flex; gap: 10px; font-size: 12px; align-items: center; }
 	.card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; text-transform: capitalize; }

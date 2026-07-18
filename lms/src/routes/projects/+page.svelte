@@ -273,8 +273,8 @@
 		align-items: center;
 	}
 	.difficulty.beginner { color: #27ae60; }
-	.difficulty.intermediate { color: #f39c12; }
-	.difficulty.advanced { color: #e74c3c; }
+	.difficulty.intermediate { color: #f59e0b; }
+	.difficulty.advanced { color: #ef4444; }
 
 	/* Mobile */
 	@media (max-width: 767px) {

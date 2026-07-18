@@ -83,7 +83,7 @@
 	.error {
 		padding: 40px 20px;
 		text-align: center;
-		color: var(--color-red, #e74c3c);
+		color: var(--color-red, #ef4444);
 	}
 
 	.offering-list {

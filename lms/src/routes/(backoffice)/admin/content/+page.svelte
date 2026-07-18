@@ -628,7 +628,7 @@
 	.lesson-status { font-size: 10px; padding: 1px 6px; border-radius: 6px; }
 	.lesson-status.published { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
 	.lesson-status.draft { background: rgba(234, 179, 8, 0.1); color: #ca8a04; }
-	.lesson-status.archived { background: rgba(107, 114, 128, 0.1); color: #6b7280; }
+	.lesson-status.archived { background: rgba(107, 114, 128, 0.1); color: #8a8f98; }
 
 	.cell-actions { display: flex; gap: 4px; white-space: nowrap; }
 

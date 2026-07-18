@@ -490,11 +490,11 @@
 
 	/* Badge */
 	.pg-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
-	.badge-unpaid { background: rgba(249,115,22,0.12); color: #f97316; }
-	.badge-partial { background: rgba(234,179,8,0.12); color: #eab308; }
+	.badge-unpaid { background: rgba(245,158,11,0.12); color: #f59e0b; }
+	.badge-partial { background: rgba(245,158,11,0.12); color: #f59e0b; }
 	.badge-paid { background: rgba(34,197,94,0.12); color: #22c55e; }
 	.badge-overdue { background: rgba(239,68,68,0.12); color: #ef4444; }
-	.badge-cancelled { background: rgba(156,163,175,0.12); color: #9ca3af; }
+	.badge-cancelled { background: rgba(138,143,152,0.12); color: #8a8f98; }
 
 	/* Actions */
 	.pg-actions { display: flex; gap: 6px; }

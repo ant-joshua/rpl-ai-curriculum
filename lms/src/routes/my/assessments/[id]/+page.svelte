@@ -218,9 +218,9 @@
 
 	// Result screen helpers
 	function scoreColor(pct: number): string {
-		if (pct >= 80) return 'var(--color-green, #2ecc71)';
+		if (pct >= 80) return 'var(--color-green, #22c55e)';
 		if (pct >= 60) return 'var(--color-yellow, #f1c40f)';
-		return 'var(--color-red, #e74c3c)';
+		return 'var(--color-red, #ef4444)';
 	}
 </script>
 
@@ -515,7 +515,7 @@
 
 	.error-state p {
 		margin-bottom: 16px;
-		color: var(--color-red, #e74c3c);
+		color: var(--color-red, #ef4444);
 	}
 
 	/* Header */
@@ -550,9 +550,9 @@
 		color: var(--accent);
 	}
 
-	.badge--midterm, .badge--final { background: #e74c3c33; color: #e74c3c; }
-	.badge--practice { background: #2ecc7133; color: #2ecc71; }
-	.badge--exercise { background: #f39c1233; color: #f39c12; }
+	.badge--midterm, .badge--final { background: #ef444433; color: #ef4444; }
+	.badge--practice { background: #22c55e33; color: #22c55e; }
+	.badge--exercise { background: #f59e0b33; color: #f59e0b; }
 
 	/* Timer */
 	.quiz-timer {
@@ -571,15 +571,15 @@
 	.timer-icon { font-size: 18px; }
 
 	.timer-warning {
-		border-color: #f39c12;
-		color: #f39c12;
-		background: #f39c1215;
+		border-color: #f59e0b;
+		color: #f59e0b;
+		background: #f59e0b15;
 	}
 
 	.timer-critical {
-		border-color: #e74c3c;
-		color: #e74c3c;
-		background: #e74c3c15;
+		border-color: #ef4444;
+		color: #ef4444;
+		background: #ef444415;
 		animation: pulse 1s ease-in-out infinite;
 	}
 
@@ -596,9 +596,9 @@
 
 	/* Error banner */
 	.submit-error-banner {
-		background: #e74c3c15;
-		border: 1px solid #e74c3c;
-		color: #e74c3c;
+		background: #ef444415;
+		border: 1px solid #ef4444;
+		color: #ef4444;
 		padding: 10px 16px;
 		border-radius: 8px;
 		margin-bottom: 12px;
@@ -676,23 +676,23 @@
 	}
 
 	.nav-q-btn.answered {
-		background: #2ecc7115;
-		border-color: #2ecc71;
-		color: #2ecc71;
+		background: #22c55e15;
+		border-color: #22c55e;
+		color: #22c55e;
 	}
 
 	.nav-q-btn.flagged {
-		background: #f39c1215;
-		border-color: #f39c12;
-		color: #f39c12;
+		background: #f59e0b15;
+		border-color: #f59e0b;
+		color: #f59e0b;
 	}
 
 	.nav-q-btn.answered.active {
-		background: #2ecc7125;
+		background: #22c55e25;
 	}
 
 	.nav-q-btn.flagged.active {
-		background: #f39c1225;
+		background: #f59e0b25;
 	}
 
 	/* Question Display */
@@ -843,7 +843,7 @@
 	}
 
 	.flagged-btn {
-		color: #f39c12 !important;
+		color: #f59e0b !important;
 	}
 
 	/* Question Nav Buttons */
@@ -883,7 +883,7 @@
 	}
 
 	.btn-success {
-		background: #2ecc71;
+		background: #22c55e;
 		color: white;
 	}
 
@@ -944,7 +944,7 @@
 	}
 
 	.modal-stats .warning {
-		color: #f39c12;
+		color: #f59e0b;
 		margin-top: 10px;
 	}
 
@@ -958,10 +958,10 @@
 	.time-expired-notice {
 		margin-top: 12px;
 		padding: 8px 16px;
-		background: #e74c3c15;
-		border: 1px solid #e74c3c;
+		background: #ef444415;
+		border: 1px solid #ef4444;
 		border-radius: 8px;
-		color: #e74c3c;
+		color: #ef4444;
 		font-size: 14px;
 		font-weight: 600;
 		display: inline-block;
@@ -1016,8 +1016,8 @@
 		letter-spacing: 1px;
 	}
 
-	.score-status.passed { color: #2ecc71; }
-	.score-status.failed { color: #e74c3c; }
+	.score-status.passed { color: #22c55e; }
+	.score-status.failed { color: #ef4444; }
 
 	.passing-info {
 		display: block;
@@ -1047,11 +1047,11 @@
 	}
 
 	.result-item.correct {
-		border-left: 3px solid #2ecc71;
+		border-left: 3px solid #22c55e;
 	}
 
 	.result-item.wrong {
-		border-left: 3px solid #e74c3c;
+		border-left: 3px solid #ef4444;
 	}
 
 	.result-q-header {
@@ -1072,8 +1072,8 @@
 		font-weight: 600;
 	}
 
-	.result-item.correct .result-q-status { color: #2ecc71; }
-	.result-item.wrong .result-q-status { color: #e74c3c; }
+	.result-item.correct .result-q-status { color: #22c55e; }
+	.result-item.wrong .result-q-status { color: #ef4444; }
 
 	.result-q-points {
 		margin-left: auto;
@@ -1107,8 +1107,8 @@
 		flex-shrink: 0;
 	}
 
-	.value.wrong { color: #e74c3c; }
-	.value.correct { color: #2ecc71; }
+	.value.wrong { color: #ef4444; }
+	.value.correct { color: #22c55e; }
 
 	.result-explanation {
 		margin-top: 8px;

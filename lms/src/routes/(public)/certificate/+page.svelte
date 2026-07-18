@@ -448,7 +448,7 @@
 		justify-content: space-between;
 		margin-top: 24px;
 		padding-top: 24px;
-		border-top: 1px solid rgba(212, 160, 23, 0.2);
+		border-top: 1px solid rgba(245, 158, 11, 0.2);
 		text-align: center;
 	}
 
@@ -484,14 +484,14 @@
 
 	.footer-value {
 		font-size: 14px;
-		color: #d4a017;
+		color: #f59e0b;
 		font-weight: 600;
 	}
 
 	.signature-line {
 		width: 140px;
 		height: 2px;
-		background: #d4a017;
+		background: #f59e0b;
 		margin: 6px 0 4px;
 		border-radius: 1px;
 	}

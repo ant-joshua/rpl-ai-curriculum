@@ -274,7 +274,7 @@
 
   .block-status { text-align: center; }
   .status-locked { font-size: 13px; color: var(--text-secondary); }
-  .status-completed { font-size: 13px; color: #2ecc71; font-weight: 500; display: block; }
+  .status-completed { font-size: 13px; color: #22c55e; font-weight: 500; display: block; }
   .block-stats { font-size: 11px; color: var(--text-secondary); margin-top: 4px; display: block; }
   .block-footer-stats { text-align: center; margin-top: 10px; font-size: 11px; color: var(--text-secondary); padding-top: 8px; border-top: 1px solid var(--border); }
 
@@ -298,7 +298,7 @@
     background: rgba(46, 204, 113, 0.1);
     border: 1px solid rgba(46, 204, 113, 0.3);
     border-radius: 12px;
-    color: #2ecc71;
+    color: #22c55e;
     font-weight: 600;
     font-size: 15px;
   }
