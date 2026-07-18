@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { StatCard, PageHeader } from '$lib/components/ui';
+	import { StatCard, PageHeader, DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -72,6 +73,27 @@
 		if (!d) return '—';
 		try { return new Date(d).toLocaleString('id-ID', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }); } catch { return d; }
 	}
+const queueColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Channel',
+		accessorKey: 'channel',
+		cell: ({ getValue }) => `<span class="channel-badge">${getValue()}</span>`
+	},
+	{
+		header: 'Status',
+		accessorKey: 'status',
+		cell: ({ getValue }) => {
+			const s = getValue() as string;
+			return `<span class="status-badge ${statusColor(s)}">${s}</span>`;
+		}
+	},
+	{
+		header: 'Waktu',
+		accessorKey: 'created_at',
+		cell: ({ getValue }) => formatDate(getValue() as string)
+	},
+];
+
 </script>
 
 <svelte:head>

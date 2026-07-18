@@ -119,6 +119,34 @@
 		loadParent();
 		loadLinks();
 	});
+const linkColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Student ID',
+		accessorKey: 'studentId',
+		cell: ({ getValue }) => `<span class="pp-mono">${getValue()}</span>`
+	},
+	{
+		header: 'Hubungan',
+		accessorKey: 'relationship',
+		cell: ({ getValue }) => relationshipLabel[getValue() as string] || getValue()
+	},
+	{
+		header: 'Akses',
+		accessorKey: 'accessLevel',
+		cell: ({ getValue }) => getValue() || '\u2014'
+	},
+	{
+		header: 'Ditautkan',
+		accessorKey: 'createdAt',
+		cell: ({ getValue }) => formatDate(getValue() as string | null)
+	},
+	{
+		header: 'Aksi',
+		id: 'actions',
+		cell: ({ row }) => `<button class="pp-btn pp-btn-ghost pp-btn-sm pp-btn-danger" onclick="window.__removeLink && window.__removeLink('${row.original.id}')">Hapus</button>`
+	},
+];
+
 </script>
 
 <div class="pp-page">
@@ -194,32 +222,7 @@
 					<p>Belum ada siswa yang ditautkan</p>
 				</div>
 			{:else}
-				<div class="pp-table-wrap">
-					<table class="pp-table">
-						<thead>
-							<tr>
-								<th>Student ID</th>
-								<th>Hubungan</th>
-								<th>Akses</th>
-								<th>Ditautkan</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each linkedStudents as link}
-								<tr>
-									<td class="pp-mono">{link.studentId}</td>
-									<td>{relationshipLabel[link.relationship] || link.relationship}</td>
-									<td>{link.accessLevel}</td>
-									<td>{formatDate(link.createdAt)}</td>
-									<td>
-										<button class="pp-btn pp-btn-ghost pp-btn-sm pp-btn-danger" onclick={() => removeLink(link.id)}>Hapus</button>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+				<DataTable columns={linkColumns} data={linkedStudents} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada siswa yang ditautkan" />
 			{/if}
 		</div>
 	{/if}

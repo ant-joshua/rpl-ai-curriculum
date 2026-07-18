@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Loading, Badge, Button } from '$lib/components/ui/index.js';
+	import { Loading, Badge, Button, DataTable } from '$lib/components/ui/index.js';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let semester = $state('');
 	let rapor: any = $state(null);
@@ -77,6 +78,57 @@
 	function getSemesterLabel(s: string): string {
 		return s === '1' ? 'Ganjil' : s === '2' ? 'Genap' : s;
 	}
+
+	const pengetahuanColumns: ColumnDef<any, any>[] = [
+		{ header: 'No', id: 'no', cell: ({ row }) => String(row.index + 1) },
+		{ header: 'Mata Pelajaran', id: 'mapel', cell: ({ row }) => row.original.subject_name || row.original.mapel || '-' },
+		{ header: 'NA', id: 'na', cell: ({ row }) => `<span style="text-align:center;font-weight:600">${formatNa(row.original.na_pengetahuan)}</span>` },
+		{ header: 'Predikat', id: 'predikat', cell: ({ row }) => {
+			const v = row.original.predikat_pengetahuan || '-';
+			return `<span class="predikat" style="color:${predikatColor(row.original.predikat_pengetahuan)};font-weight:700;font-size:14px">${v}</span>`;
+		}},
+		{ header: 'KKM', id: 'kkm', cell: ({ row }) => `<span style="text-align:center;font-weight:600">${row.original.kkm || row.original.kkm_pengetahuan || '-'}</span>` },
+		{ header: 'Keterangan', id: 'desc', cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.deskripsi_pengetahuan || '-'}</span>` },
+	];
+
+	const keterampilanColumns: ColumnDef<any, any>[] = [
+		{ header: 'No', id: 'no', cell: ({ row }) => String(row.index + 1) },
+		{ header: 'Mata Pelajaran', id: 'mapel', cell: ({ row }) => row.original.subject_name || row.original.mapel || '-' },
+		{ header: 'NA', id: 'na', cell: ({ row }) => `<span style="text-align:center;font-weight:600">${formatNa(row.original.na_keterampilan)}</span>` },
+		{ header: 'Predikat', id: 'predikat', cell: ({ row }) => {
+			const v = row.original.predikat_keterampilan || '-';
+			return `<span class="predikat" style="color:${predikatColor(row.original.predikat_keterampilan)};font-weight:700;font-size:14px">${v}</span>`;
+		}},
+		{ header: 'KKM', id: 'kkm', cell: ({ row }) => `<span style="text-align:center;font-weight:600">${row.original.kkm || row.original.kkm_keterampilan || '-'}</span>` },
+		{ header: 'Keterangan', id: 'desc', cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.deskripsi_keterampilan || '-'}</span>` },
+	];
+
+	const sikapColumns: ColumnDef<any, any>[] = [
+		{ header: 'Aspek', accessorKey: 'aspek' },
+		{ header: 'Predikat', id: 'predikat', cell: ({ row }) => {
+			const v = row.original.predikat || '-';
+			return `<span class="predikat" style="color:${predikatColor(row.original.pred)};font-weight:700;font-size:14px">${v}</span>`;
+		}},
+		{ header: 'Deskripsi', id: 'desc', cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.desc || '-'}</span>` },
+	];
+
+	const ekstraColumns: ColumnDef<any, any>[] = [
+		{ header: 'No', id: 'no', cell: ({ row }) => String(row.index + 1) },
+		{ header: 'Kegiatan', id: 'kegiatan', cell: ({ row }) => row.original.name || row.original.kegiatan || '-' },
+		{ header: 'Predikat', id: 'predikat', cell: ({ row }) => {
+			const v = row.original.predikat || '-';
+			return `<span class="predikat" style="color:${predikatColor(row.original.predikat)};font-weight:700;font-size:14px">${v}</span>`;
+		}},
+		{ header: 'Keterangan', id: 'desc', cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.keterangan || row.original.deskripsi || '-'}</span>` },
+	];
+
+	// Pre-filter data
+	let pengetahuanData = $derived((rapor?.subject_grades || []).filter((sg: any) => sg.na_pengetahuan != null));
+	let keterampilanData = $derived((rapor?.subject_grades || []).filter((sg: any) => sg.na_keterampilan != null));
+	let sikapData = $derived([
+		{ aspek: 'Spiritual', predikat: rapor?.attitude_spiritual || '-', pred: rapor?.attitude_spiritual, desc: rapor?.attitude_spiritual_desc || '-' },
+		{ aspek: 'Sosial', predikat: rapor?.attitude_social || '-', pred: rapor?.attitude_social, desc: rapor?.attitude_social_desc || '-' },
+	]);
 </script>
 
 <svelte:head>
@@ -135,157 +187,37 @@
 		<!-- A. PENGETAHUAN -->
 		<div class="section">
 			<h3 class="section-title">A. PENGETAHUAN</h3>
-			<div class="table-wrapper">
-				<table class="grade-detail-table">
-					<thead>
-						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Mata Pelajaran</th>
-							<th class="score-col">NA</th>
-							<th class="pred-col">Predikat</th>
-							<th class="score-col">KKM</th>
-							<th class="desc-col">Keterangan</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each (rapor.subject_grades || []) as sg, i}
-							{#if sg.na_pengetahuan != null}
-								<tr>
-									<td class="no-col">{i + 1}</td>
-									<td class="mapel-col">{sg.subject_name || sg.mapel || '-'}</td>
-									<td class="score-col">{formatNa(sg.na_pengetahuan)}</td>
-									<td class="pred-col">
-										<span class="predikat" style="color: {predikatColor(sg.predikat_pengetahuan)}">
-											{sg.predikat_pengetahuan || '-'}
-										</span>
-									</td>
-									<td class="score-col">{sg.kkm || sg.kkm_pengetahuan || '-'}</td>
-									<td class="desc-col">{sg.deskripsi_pengetahuan || '-'}</td>
-								</tr>
-							{/if}
-						{/each}
-						{#if !(rapor.subject_grades || []).some((s: any) => s.na_pengetahuan != null)}
-							<tr>
-								<td class="empty-col" colspan="6">Belum ada data pengetahuan</td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
-			</div>
+			{#if pengetahuanData.length > 0}
+				<DataTable columns={pengetahuanColumns} data={pengetahuanData} pageSize={20} showSearch={false} showPagination={false} />
+			{:else}
+				<div class="empty-table">Belum ada data pengetahuan</div>
+			{/if}
 		</div>
 
 		<!-- B. KETERAMPILAN -->
 		<div class="section">
 			<h3 class="section-title">B. KETERAMPILAN</h3>
-			<div class="table-wrapper">
-				<table class="grade-detail-table">
-					<thead>
-						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Mata Pelajaran</th>
-							<th class="score-col">NA</th>
-							<th class="pred-col">Predikat</th>
-							<th class="score-col">KKM</th>
-							<th class="desc-col">Keterangan</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each (rapor.subject_grades || []) as sg, i}
-							{#if sg.na_keterampilan != null}
-								<tr>
-									<td class="no-col">{i + 1}</td>
-									<td class="mapel-col">{sg.subject_name || sg.mapel || '-'}</td>
-									<td class="score-col">{formatNa(sg.na_keterampilan)}</td>
-									<td class="pred-col">
-										<span class="predikat" style="color: {predikatColor(sg.predikat_keterampilan)}">
-											{sg.predikat_keterampilan || '-'}
-										</span>
-									</td>
-									<td class="score-col">{sg.kkm || sg.kkm_keterampilan || '-'}</td>
-									<td class="desc-col">{sg.deskripsi_keterampilan || '-'}</td>
-								</tr>
-							{/if}
-						{/each}
-						{#if !(rapor.subject_grades || []).some((s: any) => s.na_keterampilan != null)}
-							<tr>
-								<td class="empty-col" colspan="6">Belum ada data keterampilan</td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
-			</div>
+			{#if keterampilanData.length > 0}
+				<DataTable columns={keterampilanColumns} data={keterampilanData} pageSize={20} showSearch={false} showPagination={false} />
+			{:else}
+				<div class="empty-table">Belum ada data keterampilan</div>
+			{/if}
 		</div>
 
 		<!-- C. SIKAP -->
 		<div class="section">
 			<h3 class="section-title">C. SIKAP</h3>
-			<div class="table-wrapper">
-				<table class="sikap-table">
-					<thead>
-						<tr>
-							<th class="aspek-col">Aspek</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col-wide">Deskripsi</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="aspek-col">Spiritual</td>
-							<td class="pred-col">
-								<span class="predikat" style="color: {predikatColor(rapor.attitude_spiritual)}">
-									{rapor.attitude_spiritual || '-'}
-								</span>
-							</td>
-							<td class="desc-col-wide">{rapor.attitude_spiritual_desc || '-'}</td>
-						</tr>
-						<tr>
-							<td class="aspek-col">Sosial</td>
-							<td class="pred-col">
-								<span class="predikat" style="color: {predikatColor(rapor.attitude_social)}">
-									{rapor.attitude_social || '-'}
-								</span>
-							</td>
-							<td class="desc-col-wide">{rapor.attitude_social_desc || '-'}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<DataTable columns={sikapColumns} data={sikapData} pageSize={20} showSearch={false} showPagination={false} />
 		</div>
 
 		<!-- D. EKSTRAKURIKULER -->
 		<div class="section">
 			<h3 class="section-title">D. EKSTRAKURIKULER</h3>
-			<div class="table-wrapper">
-				<table class="ekstra-table">
-					<thead>
-						<tr>
-							<th class="no-col">No</th>
-							<th class="mapel-col">Kegiatan</th>
-							<th class="pred-col">Predikat</th>
-							<th class="desc-col-wide">Keterangan</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each (rapor.extracurriculars || []) as ek, i}
-							<tr>
-								<td class="no-col">{i + 1}</td>
-								<td class="mapel-col">{ek.name || ek.kegiatan || '-'}</td>
-								<td class="pred-col">
-									<span class="predikat" style="color: {predikatColor(ek.predikat)}">
-										{ek.predikat || '-'}
-									</span>
-								</td>
-								<td class="desc-col-wide">{ek.keterangan || ek.deskripsi || '-'}</td>
-							</tr>
-						{/each}
-						{#if !(rapor.extracurriculars || []).length}
-							<tr>
-								<td class="empty-col" colspan="4">Tidak ada data ekstrakurikuler</td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
-			</div>
+			{#if (rapor.extracurriculars || []).length > 0}
+				<DataTable columns={ekstraColumns} data={rapor.extracurriculars || []} pageSize={20} showSearch={false} showPagination={false} />
+			{:else}
+				<div class="empty-table">Tidak ada data ekstrakurikuler</div>
+			{/if}
 		</div>
 
 		<!-- E. ABSENSI -->
@@ -386,43 +318,15 @@
 		display: inline-block;
 	}
 
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	.grade-detail-table,
-	.sikap-table,
-	.ekstra-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 13px;
-		min-width: 500px;
-	}
-	th {
-		text-align: left;
-		padding: 8px 10px;
-		border-bottom: 2px solid var(--border);
-		color: var(--text-secondary);
-		font-weight: 600;
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 0.3px;
-		white-space: nowrap;
+	.empty-table {
+		text-align: center;
+		color: var(--text-quaternary);
+		padding: 24px;
+		font-style: italic;
 		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 10px;
 	}
-	td {
-		padding: 8px 10px;
-		border-bottom: 1px solid var(--border);
-		vertical-align: middle;
-	}
-	tr:last-child td { border-bottom: none; }
-
-	.no-col { text-align: center; min-width: 32px; width: 32px; color: var(--text-secondary); font-weight: 500; }
-	.mapel-col { min-width: 180px; }
-	.score-col { text-align: center; font-weight: 600; min-width: 50px; }
-	.pred-col { text-align: center; min-width: 70px; font-weight: 600; }
-	.desc-col { min-width: 200px; color: var(--text-secondary); font-size: 12px; }
-	.desc-col-wide { min-width: 250px; color: var(--text-secondary); font-size: 12px; }
-	.aspek-col { min-width: 120px; font-weight: 600; }
-	.empty-col { text-align: center; color: var(--text-quaternary); padding: 24px; font-style: italic; }
-	.predikat { font-weight: 700; font-size: 14px; }
 
 	.absensi-grid {
 		display: flex;
@@ -486,9 +390,6 @@
 		.identity-label { color: #555; }
 		.identity-value { color: #111; }
 		.section-title { border-bottom-color: #555; }
-		.table-wrapper { border-color: #ccc; border-radius: 4px; }
-		th { background: #f5f5f5 !important; color: #333 !important; border-bottom-color: #999 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-		td { border-bottom-color: #eee; }
 		.absensi-grid { background: #fafafa; border-color: #ccc; border-radius: 4px; }
 		.notes-display { background: #fafafa; border-color: #ccc; border-radius: 4px; }
 
@@ -498,10 +399,5 @@
 			margin-top: 40px;
 			padding-top: 10px;
 		}
-		.signature-box { text-align: center; font-size: 12px; color: #333; min-width: 200px; }
-		.signature-title { font-weight: 700; margin-top: 4px; font-size: 12px; }
-		.signature-space { height: 60px; }
-		.signature-name { font-size: 12px; margin-top: 4px; font-weight: 600; }
-		.signature-nip { font-size: 11px; color: #666; margin-top: 2px; }
 	}
 </style>

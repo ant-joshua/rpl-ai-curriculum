@@ -57,6 +57,32 @@
 			return new Date(d).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 		} catch { return d; }
 	}
+const instanceColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Title',
+		accessorKey: 'title',
+		cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+	},
+	{
+		header: 'Status',
+		accessorKey: 'status',
+		cell: ({ getValue }) => {
+			const s = getValue() as string;
+			return `<span class="status-badge ${statusColor(s)}">${s}</span>`;
+		}
+	},
+	{
+		header: 'Target',
+		accessorKey: 'target_type',
+		cell: ({ getValue }) => (getValue() as string) || '—'
+	},
+	{
+		header: 'Waktu',
+		accessorKey: 'created_at',
+		cell: ({ getValue }) => formatDate(getValue() as string)
+	},
+];
+
 </script>
 
 <svelte:head>
@@ -110,28 +136,7 @@
 						<p>Belum ada survei</p>
 					</div>
 				{:else}
-					<div class="table-container">
-						<table>
-							<thead>
-								<tr>
-									<th>Title</th>
-									<th>Status</th>
-									<th>Target</th>
-									<th>Waktu</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each recentInstances as inst}
-									<tr>
-										<td class="cell-name">{inst.title}</td>
-										<td><span class="status-badge {statusColor(inst.status)}">{inst.status}</span></td>
-										<td>{inst.target_type || '—'}</td>
-										<td>{formatDate(inst.created_at)}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+					<DataTable columns={instanceColumns} data={recentInstances} pageSize={10} showSearch={false} showPagination={false} emptyMessage="Belum ada survei" emptyIcon="📊" />
 				{/if}
 			</div>
 

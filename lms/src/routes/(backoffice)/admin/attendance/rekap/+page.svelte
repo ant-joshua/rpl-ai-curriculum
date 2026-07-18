@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type StudentRow = {
 		id: string;
@@ -135,6 +137,64 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
+function getPercentColor(pct: number): string {
+	if (pct >= 90) return 'var(--success)';
+	if (pct >= 75) return 'var(--warning)';
+	return 'var(--danger)';
+}
+
+const recapColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Nama Siswa',
+		accessorKey: 'name',
+		cell: ({ getValue }) => `<span style="font-weight:500;min-width:160px;display:inline-block">${getValue()}</span>`
+	},
+	{
+		header: 'NIS',
+		accessorKey: 'nis',
+		cell: ({ getValue }) => `<code>${(getValue() as string) || '—'}</code>`
+	},
+	{
+		header: 'Kelas',
+		accessorKey: 'class_name',
+		cell: ({ getValue }) => (getValue() as string) || '—'
+	},
+	{
+		header: 'Sakit',
+		accessorKey: 'sakit',
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:var(--warning);display:block">${getValue()}</span>`
+	},
+	{
+		header: 'Izin',
+		accessorKey: 'izin',
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:var(--info);display:block">${getValue()}</span>`
+	},
+	{
+		header: 'Alpha',
+		accessorKey: 'alpha',
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:700;color:var(--danger);display:block">${getValue()}</span>`
+	},
+	{
+		header: 'Dispensasi',
+		accessorKey: 'dispensasi',
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:#8b5cf6;display:block">${getValue()}</span>`
+	},
+	{
+		header: 'Telat',
+		accessorKey: 'terlambat',
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:#f97316;display:block">${getValue()}</span>`
+	},
+	{
+		header: '%',
+		accessorKey: 'attendancePercent',
+		cell: ({ getValue }) => {
+			const pct = getValue() as number;
+			const color = getPercentColor(pct);
+			return `<span class="pct-badge" style="color: ${color}; border-color: ${color}40; background: ${color}10">${pct}%</span>`;
+		}
+	},
+];
+
 </script>
 
 <svelte:head>
@@ -207,42 +267,7 @@
 				<span class="summary-item">T: <strong style="color:#f97316">{totalAll.terlambat}</strong></span>
 			</div>
 
-			<div class="table-wrap">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Siswa</th>
-							<th>NIS</th>
-							<th>Kelas</th>
-							<th class="col-num">Sakit</th>
-							<th class="col-num">Izin</th>
-							<th class="col-num">Alpha</th>
-							<th class="col-num">Dispensasi</th>
-							<th class="col-num">Telat</th>
-							<th class="col-num">%</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filteredStudents as s}
-							<tr>
-								<td class="cell-name">{s.name}</td>
-								<td><code>{s.nis || '—'}</code></td>
-								<td>{s.class_name || '—'}</td>
-								<td class="cell-num cell-sakit">{s.sakit}</td>
-								<td class="cell-num cell-izin">{s.izin}</td>
-								<td class="cell-num cell-alpha">{s.alpha}</td>
-								<td class="cell-num cell-dispensasi">{s.dispensasi}</td>
-								<td class="cell-num cell-terlambat">{s.terlambat}</td>
-								<td class="cell-num">
-									<span class="pct-badge" style="color: {getPercentColor(s.attendancePercent)}; border-color: {getPercentColor(s.attendancePercent)}40; background: {getPercentColor(s.attendancePercent)}10">
-										{s.attendancePercent}%
-									</span>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable columns={recapColumns} data={filteredStudents} pageSize={20} showSearch={true} searchPlaceholder="Cari nama siswa..." emptyMessage="Belum ada data absensi" emptyIcon="📋" />
 		{/if}
 	{/if}
 </div>

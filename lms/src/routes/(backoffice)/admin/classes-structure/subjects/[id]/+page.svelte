@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let mapel: any = $state(null);
 	let kdList: any[] = $state([]);
@@ -20,7 +22,12 @@
 	let saving = $state(false);
 	let saveError = $state('');
 
-	onMount(() => { if (browser) loadData(); });
+	onMount(() => {
+		if (browser) {
+			(window as any).__deleteKD = deleteKD;
+			loadData();
+		}
+	});
 
 	async function loadData() {
 		loading = true; error = '';
@@ -80,9 +87,7 @@
 	}
 
 	const typeLabels: Record<string, string> = {
-		pengetahuan: 'Pengetahuan',
-		keterampilan: 'Keterampilan',
-		sikap: 'Sikap',
+		pengetahuan: 'Pengetahuan', keterampilan: 'Keterampilan', sikap: 'Sikap',
 	};
 
 	const typeColors: Record<string, string> = {
@@ -92,10 +97,7 @@
 	};
 
 	const compTypeLabels: Record<string, string> = {
-		'3': 'KI-3 Pengetahuan',
-		'4': 'KI-4 Keterampilan',
-		'1': 'KI-1 Spiritual',
-		'2': 'KI-2 Sosial',
+		'3': 'KI-3 Pengetahuan', '4': 'KI-4 Keterampilan', '1': 'KI-1 Spiritual', '2': 'KI-2 Sosial',
 	};
 
 	const compTypeColors: Record<string, string> = {
@@ -104,6 +106,34 @@
 		'1': 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		'2': 'background: rgba(236,72,153,0.1); color: #ec4899',
 	};
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Kode', accessorKey: 'code',
+			cell: ({ getValue }) => `<code class="kd-code">${getValue()}</code>`
+		},
+		{
+			header: 'Tipe', accessorKey: 'type',
+			cell: ({ getValue }) => {
+				const t = getValue() as string;
+				return `<span class="type-badge" style="${typeColors[t] || typeColors['pengetahuan']}">${typeLabels[t] || t}</span>`;
+			}
+		},
+		{
+			header: 'KI', id: 'ki',
+			cell: ({ row }) => {
+				const ct = row.original.competence_type || row.original.competenceType;
+				const ctStr = String(ct || '');
+				return `<span class="comp-badge" style="${compTypeColors[ctStr] || ''}">${compTypeLabels[ctStr] || ct || ''}</span>`;
+			}
+		},
+		{ header: 'Deskripsi', accessorKey: 'description', cell: ({ getValue }) => `<span style="max-width:350px;white-space:normal;line-height:1.5;color:var(--text-secondary)">${getValue()}</span>` },
+		{ header: 'Semester', accessorKey: 'semester', cell: ({ getValue }) => `<span style="text-align:center">Smt ${getValue() || 1}</span>` },
+		{
+			header: 'Aksi', id: 'aksi',
+			cell: ({ row }) => `<button class="btn-danger-icon" onclick="window.__deleteKD('${row.original.id}')" title="Hapus KD">✕</button>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -168,42 +198,7 @@
 					<p>Belum ada KD untuk mata pelajaran ini</p>
 				</div>
 			{:else}
-				<div class="table-container">
-					<table>
-						<thead>
-							<tr>
-								<th>Kode</th>
-								<th>Tipe</th>
-								<th>KI</th>
-								<th>Deskripsi</th>
-								<th>Semester</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each kdList as kd}
-								<tr>
-									<td><code class="kd-code">{kd.code}</code></td>
-									<td>
-										<span class="type-badge" style={typeColors[kd.type] || typeColors['pengetahuan']}>
-											{typeLabels[kd.type] || kd.type}
-										</span>
-									</td>
-									<td>
-										<span class="comp-badge" style={compTypeColors[kd.competence_type || kd.competenceType] || ''}>
-											{compTypeLabels[kd.competence_type || kd.competenceType] || kd.competence_type || kd.competenceType}
-										</span>
-									</td>
-									<td class="cell-desc">{kd.description}</td>
-									<td class="cell-num">Smt {kd.semester || 1}</td>
-									<td>
-										<button class="btn-danger-icon" onclick={() => deleteKD(kd.id)} title="Hapus KD">✕</button>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+				<DataTable {columns} data={kdList} pageSize={20} showSearch={true} searchPlaceholder="Cari KD..." />
 			{/if}
 		</div>
 
@@ -308,14 +303,6 @@
 	.card-header-actions { display: flex; align-items: center; gap: 10px; }
 	.badge-count { font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); padding: 3px 10px; border-radius: 20px; }
 	.empty-sub { text-align: center; padding: 40px; color: var(--text-secondary); }
-
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 11px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
-	td { padding: 11px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-desc { max-width: 350px; white-space: normal; line-height: 1.5; color: var(--text-secondary); }
-	.cell-num { text-align: center; }
 	.btn-danger-icon { background: none; border: 1px solid transparent; color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 4px 8px; border-radius: 4px; }
 	.btn-danger-icon:hover { color: #ef4444; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
 

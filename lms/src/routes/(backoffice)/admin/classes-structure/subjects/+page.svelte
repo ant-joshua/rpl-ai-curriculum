@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let mapelList: any[] = $state([]);
 	let tingkatList: any[] = $state([]);
@@ -91,10 +93,7 @@
 	}
 
 	const typeLabels: Record<string, string> = {
-		wajib: 'Wajib',
-		peminatan: 'Peminatan',
-		muatan_lokal: 'Muatan Lokal',
-		pilihan: 'Pilihan',
+		wajib: 'Wajib', peminatan: 'Peminatan', muatan_lokal: 'Muatan Lokal', pilihan: 'Pilihan',
 	};
 	const typeColors: Record<string, string> = {
 		wajib: 'background: rgba(94,106,210,0.1); color: #5e6ad2',
@@ -102,6 +101,27 @@
 		muatan_lokal: 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		pilihan: 'background: rgba(236,72,153,0.1); color: #ec4899',
 	};
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Nama', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+		{ header: 'Kode', accessorKey: 'code', cell: ({ getValue }) => `<code>${getValue() || '—'}</code>` },
+		{
+			header: 'Jenis', accessorKey: 'type',
+			cell: ({ getValue }) => {
+				const t = getValue() as string;
+				return `<span class="type-badge" style="${typeColors[t] || typeColors['wajib']}">${typeLabels[t] || t}</span>`;
+			}
+		},
+		{ header: 'Kelompok', accessorKey: 'group_name', cell: ({ row }) => `<span style="color:var(--text-secondary)">${row.original.group_name || row.original.groupName || '—'}</span>` },
+		{ header: 'Tingkat', id: 'tingkat', cell: ({ row }) => getTingkatName(row.original.grade_level_id || row.original.gradeLevelId) },
+		{ header: 'Jurusan', id: 'jurusan', cell: ({ row }) => getJurusanName(row.original.major_id || row.original.majorId) || '—' },
+		{ header: 'JP/mgg', accessorKey: 'min_hours_per_week', cell: ({ row }) => `<span style="text-align:center">${row.original.min_hours_per_week ?? row.original.minHoursPerWeek ?? '—'}</span>` },
+		{ header: 'KD', accessorKey: 'kd_count', cell: ({ row }) => `<span style="text-align:center">${row.original.kd_count ?? row.original.kompetensi_dasar_count ?? '—'}</span>` },
+		{
+			header: 'Aksi', id: 'aksi',
+			cell: ({ row }) => `<a href="/admin/classes-structure/mapel/${row.original.id}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">KD</a>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -150,46 +170,7 @@
 			<button class="btn-primary" onclick={openForm}>Buat Mapel Pertama</button>
 		</div>
 	{:else}
-		<div class="card">
-			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama</th>
-							<th>Kode</th>
-							<th>Jenis</th>
-							<th>Kelompok</th>
-							<th>Tingkat</th>
-							<th>Jurusan</th>
-							<th>JP/mgg</th>
-							<th>KD</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filtered as m}
-							<tr>
-								<td class="cell-name">{m.name}</td>
-								<td><code>{m.code || '—'}</code></td>
-								<td>
-									<span class="type-badge" style={typeColors[m.type] || typeColors['wajib']}>
-										{typeLabels[m.type] || m.type}
-									</span>
-								</td>
-								<td class="cell-sub">{m.group_name || m.groupName || '—'}</td>
-								<td>{getTingkatName(m.grade_level_id || m.gradeLevelId)}</td>
-								<td>{getJurusanName(m.major_id || m.majorId) || '—'}</td>
-								<td class="cell-num">{m.min_hours_per_week ?? m.minHoursPerWeek ?? '—'}</td>
-								<td class="cell-num">{m.kd_count ?? m.kompetensi_dasar_count ?? '—'}</td>
-								<td>
-									<a href="/admin/classes-structure/mapel/{m.id}" class="btn-small">KD</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari mata pelajaran..." />
 	{/if}
 </div>
 
@@ -280,7 +261,6 @@
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--hover); }
-	.btn-small { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
 	.btn-cancel { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
 
 	.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -293,19 +273,6 @@
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-sub { color: var(--text-secondary); }
-	.cell-num { text-align: center; }
-	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.type-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-
-	/* Modal */
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 	.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 	.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 0; }

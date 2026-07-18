@@ -88,6 +88,60 @@
 		} catch { saveError = 'Terjadi kesalahan'; }
 		finally { saving = false; }
 	}
+const classColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Nama Kelas',
+		accessorKey: 'name',
+		cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+	},
+	{
+		header: 'Kode',
+		accessorKey: 'code',
+		cell: ({ getValue }) => {
+			const v = getValue() as string;
+			return v ? `<code>${v}</code>` : '\u2014';
+		}
+	},
+	{
+		header: 'Tingkat',
+		id: 'tingkat',
+		cell: ({ row }) => getTingkatName(row.original.grade_level_id || row.original.gradeLevelId)
+	},
+	{
+		header: 'Jurusan',
+		id: 'jurusan',
+		cell: ({ row }) => getJurusanName(row.original.major_id || row.original.majorId) || '\u2014'
+	},
+	{
+		header: 'Wali Kelas',
+		id: 'wali',
+		cell: ({ row }) => row.original.homeroom_teacher_name || row.original.homeroomTeacherName || '\u2014'
+	},
+	{
+		header: 'Ruangan',
+		accessorKey: 'room',
+		cell: ({ getValue }) => (getValue() as string) || '\u2014'
+	},
+	{
+		header: 'Shift',
+		accessorKey: 'shift',
+		cell: ({ getValue }) => `<span class="badge">${(getValue() as string) || 'pagi'}</span>`
+	},
+	{
+		header: 'Siswa',
+		id: 'siswa',
+		cell: ({ row }) => {
+			const count = row.original.student_count ?? row.original.siswa;
+			return count != null ? `<span style="text-align:center;font-weight:600;display:block">${count}</span>` : '\u2014';
+		}
+	},
+	{
+		header: 'Aksi',
+		id: 'actions',
+		cell: ({ row }) => `<a href="/admin/classes-structure/kelas/${row.original.id}" class="btn-small">Detail</a>`
+	},
+];
+
 </script>
 
 <svelte:head>
@@ -129,42 +183,7 @@
 			<button class="btn-primary" onclick={openForm}>Buat Kelas Pertama</button>
 		</div>
 	{:else}
-		<div class="card">
-			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Kelas</th>
-							<th>Kode</th>
-							<th>Tingkat</th>
-							<th>Jurusan</th>
-							<th>Wali Kelas</th>
-							<th>Ruangan</th>
-							<th>Shift</th>
-							<th>Siswa</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filtered as k}
-							<tr>
-								<td class="cell-name">{k.name}</td>
-								<td><code>{k.code || '—'}</code></td>
-								<td>{getTingkatName(k.grade_level_id || k.gradeLevelId)}</td>
-								<td>{getJurusanName(k.major_id || k.majorId) || '—'}</td>
-								<td>{k.homeroom_teacher_name || k.homeroomTeacherName || '—'}</td>
-								<td>{k.room || '—'}</td>
-								<td><span class="badge">{k.shift || 'pagi'}</span></td>
-								<td class="cell-count">{k.student_count ?? k.siswa ?? '—'}</td>
-								<td>
-									<a href="/admin/classes-structure/kelas/{k.id}" class="btn-small">Detail</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<DataTable columns={classColumns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari kelas..." emptyMessage="Belum ada kelas" />
 	{/if}
 </div>
 

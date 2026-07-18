@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let exams: any[] = $state([]);
 	let loading = $state(true);
@@ -150,6 +152,72 @@
 			return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 		} catch { return d; }
 	}
+
+	// Expose delete handler for DataTable inline HTML buttons
+	$effect(() => {
+		(window as any).__deleteExam = deleteExam;
+		return () => { delete (window as any).__deleteExam; };
+	});
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Nama Ujian',
+			accessorKey: 'name',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue() || ''}</span>`
+		},
+		{
+			header: 'Tanggal',
+			accessorKey: 'date',
+			cell: ({ getValue }) => formatDate(getValue() as string)
+		},
+		{
+			header: 'Jam',
+			accessorKey: 'start_time',
+			cell: ({ row }) => {
+				const e = row.original;
+				return `${e.start_time || '—'}${e.end_time ? ` - ${e.end_time}` : ''}`;
+			}
+		},
+		{
+			header: 'Ruangan',
+			accessorKey: 'room_id',
+			cell: ({ row }) => {
+				const e = row.original;
+				return rooms.find((r: any) => r.id === e.room_id)?.name || e.room_id?.slice(0, 8) || '—';
+			}
+		},
+		{
+			header: 'Tipe',
+			accessorKey: 'exam_type',
+			cell: ({ row }) => {
+				const e = row.original;
+				return e.exam_type || examTypes.find((t: any) => t.id === e.type_id)?.name || '—';
+			}
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				const colors: Record<string, string> = {
+					draft: 'background:rgba(98,102,109,0.15);color:#8a8f98',
+					published: 'background:rgba(16,185,129,0.1);color:#10b981',
+					ongoing: 'background:rgba(59,130,246,0.1);color:#3b82f6',
+					completed: 'background:rgba(139,92,246,0.1);color:#8b5cf6',
+					cancelled: 'background:rgba(239,68,68,0.1);color:#ef4444',
+				};
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;${colors[s] || colors.draft}">${s}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			enableSorting: false,
+			cell: ({ getValue }) => {
+				return `<button onclick="window.__deleteExam('${getValue()}')" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.2);border-radius:6px;background:transparent;color:#ef4444;font-size:12px;cursor:pointer">Hapus</button>`;
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -211,34 +279,7 @@
 		{:else}
 			<div class="card">
 				<div class="table-container">
-					<table>
-						<thead>
-							<tr>
-								<th>Nama Ujian</th>
-								<th>Tanggal</th>
-								<th>Jam</th>
-								<th>Ruangan</th>
-								<th>Tipe</th>
-								<th>Status</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each filteredExams as exam}
-								<tr>
-									<td class="cell-name">{exam.name}</td>
-									<td>{formatDate(exam.date)}</td>
-									<td>{exam.start_time || '—'}{exam.end_time ? ` - ${exam.end_time}` : ''}</td>
-									<td>{rooms.find(r => r.id === exam.room_id)?.name || exam.room_id?.slice(0, 8) || '—'}</td>
-									<td>{exam.exam_type || examTypes.find(t => t.id === exam.type_id)?.name || '—'}</td>
-									<td><span class="status-badge {statusColor(exam.status)}">{exam.status}</span></td>
-									<td class="cell-actions">
-										<button class="btn-delete" onclick={() => deleteExam(exam.id)}>Hapus</button>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable {columns} data={filteredExams} pageSize={15} showSearch={false} />
 				</div>
 			</div>
 		{/if}

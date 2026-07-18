@@ -3,7 +3,8 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type SessionDetail = {
 		id: string;
@@ -53,7 +54,6 @@
 	onMount(() => {
 		if (!browser) return;
 		loadSession();
-		// Auto-refresh every 10 seconds for active sessions
 		refreshInterval = setInterval(() => {
 			if (session?.status === 'active') loadSession();
 		}, 10000);
@@ -63,7 +63,7 @@
 	});
 
 	async function loadSession() {
-		loading = !session; // Don't show full loading on refresh
+		loading = !session;
 		error = '';
 		try {
 			const res = await fetch(`/api/admin/attendance/sessions/${sessionId}`);
@@ -134,16 +134,6 @@
 		return t || '—';
 	}
 
-	function getStatusColor(s: string) {
-		switch (s) {
-			case 'present': return 'status-present';
-			case 'late': return 'status-late';
-			case 'absent': return 'status-absent';
-			case 'excused': return 'status-excused';
-			default: return '';
-		}
-	}
-
 	function getStatusLabel(s: string) {
 		switch (s) {
 			case 'present': return 'Hadir';
@@ -153,6 +143,47 @@
 			default: return s;
 		}
 	}
+
+	const statusColorMap: Record<string, string> = {
+		present: 'background: rgba(34,197,94,0.12); color: #22c55e',
+		late: 'background: rgba(245,158,11,0.12); color: #f59e0b',
+		absent: 'background: rgba(239,68,68,0.12); color: #ef4444',
+		excused: 'background: rgba(139,92,246,0.12); color: #8b5cf6',
+	};
+
+	const recordColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'No', id: 'no',
+			cell: ({ row }) => String(row.index + 1)
+		},
+		{
+			header: 'Nama Siswa', id: 'nama',
+			cell: ({ row }) => `<span style="font-weight:600">${row.original.student_name || row.original.student_id}</span>`
+		},
+		{
+			header: 'NIS', accessorKey: 'nis',
+			cell: ({ getValue }) => `<span style="font-family:monospace;font-size:12px">${getValue() || '—'}</span>`
+		},
+		{
+			header: 'Status', accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				return `<span class="badge" style="${statusColorMap[s] || ''}">${getStatusLabel(s)}</span>`;
+			}
+		},
+		{
+			header: 'Metode', accessorKey: 'method',
+			cell: ({ getValue }) => `<span style="font-family:monospace;font-size:12px">${getValue()}</span>`
+		},
+		{
+			header: 'Waktu Check-in', accessorKey: 'check_in_time',
+			cell: ({ getValue }) => {
+				const v = getValue();
+				const t = v ? new Date(v).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—';
+				return `<span style="font-family:monospace;font-size:11px;color:var(--text-secondary)">${t}</span>`;
+			}
+		},
+	];
 </script>
 
 <svelte:head>
@@ -306,40 +337,7 @@
 					<p>Belum ada siswa check-in</p>
 				</div>
 			{:else}
-				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>No</th>
-								<th>Nama Siswa</th>
-								<th>NIS</th>
-								<th>Status</th>
-								<th>Metode</th>
-								<th>Waktu Check-in</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each session.records as record, i}
-								<tr>
-									<td class="cell-center">{i + 1}</td>
-									<td class="cell-bold">{record.student_name || record.student_id}</td>
-									<td class="cell-mono">{record.nis || '—'}</td>
-									<td>
-										<span class="badge {getStatusColor(record.status)}">
-											{getStatusLabel(record.status)}
-										</span>
-									</td>
-									<td class="cell-mono">{record.method}</td>
-									<td class="cell-mono cell-small">
-										{record.check_in_time
-											? new Date(record.check_in_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-											: '—'}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+				<DataTable columns={recordColumns} data={session.records || []} pageSize={20} showSearch={true} searchPlaceholder="Cari siswa..." />
 			{/if}
 		</div>
 	{/if}
@@ -430,17 +428,6 @@
 	.record-stats {
 		display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
 	}
-	.record-stat {
-		flex: 1; min-width: 100px; padding: 16px; border-radius: 10px;
-		text-align: center; background: var(--surface); border: 1px solid var(--border);
-	}
-	.record-stat-value { font-size: 24px; font-weight: 700; }
-	.record-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
-	.record-stat--present .record-stat-value { color: #22c55e; }
-	.record-stat--late .record-stat-value { color: #f59e0b; }
-	.record-stat--absent .record-stat-value { color: #ef4444; }
-	.record-stat--excused .record-stat-value { color: #8b5cf6; }
-	.record-stat--total .record-stat-value { color: var(--text); }
 
 	.section { margin-bottom: 32px; }
 
@@ -474,28 +461,4 @@
 	}
 	.result-success { background: rgba(34,197,94,0.1); color: #22c55e; }
 	.result-error { background: rgba(239,68,68,0.1); color: #ef4444; }
-
-	.table-wrap {
-		overflow-x: auto; border: 1px solid var(--border);
-		border-radius: 10px; background: var(--surface);
-	}
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; white-space: nowrap; background: var(--bg-secondary);
-	}
-	td { padding: 10px 12px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-
-	.cell-center { text-align: center; }
-	.cell-bold { font-weight: 600; }
-	.cell-mono { font-family: monospace; font-size: 12px; }
-	.cell-small { font-size: 11px; color: var(--text-secondary); }
-
-	.status-present { background: rgba(34,197,94,0.12); color: #22c55e; }
-	.status-late { background: rgba(245,158,11,0.12); color: #f59e0b; }
-	.status-absent { background: rgba(239,68,68,0.12); color: #ef4444; }
-	.status-excused { background: rgba(139,92,246,0.12); color: #8b5cf6; }
 </style>

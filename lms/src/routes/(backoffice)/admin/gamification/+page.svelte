@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState } from '$lib/components/ui';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	// Auth
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
@@ -219,6 +221,119 @@
 		discussion_posts: 'Posting Diskusi',
 		custom: 'Kustom (XP)',
 	};
+
+	// Expose handlers for DataTable inline HTML buttons
+	$effect(() => {
+		(window as any).__editXpRule = (id: string) => {
+			const r = xpRules.find((x: any) => x.id === id);
+			if (r) openEditXpRule(r);
+		};
+		(window as any).__deleteXpRule = deleteXpRule;
+		return () => {
+			delete (window as any).__editXpRule;
+			delete (window as any).__deleteXpRule;
+		};
+	});
+
+	const xpRuleColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Aksi',
+			accessorKey: 'action_type',
+			cell: ({ getValue }) => {
+				const t = getValue() as string;
+				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:rgba(113,112,255,0.12);color:#7170ff">${XP_TYPE_LABELS[t] || t}</span>`;
+			}
+		},
+		{
+			header: 'XP',
+			accessorKey: 'xp_amount',
+			cell: ({ getValue }) => `<span style="font-weight:700;color:var(--accent)">+${getValue()} XP</span>`
+		},
+		{
+			header: 'Deskripsi',
+			accessorKey: 'description',
+			cell: ({ getValue }) => `<span style="color:var(--text-secondary);font-size:13px">${getValue()}</span>`
+		},
+		{
+			header: 'Status',
+			accessorKey: 'is_active',
+			cell: ({ getValue }) => {
+				const active = getValue() === 1 || getValue() === true;
+				const bg = active ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
+				const color = active ? '#22c55e' : '#ef4444';
+				const label = active ? 'Aktif' : 'Nonaktif';
+				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			enableSorting: false,
+			cell: ({ getValue }) => `<button onclick="window.__editXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Edit">✏️</button><button onclick="window.__deleteXpRule('${getValue()}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;opacity:0.6" title="Hapus">🗑️</button>`
+		}
+	];
+
+	const leaderboardColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Peringkat',
+			accessorKey: 'rank',
+			cell: ({ getValue, row }) => {
+				const rank = getValue() as number;
+				const i = row.index;
+				let display = `#${rank}`;
+				if (rank === 1) display = '🥇';
+				else if (rank === 2) display = '🥈';
+				else if (rank === 3) display = '🥉';
+				const size = i < 3 ? 'font-size:20px' : 'font-size:16px;font-weight:700;color:var(--text-secondary)';
+				return `<span style="${size}">${display}</span>`;
+			}
+		},
+		{
+			header: 'Pengguna',
+			accessorKey: 'displayName',
+			cell: ({ row }) => {
+				const e = row.original;
+				let html = '<div style="display:flex;align-items:center;gap:10px">';
+				if (e.avatarUrl) {
+					html += `<img src="${e.avatarUrl}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
+				} else {
+					const initial = (e.displayName || '?').charAt(0).toUpperCase();
+					html += `<div style="width:32px;height:32px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">${initial}</div>`;
+				}
+				html += `<span style="font-weight:600;color:var(--text)">${e.displayName || e.userId?.slice(0, 12)}</span>`;
+				if (e.isCurrentUser) {
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">Anda</span>`;
+				}
+				html += '</div>';
+				return html;
+			}
+		},
+		{
+			header: 'Total XP',
+			accessorKey: 'totalXp',
+			cell: ({ getValue }) => `<span style="font-weight:700;font-size:15px;color:var(--text)">${(getValue() as number).toLocaleString()}</span> <span style="font-size:11px;color:var(--text-secondary)">XP</span>`
+		},
+		{
+			header: 'Level',
+			accessorKey: 'level',
+			cell: ({ getValue }) => {
+				const lvl = getValue() as number;
+				let icon = '📌';
+				if (lvl >= 20) icon = '💎';
+				else if (lvl >= 10) icon = '🏅';
+				else if (lvl >= 5) icon = '⭐';
+				return `<span style="font-size:13px;font-weight:600;color:var(--accent)">${icon} Lv.${lvl}</span>`;
+			}
+		},
+		{
+			header: 'Streak',
+			accessorKey: 'currentStreak',
+			cell: ({ getValue }) => {
+				const s = getValue() as number;
+				return s > 0 ? `🔥 ${s} hari` : '—';
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -341,37 +456,7 @@
 		{:else}
 			<Card>
 				<CardContent>
-					<table class="rules-table">
-						<thead>
-							<tr>
-								<th>Aksi</th>
-								<th>XP</th>
-								<th>Deskripsi</th>
-								<th>Status</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each xpRules as r}
-								<tr>
-									<td><Badge variant="accent">{XP_TYPE_LABELS[r.action_type] || r.action_type}</Badge></td>
-									<td class="xp-amount">+{r.xp_amount} XP</td>
-									<td class="desc-cell">{r.description}</td>
-									<td>
-										{#if r.is_active === 1 || r.is_active === true}
-											<Badge variant="success">Aktif</Badge>
-										{:else}
-											<Badge variant="danger">Nonaktif</Badge>
-										{/if}
-									</td>
-									<td class="action-cell">
-										<button class="icon-btn" onclick={() => openEditXpRule(r)} title="Edit">✏️</button>
-										<button class="icon-btn" onclick={() => deleteXpRule(r.id)} title="Hapus">🗑️</button>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable columns={xpRuleColumns} data={xpRules} pageSize={100} showSearch={false} showPagination={false} />
 				</CardContent>
 			</Card>
 		{/if}
@@ -465,53 +550,7 @@
 		{:else}
 			<Card>
 				<CardContent>
-					<table class="leaderboard-table">
-						<thead>
-							<tr>
-								<th class="col-rank">Peringkat</th>
-								<th class="col-user">Pengguna</th>
-								<th class="col-xp">Total XP</th>
-								<th class="col-level">Level</th>
-								<th class="col-streak">Streak</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each globalLeaderboard as entry, i}
-								<tr class="leaderboard-row" class:highlight={entry.isCurrentUser}>
-									<td class="col-rank">
-										<span class="rank-badge" class:top3={i < 3}>{rankBadge(entry.rank)}</span>
-									</td>
-									<td class="col-user">
-										<div class="user-info">
-											{#if entry.avatarUrl}
-												<img src={entry.avatarUrl} alt="" class="avatar" />
-											{:else}
-												<div class="avatar-placeholder">{entry.displayName?.charAt(0)?.toUpperCase() || '?'}</div>
-											{/if}
-											<span class="display-name">{entry.displayName || entry.userId?.slice(0, 12)}</span>
-											{#if entry.isCurrentUser}
-												<Badge variant="accent">Anda</Badge>
-											{/if}
-										</div>
-									</td>
-									<td class="col-xp">
-										<span class="xp-value">{entry.totalXp.toLocaleString()}</span>
-										<span class="xp-label">XP</span>
-									</td>
-									<td class="col-level">
-										<span class="level-badge">{getLevelIcon(entry.level)} Lv.{entry.level}</span>
-									</td>
-									<td class="col-streak">
-										{#if entry.currentStreak > 0}
-											<span class="streak-value">🔥 {entry.currentStreak} hari</span>
-										{:else}
-											<span class="streak-value dim">—</span>
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable columns={leaderboardColumns} data={globalLeaderboard} pageSize={100} showSearch={false} showPagination={false} />
 				</CardContent>
 			</Card>
 		{/if}

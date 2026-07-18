@@ -100,6 +100,60 @@
 			return String(parsed);
 		} catch { return String(raw); }
 	}
+const roomColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Nama',
+		accessorKey: 'name',
+		cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+	},
+	{
+		header: 'Kode',
+		accessorKey: 'code',
+		cell: ({ getValue }) => {
+			const v = getValue() as string;
+			return v ? `<code>${v}</code>` : '\u2014';
+		}
+	},
+	{
+		header: 'Kapasitas',
+		accessorKey: 'capacity',
+		cell: ({ getValue }) => getValue() ?? '\u2014'
+	},
+	{
+		header: 'Gedung',
+		accessorKey: 'building',
+		cell: ({ getValue }) => (getValue() as string) || '\u2014'
+	},
+	{
+		header: 'Lantai',
+		accessorKey: 'floor',
+		cell: ({ getValue }) => getValue() || '\u2014'
+	},
+	{
+		header: 'Fasilitas',
+		accessorKey: 'facilities',
+		cell: ({ getValue }) => `<span style="font-size:12px;color:var(--text-secondary)">${parseFacilities(getValue())}</span>`
+	},
+	{
+		header: 'Status',
+		accessorKey: 'is_active',
+		cell: ({ getValue }) => {
+			const active = getValue();
+			return active
+				? '<span class="badge badge-active">Aktif</span>'
+				: '<span class="badge badge-inactive">Nonaktif</span>';
+		}
+	},
+	{
+		header: 'Aksi',
+		id: 'actions',
+		cell: ({ row }) => {
+			const r = row.original;
+			return `<div style="display:flex;gap:8px"><button class="btn-sm" onclick="window.__editRoom && window.__editRoom('${r.id}')">Edit</button><button class="btn-sm btn-danger" onclick="window.__deleteRoom && window.__deleteRoom('${r.id}')">Hapus</button></div>`;
+		}
+	},
+];
+
 </script>
 
 <div class="page">
@@ -134,43 +188,7 @@
 			<p>Tidak ada ruangan yang cocok dengan pencarian</p>
 		</div>
 	{:else}
-		<div class="table-wrap">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>Nama</th>
-						<th>Kode</th>
-						<th>Kapasitas</th>
-						<th>Gedung</th>
-						<th>Lantai</th>
-						<th>Fasilitas</th>
-						<th>Status</th>
-						<th>Aksi</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredRooms as r (r.id)}
-						<tr>
-							<td class="font-medium">{r.name}</td>
-							<td><code>{r.code || '—'}</code></td>
-							<td>{r.capacity}</td>
-							<td>{r.building || '—'}</td>
-							<td>{r.floor || '—'}</td>
-							<td class="facilities">{parseFacilities(r.facilities)}</td>
-							<td>
-								<span class="badge {r.is_active ? 'badge-active' : 'badge-inactive'}">
-									{r.is_active ? 'Aktif' : 'Nonaktif'}
-								</span>
-							</td>
-							<td class="actions">
-								<button class="btn-sm" onclick={() => openEdit(r)}>Edit</button>
-								<button class="btn-sm btn-danger" onclick={() => deleteRoom(r.id)}>Hapus</button>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<DataTable columns={roomColumns} data={rooms} pageSize={20} showSearch={false} searchPlaceholder="Cari ruangan..." emptyMessage="Belum ada ruangan" />
 	{/if}
 </div>
 

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let invoices: any[] = $state([]);
 	let loading = $state(true);
@@ -164,6 +166,84 @@
 		return m[s] || 'badge-cancelled';
 	}
 
+	// Expose handlers for DataTable inline HTML buttons
+	$effect(() => {
+		(window as any).__openPaymentModal = (id: string) => {
+			const inv = invoices.find((i: any) => i.id === id);
+			if (inv) openPaymentModal(inv);
+		};
+		(window as any).__viewInvoice = (id: string) => {
+			const inv = invoices.find((i: any) => i.id === id);
+			if (inv) selectedInvoice = inv;
+		};
+		return () => {
+			delete (window as any).__openPaymentModal;
+			delete (window as any).__viewInvoice;
+		};
+	});
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'No. Invoice',
+			accessorKey: 'invoice_number',
+			cell: ({ getValue }) => `<span style="font-family:'SF Mono','Fira Code',monospace;font-size:12px">${getValue()}</span>`
+		},
+		{
+			header: 'Mahasiswa',
+			accessorKey: 'student_name',
+			cell: ({ row }) => {
+				const inv = row.original;
+				return inv.student_name || inv.student_id;
+			}
+		},
+		{
+			header: 'Total',
+			accessorKey: 'total_amount',
+			cell: ({ getValue }) => `<span style="font-weight:600;color:var(--text-primary)">${formatCurrency(getValue() as number)}</span>`
+		},
+		{
+			header: 'Dibayar',
+			accessorKey: 'paid_amount',
+			cell: ({ getValue }) => formatCurrency((getValue() as number) || 0)
+		},
+		{
+			header: 'Jatuh Tempo',
+			accessorKey: 'due_date',
+			cell: ({ getValue }) => formatDate(getValue() as string || '')
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				const colors: Record<string, { bg: string; color: string }> = {
+					unpaid: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
+					partial: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
+					paid: { bg: 'rgba(34,197,94,0.12)', color: '#22c55e' },
+					overdue: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444' },
+					cancelled: { bg: 'rgba(138,143,152,0.12)', color: '#8a8f98' },
+				};
+				const c = colors[s] || colors.cancelled;
+				return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:capitalize;background:${c.bg};color:${c.color}">${s}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			enableSorting: false,
+			cell: ({ row }) => {
+				const inv = row.original;
+				let html = '<div style="display:flex;gap:6px">';
+				if (inv.status !== 'paid' && inv.status !== 'cancelled') {
+					html += `<button onclick="window.__openPaymentModal('${inv.id}')" style="padding:5px 12px;background:rgba(113,112,255,0.12);color:#7170ff;border:none;border-radius:6px;font-size:12px;cursor:pointer">Bayar</button>`;
+				}
+				html += `<button onclick="window.__viewInvoice('${inv.id}')" style="padding:5px 12px;background:transparent;color:var(--accent);border:1px solid var(--border-color,rgba(255,255,255,0.1));border-radius:6px;font-size:12px;cursor:pointer">Detail</button>`;
+				html += '</div>';
+				return html;
+			}
+		}
+	];
+
 	onMount(loadInvoices);
 </script>
 
@@ -207,39 +287,7 @@
 		</div>
 	{:else}
 		<div class="pg-table-wrap">
-			<table class="pg-table">
-				<thead>
-					<tr>
-						<th>No. Invoice</th>
-						<th>Mahasiswa</th>
-						<th>Total</th>
-						<th>Dibayar</th>
-						<th>Jatuh Tempo</th>
-						<th>Status</th>
-						<th>Aksi</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each invoices as inv}
-						<tr>
-							<td class="pg-mono">{inv.invoice_number}</td>
-							<td>{inv.student_name || inv.student_id}</td>
-							<td class="pg-amount">{formatCurrency(inv.total_amount)}</td>
-							<td>{formatCurrency(inv.paid_amount || 0)}</td>
-							<td>{formatDate(inv.due_date || '')}</td>
-							<td><span class="pg-badge {statusBadge(inv.status)}">{inv.status}</span></td>
-							<td>
-								<div class="pg-actions">
-									{#if inv.status !== 'paid' && inv.status !== 'cancelled'}
-										<button class="pg-btn pg-btn-sm pg-btn-accent" onclick={() => openPaymentModal(inv)}>Bayar</button>
-									{/if}
-									<button class="pg-btn pg-btn-sm pg-btn-ghost" onclick={() => selectedInvoice = inv}>Detail</button>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+			<DataTable {columns} data={invoices} pageSize={100} showSearch={false} showPagination={false} />
 		</div>
 
 		<!-- Pagination -->

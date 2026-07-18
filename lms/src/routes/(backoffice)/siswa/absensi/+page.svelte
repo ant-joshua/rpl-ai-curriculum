@@ -118,6 +118,28 @@
 		const d = new Date(dateStr + 'T00:00:00');
 		return d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
 	}
+const dayColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Tanggal',
+		accessorKey: 'date',
+		cell: ({ getValue }) => `<span style="font-weight:500">${formatDate(getValue() as string)}</span>`
+	},
+	{
+		header: 'Status',
+		accessorKey: 'status',
+		cell: ({ getValue }) => {
+			const s = getValue() as string;
+			const color = getStatusColor(s);
+			return `<span class="status-badge" style="background: ${color}20; color: ${color}; border: 1px solid ${color}40;">${getStatusLetter(s)} ${getStatusLabel(s)}</span>`;
+		}
+	},
+	{
+		header: 'Keterangan',
+		id: 'reason',
+		cell: ({ row }) => row.original.reason || row.original.subject_name || '—',
+	},
+];
+
 </script>
 
 <svelte:head>
@@ -184,30 +206,7 @@
 		{#if days.length === 0}
 			<EmptyState icon="📋" title="Belum Ada Data" description="Belum ada catatan absensi untuk bulan ini." />
 		{:else}
-			<div class="table-wrap">
-				<table>
-					<thead>
-						<tr>
-							<th>Tanggal</th>
-							<th>Status</th>
-							<th>Keterangan</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each days as d}
-							<tr>
-								<td class="col-date">{formatDate(d.date)}</td>
-								<td class="col-status">
-									<span class="status-badge" style="background: {getStatusColor(d.status)}20; color: {getStatusColor(d.status)}; border: 1px solid {getStatusColor(d.status)}40;">
-										{getStatusLetter(d.status)} {getStatusLabel(d.status)}
-									</span>
-								</td>
-								<td class="col-reason">{d.reason || d.subject_name || '—'}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+			<DataTable columns={dayColumns} data={days} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada data absensi" emptyIcon="📋" />
 		{/if}
 	{/if}
 </div>

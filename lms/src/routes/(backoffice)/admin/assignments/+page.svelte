@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Button, Badge, Card, CardContent, TableHeader, PageHeader, EmptyState, StatCard } from '$lib/components/ui';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let assignments: any[] = $state([]);
 	let offerings: any[] = $state([]);
@@ -178,6 +180,85 @@
 
 	const typeLabel: Record<string, string> = { text: 'Teks', file: 'File', link: 'Link', github: 'GitHub' };
 	const statusVariant: Record<string, string> = { published: 'success', draft: 'warning', archived: 'default' };
+
+	// Expose handlers for DataTable inline HTML buttons
+	$effect(() => {
+		(window as any).__toggleSubmissions = loadSubmissions;
+		(window as any).__editAssignment = (id: string) => {
+			const a = assignments.find((x: any) => x.id === id);
+			if (a) openEdit(a);
+		};
+		(window as any).__confirmDeleteAssignment = (id: string) => { confirmDelete = id; };
+		(window as any).__deleteAssignment = handleDelete;
+		(window as any).__cancelDeleteAssignment = () => { confirmDelete = null; };
+		return () => {
+			delete (window as any).__toggleSubmissions;
+			delete (window as any).__editAssignment;
+			delete (window as any).__confirmDeleteAssignment;
+			delete (window as any).__deleteAssignment;
+			delete (window as any).__cancelDeleteAssignment;
+		};
+	});
+
+	const assignmentColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Judul',
+			accessorKey: 'title',
+			cell: ({ getValue }) => `<span style="font-weight:500">${getValue() || '-'}</span>`
+		},
+		{
+			header: 'Kursus',
+			accessorKey: 'course_offering_id',
+			cell: ({ getValue }) => `<span style="color:var(--text-secondary);font-size:13px">${offeringName(getValue() as string)}</span>`
+		},
+		{
+			header: 'Tipe',
+			accessorKey: 'submission_type',
+			cell: ({ getValue }) => `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">${typeLabel[getValue() as string] || getValue()}</span>`
+		},
+		{
+			header: 'Nilai Maks',
+			accessorKey: 'max_score',
+			cell: ({ getValue }) => `<span style="text-align:center;display:block">${getValue() || '-'}</span>`
+		},
+		{
+			header: 'Tenggat',
+			accessorKey: 'due_date',
+			cell: ({ getValue }) => `<span style="color:var(--text-secondary);font-size:13px">${formatDate(getValue() as string)}</span>`
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				const colors: Record<string, string> = {
+					published: 'background:rgba(34,197,94,0.12);color:#22c55e',
+					draft: 'background:rgba(245,158,11,0.12);color:#f59e0b',
+					archived: 'background:rgba(156,163,175,0.12);color:#9ca3af',
+				};
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;${colors[s] || 'background:rgba(156,163,175,0.12);color:#9ca3af'}">${s}</span>`;
+			}
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			enableSorting: false,
+			cell: ({ row }) => {
+				const a = row.original;
+				let html = '<div style="display:flex;gap:4px;align-items:center;white-space:nowrap">';
+				html += `<button onclick="window.__toggleSubmissions('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Submissions">📥 (${a.submission_count ?? '-'})</button>`;
+				html += `<button onclick="window.__editAssignment('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Edit">✏️</button>`;
+				if (confirmDelete === a.id) {
+					html += `<button onclick="window.__deleteAssignment('${a.id}')" style="padding:4px 8px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">Hapus</button>`;
+					html += `<button onclick="window.__cancelDeleteAssignment()" style="padding:4px 8px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Batal</button>`;
+				} else {
+					html += `<button onclick="window.__confirmDeleteAssignment('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Hapus">🗑️</button>`;
+				}
+				html += '</div>';
+				return html;
+			}
+		}
+	];
 
 	function offeringName(id: string): string {
 		return offerings.find(o => o.id === id)?.name || id;

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Parent = {
 		id: string;
@@ -117,6 +119,53 @@
 	};
 
 	onMount(loadParents);
+const parentColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Nama',
+		accessorKey: 'name',
+		cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>`
+	},
+	{
+		header: 'Telepon',
+		accessorKey: 'phone',
+		cell: ({ getValue }) => (getValue() as string) || '\u2014'
+	},
+	{
+		header: 'Email',
+		accessorKey: 'email',
+		cell: ({ getValue }) => (getValue() as string) || '\u2014'
+	},
+	{
+		header: 'Hubungan',
+		accessorKey: 'relationship',
+		cell: ({ getValue }) => {
+			const v = getValue() as string;
+			return relationshipOptions.find(o => o.value === v)?.label || v;
+		}
+	},
+	{
+		header: 'Primer',
+		accessorKey: 'isPrimary',
+		cell: ({ getValue }) => {
+			const v = getValue() as number;
+			return v === 1 ? '<span style="color:#10b981;font-weight:600">Ya</span>' : '<span style="color:var(--text-secondary)">Tidak</span>';
+		}
+	},
+	{
+		header: 'Siswa Terkait',
+		accessorKey: 'linkedStudents',
+		cell: ({ getValue }) => `<span style="font-weight:600">${getValue()}</span>`
+	},
+	{
+		header: 'Aksi',
+		id: 'actions',
+		cell: ({ row }) => {
+			const p = row.original;
+			return `<a href="/admin/parent-portal/parents/${p.id}" class="btn-small">Detail</a>`;
+		}
+	},
+];
+
 </script>
 
 <div class="pp-page">

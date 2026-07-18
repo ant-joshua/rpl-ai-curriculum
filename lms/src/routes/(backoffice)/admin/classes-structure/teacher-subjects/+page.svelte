@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let assignments: any[] = $state([]);
 	let kelasList: any[] = $state([]);
@@ -21,7 +23,7 @@
 	let saving = $state(false);
 	let saveError = $state('');
 
-	onMount(() => { if (browser) loadData(); });
+	onMount(() => { if (browser) { (window as any).__deleteAssignment = deleteAssignment; loadData(); } });
 
 	async function loadData() {
 		loading = true; error = '';
@@ -103,6 +105,25 @@
 			if (json.success) assignments = assignments.filter(a => a.id !== id);
 		} catch { /* ignore */ }
 	}
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Kelas', id: 'kelas', cell: ({ row }) => getKelasName(row.original.class_id || row.original.classId) },
+		{ header: 'Mata Pelajaran', id: 'mapel', cell: ({ row }) => getMapelName(row.original.subject_id || row.original.subjectId) },
+		{ header: 'Guru', id: 'guru', cell: ({ row }) => getGuruName(row.original.teacher_id || row.original.teacherId) },
+		{ header: 'Semester', accessorKey: 'semester', cell: ({ getValue }) => `Smt ${getValue() || 1}` },
+		{ header: 'JP/mgg', accessorKey: 'total_hours_per_week', cell: ({ row }) => String(row.original.total_hours_per_week ?? row.original.totalHoursPerWeek ?? '—') },
+		{
+			header: 'Status', id: 'status',
+			cell: ({ row }) => {
+				const isActive = row.original.status !== 'inactive';
+				return `<span class="status-dot${isActive ? ' active' : ''}"></span>`;
+			}
+		},
+		{
+			header: 'Aksi', id: 'aksi',
+			cell: ({ row }) => `<button class="btn-danger-icon" onclick="window.__deleteAssignment('${row.original.id}')" title="Hapus">✕</button>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -150,40 +171,7 @@
 			<button class="btn-primary" onclick={openForm}>Assign Pertama</button>
 		</div>
 	{:else}
-		<div class="card">
-			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Kelas</th>
-							<th>Mata Pelajaran</th>
-							<th>Guru</th>
-							<th>Semester</th>
-							<th>JP/mgg</th>
-							<th>Status</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filtered as a}
-							<tr>
-								<td class="cell-name">{getKelasName(a.class_id || a.classId)}</td>
-								<td>{getMapelName(a.subject_id || a.subjectId)}</td>
-								<td>{getGuruName(a.teacher_id || a.teacherId)}</td>
-								<td class="cell-num">Smt {a.semester || 1}</td>
-								<td class="cell-num">{a.total_hours_per_week ?? a.totalHoursPerWeek ?? '—'}</td>
-								<td>
-									<span class="status-dot" class:active={a.status !== 'inactive'}></span>
-								</td>
-								<td>
-									<button class="btn-danger-icon" onclick={() => deleteAssignment(a.id)} title="Hapus">✕</button>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari kelas/guru..." />
 	{/if}
 </div>
 
@@ -272,17 +260,6 @@
 	.error-msg { color: #ef4444; margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
-
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-num { text-align: center; }
-	.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
-	.status-dot.active { background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.4); }
 
 	/* Modal */
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }

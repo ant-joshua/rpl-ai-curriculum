@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { StatCard } from '$lib/components/ui';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Tab = 'exams' | 'rooms' | 'types';
 	let activeTab = $state<Tab>('exams');
@@ -28,6 +30,25 @@
 
 	async function loadAll() {
 		loading = true;
+		const examColumns: ColumnDef<any, any>[] = [
+			{ header: 'Nama Ujian', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+			{ header: 'Tanggal', accessorKey: 'date', cell: ({ getValue }) => formatDate(getValue() as string) },
+			{ header: 'Jam', id: 'jam', cell: ({ row }) => `${row.original.start_time || '\u2014'} - ${row.original.end_time || '\u2014'}` },
+			{ header: 'Status', accessorKey: 'status', cell: ({ getValue }) => { const s = getValue() as string; return `<span class="status-badge ${statusColor(s)}">${s}</span>`; } },
+		];
+
+		const roomTabColumns: ColumnDef<any, any>[] = [
+			{ header: 'Nama Ruangan', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+			{ header: 'Kapasitas', accessorKey: 'capacity', cell: ({ getValue }) => getValue() ?? '\u2014' },
+			{ header: 'Lokasi', accessorKey: 'location', cell: ({ getValue }) => (getValue() as string) || '\u2014' },
+			{ header: 'Status', accessorKey: 'is_available', cell: ({ getValue }) => getValue() !== false ? '<span class="status-badge status-published">Tersedia</span>' : '<span class="status-badge status-cancelled">Tidak Tersedia</span>' },
+		];
+
+		const typeColumns: ColumnDef<any, any>[] = [
+			{ header: 'Nama Tipe', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+			{ header: 'Deskripsi', accessorKey: 'description', cell: ({ getValue }) => (getValue() as string) || '\u2014' },
+			{ header: 'Durasi Default', accessorKey: 'default_duration', cell: ({ getValue }) => { const v = getValue(); return v ? `${v} menit` : '\u2014'; } },
+		];
 		error = '';
 		try {
 			const [exRes, rmRes, tyRes] = await Promise.all([

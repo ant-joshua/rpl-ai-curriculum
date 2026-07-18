@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
+import { DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
 	function authFetch(url: string, opts?: RequestInit) {
@@ -120,6 +122,64 @@
 		if (days < 30) return `${days} hari lalu`;
 		return new Date(dateStr).toLocaleDateString('id-ID');
 	}
+
+	const leaderboardColumns: ColumnDef<any, any>[] = [
+		{
+			header: '#',
+			accessorKey: 'rank',
+			cell: ({ getValue, row }) => {
+				const rank = getValue() as number;
+				const i = row.index;
+				let display = `#${rank}`;
+				if (rank === 1) display = '🥇';
+				else if (rank === 2) display = '🥈';
+				else if (rank === 3) display = '🥉';
+				const size = i < 3 ? 'font-size:18px' : 'font-weight:700;color:var(--text-secondary)';
+				return `<span style="${size}">${display}</span>`;
+			}
+		},
+		{
+			header: 'Pengguna',
+			accessorKey: 'displayName',
+			cell: ({ row }) => {
+				const e = row.original;
+				let html = '<div style="display:flex;align-items:center;gap:10px">';
+				if (e.avatarUrl) {
+					html += `<img src="${e.avatarUrl}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`;
+				} else {
+					const initial = (e.displayName || '?').charAt(0).toUpperCase();
+					html += `<div style="width:28px;height:28px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">${initial}</div>`;
+				}
+				html += `<span style="font-weight:600">${e.displayName || e.userId?.slice(0, 8)}</span>`;
+				if (e.isCurrentUser) {
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">Anda</span>`;
+				}
+				html += '</div>';
+				return html;
+			}
+		},
+		{
+			header: 'XP',
+			accessorKey: 'totalXp',
+			cell: ({ getValue }) => `<span style="font-weight:700">${(getValue() as number).toLocaleString()}</span>`
+		},
+		{
+			header: 'Level',
+			accessorKey: 'level',
+			cell: ({ getValue }) => {
+				const lvl = getValue() as number;
+				return `${getLevelIcon(lvl)} ${lvl}`;
+			}
+		},
+		{
+			header: 'Streak',
+			accessorKey: 'currentStreak',
+			cell: ({ getValue }) => {
+				const s = getValue() as number;
+				return s > 0 ? `🔥 ${s} hari` : '—';
+			}
+		}
+	];
 </script>
 
 <svelte:head>
@@ -234,42 +294,7 @@
 				{:else}
 					<Card>
 						<CardContent>
-							<table class="leaderboard-table">
-								<thead>
-									<tr>
-										<th class="col-rank">#</th>
-										<th class="col-user">Pengguna</th>
-										<th class="col-xp">XP</th>
-										<th class="col-level">Level</th>
-										<th class="col-streak">Streak</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each leaderboard.slice(0, 20) as entry, i}
-										<tr class="leaderboard-row" class:highlight={entry.isCurrentUser}>
-											<td class="col-rank"><span class="rank-badge" class:top3={i < 3}>{rankBadge(i + 1)}</span></td>
-											<td class="col-user">
-												<div class="user-info">
-													{#if entry.avatarUrl}
-														<img src={entry.avatarUrl} alt="" class="avatar" />
-													{:else}
-														<div class="avatar-placeholder">{entry.displayName?.charAt(0)?.toUpperCase() || '?'}</div>
-													{/if}
-													<span class="display-name">{entry.displayName || entry.userId?.slice(0, 8)}</span>
-													{#if entry.isCurrentUser}
-														<Badge variant="accent">Anda</Badge>
-													{/if}
-												</div>
-											</td>
-											<td class="col-xp">{entry.totalXp.toLocaleString()}</td>
-											<td class="col-level">{getLevelIcon(entry.level)} {entry.level}</td>
-											<td class="col-streak">
-												{#if entry.currentStreak > 0}🔥 {entry.currentStreak} hari{:else}—{/if}
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
+							<DataTable columns={leaderboardColumns} data={leaderboard.slice(0, 20)} pageSize={100} showSearch={false} showPagination={false} />
 						</CardContent>
 					</Card>
 				{/if}

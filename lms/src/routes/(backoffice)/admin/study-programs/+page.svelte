@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let prodiList: any[] = $state([]);
 	let fakultasList: any[] = $state([]);
@@ -19,7 +21,12 @@
 	let saving = $state(false);
 	let saveError = $state('');
 
-	onMount(() => { if (browser) loadData(); });
+	onMount(() => {
+		if (browser) {
+			(window as any).__openEditProdi = openEdit;
+			loadData();
+		}
+	});
 
 	async function loadData() {
 		loading = true; error = '';
@@ -90,13 +97,7 @@
 	}
 
 	const jenjangLabels: Record<string, string> = {
-		'D3': 'D3',
-		'D4': 'D4',
-		'S1': 'S1',
-		'S2': 'S2',
-		'S3': 'S3',
-		'Profesi': 'Profesi',
-		'Spesialis': 'Spesialis',
+		'D3': 'D3', 'D4': 'D4', 'S1': 'S1', 'S2': 'S2', 'S3': 'S3', 'Profesi': 'Profesi', 'Spesialis': 'Spesialis',
 	};
 	const jenjangColors: Record<string, string> = {
 		'D3': 'background:rgba(16,185,129,0.1);color:#10b981',
@@ -105,6 +106,23 @@
 		'S2': 'background:rgba(245,158,11,0.1);color:#f59e0b',
 		'S3': 'background:rgba(239,68,68,0.1);color:#ef4444',
 	};
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Nama Prodi', accessorKey: 'name', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+		{ header: 'Kode', accessorKey: 'code', cell: ({ getValue }) => `<code>${getValue() || '—'}</code>` },
+		{ header: 'Fakultas', id: 'fakultas', cell: ({ row }) => getFakultasName(row.original.fakultas_id || row.original.faculty_id) },
+		{
+			header: 'Jenjang', id: 'jenjang',
+			cell: ({ row }) => {
+				const j = row.original.jenjang || row.original.degree_level || 'S1';
+				return `<span class="jenjang-badge" style="${jenjangColors[j] || ''}">${jenjangLabels[j] || j}</span>`;
+			}
+		},
+		{
+			header: 'Aksi', id: 'aksi',
+			cell: ({ row }) => `<button class="btn-edit" onclick="window.__openEditProdi(${JSON.stringify(row.original).replace(/"/g, '&quot;')})">Edit</button>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -146,38 +164,7 @@
 			<button class="btn-primary" onclick={openCreate}>Buat Prodi Pertama</button>
 		</div>
 	{:else}
-		<div class="card">
-			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Prodi</th>
-							<th>Kode</th>
-							<th>Fakultas</th>
-							<th>Jenjang</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filtered as p}
-							<tr>
-								<td class="cell-name">{p.name}</td>
-								<td><code>{p.code || '—'}</code></td>
-								<td>{getFakultasName(p.fakultas_id || p.faculty_id)}</td>
-								<td>
-									<span class="jenjang-badge" style={jenjangColors[p.jenjang || p.degree_level || 'S1']}>
-										{jenjangLabels[p.jenjang || p.degree_level || 'S1']}
-									</span>
-								</td>
-								<td class="cell-actions">
-									<button class="btn-edit" onclick={() => openEdit(p)}>Edit</button>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari prodi..." />
 	{/if}
 </div>
 
@@ -310,18 +297,7 @@
 	.error-msg { color: #ef4444; margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-actions { white-space: nowrap; }
-	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.jenjang-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
 
-	.field-row { display: flex; gap: 12px; }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 	.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 	.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 0; }

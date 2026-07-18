@@ -2,7 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, DataTable } from '$lib/components/ui';
+import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type AttendanceStats = {
 		total_sessions: number;
@@ -107,6 +108,47 @@
 		if (status === 'active') return 'badge-active';
 		return 'badge-closed';
 	}
+function getStatusLabel(s: string) { return s === 'active' ? 'Aktif' : 'Selesai'; }
+
+const sessionColumns: ColumnDef<any, any>[] = [
+	{
+		header: 'Tanggal',
+		accessorKey: 'session_date',
+		cell: ({ getValue }) => formatDate(getValue() as string)
+	},
+	{
+		header: 'Kelas',
+		accessorKey: 'class_name',
+		cell: ({ getValue }) => (getValue() as string) || '—'
+	},
+	{
+		header: 'Mata Kuliah',
+		accessorKey: 'subject_name',
+		cell: ({ getValue }) => (getValue() as string) || '—'
+	},
+	{
+		header: 'Waktu',
+		id: 'waktu',
+		cell: ({ row }) => {
+			const o = row.original;
+			return `${o.start_time || ''} ${o.end_time ? '- ' + o.end_time : ''}`;
+		}
+	},
+	{
+		header: 'Status',
+		accessorKey: 'status',
+		cell: ({ getValue }) => {
+			const s = getValue() as string;
+			return `<span class="badge ${getStatusColor(s)}">${getStatusLabel(s)}</span>`;
+		}
+	},
+	{
+		header: 'Aksi',
+		id: 'actions',
+		cell: ({ row }) => `<a href="/admin/attendance/sessions/${row.original.id}" class="btn-sm">Detail</a>`
+	},
+];
+
 </script>
 
 <svelte:head>
@@ -199,38 +241,7 @@
 					<p>Belum ada sesi presensi</p>
 				</div>
 			{:else}
-				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>Tanggal</th>
-								<th>Kelas</th>
-								<th>Mata Kuliah</th>
-								<th>Waktu</th>
-								<th>Status</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats?.recent_sessions ?? [] as session}
-								<tr>
-									<td>{formatDate(session.session_date)}</td>
-									<td>{session.class_name || '—'}</td>
-									<td>{session.subject_name || '—'}</td>
-									<td>{session.start_time} {session.end_time ? '- ' + session.end_time : ''}</td>
-									<td>
-										<span class="badge {getStatusColor(session.status)}">
-											{session.status === 'active' ? 'Aktif' : 'Selesai'}
-										</span>
-									</td>
-									<td>
-										<a href="/admin/attendance/sessions/{session.id}" class="btn-sm">Detail</a>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+				<DataTable columns={sessionColumns} data={stats?.recent_sessions ?? []} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada sesi presensi" emptyIcon="📅" />
 			{/if}
 		</div>
 	{/if}
