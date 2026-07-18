@@ -30,6 +30,7 @@
 			import('@tiptap/extension-link'),
 			import('@tiptap/extension-code-block-lowlight'),
 			import('lowlight'),
+			import('$lib/utils/languages'),
 		]);
 		const { Editor } = mod[0];
 		const StarterKit = mod[1].default;
@@ -37,9 +38,10 @@
 		const ImageExt = mod[3].default;
 		const LinkExt = mod[4].default;
 		const CodeBlockLowlight = mod[5].default;
-		const { common, createLowlight } = mod[6];
+		const { createLowlight } = mod[6];
+		const { curriculumGrammars } = mod[7];
 
-		const lowlight = createLowlight(common);
+		const lowlight = createLowlight(curriculumGrammars);
 
 		editor = new Editor({
 			element: editorEl,

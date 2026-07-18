@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { modules } from '$lib/stores/modules';
-	import { onMount } from 'svelte';
 
 	let pdfFiles = $state<
 		{ filename: string; dirName: string; title: string }[]
@@ -8,18 +7,19 @@
 	let searchQuery = $state('');
 	let loaded = $state(false);
 
-	onMount(async () => {
-		try {
-			const res = await fetch('/pdfs/index.json');
-			if (res.ok) {
-				const idx = await res.json();
-				pdfFiles = idx.files;
-			}
-		} catch { /* ignore */ }
-		loaded = true;
+	$effect(() => {
+		(async () => {
+			try {
+				const res = await fetch('/pdfs/index.json');
+				if (res.ok) {
+					const idx = await res.json();
+					pdfFiles = idx.files;
+				}
+			} catch { /* ignore */ }
+			loaded = true;
+		})();
 	});
 
-	// Enrich PDF files with module info where available
 	let enriched = $derived(
 		pdfFiles.map((f) => {
 			const mod = modules.find((m) => m.dirName === f.dirName);
@@ -48,10 +48,11 @@
 </svelte:head>
 
 <div class="resources-page">
-	<h1>📥 PDF Resources</h1>
-	<p class="subtitle">Download all 57 module exports as PDF — offline-friendly, printable, shareable.</p>
+	<h1>PDF Resources</h1>
+	<p class="subtitle">Download semua modul sebagai PDF — offline-friendly, printable, shareable.</p>
 
 	<div class="search-bar">
+		<span class="search-icon">🔍</span>
 		<input
 			type="text"
 			placeholder="Cari modul..."
@@ -62,7 +63,7 @@
 	{#if !loaded}
 		<div class="loading">Memuat...</div>
 	{:else if filtered.length === 0}
-		<div class="empty">Tidak ada PDF yang cocok dengan pencarian.</div>
+		<div class="empty">Tidak ada PDF yang cocok.</div>
 	{:else}
 		<div class="pdf-list">
 			{#each filtered as file (file.dirName)}
@@ -80,7 +81,7 @@
 						</div>
 					</div>
 					<a
-						href="/pdfs/{file.filename}"
+						href="/api/pdfs/{file.filename}"
 						class="pdf-dl-btn"
 						download
 					>
@@ -101,46 +102,66 @@
 
 	h1 {
 		font-size: 24px;
-		font-weight: 700;
+		font-weight: 590;
+		letter-spacing: -0.288px;
+		color: #f7f8f8;
 		margin-bottom: 6px;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.subtitle {
 		font-size: 14px;
-		color: var(--text-secondary);
+		color: #8a8f98;
 		margin-bottom: 24px;
 	}
 
 	.search-bar {
+		position: relative;
 		margin-bottom: 20px;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 14px;
+		opacity: 0.5;
 	}
 
 	.search-bar input {
 		width: 100%;
-		padding: 10px 14px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
-		color: var(--text);
-		font-size: 14px;
+		padding: 8px 12px 8px 34px;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 6px;
+		color: #f7f8f8;
+		font-size: 13px;
+		font-family: inherit;
+		font-feature-settings: 'cv01', 'ss03';
 		outline: none;
-		transition: border-color 0.15s ease;
+		transition: border-color 0.15s;
 	}
 
 	.search-bar input:focus {
-		border-color: var(--accent);
+		border-color: #5e6ad2;
+		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
+	}
+
+	.search-bar input::placeholder {
+		color: #8a8f98;
 	}
 
 	.loading {
 		text-align: center;
 		padding: 60px 20px;
-		color: var(--text-secondary);
+		color: #8a8f98;
 	}
 
 	.empty {
 		text-align: center;
 		padding: 60px 20px;
-		color: var(--text-secondary);
+		color: #8a8f98;
 	}
 
 	.pdf-list {
@@ -154,14 +175,15 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 14px 16px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		transition: border-color 0.15s ease;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		transition: all 0.15s;
 	}
 
 	.pdf-item:hover {
-		border-color: var(--accent);
+		background: rgba(255, 255, 255, 0.04);
+		border-color: rgba(94, 106, 210, 0.3);
 	}
 
 	.pdf-info {
@@ -185,16 +207,17 @@
 
 	.pdf-title {
 		font-size: 14px;
-		font-weight: 600;
-		color: var(--text);
+		font-weight: 510;
+		color: #f7f8f8;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.pdf-subtitle {
 		font-size: 12px;
-		color: var(--text-secondary);
+		color: #8a8f98;
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -202,9 +225,9 @@
 
 	.level-badge {
 		font-size: 10px;
-		font-weight: 600;
+		font-weight: 510;
 		padding: 2px 8px;
-		border-radius: 6px;
+		border-radius: 9999px;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
 	}
@@ -226,19 +249,21 @@
 
 	.pdf-dl-btn {
 		flex-shrink: 0;
-		padding: 8px 16px;
-		border: 1px solid var(--accent);
-		border-radius: 8px;
-		background: var(--accent-dim);
-		color: var(--accent);
+		padding: 6px 14px;
+		border: 1px solid rgba(94, 106, 210, 0.3);
+		border-radius: 6px;
+		background: rgba(94, 106, 210, 0.08);
+		color: #7170ff;
 		font-size: 13px;
-		font-weight: 600;
+		font-weight: 510;
 		text-decoration: none !important;
-		transition: all 0.15s ease;
+		transition: all 0.15s;
+		font-family: inherit;
 	}
 
 	.pdf-dl-btn:hover {
-		background: var(--accent);
-		color: #fff;
+		background: #5e6ad2;
+		border-color: #5e6ad2;
+		color: #f7f8f8;
 	}
 </style>

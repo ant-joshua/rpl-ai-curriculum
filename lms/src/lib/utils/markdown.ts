@@ -1,6 +1,11 @@
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
+import { curriculumGrammars } from './languages';
+
+for (const [name, grammar] of Object.entries(curriculumGrammars)) {
+	hljs.registerLanguage(name, grammar);
+}
 
 const marked = new Marked(
 	markedHighlight({
