@@ -322,11 +322,11 @@
 		margin: 0 0 4px;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.288px;
-		color: #f7f8f8;
+		color: var(--text);
 	}
 	.subtitle {
 		font-size: 14px;
-		color: #8a8f98;
+		color: var(--text-tertiary);
 		margin: 0;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -370,7 +370,7 @@
 	.xp-total {
 		font-size: 14px;
 		font-weight: 510;
-		color: #8a8f98;
+		color: var(--text-tertiary);
 		font-feature-settings: 'cv01', 'ss03';
 	}
 	.badge-count {
@@ -399,7 +399,7 @@
 	}
 	.xp-bar-label {
 		font-size: 12px;
-		color: #62666d;
+		color: var(--text-tertiary);
 		white-space: nowrap;
 		font-weight: 510;
 		font-feature-settings: 'cv01', 'ss03';
@@ -427,7 +427,7 @@
 		font-weight: 590;
 		margin: 0 0 14px;
 		font-feature-settings: 'cv01', 'ss03';
-		color: #f7f8f8;
+		color: var(--text);
 	}
 
 	/* Course list */
@@ -467,7 +467,7 @@
 	.course-row-title {
 		font-size: 14px;
 		font-weight: 510;
-		color: #d0d6e0;
+		color: var(--text);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -475,7 +475,7 @@
 	}
 	.course-row-meta {
 		font-size: 11px;
-		color: #62666d;
+		color: var(--text-tertiary);
 		font-feature-settings: 'cv01', 'ss03';
 	}
 	.course-row-bar {
@@ -535,14 +535,14 @@
 		flex-shrink: 0;
 	}
 	.activity-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-	.activity-action { font-weight: 510; color: #d0d6e0; font-feature-settings: 'cv01', 'ss03'; }
-	.activity-detail { font-size: 11px; color: #62666d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.activity-time { font-size: 11px; color: #62666d; white-space: nowrap; font-feature-settings: 'cv01', 'ss03'; }
+	.activity-action { font-weight: 510; color: var(--text); font-feature-settings: 'cv01', 'ss03'; }
+	.activity-detail { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.activity-time { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; font-feature-settings: 'cv01', 'ss03'; }
 
 	.empty-text {
 		text-align: center;
 		padding: 24px;
-		color: #62666d;
+		color: var(--text-tertiary);
 		font-size: 13px;
 	}
 </style>

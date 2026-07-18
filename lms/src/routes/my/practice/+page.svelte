@@ -273,7 +273,7 @@
 
 <style>
 	.practice-page { max-width: 800px; }
-	h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+	h1 { font-size: 24px; font-weight: 590; margin-bottom: 4px; font-feature-settings: 'cv01', 'ss03'; }
 	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
 
 	.page-header { margin-bottom: 24px; }
@@ -292,7 +292,7 @@
 		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 6px;
-		font-family: var(--font-sans);
+		font-family: inherit;
 		min-width: 200px;
 		flex: 1;
 	}
@@ -321,7 +321,7 @@
 		transition: border-color 0.15s;
 	}
 	.question-card.answered {
-		border-color: rgba(94, 106, 210, 0.3);
+		border-color: rgba(94,106,210,0.3);
 	}
 
 	.q-header {
@@ -339,13 +339,13 @@
 	.tag {
 		font-size: 11px;
 		background: rgba(94, 106, 210, 0.12);
-		color: #7170ff;
+		color: #5e6ad2;
 		padding: 2px 8px;
 		border-radius: 10px;
 	}
 	.q-points {
 		font-size: 13px;
-		font-weight: 600;
+		font-weight: 510;
 		color: var(--text-secondary);
 		white-space: nowrap;
 	}
@@ -370,9 +370,9 @@
 		font-size: 14px;
 		transition: all 0.15s;
 	}
-	.mc-option:hover { border-color: var(--accent-dim); background: rgba(94, 106, 210, 0.04); }
-	.mc-option.selected { border-color: #7170ff; background: rgba(94, 106, 210, 0.08); }
-	.mc-option input { accent-color: #7170ff; }
+	.mc-option:hover { border-color: var(--accent-dim); background: rgba(94,106,210,0.08); }
+	.mc-option.selected { border-color: #5e6ad2; background: rgba(94,106,210,0.08); }
+	.mc-option input { accent-color: #5e6ad2; }
 
 	.code-block {
 		background: rgba(0,0,0,0.3);
@@ -394,12 +394,12 @@
 		border: 1px solid;
 	}
 	.q-feedback.correct {
-		background: rgba(74, 222, 128, 0.08);
-		border-color: rgba(74, 222, 128, 0.3);
+		background: rgba(34,197,94,0.08);
+		border-color: rgba(34,197,94,0.3);
 	}
 	.q-feedback.incorrect {
-		background: rgba(239, 68, 68, 0.08);
-		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239,68,68,0.08);
+		border-color: rgba(239,68,68,0.3);
 	}
 	.feedback-header {
 		display: flex;
@@ -409,12 +409,12 @@
 	}
 	.feedback-result {
 		font-size: 15px;
-		font-weight: 600;
+		font-weight: 510;
 	}
 	.feedback-points {
 		font-size: 13px;
-		font-weight: 600;
-		color: #4ade80;
+		font-weight: 510;
+		color: #22c55e;
 	}
 	.feedback-explain {
 		font-size: 14px;

@@ -668,8 +668,11 @@
 
   h1 {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 590;
     margin-bottom: 2px;
+    font-feature-settings: 'cv01', 'ss03';
+    letter-spacing: -0.288px;
+    color: #f7f8f8;
   }
 
   .subtitle {
@@ -695,7 +698,7 @@
     background: transparent;
     color: var(--text-secondary);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 510;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s;
@@ -727,7 +730,7 @@
   }
   .task-day {
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 510;
     color: var(--accent);
     min-width: 60px;
   }
@@ -753,7 +756,7 @@
   .time-stat-value {
     display: block;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 590;
     color: var(--accent);
   }
   .time-stat-label {
@@ -781,7 +784,7 @@
     background: var(--accent-dim);
     color: var(--accent);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 510;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s;
@@ -833,13 +836,13 @@
   }
   .time-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #a855f7);
+    background: linear-gradient(90deg, var(--accent), #7170ff);
     border-radius: 7px;
     transition: width 0.3s ease;
   }
   .time-bar-value {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 510;
     color: var(--text);
     min-width: 36px;
     text-align: right;
@@ -866,7 +869,7 @@
 
   .select-label {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 510;
     color: var(--text-secondary);
   }
 
@@ -925,10 +928,10 @@
     margin-bottom: 16px;
   }
 
-  .section-card-header h2 { font-size: 16px; font-weight: 600; margin: 0; }
+  .section-card-header h2 { font-size: 16px; font-weight: 510; margin: 0; font-feature-settings: 'cv01', 'ss03'; }
 
   .toggle-btn {
-    font-size: 12px; font-weight: 600; color: var(--accent);
+    font-size: 12px; font-weight: 510; color: var(--accent);
     background: var(--accent-dim); border: none; padding: 6px 14px;
     border-radius: 8px; cursor: pointer; font-family: inherit;
     transition: all 0.15s ease;
@@ -946,7 +949,7 @@
   .setup-form { display: flex; flex-direction: column; gap: 14px; }
   .form-row { display: flex; gap: 14px; }
   .form-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .form-group label { font-size: 13px; font-weight: 510; color: var(--text-secondary); }
   .form-input {
     padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
@@ -963,20 +966,20 @@
   .week-date { font-size: 12px; }
   .week-bars { display: flex; flex-direction: column; gap: 4px; }
   .bar-group { display: flex; align-items: center; gap: 8px; }
-  .bar-label { font-size: 10px; font-weight: 600; color: var(--text-secondary); width: 36px; text-align: right; flex-shrink: 0; }
+  .bar-label { font-size: 10px; font-weight: 510; color: var(--text-secondary); width: 36px; text-align: right; flex-shrink: 0; }
   .bar-track { flex: 1; height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s ease; min-width: 4px; }
   .bar-fill.target { background: var(--accent); opacity: 0.4; }
   .bar-fill.actual { background: var(--accent); opacity: 0.85; }
-  .bar-value { font-size: 11px; font-weight: 700; min-width: 20px; text-align: right; color: var(--text); }
-  .week-status { font-size: 11px; font-weight: 600; text-align: right; }
+  .bar-value { font-size: 11px; font-weight: 590; min-width: 20px; text-align: right; color: var(--text); }
+  .week-status { font-size: 11px; font-weight: 510; text-align: right; }
 
   .cumulative-row { display: grid; grid-template-columns: 180px 1fr 90px; gap: 12px; align-items: center; padding: 2px 0 8px 20px; }
   .cumulative-label { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
   .cumulative-bar { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; position: relative; }
   .cumulative-cap { position: absolute; height: 100%; background: var(--accent); opacity: 0.2; border-radius: 3px; transition: width 0.3s ease; }
   .cumulative-fill { position: absolute; height: 100%; background: var(--accent); opacity: 0.7; border-radius: 3px; transition: width 0.3s ease; }
-  .cumulative-value { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-align: right; }
+  .cumulative-value { font-size: 11px; font-weight: 510; color: var(--text-secondary); text-align: right; }
 
   .week-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
 
@@ -990,9 +993,9 @@
   .rec-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
   .rec-item div { display: flex; flex-direction: column; gap: 2px; }
   .rec-label { font-size: 13px; color: var(--text-secondary); }
-  .rec-link { font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .rec-link { font-size: 14px; font-weight: 510; color: var(--accent); text-decoration: none; }
   .rec-link:hover { text-decoration: underline; }
-  .rec-value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .rec-value { font-size: 14px; font-weight: 510; color: var(--text); }
   .rec-value.greened { color: var(--success); }
 
   /* Reminder */
@@ -1004,7 +1007,7 @@
     border: none; cursor: pointer; position: relative; transition: background 0.2s ease; padding: 0;
   }
   .toggle-switch.active { background: var(--accent); }
-  .toggle-knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle-knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s ease; box-shadow: none; }
   .toggle-switch.active .toggle-knob { transform: translateX(20px); }
 
   .empty-note { font-size: 13px; color: var(--text-secondary); padding: 12px 0; }

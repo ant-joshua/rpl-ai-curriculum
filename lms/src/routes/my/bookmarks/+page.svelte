@@ -73,15 +73,18 @@
 
 	.page-header h1 {
 		font-size: 26px;
-		font-weight: 700;
+		font-weight: 590;
 		color: var(--text);
 		margin: 0 0 4px;
+		font-feature-settings: 'cv01', 'ss03';
+		letter-spacing: -0.288px;
 	}
 
 	.text-secondary {
-		color: var(--text-secondary);
+		color: var(--text-tertiary);
 		font-size: 14px;
 		margin: 0;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	/* Bookmarks list */
@@ -96,16 +99,16 @@
 		align-items: center;
 		gap: 14px;
 		padding: 16px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
+		background: rgba(255,255,255,0.02);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.15s ease;
 	}
 
 	.bookmark-card:hover {
-		border-color: var(--accent);
-		background: var(--surface-hover);
+		border-color: rgba(94,106,210,0.25);
+		background: rgba(255,255,255,0.04);
 	}
 
 	.bookmark-card:hover .card-arrow {
@@ -121,7 +124,7 @@
 		height: 36px;
 		justify-content: center;
 		background: rgba(245, 158, 11, 0.1);
-		border-radius: 10px;
+		border-radius: 8px;
 	}
 
 	.card-body {
@@ -131,10 +134,11 @@
 
 	.card-title {
 		font-size: 15px;
-		font-weight: 600;
+		font-weight: 510;
 		color: var(--text);
 		margin: 0 0 4px;
 		line-height: 1.3;
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.card-meta {
@@ -143,7 +147,8 @@
 		gap: 4px;
 		flex-wrap: wrap;
 		font-size: 12px;
-		color: var(--text-secondary);
+		color: var(--text-tertiary);
+		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.card-meta .sep {
@@ -152,7 +157,7 @@
 
 	.card-arrow {
 		flex-shrink: 0;
-		color: var(--text-secondary);
+		color: var(--text-tertiary);
 		transition: all 0.15s ease;
 	}
 

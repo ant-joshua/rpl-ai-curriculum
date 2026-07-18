@@ -145,7 +145,7 @@
 
 	.page-header h1 {
 		font-size: 28px;
-		font-weight: 700;
+		font-weight: 590;
 		margin: 0 0 6px;
 	}
 
@@ -185,9 +185,9 @@
 		margin-bottom: 16px;
 	}
 
-	.section-title {
+	.section-title { font-feature-settings: 'cv01', 'ss03';
 		font-size: 18px;
-		font-weight: 600;
+		font-weight: 510;
 		margin: 0 0 12px;
 	}
 
@@ -233,7 +233,7 @@
 
 	.progress-card-title {
 		font-size: 16px;
-		font-weight: 600;
+		font-weight: 510;
 		color: var(--text);
 		margin: 0 0 2px;
 	}
@@ -278,7 +278,7 @@
 		background: var(--accent);
 		color: #fff;
 		font-size: 15px;
-		font-weight: 600;
+		font-weight: 510;
 		text-decoration: none;
 	}
 
@@ -306,7 +306,7 @@
 	}
 
 	.cert-card:hover {
-		border-color: #d4a017;
+		border-color: #f59e0b;
 		background: var(--surface-hover);
 		transform: translateX(4px);
 	}
@@ -323,7 +323,7 @@
 
 	.cert-card-title {
 		font-size: 16px;
-		font-weight: 600;
+		font-weight: 510;
 		color: var(--text);
 		margin: 0 0 2px;
 	}
@@ -343,25 +343,25 @@
 
 	.cert-card-number {
 		font-size: 11px;
-		font-family: monospace;
-		color: #d4a017;
-		background: rgba(212, 160, 23, 0.1);
+		font-family: inherit;
+		color: #f59e0b;
+		background: rgba(245,158,11,0.08);
 		padding: 2px 8px;
 		border-radius: 4px;
-		font-weight: 600;
+		font-weight: 510;
 	}
 
 	.status-badge {
 		font-size: 11px;
-		font-weight: 600;
+		font-weight: 510;
 		padding: 2px 10px;
 		border-radius: 4px;
-		background: rgba(46, 204, 113, 0.1);
-		color: #2ecc71;
-		border: 1px solid rgba(46, 204, 113, 0.3);
+		background: rgba(34,197,94,0.08);
+		color: #22c55e;
+		border: 1px solid rgba(34,197,94,0.3);
 	}
 
-	.status-badge.issued { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border-color: rgba(46, 204, 113, 0.3); }
+	.status-badge.issued { background: rgba(34,197,94,0.08); color: #22c55e; border-color: rgba(34,197,94,0.3); }
 
 	.download-btn {
 		width: 36px;
@@ -400,6 +400,6 @@
 	}
 
 	.cert-card:hover .cert-card-arrow {
-		color: #d4a017;
+		color: #f59e0b;
 	}
 </style>

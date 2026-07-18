@@ -28,9 +28,9 @@
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 80) return 'var(--color-green, #2ecc71)';
-		if (pct >= 60) return 'var(--color-yellow, #f1c40f)';
-		return 'var(--color-red, #e74c3c)';
+		if (pct >= 80) return 'var(--color-green, #22c55e)';
+		if (pct >= 60) return 'var(--color-yellow, #f59e0b)';
+		return 'var(--color-red, #ef4444)';
 	}
 
 	function statusLabel(status: string): string {
@@ -193,7 +193,7 @@
 
 	.back-link {
 		font-size: 13px;
-		font-weight: 600;
+		font-weight: 510;
 		color: var(--accent);
 		text-decoration: none;
 		padding: 4px 10px;
@@ -214,7 +214,7 @@
 		color: var(--text-secondary);
 	}
 
-	.error { color: var(--color-red, #e74c3c); }
+	.error { color: var(--color-red, #ef4444); }
 
 	.offering-card {
 		background: var(--surface);
@@ -231,7 +231,7 @@
 		margin-bottom: 16px;
 	}
 
-	.offering-info h2 {
+	.offering-info h2 { font-feature-settings: 'cv01', 'ss03';
 		font-size: 18px;
 		margin: 0 0 4px 0;
 	}
@@ -247,7 +247,7 @@
 
 	.total-pct {
 		font-size: 28px;
-		font-weight: 700;
+		font-weight: 590;
 	}
 
 	.total-fraction {
@@ -268,7 +268,7 @@
 		padding: 8px 10px;
 		border-bottom: 2px solid var(--border);
 		color: var(--text-secondary);
-		font-weight: 600;
+		font-weight: 510;
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
@@ -285,7 +285,7 @@
 		padding: 2px 8px;
 		border-radius: 4px;
 		font-size: 11px;
-		font-weight: 600;
+		font-weight: 510;
 		background: var(--bg-secondary);
 	}
 
@@ -294,12 +294,12 @@
 		padding: 2px 8px;
 		border-radius: 4px;
 		font-size: 11px;
-		font-weight: 600;
+		font-weight: 510;
 	}
 
-	.status--graded { background: #2ecc7133; color: #2ecc71; }
-	.status--submitted { background: #3498db33; color: #3498db; }
-	.status--returned { background: #f39c1233; color: #f39c12; }
+	.status--graded { background: #22c55e33; color: #22c55e; }
+	.status--submitted { background: #3b82f633; color: #3b82f6; }
+	.status--returned { background: #f59e0b33; color: #f59e0b; }
 	.status--draft, .status--pending { background: var(--bg-secondary); color: var(--text-secondary); }
 
 	.feedback-cell {
