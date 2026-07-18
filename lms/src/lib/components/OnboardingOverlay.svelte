@@ -116,7 +116,7 @@
 	}
 
 	.onboarding-modal {
-		background: var(--surface, #1e1e2e);
+		background: var(--surface, #191a1b);
 		border: 1px solid var(--border, #333);
 		border-radius: 20px;
 		padding: 36px;
@@ -139,7 +139,7 @@
 	.onboarding-step h2 {
 		font-size: 20px;
 		font-weight: 700;
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 		margin-bottom: 12px;
 	}
 
@@ -203,7 +203,7 @@
 	}
 
 	.skip-btn:hover {
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 		border-color: var(--text-secondary, #888);
 	}
 

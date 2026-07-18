@@ -247,8 +247,8 @@
 	}
 
 	.run-btn {
-		background: #6366f1;
-		border-color: #6366f1;
+		background: #5e6ad2;
+		border-color: #5e6ad2;
 		color: #fff;
 	}
 
@@ -262,8 +262,8 @@
 	}
 
 	.reset-btn:hover {
-		border-color: #6366f1;
-		color: #6366f1;
+		border-color: #5e6ad2;
+		color: #5e6ad2;
 	}
 
 	.html-preview {

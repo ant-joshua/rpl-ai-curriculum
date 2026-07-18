@@ -85,7 +85,7 @@
 	td { padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--text-primary); border-bottom: 1px solid var(--border); }
 	code { background: var(--bg-code); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
 	.badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-	.badge-lms { background: #6366f1; color: #fff; }
+	.badge-lms { background: #5e6ad2; color: #fff; }
 	.badge-academic_k13 { background: #10b981; color: #fff; }
 	.badge-university { background: #f59e0b; color: #fff; }
 	.badge-bimbel { background: #8b5cf6; color: #fff; }

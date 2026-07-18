@@ -68,16 +68,16 @@
 		position: relative;
 		width: 40px;
 		height: 22px;
-		background: var(--bg-secondary, #1c1e2e);
+		background: var(--bg-secondary, rgba(255,255,255,0.02));
 		border-radius: 999px;
 		transition: background 0.2s ease;
 		flex-shrink: 0;
-		border: 2px solid var(--border, #2a2d3e);
+		border: 2px solid var(--border, rgba(255,255,255,0.08));
 	}
 
 	.checked .toggle-track {
-		background: var(--accent, #6366f1);
-		border-color: var(--accent, #6366f1);
+		background: var(--accent, #5e6ad2);
+		border-color: var(--accent, #5e6ad2);
 	}
 
 	.toggle-track input {

@@ -136,14 +136,16 @@
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 8px;
     padding: 20px;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: all 0.15s ease;
     position: relative;
     overflow: hidden;
   }
 
   .course-card:hover {
     background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.12);
+    border-color: rgba(94,106,210,0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(94,106,210,0.1);
   }
 
   .course-card.enrolled {

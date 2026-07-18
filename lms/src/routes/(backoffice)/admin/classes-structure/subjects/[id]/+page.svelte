@@ -86,7 +86,7 @@
 	};
 
 	const typeColors: Record<string, string> = {
-		pengetahuan: 'background: rgba(99,102,241,0.1); color: #6366f1',
+		pengetahuan: 'background: rgba(94,106,210,0.1); color: #5e6ad2',
 		keterampilan: 'background: rgba(16,185,129,0.1); color: #10b981',
 		sikap: 'background: rgba(245,158,11,0.1); color: #f59e0b',
 	};
@@ -99,7 +99,7 @@
 	};
 
 	const compTypeColors: Record<string, string> = {
-		'3': 'background: rgba(99,102,241,0.1); color: #6366f1',
+		'3': 'background: rgba(94,106,210,0.1); color: #5e6ad2',
 		'4': 'background: rgba(16,185,129,0.1); color: #10b981',
 		'1': 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		'2': 'background: rgba(236,72,153,0.1); color: #ec4899',
@@ -284,7 +284,7 @@
 	.meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; color: var(--text-secondary); }
 	.meta-item { display: flex; align-items: center; gap: 4px; }
 	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-	.kd-code { font-weight: 600; background: rgba(99,102,241,0.1); color: #6366f1; }
+	.kd-code { font-weight: 600; background: rgba(94,106,210,0.1); color: #5e6ad2; }
 
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 60px; }

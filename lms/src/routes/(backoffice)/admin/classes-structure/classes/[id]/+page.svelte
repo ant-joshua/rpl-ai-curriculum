@@ -31,7 +31,7 @@
 		const styles: Record<string, string> = {
 			active: 'background: rgba(16,185,129,0.1); color: #10b981;',
 			inactive: 'background: rgba(239,68,68,0.1); color: #ef4444;',
-			alumni: 'background: rgba(99,102,241,0.1); color: #6366f1;',
+			alumni: 'background: rgba(94,106,210,0.1); color: #5e6ad2;',
 			mutasi: 'background: rgba(245,158,11,0.1); color: #f59e0b;',
 		};
 		return styles[status] || 'background: var(--bg-secondary); color: var(--text-secondary);';

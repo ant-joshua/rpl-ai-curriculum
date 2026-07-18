@@ -69,7 +69,7 @@
 		background: var(--hover, rgba(255,255,255,0.05));
 		overflow: hidden;
 		flex-shrink: 0;
-		border: 2px solid var(--border, #2a2d3e);
+		border: 2px solid var(--border, rgba(255,255,255,0.08));
 	}
 
 	.avatar-img {
@@ -82,7 +82,7 @@
 	.avatar-initials,
 	.avatar-fallback {
 		font-weight: 600;
-		color: var(--text-secondary, #a1a1aa);
+		color: var(--text-secondary, #d0d6e0);
 		line-height: 1;
 	}
 

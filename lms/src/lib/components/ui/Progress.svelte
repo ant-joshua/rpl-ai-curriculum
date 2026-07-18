@@ -57,7 +57,7 @@
 
 	.progress-bar {
 		flex: 1;
-		background: var(--bg-secondary, #1c1e2e);
+		background: var(--bg-secondary, rgba(255,255,255,0.02));
 		border-radius: 999px;
 		overflow: hidden;
 	}
@@ -65,7 +65,7 @@
 	.progress-fill {
 		height: 100%;
 		border-radius: 999px;
-		background: var(--accent, #6366f1);
+		background: var(--accent, #5e6ad2);
 		transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
@@ -84,7 +84,7 @@
 	.progress-label {
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--text-secondary, #a1a1aa);
+		color: var(--text-secondary, #d0d6e0);
 		white-space: nowrap;
 		flex-shrink: 0;
 	}

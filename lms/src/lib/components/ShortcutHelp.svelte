@@ -58,7 +58,7 @@
 	}
 
 	.shortcut-modal {
-		background: var(--surface, #1e1e2e);
+		background: var(--surface, #191a1b);
 		border: 1px solid var(--border, #333);
 		border-radius: 16px;
 		padding: 28px;
@@ -79,7 +79,7 @@
 	.shortcut-header h2 {
 		font-size: 18px;
 		font-weight: 700;
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 		margin: 0;
 	}
 
@@ -100,7 +100,7 @@
 
 	.close-btn:hover {
 		background: var(--hover, rgba(255,255,255,0.05));
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 	}
 
 	.shortcut-grid {

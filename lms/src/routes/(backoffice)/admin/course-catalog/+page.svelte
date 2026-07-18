@@ -91,7 +91,7 @@
 		wajib_peminatan: 'Wajib Peminatan',
 	};
 	const sifatColors: Record<string, string> = {
-		wajib: 'background:rgba(99,102,241,0.1);color:#6366f1',
+		wajib: 'background:rgba(94,106,210,0.1);color:#5e6ad2',
 		pilihan: 'background:rgba(16,185,129,0.1);color:#10b981',
 		wajib_peminatan: 'background:rgba(245,158,11,0.1);color:#f59e0b',
 	};

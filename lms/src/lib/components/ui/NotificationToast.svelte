@@ -83,7 +83,7 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 12px 14px;
-		background: var(--surface, #1e1e2e);
+		background: var(--surface, #191a1b);
 		border: 1px solid var(--accent-dim, rgba(94,106,210,0.3));
 		border-left: 4px solid var(--accent, #5e6ad2);
 		border-radius: 10px;
@@ -107,7 +107,7 @@
 	.nt-title {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 		line-height: 1.3;
 	}
 	.nt-desc {
@@ -134,6 +134,6 @@
 		transition: color 0.15s;
 	}
 	.nt-close:hover {
-		color: var(--text, #e0e0e0);
+		color: var(--text, #f7f8f8);
 	}
 </style>

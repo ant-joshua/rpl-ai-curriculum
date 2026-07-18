@@ -170,15 +170,18 @@
 
   .catalog-header h1 {
     font-size: 28px;
-    font-weight: 800;
+    font-weight: 590;
     color: #f7f8f8;
     margin: 0 0 4px;
+    font-feature-settings: 'cv01', 'ss03';
+    letter-spacing: -0.288px;
   }
 
   .catalog-subtitle {
     font-size: 14px;
     color: #8a8f98;
     margin: 0;
+    font-feature-settings: 'cv01', 'ss03';
   }
 
   .catalog-controls {
@@ -191,61 +194,72 @@
   .filter-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
   .filter-select {
-    padding: 8px 12px;
+    padding: 6px 12px;
     font-size: 13px;
     font-family: inherit;
     font-feature-settings: 'cv01', 'ss03';
-    background: rgba(255,255,255,0.02);
+    font-weight: 510;
+    background: transparent;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 6px;
-    color: #f7f8f8;
+    color: #d0d6e0;
     outline: none;
     cursor: pointer;
-    transition: border-color 0.15s ease;
+    transition: all 0.15s ease;
     min-width: 140px;
+  }
+
+  .filter-select:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.12);
+    color: #f7f8f8;
   }
 
   .filter-select:focus {
     border-color: #5e6ad2;
     box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+    color: #f7f8f8;
   }
 
   .result-count {
     margin-left: auto;
     font-size: 13px;
-    color: #8a8f98;
-    font-weight: 500;
+    color: #62666d;
+    font-weight: 510;
+    font-feature-settings: 'cv01', 'ss03';
   }
 
   /* Grid */
   .catalog-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 16px;
   }
 
   /* Clear button */
   .clear-btn {
-    background: rgba(255,255,255,0.04);
+    background: transparent;
     border: 1px solid rgba(255,255,255,0.08);
-    color: #d0d6e0;
+    color: #8a8f98;
     font-family: inherit;
     font-size: 13px;
-    font-weight: 500;
-    padding: 8px 16px;
+    font-weight: 510;
+    font-feature-settings: 'cv01', 'ss03';
+    padding: 7px 16px;
     border-radius: 6px;
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
+    transition: all 0.15s ease;
   }
 
   .clear-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.15);
+    color: #f7f8f8;
   }
 
   /* Responsive */
@@ -262,6 +276,7 @@
 
     .catalog-header h1 {
       font-size: 22px;
+      letter-spacing: -0.264px;
     }
 
     .filter-row {

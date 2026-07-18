@@ -59,7 +59,7 @@
 	};
 	const typeColors: Record<string, string> = {
 		umum: 'var(--bg-secondary); color: var(--text-secondary)',
-		keahlian: 'background: rgba(99,102,241,0.1); color: #6366f1',
+		keahlian: 'background: rgba(94,106,210,0.1); color: #5e6ad2',
 		agama: 'background: rgba(16,185,129,0.1); color: #10b981',
 		olahraga: 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		seni: 'background: rgba(236,72,153,0.1); color: #ec4899',
