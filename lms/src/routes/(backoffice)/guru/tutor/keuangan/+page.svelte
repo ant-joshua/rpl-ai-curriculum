@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, DataTable, Select } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Button } from '$lib/components/ui';
+	import { Alert, Button, Card, CardContent, Input } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -133,7 +133,7 @@
 		<CardContent>
 			<h2>Impor Course</h2>
 			<p class="desc">Upload file JSON hasil ekspor course untuk diimpor ke tenant saat ini. ID akan digenerate baru, data lama tidak akan ditimpa.</p>
-			<input
+<Input  />
 				type="file"
 				accept=".json"
 				onchange={importCourse}

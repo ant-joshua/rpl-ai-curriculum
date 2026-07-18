@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
@@ -133,14 +133,13 @@
 
 	<div class="toolbar">
 		<div class="filter-group">
-			<label for="filter-status">{t('common.filter_status')}</label>
-			<select id="filter-status" class="filter-select" bind:value={filterStatus}>
-				{#each filterOptions as opt}
-					<option value={opt.value}>{opt.label}</option>
-				{/each}
-			</select>
+			<Select
+				label={t('common.filter_status')}
+				bind:value={filterStatus}
+				options={filterOptions}
+			/>
 		</div>
-		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>🔄 {t('common.refresh')}</button>
+		<Button variant="primary" size="sm" onclick={loadInvoices}>🔄 {t('common.refresh')}</Button>
 	</div>
 
 	{#if loading}

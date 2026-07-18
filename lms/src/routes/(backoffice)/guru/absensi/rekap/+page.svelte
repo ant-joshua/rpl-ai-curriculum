@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import { DataTable, Loading, EmptyState, Select, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	type DayRecord = {
 		date: string;
@@ -205,31 +205,18 @@ import { t } from '$lib/stores/i18n.svelte';
 	<div class="filters">
 		<div class="filter-group">
 			<label for="class-select">{t('absensi.kelas')}</label>
-			<select id="class-select" bind:value={selectedClassId} disabled={loadingClasses}>
-				<option value="">— {t('absensi.pilih_kelas')} —</option>
-				{#each classes as c}
-					<option value={c.id}>{c.class_name || c.name}</option>
-				{/each}
-			</select>
+			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} disabled={loadingClasses} placeholder="— Pilih Kelas —" />
 		</div>
 		<div class="filter-group">
 			<label for="month-select">{t('absensi.bulan')}</label>
-			<select id="month-select" bind:value={selectedMonth}>
-				{#each months as m}
-					<option value={m.value}>{m.label}</option>
-				{/each}
-			</select>
+			<Select options={months.map(m => ({ value: m.value, label: m.label }))} bind:value={selectedMonth} placeholder="Pilih Bulan" />
 		</div>
 		<div class="filter-group">
 			<label for="year-select">{t('absensi.tahun')}</label>
-			<select id="year-select" bind:value={selectedYear}>
-				{#each years as y}
-					<option value={y}>{y}</option>
-				{/each}
-			</select>
+			<Select options={years.map(y => ({ value: y, label: y }))} bind:value={selectedYear} placeholder="Pilih Tahun" />
 		</div>
 		<div class="filter-action">
-			<button class="btn-secondary" onclick={loadRecap}>{t('absensi.tampilkan')}</button>
+			<Button onclick={loadRecap} variant="secondary">{t('absensi.tampilkan')}</Button>
 		</div>
 	</div>
 

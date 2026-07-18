@@ -424,7 +424,7 @@
 				</p>
 			</div>
 			<div class="header-actions">
-				<input
+<Input  />
 					type="text"
 					class="search-input"
 					placeholder="Cari mahasiswa..."
@@ -463,7 +463,7 @@
 					{#each weightCategories() as cat}
 						<div class="weight-category">
 							<span class="cat-label">{cat}</span>
-							<input
+<Input  />
 								type="number"
 								class="weight-input"
 								bind:value={weightConfig[cat]}
@@ -533,13 +533,13 @@
 							<tr class="student-row" class:row--expanded={isExpanded}>
 								<td class="sticky-col name-col">
 									<div class="student-info">
-										<button
+										<Button
 											class="expand-btn"
 											onclick={() => toggleExpand(e.user_id)}
 											title={isExpanded ? 'Sembunyikan rincian' : 'Lihat rincian nilai'}
 										>
 											{isExpanded ? '▼' : '▶'}
-										</button>
+										</Button>
 										<span class="student-name">{displayName(e)}</span>
 										<span class="student-email">{e.email || ''}</span>
 									</div>
@@ -556,7 +556,7 @@
 									>
 										{#if isEditing}
 											<!-- svelte-ignore a11y_autofocus -->
-											<input
+<Input  />
 												type="number"
 												step="0.5"
 												min="0"

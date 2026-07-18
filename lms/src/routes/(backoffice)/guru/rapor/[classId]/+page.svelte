@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import { DataTable, Loading, EmptyState, Button, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 
@@ -169,13 +169,10 @@ import { t } from '$lib/stores/i18n.svelte';
 				</p>
 			</div>
 			<div class="header-actions">
-				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-					<option value="1">{t('nilai.semester_ganjil')}</option>
-					<option value="2">{t('nilai.semester_genap')}</option>
-				</select>
-				<button class="btn-secondary" onclick={generateAll} disabled={generating || students.length === 0}>
+				<Select options={[{ value:'1', label: t('nilai.semester_ganjil') }, { value:'2', label: t('nilai.semester_genap') }]} bind:value={selectedSemester} onchange={() => loadAll()} />
+				<Button onclick={generateAll} disabled={generating || students.length === 0} variant="secondary">
 					{generating ? t('rapor.generating') : t('rapor.generate_all')}
-				</button>
+				</Button>
 			</div>
 		</div>
 

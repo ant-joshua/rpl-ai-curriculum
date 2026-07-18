@@ -203,7 +203,7 @@
 			<Button onclick={() => document.getElementById('file-upload')?.click()} loading={uploading}>
 				+ Upload File
 			</Button>
-			<input
+<Input  />
 				id="file-upload"
 				type="file"
 				class="hidden-input"

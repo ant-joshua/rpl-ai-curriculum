@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let tingkatList: any[] = $state([]);
@@ -96,8 +96,8 @@
 			<p class="subtitle">Jenjang & tingkat kelas (X, XI, XII, dsb.)</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openForm}>+ Tingkat Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openForm}>+ Tingkat Baru</Button>
 		</div>
 	</div>
 
@@ -106,12 +106,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if tingkatList.length === 0}
 		<div class="empty-state">
 			<p>Belum ada tingkat</p>
-			<button class="btn-primary" onclick={openForm}>Buat Tingkat Pertama</button>
+			<Button variant="primary" onclick={openForm}>Buat Tingkat Pertama</Button>
 		</div>
 	{:else}
 		<div class="card">
@@ -130,33 +130,25 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Tingkat Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="tingkat-name">{t('admin.nama_tingkat')}</label>
-					<input id="tingkat-name" type="text" bind:value={formName} oninput={generateSlug} placeholder="Cth: Kelas X" />
+<Input label={t('admin.nama_tingkat')} bind:value={formName} placeholder="Cth: Kelas X" oninput={generateSlug} />
 				</div>
 				<div class="field">
-					<label for="tingkat-slug">{t('admin.slug')}</label>
-					<input id="tingkat-slug" type="text" bind:value={formSlug} placeholder="kelas-x" />
+<Input label={t('admin.slug')} bind:value={formSlug} placeholder="kelas-x" />
 				</div>
 				<div class="field">
-					<label for="tingkat-edu">{t('admin.jenjang_pendidikan')}</label>
-					<select id="tingkat-edu" bind:value={formEducationLevel}>
-						<option value="sd">SD / MI</option>
-						<option value="smp">SMP / MTs</option>
-						<option value="menengah">SMA / SMK / MA</option>
-						<option value="tinggi">Perguruan Tinggi</option>
-					</select>
+<Select label={t('admin.jenjang_pendidikan')} bind:value={formEducationLevel} options={[{ value: "sd", label: "SD / MI" }, { value: "smp", label: "SMP / MTs" }, { value: "menengah", label: "SMA / SMK / MA" }, { value: "tinggi", label: "Perguruan Tinggi" }]} />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

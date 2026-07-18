@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 
 	type Student = {
@@ -193,12 +193,7 @@
 	<div class="filters">
 		<div class="filter-group">
 			<label for="class-select">Kelas</label>
-			<select id="class-select" bind:value={selectedClassId} onchange={handleClassChange} disabled={loadingClasses}>
-				<option value="">— Pilih Kelas —</option>
-				{#each classes as c}
-					<option value={c.id}>{c.class_name || c.name}</option>
-				{/each}
-			</select>
+			<Select options={classes.map(c => ({ value: c.id, label: c.class_name || c.name }))} bind:value={selectedClassId} onchange={handleClassChange} disabled={loadingClasses} placeholder="— Pilih Kelas —" />
 		</div>
 		<div class="filter-group">
 			<label for="date-picker">Tanggal</label>
@@ -206,12 +201,7 @@
 		</div>
 		<div class="filter-group">
 			<label for="subject-select">Mata Pelajaran (opsional)</label>
-			<select id="subject-select" bind:value={selectedSubjectId} onchange={handleSubjectChange}>
-				<option value="">— Semua Mapel —</option>
-				{#each subjects as s}
-					<option value={s.id}>{s.subject_name || s.name}</option>
-				{/each}
-			</select>
+			<Select options={subjects.map(s => ({ value: s.id, label: s.subject_name || s.name }))} bind:value={selectedSubjectId} onchange={handleSubjectChange} placeholder="— Semua Mapel —" />
 		</div>
 	</div>
 
@@ -310,10 +300,10 @@
 		{/if}
 
 		<div class="actions">
-			<button class="btn-secondary" onclick={simpan} disabled={saving}>
+			<Button onclick={simpan} disabled={saving} variant="secondary">
 				{saving ? 'Menyimpan...' : '💾 Simpan'}
-			</button>
-			<button class="btn-ghost" onclick={resetForm}>↺ Reset</button>
+			</Button>
+			<Button onclick={resetForm} variant="ghost">↺ Reset</Button>
 		</div>
 	{/if}
 </div>

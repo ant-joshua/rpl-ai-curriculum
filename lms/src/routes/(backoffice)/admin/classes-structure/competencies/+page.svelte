@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let { data }: { data: any } = $props();
@@ -127,10 +127,10 @@
 
 <div class="page-header">
 	<h2>Kompetensi Dasar</h2>
-	<button class="btn btn-primary" onclick={() => openForm()}>
+	<Button variant="primary" class="btn" onclick={() => openForm()}>
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 		Tambah KD
-	</button>
+	</Button>
 </div>
 
 <div class="filters">
@@ -160,52 +160,36 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label>{t('admin.mapel')}</label>
-						<select bind:value={form.subject_id} required>
-							<option value="">{t('admin.pilih')}</option>
-							{#each data.subjects as s}
-								<option value={s.id}>{s.name}</option>
-							{/each}
-						</select>
+<Select bind:value={form.subject_id} required options={data.subjects.map((s) => ({ value: s.id, label: s.name }))} />
 					</div>
 					<div class="form-group">
 						<label>Code (e.g., 3.1, 4.2)</label>
-						<input type="text" bind:value={form.code} required placeholder="3.1" />
+<Input bind:value={form.code} placeholder="3.1" required />
 					</div>
 					<div class="form-group">
 						<label>Tipe Kompetensi</label>
-						<select bind:value={form.competence_type} required>
-							<option value="pengetahuan">Pengetahuan</option>
-							<option value="keterampilan">Keterampilan</option>
-						</select>
+<Select bind:value={form.competence_type} required options={[{ value: "pengetahuan", label: "Pengetahuan" }, { value: "keterampilan", label: "Keterampilan" }]} />
 					</div>
 					<div class="form-group">
 						<label>{t('admin.tipe')}</label>
-						<select bind:value={form.type}>
-							<option value="umum">Umum</option>
-							<option value="inti">Inti</option>
-							<option value="pengayaan">Pengayaan</option>
-						</select>
+<Select bind:value={form.type} options={[{ value: "umum", label: "Umum" }, { value: "inti", label: "Inti" }, { value: "pengayaan", label: "Pengayaan" }]} />
 					</div>
 					<div class="form-group full-width">
 						<label>{t('common.description')}</label>
-						<textarea bind:value={form.description} required rows="3"></textarea>
+<Textarea bind:value={form.description} rows=3 required />
 					</div>
 					<div class="form-group">
 						<label>{t('admin.semester')}</label>
-						<select bind:value={form.semester}>
-							<option value="">—</option>
-							<option value="1">1</option>
-							<option value="2">2</option>
-						</select>
+<Select bind:value={form.semester} options={[{ value: "", label: "—" }, { value: "1", label: "1" }, { value: "2", label: "2" }]} />
 					</div>
 					<div class="form-group full-width">
 						<label>Topics (optional)</label>
-						<input type="text" bind:value={form.topics} placeholder="Comma separated" />
+<Input bind:value={form.topics} placeholder="Comma separated" />
 					</div>
 				</div>
 				<div class="modal-actions">
-					<button type="button" class="btn" onclick={closeForm}>{t('common.cancel')}</button>
-					<button type="submit" class="btn btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
+					<Button class="btn" type="button" onclick={closeForm}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="btn" type="submit" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</Button>
 				</div>
 			</form>
 		</div>

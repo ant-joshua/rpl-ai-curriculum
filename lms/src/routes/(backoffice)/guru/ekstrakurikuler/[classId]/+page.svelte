@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { DataTable, Button, Loading, EmptyState } from '$lib/components/ui';
+	import { DataTable, Loading, EmptyState, Button, Select, Input, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 
@@ -182,10 +182,7 @@ import { t } from '$lib/stores/i18n.svelte';
 				<p class="meta">{className}</p>
 			</div>
 			<div class="header-actions">
-				<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-					<option value="1">{t('nilai.semester_ganjil')}</option>
-					<option value="2">{t('nilai.semester_genap')}</option>
-				</select>
+				<Select options={[{ value:'1', label: t('nilai.semester_ganjil') }, { value:'2', label: t('nilai.semester_genap') }]} bind:value={selectedSemester} onchange={() => loadAll()} />
 				<Button onclick={saveAll} disabled={saving} variant="secondary" size="sm">
 					{saving ? t('nilai.menyimpan') : t('nilai.simpan')}
 				</Button>

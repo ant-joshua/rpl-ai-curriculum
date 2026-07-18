@@ -115,9 +115,9 @@
 				</div>
 				{#if dbStats?.tables?.length}
 					<div class="table-list">
-						<button class="table-toggle" onclick={() => document.getElementById('table-list').classList.toggle('open')}>
+						<Button class="table-toggle" onclick={() => document.getElementById('table-list').classList.toggle('open')}>
 							📋 Show table list ({dbStats?.tableCount ?? 0})
-						</button>
+						</Button>
 						<div id="table-list" class="table-list-items">
 							{#each dbStats.tables as t}
 								<span class="table-badge">{t.name}</span>

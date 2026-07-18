@@ -192,10 +192,7 @@
 			<div class="header-actions">
 				<div class="sem-selector">
 					<label class="sem-label">Semester:</label>
-					<select class="sem-select" bind:value={selectedSemester} onchange={() => loadAll()}>
-						<option value="1">Ganjil</option>
-						<option value="2">Genap</option>
-					</select>
+					<Select options={[{ value:'1', label:'Ganjil' }, { value:'2', label:'Genap' }]} bind:value={selectedSemester} onchange={() => loadAll()} />
 				</div>
 				<Button onclick={manualSave} disabled={saving} variant="secondary" size="sm">
 					{saving ? '⏳ Menyimpan...' : '💾 Simpan Semua'}

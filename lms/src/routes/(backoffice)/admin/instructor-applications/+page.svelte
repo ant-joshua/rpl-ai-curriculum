@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, Card, CardContent, EmptyState, Loading } from '$lib/components/ui';
+	import { Badge, Button, Card, CardContent, EmptyState, Loading, Select } from '$lib/components/ui';
 
 	let applications: any[] = $state([]);
 	let loading = $state(true);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let prodiList: any[] = $state([]);
@@ -137,18 +137,13 @@
 			<p class="subtitle">Kelola program studi per fakultas</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Prodi Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Prodi Baru</Button>
 		</div>
 	</div>
 
 	<div class="filter-bar">
-		<select bind:value={filterFakultas} class="filter-select">
-			<option value="">Semua Fakultas</option>
-			{#each fakultasList as f}
-				<option value={f.id}>{f.name}</option>
-			{/each}
-		</select>
+<Select bind:value={filterFakultas} options={fakultasList.map((f) => ({ value: f.id, label: f.name }))} />
 		<span class="filter-count">{filtered.length} prodi</span>
 	</div>
 
@@ -157,12 +152,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if prodiList.length === 0}
 		<div class="empty-state">
 			<p>Belum ada program studi</p>
-			<button class="btn-primary" onclick={openCreate}>Buat Prodi Pertama</button>
+			<Button variant="primary" onclick={openCreate}>Buat Prodi Pertama</Button>
 		</div>
 	{:else}
 		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari prodi..." />
@@ -176,47 +171,30 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Prodi Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="prodi-name">{t('admin.prodi')}</label>
-					<input id="prodi-name" type="text" bind:value={formName} placeholder="Cth: Teknik Informatika" />
+<Input label={t('admin.prodi')} bind:value={formName} placeholder="Cth: Teknik Informatika" />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="prodi-code">{t('common.code')}</label>
-						<input id="prodi-code" type="text" bind:value={formCode} placeholder="IF" />
+<Input label={t('common.code')} bind:value={formCode} placeholder="IF" />
 					</div>
 					<div class="field">
-						<label for="prodi-jenjang">Jenjang</label>
-						<select id="prodi-jenjang" bind:value={formJenjang}>
-							<option value="D3">D3</option>
-							<option value="D4">D4</option>
-							<option value="S1">S1</option>
-							<option value="S2">S2</option>
-							<option value="S3">S3</option>
-							<option value="Profesi">Profesi</option>
-							<option value="Spesialis">Spesialis</option>
-						</select>
+<Select label="Jenjang" bind:value={formJenjang} options={[{ value: "D3", label: "D3" }, { value: "D4", label: "D4" }, { value: "S1", label: "S1" }, { value: "S2", label: "S2" }, { value: "S3", label: "S3" }, { value: "Profesi", label: "Profesi" }, { value: "Spesialis", label: "Spesialis" }]} />
 					</div>
 				</div>
 				<div class="field">
-					<label for="prodi-fakultas">Fakultas</label>
-					<select id="prodi-fakultas" bind:value={formFakultasId}>
-						<option value="">— Pilih Fakultas —</option>
-						{#each fakultasList as f}
-							<option value={f.id}>{f.name}</option>
-						{/each}
-					</select>
+<Select label="Fakultas" bind:value={formFakultasId} options={fakultasList.map((f) => ({ value: f.id, label: f.name }))} />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>
@@ -229,47 +207,30 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Edit Prodi</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="prodi-edit-name">{t('admin.prodi')}</label>
-					<input id="prodi-edit-name" type="text" bind:value={formName} />
+<Input label={t('admin.prodi')} bind:value={formName} />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="prodi-edit-code">{t('common.code')}</label>
-						<input id="prodi-edit-code" type="text" bind:value={formCode} />
+<Input label={t('common.code')} bind:value={formCode} />
 					</div>
 					<div class="field">
-						<label for="prodi-edit-jenjang">Jenjang</label>
-						<select id="prodi-edit-jenjang" bind:value={formJenjang}>
-							<option value="D3">D3</option>
-							<option value="D4">D4</option>
-							<option value="S1">S1</option>
-							<option value="S2">S2</option>
-							<option value="S3">S3</option>
-							<option value="Profesi">Profesi</option>
-							<option value="Spesialis">Spesialis</option>
-						</select>
+<Select label="Jenjang" bind:value={formJenjang} options={[{ value: "D3", label: "D3" }, { value: "D4", label: "D4" }, { value: "S1", label: "S1" }, { value: "S2", label: "S2" }, { value: "S3", label: "S3" }, { value: "Profesi", label: "Profesi" }, { value: "Spesialis", label: "Spesialis" }]} />
 					</div>
 				</div>
 				<div class="field">
-					<label for="prodi-edit-fakultas">Fakultas</label>
-					<select id="prodi-edit-fakultas" bind:value={formFakultasId}>
-						<option value="">— Pilih Fakultas —</option>
-						{#each fakultasList as f}
-							<option value={f.id}>{f.name}</option>
-						{/each}
-					</select>
+<Select label="Fakultas" bind:value={formFakultasId} options={fakultasList.map((f) => ({ value: f.id, label: f.name }))} />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

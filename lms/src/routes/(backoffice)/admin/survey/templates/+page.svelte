@@ -293,8 +293,8 @@
 			<p class="subtitle">Kelola template survei dan pertanyaan</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadTemplates}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Template</button>
+			<Button class="btn-refresh" onclick={loadTemplates}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Template</Button>
 		</div>
 	</div>
 
@@ -313,7 +313,7 @@
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadTemplates}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadTemplates}>{t('common.retry')}</Button>
 		</div>
 	{/if}
 
@@ -327,33 +327,29 @@
 			<div class="modal" onclick={(e) => e.stopPropagation()}>
 				<div class="modal-header">
 					<h3>{editingId ? 'Edit Template' : 'Buat Template Baru'}</h3>
-					<button class="btn-close" onclick={cancelForm}>✕</button>
+					<Button class="btn-close" onclick={cancelForm}>✕</Button>
 				</div>
 				<div class="modal-body">
 					<div class="form-row">
 						<label class="form-label">Nama Template</label>
-						<input class="form-input" bind:value={formName} placeholder="e.g. Course Feedback" />
+<Input bind:value={formName} placeholder="e.g. Course Feedback" />
 					</div>
 					<div class="form-row-2col">
 						<div>
 							<label class="form-label">Tipe Survei</label>
-							<select class="form-input" bind:value={formSurveyType}>
-								{#each surveyTypes as st}
-									<option value={st}>{st}</option>
-								{/each}
-							</select>
+<Select bind:value={formSurveyType} options={surveyTypes.map((st) => ({ value: st, label: st }))} />
 						</div>
 					</div>
 					<div class="form-row">
 						<label class="form-label">Deskripsi (opsional)</label>
-						<textarea class="form-textarea" bind:value={formDescription} rows="3" placeholder="Deskripsi template..."></textarea>
+<Textarea placeholder="Deskripsi template..." bind:value={formDescription} rows=3 />
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
-					<button class="btn-primary" onclick={saveTemplate} disabled={saving || !formName}>
+					<Button variant="secondary" onclick={cancelForm}>{t('common.cancel')}</Button>
+					<Button variant="primary" onclick={saveTemplate} disabled={saving || !formName}>
 						{saving ? 'Menyimpan...' : editingId ? 'Update' : 'Buat Template'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -369,21 +365,17 @@
 			<div class="modal modal-wide" onclick={(e) => e.stopPropagation()}>
 				<div class="modal-header">
 					<h3>{editingQuestionId ? 'Edit Pertanyaan' : 'Tambah Pertanyaan'}</h3>
-					<button class="btn-close" onclick={cancelQForm}>✕</button>
+					<Button class="btn-close" onclick={cancelQForm}>✕</Button>
 				</div>
 				<div class="modal-body">
 					<div class="form-row">
 						<label class="form-label">Pertanyaan</label>
-						<input class="form-input" bind:value={qFormText} placeholder="e.g. How satisfied are you?" />
+<Input bind:value={qFormText} placeholder="e.g. How satisfied are you?" />
 					</div>
 					<div class="form-row-2col">
 						<div>
 							<label class="form-label">Tipe Jawaban</label>
-							<select class="form-input" bind:value={qFormType} onchange={() => { if (qFormType !== 'choice' && qFormType !== 'multiple_choice') qFormOptions = ''; }}>
-								{#each questionTypes as qt}
-									<option value={qt}>{questionTypeLabel(qt)}</option>
-								{/each}
-							</select>
+<Select bind:value={qFormType} onchange={() => { if (qFormType !== 'choice' && qFormType !== 'multiple_choice') qFormOptions = ''; }} options={questionTypes.map((qt) => ({ value: qt, label: questionTypeLabel(qt) }))} />
 						</div>
 						<div>
 							<label class="form-label">Urutan</label>
@@ -399,15 +391,15 @@
 					{#if qFormType === 'choice' || qFormType === 'multiple_choice'}
 						<div class="form-row">
 							<label class="form-label">Pilihan (satu per baris)</label>
-							<textarea class="form-textarea" bind:value={qFormOptions} rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+<Textarea placeholder="Option 1&#10;Option 2&#10;Option 3" bind:value={qFormOptions} rows=4 />
 						</div>
 					{/if}
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelQForm}>{t('common.cancel')}</button>
-					<button class="btn-primary" onclick={saveQuestion} disabled={saving || !qFormText}>
+					<Button variant="secondary" onclick={cancelQForm}>{t('common.cancel')}</Button>
+					<Button variant="primary" onclick={saveQuestion} disabled={saving || !qFormText}>
 						{saving ? 'Menyimpan...' : editingQuestionId ? 'Update' : 'Tambah'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -419,7 +411,7 @@
 	{:else if templates.length === 0}
 		<div class="empty-state">
 			<p>Belum ada template survei</p>
-			<button class="btn-primary" onclick={openCreate}>Buat Template Pertama</button>
+			<Button variant="primary" onclick={openCreate}>Buat Template Pertama</Button>
 		</div>
 	{:else}
 		<div class="templates-list">
@@ -431,9 +423,9 @@
 							<p class="t-meta">{t.survey_type || 'feedback'}{t.description ? ` · ${t.description}` : ''}</p>
 						</div>
 						<div class="t-actions">
-							<button class="btn-small" onclick={() => openAddQuestion(t.id)}>+ Pertanyaan</button>
-							<button class="btn-small" onclick={() => openEdit(t)}>{t('common.edit')}</button>
-							<button class="btn-small btn-danger" onclick={() => deleteTemplate(t.id)}>{t('common.delete')}</button>
+							<Button class="btn-small" onclick={() => openAddQuestion(t.id)}>+ Pertanyaan</Button>
+							<Button class="btn-small" onclick={() => openEdit(t)}>{t('common.edit')}</Button>
+							<Button variant="danger" class="btn-small" onclick={() => deleteTemplate(t.id)}>{t('common.delete')}</Button>
 						</div>
 					</div>
 
@@ -447,7 +439,7 @@
 							{:else if questions.length === 0}
 								<div class="empty-state small">
 									<p>Belum ada pertanyaan</p>
-									<button class="btn-small" onclick={() => { resetQForm(); showQuestionForm = true; }}>+ Tambah</button>
+									<Button class="btn-small" onclick={() => { resetQForm(); showQuestionForm = true; }}>+ Tambah</Button>
 								</div>
 							{:else}
 								<div class="question-list">
@@ -462,10 +454,10 @@
 												{/if}
 											</div>
 											<div class="q-actions">
-												<button class="btn-icon" onclick={() => moveQuestion(q.id, -1)} disabled={i === 0}>↑</button>
-												<button class="btn-icon" onclick={() => moveQuestion(q.id, 1)} disabled={i === questions.length - 1}>↓</button>
-												<button class="btn-icon" onclick={() => openEditQuestion(q)}>✏️</button>
-												<button class="btn-icon btn-icon-danger" onclick={() => deleteQuestion(q.id)}>🗑️</button>
+												<Button class="btn-icon" onclick={() => moveQuestion(q.id, -1)} disabled={i === 0}>↑</Button>
+												<Button class="btn-icon" onclick={() => moveQuestion(q.id, 1)} disabled={i === questions.length - 1}>↓</Button>
+												<Button class="btn-icon" onclick={() => openEditQuestion(q)}>✏️</Button>
+												<Button class="btn-icon btn-icon-danger" onclick={() => deleteQuestion(q.id)}>🗑️</Button>
 											</div>
 										</div>
 									{/each}
@@ -477,9 +469,9 @@
 					<div class="template-card-footer">
 						<span class="t-date">{formatDate(t.created_at)}</span>
 						{#if selectedTemplateId === t.id}
-							<button class="btn-text" onclick={() => { selectedTemplateId = null; questions = []; }}>{t('common.close')}</button>
+							<Button class="btn-text" onclick={() => { selectedTemplateId = null; questions = []; }}>{t('common.close')}</Button>
 						{:else}
-							<button class="btn-text" onclick={() => { selectedTemplateId = t.id; fetchQuestions(t.id); }}>Lihat Pertanyaan</button>
+							<Button class="btn-text" onclick={() => { selectedTemplateId = t.id; fetchQuestions(t.id); }}>Lihat Pertanyaan</Button>
 						{/if}
 					</div>
 				</div>

@@ -163,12 +163,12 @@ const roomColumns: ColumnDef<any, any>[] = [
 			<h2>Ruangan Ujian</h2>
 			<p class="page-desc">{rooms.length} ruangan · {activeCount} aktif</p>
 		</div>
-		<button class="btn btn-primary" onclick={openCreate}>+ Tambah Ruangan</button>
+		<Button variant="primary" class="btn" onclick={openCreate}>+ Tambah Ruangan</Button>
 	</div>
 
 	{#if !loading && rooms.length > 0}
 		<div class="search-bar">
-			<input type="text" class="search-input" placeholder="🔍 Cari ruangan..." bind:value={searchQuery} />
+<Input bind:value={searchQuery} placeholder="🔍 Cari ruangan..." class="search-input" />
 		</div>
 	{/if}
 
@@ -177,12 +177,12 @@ const roomColumns: ColumnDef<any, any>[] = [
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn" onclick={loadRooms}>{t('common.retry')}</button>
+			<Button class="btn" onclick={loadRooms}>{t('common.retry')}</Button>
 		</div>
 	{:else if rooms.length === 0}
 		<div class="empty-state">
 			<p>Belum ada ruangan ujian</p>
-			<button class="btn btn-primary" onclick={openCreate}>Tambah Ruangan Pertama</button>
+			<Button variant="primary" class="btn" onclick={openCreate}>Tambah Ruangan Pertama</Button>
 		</div>
 	{:else if filteredRooms.length === 0}
 		<div class="empty-state">
@@ -201,33 +201,29 @@ const roomColumns: ColumnDef<any, any>[] = [
 			<form onsubmit={(e) => { e.preventDefault(); save(); }}>
 				<div class="form-grid">
 					<div class="form-group">
-						<label for="room-name">Nama Ruangan *</label>
-						<input id="room-name" type="text" bind:value={form.name} required placeholder="Ruang Aula" />
+<Input label="Nama Ruangan *" bind:value={form.name} placeholder="Ruang Aula" required />
 					</div>
 					<div class="form-group">
-						<label for="room-code">{t('common.code')}</label>
-						<input id="room-code" type="text" bind:value={form.code} placeholder="AULA-01" />
+<Input label={t('common.code')} bind:value={form.code} placeholder="AULA-01" />
 					</div>
 					<div class="form-group">
 						<label for="room-capacity">{t('admin.kapasitas')}</label>
 						<input id="room-capacity" type="number" bind:value={form.capacity} min="1" required />
 					</div>
 					<div class="form-group">
-						<label for="room-building">Gedung</label>
-						<input id="room-building" type="text" bind:value={form.building} placeholder="Gedung A" />
+<Input label="Gedung" bind:value={form.building} placeholder="Gedung A" />
 					</div>
 					<div class="form-group">
 						<label for="room-floor">Lantai</label>
 						<input id="room-floor" type="number" bind:value={form.floor} min="0" />
 					</div>
 					<div class="form-group">
-						<label for="room-facilities">Fasilitas (koma dipisah)</label>
-						<input id="room-facilities" type="text" bind:value={form.facilities} placeholder="AC, Proyektor, CCTV" />
+<Input label="Fasilitas (koma dipisah)" bind:value={form.facilities} placeholder="AC, Proyektor, CCTV" />
 					</div>
 				</div>
 				<div class="modal-actions">
-					<button type="button" class="btn" onclick={closeModal}>{t('common.cancel')}</button>
-					<button type="submit" class="btn btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
+					<Button class="btn" type="button" onclick={closeModal}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="btn" type="submit" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</Button>
 				</div>
 			</form>
 		</div>

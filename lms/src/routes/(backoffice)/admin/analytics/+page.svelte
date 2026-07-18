@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, Alert, StatCard } from '$lib/components/ui';
+	import { Alert, Button, Card, CardContent, Input, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { DataTable, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
 
@@ -149,7 +149,7 @@
 			<p class="subtitle">{t('kaprodi.subtitle')}</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
+			<Button variant="ghost" size="sm" onclick={loadData}>🔄</Button>
 		</div>
 	</div>
 
@@ -158,12 +158,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if pendingList.length === 0 && !showRiwayat}
 		<div class="empty-state">
 			<p>{t('kaprodi.no_pending')}</p>
-			<button class="btn-secondary" onclick={loadRiwayat}>{t('kaprodi.view_history')}</button>
+			<Button variant="secondary" onclick={loadRiwayat}>{t('kaprodi.view_history')}</Button>
 		</div>
 	{:else}
 		<section class="section">
@@ -195,8 +195,8 @@
 							{/each}
 						</div>
 						<div class="krs-actions">
-							<button class="btn-approve" onclick={() => approveKrs(krs.id)}>{t('kaprodi.approve')}</button>
-							<button class="btn-reject" onclick={() => rejectKrs(krs.id)}>{t('kaprodi.reject')}</button>
+							<Button variant="primary" size="sm" onclick={() => approveKrs(krs.id)}>{t('kaprodi.approve')}</Button>
+							<Button variant="danger" size="sm" onclick={() => rejectKrs(krs.id)}>{t('kaprodi.reject')}</Button>
 						</div>
 					</div>
 				{/each}
@@ -206,7 +206,7 @@
 		<section class="section">
 			<div class="section-header">
 				<h2>{t('common.history')}</h2>
-				<button class="btn-secondary" onclick={loadRiwayat}>{t('kaprodi.load_history')}</button>
+				<Button variant="secondary" onclick={loadRiwayat}>{t('kaprodi.load_history')}</Button>
 			</div>
 			{#if showRiwayat}
 				{#if riwayatList.length === 0}

@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Session = {
@@ -241,31 +241,26 @@
 			<h1>📅 Sesi Presensi</h1>
 			<p class="subtitle">Kelola sesi presensi dan QR code</p>
 		</div>
-		<button class="btn-primary" onclick={() => { showCreateModal = true; resetForm(); }}>
+		<Button variant="primary" onclick={() => { showCreateModal = true; resetForm(); }}>
 			<Icon name="calendar" size={16} />
 			Buat Sesi Baru
-		</button>
+		</Button>
 	</div>
 
 	<!-- Filters -->
 	<div class="filters">
 		<div class="filter-group">
-			<label for="filter-status">{t('common.status')}</label>
-			<select id="filter-status" bind:value={filterStatus} onchange={loadSessions}>
-				<option value="">{t('common.all')}</option>
-				<option value="active">{t('common.active')}</option>
-				<option value="closed">{t('admin.selesai')}</option>
-			</select>
+<Select label={t('common.status')} bind:value={filterStatus} onchange={loadSessions} options={[{ value: "", label: t('common.all') }, { value: "active", label: t('common.active') }, { value: "closed", label: t('admin.selesai') }]} />
 		</div>
 		<div class="filter-group">
 			<label for="filter-date">{t('admin.tanggal')}</label>
 			<input id="filter-date" type="date" bind:value={filterDate} onchange={loadSessions} />
 		</div>
 		<div class="filter-action">
-			<button class="btn-outline" onclick={loadSessions}>
+			<Button class="btn-outline" onclick={loadSessions}>
 				<Icon name="search" size={14} />
 				Filter
-			</button>
+			</Button>
 		</div>
 	</div>
 
@@ -278,15 +273,15 @@
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadSessions}>{t('common.retry')}</button>
+			<Button variant="secondary" onclick={loadSessions}>{t('common.retry')}</Button>
 		</div>
 	{:else if sessions.length === 0}
 		<div class="empty-state">
 			<Icon name="calendar" size={48} />
 			<p>Belum ada sesi presensi</p>
-			<button class="btn-secondary" onclick={() => { showCreateModal = true; resetForm(); }}>
+			<Button variant="secondary" onclick={() => { showCreateModal = true; resetForm(); }}>
 				Buat Sesi Pertama
-			</button>
+			</Button>
 		</div>
 	{:else}
 		<div class="table-wrap">
@@ -302,17 +297,17 @@
 		<!-- Pagination -->
 		{#if total > 20}
 			<div class="pagination">
-				<button
+				<Button
 					class="btn-outline btn-sm"
 					disabled={currentPage <= 1}
 					onclick={() => { currentPage--; loadSessions(); }}
-				>{t('admin.prev')}</button>
+				>{t('admin.prev')}</Button>
 				<span class="page-info">Halaman {currentPage} / {Math.ceil(total / 20)}</span>
-				<button
+				<Button
 					class="btn-outline btn-sm"
 					disabled={currentPage * 20 >= total}
 					onclick={() => { currentPage++; loadSessions(); }}
-				>{t('admin.next_page')}</button>
+				>{t('admin.next_page')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -326,9 +321,9 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h3>{t('admin.buat_sesi_baru')}</h3>
-				<button class="modal-close" onclick={() => showCreateModal = false}>
+				<Button class="modal-close" onclick={() => showCreateModal = false}>
 					<Icon name="x" size={18} />
-				</button>
+				</Button>
 			</div>
 
 			{#if createdSession}
@@ -343,34 +338,23 @@
 						<a href="/admin/attendance/sessions/{createdSession.id}" class="btn-primary">
 							Lihat Detail
 						</a>
-						<button class="btn-outline" onclick={() => { createdSession = null; resetForm(); }}>
+						<Button class="btn-outline" onclick={() => { createdSession = null; resetForm(); }}>
 							Buat Lagi
-						</button>
+						</Button>
 					</div>
 				</div>
 			{:else}
 				<form class="modal-form" onsubmit={(e) => { e.preventDefault(); createSession(); }}>
 					<div class="form-group">
-						<label for="cs-id">Kelas / Mata Kuliah *</label>
-						<select id="cs-id" bind:value={formClassSubjectId} required>
-							<option value="">— Pilih —</option>
-							{#each classSubjects as cs}
-								<option value={cs.id}>{cs.name}</option>
-							{/each}
-						</select>
+<Select label="Kelas / Mata Kuliah *" bind:value={formClassSubjectId} required options={classSubjects.map((cs) => ({ value: cs.id, label: cs.name }))} />
 					</div>
 
 					<div class="form-row">
 						<div class="form-group">
-							<label for="cs-year">Tahun Ajaran *</label>
-							<input id="cs-year" type="text" bind:value={formAcademicYear} placeholder="2025" required />
+<Input label="Tahun Ajaran *" bind:value={formAcademicYear} placeholder="2025" required />
 						</div>
 						<div class="form-group">
-							<label for="cs-semester">Semester *</label>
-							<select id="cs-semester" bind:value={formSemester}>
-								<option value={1}>1 (Ganjil)</option>
-								<option value={2}>2 (Genap)</option>
-							</select>
+<Select label="Semester *" bind:value={formSemester} />
 						</div>
 					</div>
 
@@ -386,8 +370,7 @@
 					</div>
 
 					<div class="form-group">
-						<label for="cs-notes">{t('admin.catatan')}</label>
-						<textarea id="cs-notes" bind:value={formNotes} rows="2" placeholder="Opsional..."></textarea>
+<Textarea label={t('admin.catatan')} placeholder="Opsional..." bind:value={formNotes} rows=2 />
 					</div>
 
 					{#if formError}
@@ -395,10 +378,10 @@
 					{/if}
 
 					<div class="modal-actions">
-						<button type="button" class="btn-outline" onclick={() => showCreateModal = false}>{t('common.cancel')}</button>
-						<button type="submit" class="btn-primary" disabled={formCreating}>
+						<Button class="btn-outline" type="button" onclick={() => showCreateModal = false}>{t('common.cancel')}</Button>
+						<Button variant="primary" type="submit" disabled={formCreating}>
 							{formCreating ? 'Membuat...' : 'Buat Sesi'}
-						</button>
+						</Button>
 					</div>
 				</form>
 			{/if}

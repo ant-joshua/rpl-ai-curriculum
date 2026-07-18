@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let mapelList: any[] = $state([]);
@@ -136,25 +136,14 @@
 			<p class="subtitle">Kelola data mata pelajaran & kompetensi dasar</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openForm}>+ Mapel Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openForm}>+ Mapel Baru</Button>
 		</div>
 	</div>
 
 	<div class="filter-bar">
-		<select bind:value={filterJenis} class="filter-select">
-			<option value="">Semua Jenis</option>
-			<option value="wajib">{t('admin.wajib')}</option>
-			<option value="peminatan">{t('admin.peminatan')}</option>
-			<option value="muatan_lokal">{t('admin.muatan_lokal')}</option>
-			<option value="pilihan">{t('admin.pilihan')}</option>
-		</select>
-		<select bind:value={filterTingkat} class="filter-select">
-			<option value="">Semua Tingkat</option>
-			{#each tingkatList as t}
-				<option value={t.id}>{t.name}</option>
-			{/each}
-		</select>
+<Select bind:value={filterJenis} options={[{ value: "", label: "Semua Jenis" }, { value: "wajib", label: t('admin.wajib') }, { value: "peminatan", label: t('admin.peminatan') }, { value: "muatan_lokal", label: t('admin.muatan_lokal') }, { value: "pilihan", label: t('admin.pilihan') }]} />
+<Select bind:value={filterTingkat} options={tingkatList.map((t) => ({ value: t.id, label: t.name }))} />
 		<span class="filter-count">{filtered.length} mapel</span>
 	</div>
 
@@ -163,12 +152,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if mapelList.length === 0}
 		<div class="empty-state">
 			<p>Belum ada mata pelajaran</p>
-			<button class="btn-primary" onclick={openForm}>Buat Mapel Pertama</button>
+			<Button variant="primary" onclick={openForm}>Buat Mapel Pertama</Button>
 		</div>
 	{:else}
 		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari mata pelajaran..." />
@@ -182,53 +171,32 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Mata Pelajaran Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-name">{t('admin.nama_mapel')}</label>
-						<input id="mapel-name" type="text" bind:value={formName} placeholder="Cth: Matematika" />
+<Input label={t('admin.nama_mapel')} bind:value={formName} placeholder="Cth: Matematika" />
 					</div>
 					<div class="field">
-						<label for="mapel-code">{t('common.code')}</label>
-						<input id="mapel-code" type="text" bind:value={formCode} placeholder="MTK" />
+<Input label={t('common.code')} bind:value={formCode} placeholder="MTK" />
 					</div>
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-type">{t('admin.jenis')}</label>
-						<select id="mapel-type" bind:value={formType}>
-							<option value="wajib">{t('admin.wajib')}</option>
-							<option value="peminatan">{t('admin.peminatan')}</option>
-							<option value="muatan_lokal">{t('admin.muatan_lokal')}</option>
-							<option value="pilihan">{t('admin.pilihan')}</option>
-						</select>
+<Select label={t('admin.jenis')} bind:value={formType} options={[{ value: "wajib", label: t('admin.wajib') }, { value: "peminatan", label: t('admin.peminatan') }, { value: "muatan_lokal", label: t('admin.muatan_lokal') }, { value: "pilihan", label: t('admin.pilihan') }]} />
 					</div>
 					<div class="field">
-						<label for="mapel-group">{t('admin.kelompok')}</label>
-						<input id="mapel-group" type="text" bind:value={formGroupName} placeholder="A, B, C" />
+<Input label={t('admin.kelompok')} bind:value={formGroupName} placeholder="A, B, C" />
 					</div>
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="mapel-tingkat">Tingkat (opsional)</label>
-						<select id="mapel-tingkat" bind:value={formGradeLevelId}>
-							<option value="">— Semua Tingkat —</option>
-							{#each tingkatList as t}
-								<option value={t.id}>{t.name}</option>
-							{/each}
-						</select>
+<Select label="Tingkat (opsional)" bind:value={formGradeLevelId} options={tingkatList.map((t) => ({ value: t.id, label: t.name }))} />
 					</div>
 					<div class="field">
-						<label for="mapel-jurusan">Jurusan (opsional)</label>
-						<select id="mapel-jurusan" bind:value={formMajorId}>
-							<option value="">— Semua Jurusan —</option>
-							{#each jurusanList as j}
-								<option value={j.id}>{j.name}</option>
-							{/each}
-						</select>
+<Select label="Jurusan (opsional)" bind:value={formMajorId} options={jurusanList.map((j) => ({ value: j.id, label: j.name }))} />
 					</div>
 				</div>
 				<div class="field-row">
@@ -238,15 +206,14 @@
 					</div>
 				</div>
 				<div class="field">
-					<label for="mapel-desc">Deskripsi (opsional)</label>
-					<textarea id="mapel-desc" bind:value={formDescription} rows="3" placeholder="Deskripsi mata pelajaran..."></textarea>
+<Textarea label="Deskripsi (opsional)" placeholder="Deskripsi mata pelajaran..." bind:value={formDescription} rows=3 />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let logs: any[] = $state([]);
@@ -122,25 +122,20 @@
 		<h1 class="text-2xl font-bold text-[var(--text-primary)]">Error Logs</h1>
 		<div class="flex items-center gap-3">
 			<span class="text-sm text-[var(--text-muted)]">{total} errors</span>
-			<button onclick={resetFilter} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm hover:bg-[var(--accent)] hover:text-white transition-colors">Reset</button>
+			<Button class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm hover:bg-[var(--accent)] hover:text-white transition-colors" onclick={resetFilter}>Reset</Button>
 		</div>
 	</div>
 
 	<!-- Filters -->
 	<div class="flex flex-wrap gap-3 mb-4 items-end">
-		<select bind:value={filterLevel} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm">
-			<option value="">All levels</option>
-			<option value="error">Error</option>
-			<option value="warning">Warning</option>
-			<option value="critical">Critical</option>
-		</select>
-		<input bind:value={filterSearch} placeholder="Search message, URL, stack..." class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm w-64" />
+<Select bind:value={filterLevel} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" options={[{ value: "", label: "All levels" }, { value: "error", label: "Error" }, { value: "warning", label: "Warning" }, { value: "critical", label: "Critical" }]} />
+<Input bind:value={filterSearch} placeholder="Search message, URL, stack..." class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm w-64" />
 		<div class="flex items-center gap-2">
 			<input type="date" bind:value={filterStartDate} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" />
 			<span class="text-[var(--text-muted)]">to</span>
 			<input type="date" bind:value={filterEndDate} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" />
 		</div>
-		<button onclick={applyFilter} class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90">Apply</button>
+		<Button class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90" onclick={applyFilter}>Apply</Button>
 	</div>
 
 	<!-- DataTable -->
@@ -168,15 +163,15 @@
 
 	<!-- Pagination -->
 	<div class="flex items-center justify-between mt-4 text-sm">
-		<button onclick={prevPage} disabled={page <= 1}
+		<Button onclick={prevPage} disabled={page <= 1}
 			class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] disabled:opacity-40 hover:bg-[var(--accent)] hover:text-white transition-colors">
 			← Prev
-		</button>
+		</Button>
 		<span class="text-[var(--text-muted)]">Page {page} of {totalPages}</span>
-		<button onclick={nextPage} disabled={page >= totalPages}
+		<Button onclick={nextPage} disabled={page >= totalPages}
 			class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] disabled:opacity-40 hover:bg-[var(--accent)] hover:text-white transition-colors">
 			Next →
-		</button>
+		</Button>
 	</div>
 </div>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { Button, StatCard } from '$lib/components/ui';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -93,7 +93,7 @@
 		<div class="pp-error">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
 			<p>{error}</p>
-			<button class="pp-btn pp-btn-ghost" onclick={loadStats}>{t('common.retry')}</button>
+			<Button variant="ghost" class="pp-btn pp-" onclick={loadStats}>{t('common.retry')}</Button>
 		</div>
 	{:else if stats}
 		<div class="pp-stats-grid">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, SearchBar, PageHeader, EmptyState, DataTable } from '$lib/components/ui';
+	import { Badge, Button, Card, CardContent, DataTable, EmptyState, PageHeader, SearchBar, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let enrollments: any[] = $state([]);
@@ -253,12 +253,7 @@
 	<div class="filters">
 		<SearchBar bind:value={searchQuery} placeholder="Cari nama/email siswa..." onSearch={doSearch} />
 		<div class="filter-selects">
-			<select bind:value={selectedOfferingId} onchange={() => { page = 1; loadData(); }} class="select-input">
-				<option value="">Semua Offering</option>
-				{#each offerings as o}
-					<option value={o.id}>{o.name}</option>
-				{/each}
-			</select>
+<Select bind:value={selectedOfferingId} onchange={() => { page = 1; loadData(); }} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
 		</div>
 	</div>
 
@@ -300,26 +295,14 @@
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
 			<div class="modal-header">
 				<h2>Tambah Pendaftaran</h2>
-				<button class="modal-close" onclick={closeAddModal}>✕</button>
+				<Button class="modal-close" onclick={closeAddModal}>✕</Button>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label for="add-user">Siswa</label>
-					<select id="add-user" bind:value={addUserId} class="select-input">
-						<option value="">— Pilih Siswa —</option>
-						{#each users as u}
-							<option value={u.id}>{u.display_name || u.username} ({u.email || '-'})</option>
-						{/each}
-					</select>
+<Select label="Siswa" bind:value={addUserId} options={users.map((u) => ({ value: u.id, label: `${u.display_name || u.username} (${u.email || '-'})` }))} />
 				</div>
 				<div class="form-group">
-					<label for="add-offering">Course Offering</label>
-					<select id="add-offering" bind:value={addOfferingId} class="select-input">
-						<option value="">— Pilih Offering —</option>
-						{#each offerings as o}
-							<option value={o.id}>{o.name} ({o.code || '-'})</option>
-						{/each}
-					</select>
+<Select label="Course Offering" bind:value={addOfferingId} options={offerings.map((o) => ({ value: o.id, label: `${o.name} (${o.code || '-'})` }))} />
 				</div>
 				{#if submitError}
 					<div class="submit-error">{submitError}</div>

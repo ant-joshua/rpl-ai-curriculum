@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let semesterList: any[] = $state([]);
@@ -145,8 +145,8 @@
 			<p class="subtitle">Kelola semester akademik</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Semester Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Semester Baru</Button>
 		</div>
 	</div>
 
@@ -155,12 +155,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if semesterList.length === 0}
 		<div class="empty-state">
 			<p>Belum ada semester</p>
-			<button class="btn-primary" onclick={openCreate}>Buat Semester Pertama</button>
+			<Button variant="primary" onclick={openCreate}>Buat Semester Pertama</Button>
 		</div>
 	{:else}
 		<div class="card">
@@ -184,37 +184,30 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Semester Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="sem-name">{t('admin.nama_semester')}</label>
-					<input id="sem-name" type="text" bind:value={formName} placeholder="Cth: Semester Ganjil 2025/2026" />
+<Input label={t('admin.nama_semester')} bind:value={formName} placeholder="Cth: Semester Ganjil 2025/2026" />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="sem-code">Kode (opsional)</label>
-						<input id="sem-code" type="text" bind:value={formCode} placeholder="GANJIL-2025" />
+<Input label="Kode (opsional)" bind:value={formCode} placeholder="GANJIL-2025" />
 					</div>
 					<div class="field">
-						<label for="sem-tahun">{t('admin.tahun_ajaran')}</label>
-						<input id="sem-tahun" type="text" bind:value={formTahunAjaran} placeholder="2025/2026" />
+<Input label={t('admin.tahun_ajaran')} bind:value={formTahunAjaran} placeholder="2025/2026" />
 					</div>
 					<div class="field">
-						<label for="sem-value">{t('admin.semester')}</label>
-						<select id="sem-value" bind:value={formSemester}>
-							<option value="1">{t('admin.ganjil')}</option>
-							<option value="2">{t('admin.genap')}</option>
-						</select>
+<Select label={t('admin.semester')} bind:value={formSemester} options={[{ value: "1", label: t('admin.ganjil') }, { value: "2", label: t('admin.genap') }]} />
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

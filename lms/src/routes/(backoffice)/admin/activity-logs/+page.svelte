@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let logs: any[] = $state([]);
@@ -124,18 +124,9 @@
 
 	<!-- Filters -->
 	<div class="flex flex-wrap gap-3 mb-4">
-		<select bind:value={filterAction} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm">
-			<option value="">All actions</option>
-			<option value="read">Read</option>
-			<option value="create">{t('common.create')}</option>
-			<option value="update">Update</option>
-			<option value="delete">{t('common.delete')}</option>
-			<option value="login">Login</option>
-			<option value="logout">Logout</option>
-			<option value="error">Error</option>
-		</select>
-		<input bind:value={filterUser} placeholder="User ID" class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" />
-		<button onclick={applyFilter} class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90">Apply</button>
+<Select bind:value={filterAction} class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" options={[{ value: "", label: "All actions" }, { value: "read", label: "Read" }, { value: "create", label: t('common.create') }, { value: "update", label: "Update" }, { value: "delete", label: t('common.delete') }, { value: "login", label: "Login" }, { value: "logout", label: "Logout" }, { value: "error", label: "Error" }]} />
+<Input bind:value={filterUser} placeholder="User ID" class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] text-sm" />
+		<Button class="px-4 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90" onclick={applyFilter}>Apply</Button>
 	</div>
 
 	<!-- DataTable -->
@@ -163,15 +154,15 @@
 
 	<!-- Pagination -->
 	<div class="flex items-center justify-between mt-4 text-sm">
-		<button onclick={prevPage} disabled={page <= 1}
+		<Button onclick={prevPage} disabled={page <= 1}
 			class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] disabled:opacity-40 hover:bg-[var(--accent)] hover:text-white transition-colors">
 			← Prev
-		</button>
+		</Button>
 		<span class="text-[var(--text-muted)]">Page {page} of {totalPages}</span>
-		<button onclick={nextPage} disabled={page >= totalPages}
+		<Button onclick={nextPage} disabled={page >= totalPages}
 			class="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border)] disabled:opacity-40 hover:bg-[var(--accent)] hover:text-white transition-colors">
 			Next →
-		</button>
+		</Button>
 	</div>
 </div>
 

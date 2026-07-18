@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { StatCard, DataTable } from '$lib/components/ui';
+	import { Button, DataTable, StatCard } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type AttendanceStats = {
@@ -180,7 +180,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadStats}>{t('common.retry')}</button>
+			<Button variant="secondary" onclick={loadStats}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->

@@ -222,14 +222,7 @@
 
 		<div class="field-group">
 			<label class="field-label" for="html-template">HTML Template</label>
-			<textarea
-				class="html-editor"
-				bind:value={formHtmlTemplate}
-				rows={12}
-				placeholder="<html>...</html>"
-				spellcheck="false"
-				id="html-template"
-			></textarea>
+<Textarea placeholder="<html>...</html>" bind:value={formHtmlTemplate} id="html-template" class="html-editor" />
 			<p class="field-hint">Use {'{{'}variable}} placeholders: {'{{'}student_name}}, {'{{'}class_name}}, {'{{'}academic_year}}, {'{{'}semester}}, etc.</p>
 		</div>
 

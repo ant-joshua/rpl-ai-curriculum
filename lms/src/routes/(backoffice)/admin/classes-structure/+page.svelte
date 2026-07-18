@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { Button, StatCard } from '$lib/components/ui';
 
 	let stats: any = $state(null);
 	let loading = $state(true);
@@ -49,7 +49,7 @@
 			<h1>🏗️ Struktur Kurikulum</h1>
 			<p class="subtitle">K13 — Kelola data master struktur sekolah</p>
 		</div>
-		<button class="btn-refresh" onclick={loadStats}>🔄 Refresh</button>
+		<Button class="btn-refresh" onclick={loadStats}>🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
@@ -57,7 +57,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadStats}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadStats}>{t('common.retry')}</Button>
 		</div>
 	{:else if stats}
 		<div class="stats-grid">

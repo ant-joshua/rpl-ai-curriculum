@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let mapel: any = $state(null);
@@ -190,7 +190,7 @@
 				<h2>🎯 Kompetensi Dasar (KD)</h2>
 				<div class="card-header-actions">
 					<span class="badge-count">{kdList.length} KD</span>
-					<button class="btn-primary btn-sm" onclick={openForm}>+ Tambah KD</button>
+					<Button variant="primary" size="sm" onclick={openForm}>+ Tambah KD</Button>
 				</div>
 			</div>
 
@@ -220,52 +220,35 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Tambah KD Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field-row">
 					<div class="field">
-						<label for="kd-code">Kode KD</label>
-						<input id="kd-code" type="text" bind:value={formCode} placeholder="Cth: 3.1" />
+<Input label="Kode KD" bind:value={formCode} placeholder="Cth: 3.1" />
 					</div>
 					<div class="field">
-						<label for="kd-semester">{t('admin.semester')}</label>
-						<select id="kd-semester" bind:value={formSemester}>
-							<option value={1}>Semester 1 (Ganjil)</option>
-							<option value={2}>Semester 2 (Genap)</option>
-						</select>
+<Select label={t('admin.semester')} bind:value={formSemester} />
 					</div>
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="kd-type">Tipe KD</label>
-						<select id="kd-type" bind:value={formType}>
-							<option value="pengetahuan">Pengetahuan</option>
-							<option value="keterampilan">Keterampilan</option>
-							<option value="sikap">Sikap</option>
-						</select>
+<Select label="Tipe KD" bind:value={formType} options={[{ value: "pengetahuan", label: "Pengetahuan" }, { value: "keterampilan", label: "Keterampilan" }, { value: "sikap", label: "Sikap" }]} />
 					</div>
 					<div class="field">
-						<label for="kd-ki">Kompetensi Inti</label>
-						<select id="kd-ki" bind:value={formCompetenceType}>
-							<option value="1">KI-1 (Spiritual)</option>
-							<option value="2">KI-2 (Sosial)</option>
-							<option value="3">KI-3 (Pengetahuan)</option>
-							<option value="4">KI-4 (Keterampilan)</option>
-						</select>
+<Select label="Kompetensi Inti" bind:value={formCompetenceType} options={[{ value: "1", label: "KI-1 (Spiritual)" }, { value: "2", label: "KI-2 (Sosial)" }, { value: "3", label: "KI-3 (Pengetahuan)" }, { value: "4", label: "KI-4 (Keterampilan)" }]} />
 					</div>
 				</div>
 				<div class="field">
-					<label for="kd-desc">Deskripsi KD</label>
-					<textarea id="kd-desc" bind:value={formDescription} rows="4" placeholder="Deskripsi kompetensi dasar..."></textarea>
+<Textarea label="Deskripsi KD" placeholder="Deskripsi kompetensi dasar..." bind:value={formDescription} rows=4 />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan KD'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

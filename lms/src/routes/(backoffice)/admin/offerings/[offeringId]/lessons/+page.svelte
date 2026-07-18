@@ -230,9 +230,9 @@
 				{#each lessons as lesson, i (lesson.id)}
 					<div class="lesson-card">
 						<div class="lesson-order-handle">
-							<button class="move-btn" onclick={() => moveLesson(lesson.id, 'up')} disabled={i === 0} title="Naik">↑</button>
+							<Button class="move-btn" onclick={() => moveLesson(lesson.id, 'up')} disabled={i === 0} title="Naik">↑</Button>
 							<span class="order-num">{i + 1}</span>
-							<button class="move-btn" onclick={() => moveLesson(lesson.id, 'down')} disabled={i === lessons.length - 1} title="Turun">↓</button>
+							<Button class="move-btn" onclick={() => moveLesson(lesson.id, 'down')} disabled={i === lessons.length - 1} title="Turun">↓</Button>
 						</div>
 						<div class="lesson-info">
 							<h3 class="lesson-title">{lesson.title}</h3>

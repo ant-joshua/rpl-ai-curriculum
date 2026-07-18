@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let assignments: any[] = $state([]);
@@ -138,24 +138,14 @@
 			<p class="subtitle">Penugasan guru per kelas & mata pelajaran</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openForm}>+ Assign Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openForm}>+ Assign Baru</Button>
 		</div>
 	</div>
 
 	<div class="filter-bar">
-		<select bind:value={filterKelas} class="filter-select">
-			<option value="">Semua Kelas</option>
-			{#each kelasList as k}
-				<option value={k.id}>{k.name}</option>
-			{/each}
-		</select>
-		<select bind:value={filterMapel} class="filter-select">
-			<option value="">Semua Mapel</option>
-			{#each mapelList as m}
-				<option value={m.id}>{m.name}</option>
-			{/each}
-		</select>
+<Select bind:value={filterKelas} options={kelasList.map((k) => ({ value: k.id, label: k.name }))} />
+<Select bind:value={filterMapel} options={mapelList.map((m) => ({ value: m.id, label: m.name }))} />
 		<span class="filter-count">{filtered.length} penugasan</span>
 	</div>
 
@@ -164,12 +154,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if assignments.length === 0}
 		<div class="empty-state">
 			<p>Belum ada penugasan guru mapel</p>
-			<button class="btn-primary" onclick={openForm}>Assign Pertama</button>
+			<Button variant="primary" onclick={openForm}>Assign Pertama</Button>
 		</div>
 	{:else}
 		<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari kelas/guru..." />
@@ -183,44 +173,22 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Assign Guru Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="gm-kelas">Kelas</label>
-					<select id="gm-kelas" bind:value={formClassId}>
-						<option value="">— Pilih Kelas —</option>
-						{#each kelasList as k}
-							<option value={k.id}>{k.name}</option>
-						{/each}
-					</select>
+<Select label="Kelas" bind:value={formClassId} options={kelasList.map((k) => ({ value: k.id, label: k.name }))} />
 				</div>
 				<div class="field">
-					<label for="gm-mapel">{t('admin.mapel')}</label>
-					<select id="gm-mapel" bind:value={formSubjectId}>
-						<option value="">— Pilih Mapel —</option>
-						{#each mapelList as m}
-							<option value={m.id}>{m.name}</option>
-						{/each}
-					</select>
+<Select label={t('admin.mapel')} bind:value={formSubjectId} options={mapelList.map((m) => ({ value: m.id, label: m.name }))} />
 				</div>
 				<div class="field">
-					<label for="gm-guru">Guru</label>
-					<select id="gm-guru" bind:value={formTeacherId}>
-						<option value="">— Pilih Guru —</option>
-						{#each guruList as g}
-							<option value={g.id}>{g.display_name || g.name || g.username || g.id?.slice(0, 12)}</option>
-						{/each}
-					</select>
+<Select label="Guru" bind:value={formTeacherId} options={guruList.map((g) => ({ value: g.id, label: g.display_name || g.name || g.username || g.id?.slice(0, 12) }))} />
 				</div>
 				<div class="field-row">
 					<div class="field">
-						<label for="gm-semester">{t('admin.semester')}</label>
-						<select id="gm-semester" bind:value={formSemester}>
-							<option value={1}>Semester 1 (Ganjil)</option>
-							<option value={2}>Semester 2 (Genap)</option>
-						</select>
+<Select label={t('admin.semester')} bind:value={formSemester} />
 					</div>
 					<div class="field">
 						<label for="gm-hours">{t('admin.jp_per_minggu')}</label>
@@ -229,10 +197,10 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

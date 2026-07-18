@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Input, Button } from '$lib/components/ui/index.js';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { page } from '$app/stores';
@@ -137,19 +137,19 @@
 			</div>
 
 			<div class="toolbar">
-				<input class="search-input" type="text" placeholder={t('batch.search_placeholder')} bind:value={studentSearch} />
-				<button class="btn btn-secondary btn-sm" onclick={toggleEnroll}>
+				<Input type="text" placeholder={t('batch.search_placeholder')} bind:value={studentSearch} />
+				<Button variant="primary" size="sm" onclick={toggleEnroll}>
 					{showEnroll ? t('batch.toggle_close') : t('batch.enroll_student')}
-				</button>
-				<button class="btn btn-ghost btn-sm" onclick={loadData}>🔄 {t('common.refresh')}</button>
+				</Button>
+				<Button variant="ghost" size="sm" onclick={loadData}>🔄 {t('common.refresh')}</Button>
 			</div>
 
 			{#if showEnroll}
 				<div class="enroll-box">
-					<input class="input-field" type="text" placeholder={t('batch.student_id_placeholder')} bind:value={enrollStudentId} />
-					<button class="btn btn-secondary btn-sm" onclick={enrollStudent} disabled={loadingEnroll || !enrollStudentId.trim()}>
+					<Input type="text" placeholder={t('batch.student_id_placeholder')} bind:value={enrollStudentId} />
+					<Button variant="primary" size="sm" onclick={enrollStudent} disabled={loadingEnroll || !enrollStudentId.trim()}>
 						{loadingEnroll ? t('batch.enrolling') : t('batch.enroll')}
-					</button>
+					</Button>
 				</div>
 			{/if}
 

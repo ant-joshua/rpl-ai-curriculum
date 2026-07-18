@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { Button, StatCard } from '$lib/components/ui';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -104,13 +104,13 @@
 			<h1>📋 Exam Scheduler</h1>
 			<p class="subtitle">Kelola jadwal ujian, ruangan, dan tipe ujian</p>
 		</div>
-		<button class="btn-refresh" onclick={loadAll}>🔄</button>
+		<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
 	</div>
 
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -228,7 +228,7 @@
 			{:else if examTypes.length === 0}
 				<div class="empty-state">
 					<p>Belum ada tipe ujian</p>
-					<button class="btn-primary" onclick={() => window.location.href = '/admin/exam-scheduler/exams'}>Kelola Ujian</button>
+					<Button variant="primary" onclick={() => window.location.href = '/admin/exam-scheduler/exams'}>Kelola Ujian</Button>
 				</div>
 			{:else}
 				<div class="card">

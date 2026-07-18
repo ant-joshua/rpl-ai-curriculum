@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let exams: any[] = $state([]);
@@ -232,8 +232,8 @@
 			<p class="subtitle">Kelola jadwal ujian dan penilaian</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadExams}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Ujian Baru</button>
+			<Button class="btn-refresh" onclick={loadExams}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Ujian Baru</Button>
 		</div>
 	</div>
 
@@ -246,25 +246,18 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadExams}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadExams}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<!-- Filters -->
 		<div class="filters">
-			<input
+<Input  />
 				type="text"
 				class="filter-input"
 				placeholder="🔍 Cari ujian..."
 				bind:value={filterSearch}
 			/>
-			<select class="filter-select" bind:value={filterStatus}>
-				<option value="">Semua Status</option>
-				<option value="draft">{t('admin.draft')}</option>
-				<option value="published">{t('admin.published')}</option>
-				<option value="ongoing">{t('admin.ongoing')}</option>
-				<option value="completed">{t('admin.completed')}</option>
-				<option value="cancelled">{t('admin.cancelled')}</option>
-			</select>
+<Select bind:value={filterStatus} options={[{ value: "", label: "Semua Status" }, { value: "draft", label: t('admin.draft') }, { value: "published", label: t('admin.published') }, { value: "ongoing", label: t('admin.ongoing') }, { value: "completed", label: t('admin.completed') }, { value: "cancelled", label: t('admin.cancelled') }]} />
 			<span class="filter-count">{filteredExams.length} ujian</span>
 		</div>
 
@@ -272,7 +265,7 @@
 			<div class="empty-state">
 				{#if exams.length === 0}
 					<p>Belum ada jadwal ujian</p>
-					<button class="btn-primary" onclick={openCreate}>Buat Ujian Pertama</button>
+					<Button variant="primary" onclick={openCreate}>Buat Ujian Pertama</Button>
 				{:else}
 					<p>Tidak ada ujian yang cocok dengan filter</p>
 				{/if}
@@ -295,33 +288,23 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Ujian Baru</h2>
-				<button class="modal-close" onclick={closeModal}>✕</button>
+				<Button class="modal-close" onclick={closeModal}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="form-grid">
 					<div class="field field--full">
-						<label for="exam-name">Nama Ujian *</label>
-						<input id="exam-name" type="text" bind:value={formName} placeholder="Cth: UTS Pemrograman Web" />
+<Input label="Nama Ujian *" bind:value={formName} placeholder="Cth: UTS Pemrograman Web" />
 					</div>
 					<div class="field field--full">
-						<label for="exam-desc">{t('common.description')}</label>
-						<input id="exam-desc" type="text" bind:value={formDescription} placeholder="Deskripsi singkat ujian" />
+<Input label={t('common.description')} bind:value={formDescription} placeholder="Deskripsi singkat ujian" />
 					</div>
 					<div class="field">
 						<label for="exam-date">Tanggal *</label>
 						<input id="exam-date" type="date" bind:value={formDate} />
 					</div>
 					<div class="field">
-						<label for="exam-type">{t('admin.tipe_ujian')}</label>
-						<select id="exam-type" bind:value={formExamType}>
-							<option value="">— Pilih —</option>
-							<option value="UTS">UTS</option>
-							<option value="UAS">UAS</option>
-							<option value="Quiz">Quiz</option>
-							<option value="Praktikum">Praktikum</option>
-							<option value="Lainnya">Lainnya</option>
-						</select>
+<Select label={t('admin.tipe_ujian')} bind:value={formExamType} options={[{ value: "", label: "— Pilih —" }, { value: "UTS", label: "UTS" }, { value: "UAS", label: "UAS" }, { value: "Quiz", label: "Quiz" }, { value: "Praktikum", label: "Praktikum" }, { value: "Lainnya", label: "Lainnya" }]} />
 					</div>
 					<div class="field">
 						<label for="exam-start">Jam Mulai</label>
@@ -332,35 +315,22 @@
 						<input id="exam-end" type="time" bind:value={formEndTime} />
 					</div>
 					<div class="field">
-						<label for="exam-room">{t('admin.ruangan')}</label>
-						<select id="exam-room" bind:value={formRoomId}>
-							<option value="">— Pilih Ruangan —</option>
-							{#each rooms as room}
-								<option value={room.id}>{room.name} (kap. {room.capacity || '?'})</option>
-							{/each}
-						</select>
+<Select label={t('admin.ruangan')} bind:value={formRoomId} options={rooms.map((room) => ({ value: room.id, label: `${room.name} (kap. ${room.capacity || '?'})` }))} />
 					</div>
 					<div class="field">
 						<label for="exam-max">Max Peserta</label>
 						<input id="exam-max" type="number" bind:value={formMaxParticipants} placeholder="Opsional" min="1" />
 					</div>
 					<div class="field">
-						<label for="exam-status">{t('common.status')}</label>
-						<select id="exam-status" bind:value={formStatus}>
-							<option value="draft">{t('admin.draft')}</option>
-							<option value="published">{t('admin.published')}</option>
-							<option value="ongoing">{t('admin.ongoing')}</option>
-							<option value="completed">{t('admin.completed')}</option>
-							<option value="cancelled">{t('admin.cancelled')}</option>
-						</select>
+<Select label={t('common.status')} bind:value={formStatus} options={[{ value: "draft", label: t('admin.draft') }, { value: "published", label: t('admin.published') }, { value: "ongoing", label: t('admin.ongoing') }, { value: "completed", label: t('admin.completed') }, { value: "cancelled", label: t('admin.cancelled') }]} />
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeModal}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitCreate} disabled={saving}>
+				<Button variant="secondary" onclick={closeModal}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitCreate} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

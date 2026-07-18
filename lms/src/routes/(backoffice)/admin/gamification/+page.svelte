@@ -394,7 +394,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 										{/if}
 									</div>
 								</div>
-								<button class="delete-btn" onclick={(e) => { e.stopPropagation(); deleteBadge(b.id); }} title={t('common.delete')}>🗑️</button>
+								<Button class="delete-btn" onclick={(e) => { e.stopPropagation(); deleteBadge(b.id); }} title={t('common.delete')}>🗑️</Button>
 							</div>
 						</CardContent>
 					</Card>
@@ -422,11 +422,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					<div class="form-row">
 						<div class="form-group">
 							<label>Kriteria</label>
-							<select class="input" bind:value={badgeEditModal.criteria_type}>
-								{#each Object.entries(CRITERIA_LABELS) as [k, v]}
-									<option value={k}>{v}</option>
-								{/each}
-							</select>
+<Select bind:value={badgeEditModal.criteria_type} />
 						</div>
 						<div class="form-group">
 							<label>Nilai Minimal</label>
@@ -469,11 +465,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					<h3>{xpRuleEditModal.id && xpRules.find((x: any) => x.id === xpRuleEditModal.id) ? 'Edit Aturan XP' : 'Aturan XP Baru'}</h3>
 					<div class="form-group">
 						<label>Tipe Aksi</label>
-						<select class="input" bind:value={xpRuleEditModal.action_type}>
-							{#each Object.entries(XP_TYPE_LABELS) as [k, v]}
-								<option value={k}>{v}</option>
-							{/each}
-						</select>
+<Select bind:value={xpRuleEditModal.action_type} />
 					</div>
 					<div class="form-group">
 						<label>Jumlah XP</label>
@@ -571,11 +563,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					</div>
 					<div class="form-group">
 						<label>Filter Periode Default</label>
-						<select class="input" bind:value={lbSettings.periodFilter}>
-							<option value="all">Semua Waktu</option>
-							<option value="daily">Harian</option>
-							<option value="weekly">Mingguan</option>
-						</select>
+<Select bind:value={lbSettings.periodFilter} options={[{ value: "all", label: "Semua Waktu" }, { value: "daily", label: "Harian" }, { value: "weekly", label: "Mingguan" }]} />
 					</div>
 					<div class="form-group checkbox-group">
 						<label>

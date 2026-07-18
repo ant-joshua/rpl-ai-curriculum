@@ -323,9 +323,9 @@
 					<div class="block-card">
 						<div class="block-header">
 							<div class="block-order">
-								<button class="move-btn" onclick={() => moveBlock(block, 'up')} disabled={i === 0}>↑</button>
+								<Button class="move-btn" onclick={() => moveBlock(block, 'up')} disabled={i === 0}>↑</Button>
 								<span class="order-badge">{i + 1}</span>
-								<button class="move-btn" onclick={() => moveBlock(block, 'down')} disabled={i === blocks.length - 1}>↓</button>
+								<Button class="move-btn" onclick={() => moveBlock(block, 'down')} disabled={i === blocks.length - 1}>↓</Button>
 							</div>
 							<div class="block-type-badge">{getTypeIcon(block.type)} {block.type}</div>
 							<h3 class="block-title">{block.title}</h3>
@@ -406,14 +406,14 @@
 		{:else}
 			<div class="media-picker-grid">
 				{#each mediaFiles as mf}
-					<button class="media-picker-item" onclick={() => insertMediaToBody(mf.url)}>
+					<Button class="media-picker-item" onclick={() => insertMediaToBody(mf.url)}>
 						{#if mf.mime_type.startsWith('image/')}
 							<img src={mf.url} alt={mf.original_name} class="picker-thumb" />
 						{:else}
 							<div class="picker-icon">📄</div>
 						{/if}
 						<span class="picker-name">{mf.original_name}</span>
-					</button>
+					</Button>
 				{/each}
 			</div>
 		{/if}

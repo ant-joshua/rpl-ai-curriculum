@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { PageHeader, DataTable } from '$lib/components/ui';
-	import { Button } from '$lib/components/ui';
+	import { Button, DataTable, Input, PageHeader } from '$lib/components/ui';
 
 	let fakultasList: any[] = $state([]);
 	let loading = $state(true);
@@ -83,8 +82,8 @@
 <div class="page">
 	<PageHeader title="🏛️ Fakultas" subtitle="Kelola data fakultas">
 		{#snippet action()}
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Fakultas Baru</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Fakultas Baru</Button>
 		{/snippet}
 	</PageHeader>
 
@@ -93,12 +92,12 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if fakultasList.length === 0}
 		<div class="empty-state">
 			<p>Belum ada fakultas</p>
-			<button class="btn-primary" onclick={openCreate}>Buat Fakultas Pertama</button>
+			<Button variant="primary" onclick={openCreate}>Buat Fakultas Pertama</Button>
 		</div>
 	{:else}
 		<div class="card">
@@ -122,8 +121,8 @@
 							<span class="cell-count">{row.prodi_count}</span>
 						{:else if column.key === 'actions'}
 							<div class="cell-actions">
-								<button class="btn-edit" onclick={() => openEdit(row)}>{t('common.edit')}</button>
-								<button class="btn-delete" onclick={() => deleteFakultas(row.id)}>{t('common.delete')}</button>
+								<Button class="btn-edit" onclick={() => openEdit(row)}>{t('common.edit')}</Button>
+								<Button class="btn-delete" onclick={() => deleteFakultas(row.id)}>{t('common.delete')}</Button>
 							</div>
 						{/if}
 					{/snippet}
@@ -140,24 +139,22 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Fakultas Baru</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="fakultas-name">{t('admin.nama_fakultas')}</label>
-					<input id="fakultas-name" type="text" bind:value={formName} placeholder="Cth: Fakultas Ilmu Komputer" />
+<Input label={t('admin.nama_fakultas')} bind:value={formName} placeholder="Cth: Fakultas Ilmu Komputer" />
 				</div>
 				<div class="field">
-					<label for="fakultas-code">Kode (opsional)</label>
-					<input id="fakultas-code" type="text" bind:value={formCode} placeholder="FIK" />
+<Input label="Kode (opsional)" bind:value={formCode} placeholder="FIK" />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>
@@ -170,24 +167,22 @@
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h2>Edit Fakultas</h2>
-				<button class="modal-close" onclick={closeForm}>✕</button>
+				<Button class="modal-close" onclick={closeForm}>✕</Button>
 			</div>
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-					<label for="fakultas-edit-name">{t('admin.nama_fakultas')}</label>
-					<input id="fakultas-edit-name" type="text" bind:value={formName} />
+<Input label={t('admin.nama_fakultas')} bind:value={formName} />
 				</div>
 				<div class="field">
-					<label for="fakultas-edit-code">{t('common.code')}</label>
-					<input id="fakultas-edit-code" type="text" bind:value={formCode} />
+<Input label={t('common.code')} bind:value={formCode} />
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-cancel" onclick={closeForm}>{t('common.cancel')}</button>
-				<button class="btn-primary" onclick={submitForm} disabled={saving}>
+				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
+				<Button variant="primary" onclick={submitForm} disabled={saving}>
 					{saving ? 'Menyimpan...' : 'Simpan'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

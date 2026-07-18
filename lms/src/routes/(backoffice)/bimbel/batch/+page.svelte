@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Modal } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Modal, Input, Select, Button } from '$lib/components/ui/index.js';
 
 	type Batch = {
 		id: string;
@@ -92,8 +92,8 @@
 	</div>
 
 	<div class="toolbar">
-		<button class="btn btn-secondary btn-sm" onclick={openCreate}>+ Buat Batch</button>
-		<button class="btn btn-ghost btn-sm" onclick={loadBatches}>🔄 Refresh</button>
+		<Button variant="primary" size="sm" onclick={openCreate}>+ Buat Batch</Button>
+		<Button variant="ghost" size="sm" onclick={loadBatches}>🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
@@ -135,22 +135,24 @@
 
 <Modal open={showModal} title="Buat Batch Baru" onclose={closeModal}>
 	<div class="form-group">
-		<label for="batch-name">Nama Batch</label>
-		<input id="batch-name" class="input-field" bind:value={formName} placeholder="Contoh: Bimbel Intensif IPA" />
+		<Input label="Nama Batch" bind:value={formName} placeholder="Contoh: Bimbel Intensif IPA" />
 	</div>
 	<div class="form-group">
-		<label for="batch-type">Tipe</label>
-		<select id="batch-type" class="input-field" bind:value={formType}>
-			<option value="regular">Regular</option>
-			<option value="intensif">Intensif</option>
-			<option value="privat">Privat</option>
-		</select>
+		<Select
+			label="Tipe"
+			bind:value={formType}
+			options={[
+				{ value: 'regular', label: 'Regular' },
+				{ value: 'intensif', label: 'Intensif' },
+				{ value: 'privat', label: 'Privat' },
+			]}
+		/>
 	</div>
 	<div class="modal-actions">
-		<button class="btn btn-ghost" onclick={closeModal}>Batal</button>
-		<button class="btn btn-secondary" onclick={createBatch} disabled={saving || !formName.trim()}>
+		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="primary" onclick={createBatch} disabled={saving || !formName.trim()}>
 			{saving ? 'Menyimpan...' : 'Buat'}
-		</button>
+		</Button>
 	</div>
 </Modal>
 

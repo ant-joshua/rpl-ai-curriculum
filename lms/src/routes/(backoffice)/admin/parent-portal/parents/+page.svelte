@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-import { DataTable } from '$lib/components/ui';
+import { Button, DataTable, Input, Select } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Parent = {
@@ -175,10 +175,10 @@ const parentColumns: ColumnDef<any, any>[] = [
 			<h1 class="pp-title">Orang Tua / Wali</h1>
 			<p class="pp-subtitle">Daftar akun orang tua dan wali murid</p>
 		</div>
-		<button class="pp-btn pp-btn-primary" onclick={openCreate}>
+		<Button variant="primary" class="pp-btn pp-" onclick={openCreate}>
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 			Tambah Orang Tua
-		</button>
+		</Button>
 	</div>
 
 	{#if loading}
@@ -190,13 +190,13 @@ const parentColumns: ColumnDef<any, any>[] = [
 		<div class="pp-error">
 			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
 			<p>{error}</p>
-			<button class="pp-btn pp-btn-ghost" onclick={loadParents}>{t('common.retry')}</button>
+			<Button variant="ghost" class="pp-btn pp-" onclick={loadParents}>{t('common.retry')}</Button>
 		</div>
 	{:else if parents.length === 0}
 		<div class="pp-empty">
 			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
 			<p>Belum ada orang tua terdaftar</p>
-			<button class="pp-btn pp-btn-primary" onclick={openCreate}>Tambah Orang Tua Pertama</button>
+			<Button variant="primary" class="pp-btn pp-" onclick={openCreate}>Tambah Orang Tua Pertama</Button>
 		</div>
 	{:else}
 		<div class="pp-table-wrap">
@@ -224,7 +224,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 							<td>{p.linkedStudents} siswa</td>
 							<td>{formatDate(p.createdAt)}</td>
 							<td>
-								<button class="pp-btn pp-btn-ghost pp-btn-sm" onclick={() => openEdit(p)}>{t('common.edit')}</button>
+								<Button variant="ghost" size="sm" class="pp-btn pp-pp-" onclick={() => openEdit(p)}>{t('common.edit')}</Button>
 							</td>
 						</tr>
 					{/each}
@@ -240,35 +240,31 @@ const parentColumns: ColumnDef<any, any>[] = [
 		<div class="pp-modal" onclick={(e) => e.stopPropagation()}>
 			<div class="pp-modal-header">
 				<h3>{editingId ? 'Edit Orang Tua' : 'Tambah Orang Tua'}</h3>
-				<button class="pp-btn-close" onclick={() => showModal = false}>&times;</button>
+				<Button class="pp-btn-close" onclick={() => showModal = false}>&times;</Button>
 			</div>
 			<form class="pp-form" onsubmit={(e) => { e.preventDefault(); submitForm(); }}>
 				<div class="pp-field">
 					<label class="pp-label">User ID</label>
-					<input class="pp-input" bind:value={formUserId} placeholder="user_id" required disabled={!!editingId} />
+<Input bind:value={formUserId} placeholder="user_id" disabled required />
 				</div>
 				<div class="pp-field">
 					<label class="pp-label">Nama Lengkap</label>
-					<input class="pp-input" bind:value={formName} placeholder="Nama orang tua" required />
+<Input bind:value={formName} placeholder="Nama orang tua" required />
 				</div>
 				<div class="pp-row">
 					<div class="pp-field">
 						<label class="pp-label">No. Telepon</label>
-						<input class="pp-input" bind:value={formPhone} placeholder="08xxxxxxxxxx" />
+<Input bind:value={formPhone} placeholder="08xxxxxxxxxx" />
 					</div>
 					<div class="pp-field">
 						<label class="pp-label">Email</label>
-						<input class="pp-input" bind:value={formEmail} type="email" placeholder="email@example.com" />
+<Input type="email" bind:value={formEmail} placeholder="email@example.com" />
 					</div>
 				</div>
 				<div class="pp-row">
 					<div class="pp-field">
 						<label class="pp-label">Hubungan</label>
-						<select class="pp-input" bind:value={formRelationship}>
-							{#each relationshipOptions as opt}
-								<option value={opt.value}>{opt.label}</option>
-							{/each}
-						</select>
+<Select bind:value={formRelationship} options={relationshipOptions.map((opt) => ({ value: opt.value, label: opt.label }))} />
 					</div>
 					<div class="pp-field">
 						<label class="pp-label">&nbsp;</label>
@@ -279,10 +275,10 @@ const parentColumns: ColumnDef<any, any>[] = [
 					</div>
 				</div>
 				<div class="pp-modal-actions">
-					<button type="button" class="pp-btn pp-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
-					<button type="submit" class="pp-btn pp-btn-primary" disabled={saving}>
+					<Button variant="ghost" class="pp-btn pp-" type="button" onclick={() => showModal = false}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="pp-btn pp-" type="submit" disabled={saving}>
 						{saving ? 'Menyimpan...' : 'Simpan'}
-					</button>
+					</Button>
 				</div>
 			</form>
 		</div>

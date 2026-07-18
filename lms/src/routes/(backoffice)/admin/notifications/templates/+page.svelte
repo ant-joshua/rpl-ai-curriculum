@@ -112,8 +112,8 @@
 			<p class="subtitle">Kelola template pesan notifikasi per tipe</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadTemplates}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Template</button>
+			<Button class="btn-refresh" onclick={loadTemplates}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Template</Button>
 		</div>
 	</div>
 
@@ -126,7 +126,7 @@
 	</div>
 
 	{#if error}
-		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadTemplates}>{t('common.retry')}</button></div>
+		<div><p>{error}</p><Button class="error-state" onclick={loadTemplates}>{t('common.retry')}</Button></div>
 	{/if}
 
 	<!-- Form Modal -->
@@ -139,52 +139,48 @@
 			<div class="modal" onclick={(e) => e.stopPropagation()}>
 				<div class="modal-header">
 					<h3>{editingId ? 'Edit Template' : 'Buat Template Baru'}</h3>
-					<button class="btn-close" onclick={cancelForm}>✕</button>
+					<Button class="btn-close" onclick={cancelForm}>✕</Button>
 				</div>
 				<div class="modal-body">
 					<div class="form-row">
 						<label class="form-label">Kode *</label>
-						<input class="form-input" bind:value={formCode} placeholder="contoh: welcome_email" />
+<Input bind:value={formCode} placeholder="contoh: welcome_email" />
 					</div>
 					<div class="form-row-2col">
 						<div>
 							<label class="form-label">{t('admin.tipe')}</label>
-							<select class="form-input" bind:value={formType}>
-								{#each types as t}<option value={t}>{t}</option>{/each}
-							</select>
+<Select bind:value={formType} options={types.map((t) => ({ value: t, label: t }))} />
 						</div>
 						<div>
 							<label class="form-label">{t('admin.channel')}</label>
-							<select class="form-input" bind:value={formChannels}>
-								{#each channelOpts as c}<option value={c}>{c}</option>{/each}
-							</select>
+<Select bind:value={formChannels} options={channelOpts.map((c) => ({ value: c, label: c }))} />
 						</div>
 					</div>
 					<div class="form-row">
 						<label class="form-label">Subjek (untuk email)</label>
-						<input class="form-input" bind:value={formSubject} placeholder="Subject email" />
+<Input bind:value={formSubject} placeholder="Subject email" />
 					</div>
 					<div class="form-row">
 						<div class="form-label-row">
 							<label class="form-label">Body Template *</label>
-							<button class="btn-text" onclick={() => previewMode = !previewMode}>{previewMode ? 'Edit' : 'Preview'}</button>
+							<Button class="btn-text" onclick={() => previewMode = !previewMode}>{previewMode ? 'Edit' : 'Preview'}</Button>
 						</div>
 						{#if previewMode}
 							<div class="preview-box">{formBody || '(kosong)'}</div>
 						{:else}
-							<textarea class="form-textarea" bind:value={formBody} rows="6" placeholder="Gunakan {'{{variable}}'} untuk placeholder"></textarea>
+<Textarea placeholder={'Gunakan {'} bind:value={formBody} rows=6 />
 						{/if}
 					</div>
 					<div class="form-row">
 						<label class="form-label">Variabel (JSON array)</label>
-						<input class="form-input" bind:value={formVariables} placeholder='["nama","kelas"]' />
+<Input bind:value={formVariables} placeholder="[" />
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
-					<button class="btn-primary" onclick={saveTemplate} disabled={saving || !formCode || !formBody}>
+					<Button variant="secondary" onclick={cancelForm}>{t('common.cancel')}</Button>
+					<Button variant="primary" onclick={saveTemplate} disabled={saving || !formCode || !formBody}>
 						{saving ? 'Menyimpan...' : editingId ? 'Update' : 'Buat'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -194,7 +190,7 @@
 	{#if loading}
 		<div class="loading">Memuat template...</div>
 	{:else if templates.length === 0}
-		<div class="empty-state"><p>Belum ada template notifikasi</p><button class="btn-primary" onclick={openCreate}>Buat Template Pertama</button></div>
+		<div><p>Belum ada template notifikasi</p><Button class="empty-state" onclick={openCreate}>Buat Template Pertama</Button></div>
 	{:else}
 		<div class="templates-grid">
 			{#each templates as t}
@@ -212,8 +208,8 @@
 						<span>{formatDate(t.created_at)}</span>
 					</div>
 					<div class="template-actions">
-						<button class="btn-text" onclick={() => openEdit(t)}>{t('common.edit')}</button>
-						<button class="btn-text btn-text-danger" onclick={() => deleteTemplate(t)}>{t('common.delete')}</button>
+						<Button class="btn-text" onclick={() => openEdit(t)}>{t('common.edit')}</Button>
+						<Button class="btn-text btn-text-danger" onclick={() => deleteTemplate(t)}>{t('common.delete')}</Button>
 					</div>
 				</div>
 			{/each}

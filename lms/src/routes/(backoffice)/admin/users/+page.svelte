@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, Input, Badge, Table, Modal, SearchInput, Loading, EmptyState, PageHeader, SearchBar } from '$lib/components/ui/index.js';
+	import { Badge, Button, Card, EmptyState, Input, Loading, Modal, PageHeader, SearchBar, SearchInput, Select, Table, Textarea } from '$lib/components/ui/index.js';
 
 	let users: any[] = $state([]);
 	let loading = $state(true);
@@ -223,7 +223,7 @@
 		<div class="bulk-section">
 			<h2>📋 Bulk Create Users</h2>
 			<p class="bulk-hint">Paste email addresses (one per line or comma-separated) to create user accounts.</p>
-			<textarea bind:value={bulkEmails} placeholder="user1@example.com&#10;user2@example.com" rows={4} class="bulk-textarea"></textarea>
+<Textarea placeholder="user1@example.com&#10;user2@example.com" bind:value={bulkEmails} class="bulk-textarea" />
 			<div class="bulk-actions">
 				<Button onclick={bulkCreateUsers} disabled={bulkSaving} variant="secondary">
 					{bulkSaving ? 'Creating...' : 'Create Users'}
@@ -239,24 +239,16 @@
 <!-- Edit User Modal -->
 <Modal title="✏️ Edit User" open={!!editUser} onclose={closeEdit}>
 	<div class="field">
-		<label for="edit-username">Username</label>
-		<input id="edit-username" type="text" value={editUser?.username || ''} disabled class="input-disabled" />
+<Input label="Username" value={editUser?.username || ''} disabled />
 	</div>
 	<div class="field">
-		<label for="edit-display-name">Display Name</label>
-		<input id="edit-display-name" type="text" bind:value={editDisplayName} placeholder="Display name" class="input" />
+<Input label="Display Name" bind:value={editDisplayName} placeholder="Display name" />
 	</div>
 	<div class="field">
-		<label for="edit-email">Email</label>
-		<input id="edit-email" type="email" bind:value={editEmail} placeholder="Email address" class="input" />
+<Input type="email" label="Email" bind:value={editEmail} placeholder="Email address" />
 	</div>
 	<div class="field">
-		<label for="edit-role">Role</label>
-		<select id="edit-role" bind:value={editRole} class="input">
-			{#each VALID_ROLES as role}
-				<option value={role}>{role}</option>
-			{/each}
-		</select>
+<Select label="Role" bind:value={editRole} options={VALID_ROLES.map((role) => ({ value: role, label: role }))} />
 	</div>
 	<div class="field field-checkbox">
 		<label>

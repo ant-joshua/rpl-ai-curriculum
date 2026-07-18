@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -147,10 +147,10 @@
 			<p class="subtitle">Monitor dan kelola antrian notifikasi keluar</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadQueue}>🔄</button>
-			<button class="btn-outline" onclick={retryFailed} disabled={retrying}>
+			<Button class="btn-refresh" onclick={loadQueue}>🔄</Button>
+			<Button class="btn-outline" onclick={retryFailed} disabled={retrying}>
 				{retrying ? 'Meretry...' : 'Retry Failed'}
-			</button>
+			</Button>
 		</div>
 	</div>
 
@@ -169,7 +169,7 @@
 	</div>
 
 	{#if error}
-		<div class="error-state"><p class="error-msg">{error}</p><button class="btn-primary" onclick={loadQueue}>{t('common.retry')}</button></div>
+		<div><p>{error}</p><Button class="error-state" onclick={loadQueue}>{t('common.retry')}</Button></div>
 	{/if}
 
 	{#if loading}
@@ -191,9 +191,9 @@
 
 		{#if pagination.totalPages > 1}
 			<div class="pagination">
-				<button class="btn-outline" disabled={pagination.page <= 1} onclick={() => { pagination.page--; loadQueue(); }}>←</button>
+				<Button disabled={pagination.page <= 1} onclick={() => { pagination.page--; loadQueue(); }}>←</Button>
 				<span class="page-info">{pagination.page}/{pagination.totalPages}</span>
-				<button class="btn-outline" disabled={pagination.page >= pagination.totalPages} onclick={() => { pagination.page++; loadQueue(); }}>→</button>
+				<Button disabled={pagination.page >= pagination.totalPages} onclick={() => { pagination.page++; loadQueue(); }}>→</Button>
 			</div>
 		{/if}
 	{/if}

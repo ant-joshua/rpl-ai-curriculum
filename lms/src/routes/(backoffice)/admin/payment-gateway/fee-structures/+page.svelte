@@ -126,20 +126,15 @@
 			<h1 class="pg-title">Fee Structure</h1>
 			<p class="pg-subtitle">Pengaturan biaya: SPP, gedung, praktikum, dll.</p>
 		</div>
-		<button class="pg-btn pg-btn-primary" onclick={openCreate}>
+		<Button variant="primary" class="pg-btn pg-" onclick={openCreate}>
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 			Tambah Fee
-		</button>
+		</Button>
 	</div>
 
 	<!-- Filters -->
 	<div class="pg-filters">
-		<select class="pg-select" bind:value={typeFilter} onchange={loadFeeStructures}>
-			<option value="">Semua Tipe</option>
-			{#each feeTypes as ft}
-				<option value={ft.value}>{ft.label}</option>
-			{/each}
-		</select>
+<Select bind:value={typeFilter} onchange={loadFeeStructures} options={feeTypes.map((ft) => ({ value: ft.value, label: ft.label }))} />
 		<span class="pg-filter-count">{feeStructures.length} fee structure</span>
 	</div>
 
@@ -148,13 +143,13 @@
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
-			<button class="pg-btn pg-btn-ghost" onclick={loadFeeStructures}>{t('common.retry')}</button>
+			<Button variant="ghost" class="pg-btn pg-" onclick={loadFeeStructures}>{t('common.retry')}</Button>
 		</div>
 	{:else if feeStructures.length === 0}
 		<div class="pg-empty">
 			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
 			<p>Belum ada fee structure</p>
-			<button class="pg-btn pg-btn-primary pg-btn-sm" onclick={openCreate}>Tambah Fee Pertama</button>
+			<Button variant="primary" size="sm" class="pg-btn pg-pg-" onclick={openCreate}>Tambah Fee Pertama</Button>
 		</div>
 	{:else}
 		<div class="pg-cards">
@@ -168,9 +163,9 @@
 							{/if}
 						</div>
 						<div class="pg-fee-actions">
-							<button class="pg-btn-icon" onclick={() => openEdit(fee)} title={t('common.edit')}>
+							<Button class="pg-btn-icon" onclick={() => openEdit(fee)} title={t('common.edit')}>
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-							</button>
+							</Button>
 						</div>
 					</div>
 					<h3 class="pg-fee-name">{fee.name}</h3>
@@ -200,27 +195,23 @@
 			<div class="pg-modal" onclick={(e) => e.stopPropagation()} role="document">
 				<div class="pg-modal-header">
 					<h2>{editingId ? 'Edit Fee Structure' : 'Tambah Fee Structure'}</h2>
-					<button class="pg-btn-icon" onclick={() => showModal = false}>
+					<Button class="pg-btn-icon" onclick={() => showModal = false}>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-					</button>
+					</Button>
 				</div>
 				<div class="pg-modal-body">
 					<div class="pg-form-grid">
 						<div class="pg-field">
 							<label class="pg-label">Nama <span class="pg-required">*</span></label>
-							<input class="pg-input" bind:value={formName} placeholder="Contoh: SPP Semester 1" />
+<Input bind:value={formName} placeholder="Contoh: SPP Semester 1" />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">{t('common.code')}</label>
-							<input class="pg-input" bind:value={formCode} placeholder="Contoh: SPP-01" />
+<Input bind:value={formCode} placeholder="Contoh: SPP-01" />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">Tipe <span class="pg-required">*</span></label>
-							<select class="pg-input" bind:value={formFeeType}>
-								{#each feeTypes as ft}
-									<option value={ft.value}>{ft.label}</option>
-								{/each}
-							</select>
+<Select bind:value={formFeeType} options={feeTypes.map((ft) => ({ value: ft.value, label: ft.label }))} />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">Nominal <span class="pg-required">*</span></label>
@@ -228,15 +219,15 @@
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">Tahun Akademik</label>
-							<input class="pg-input" bind:value={formAcademicYear} placeholder="Contoh: 2025/2026" />
+<Input bind:value={formAcademicYear} placeholder="Contoh: 2025/2026" />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">{t('admin.semester')}</label>
-							<input class="pg-input" bind:value={formSemester} placeholder="Contoh: 1" />
+<Input bind:value={formSemester} placeholder="Contoh: 1" />
 						</div>
 						<div class="pg-field pg-field-full">
 							<label class="pg-label">{t('common.description')}</label>
-							<input class="pg-input" bind:value={formDescription} placeholder="Deskripsi opsional" />
+<Input bind:value={formDescription} placeholder="Deskripsi opsional" />
 						</div>
 						<div class="pg-field pg-field-full">
 							<label class="pg-label">{t('common.status')}</label>
@@ -248,10 +239,10 @@
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
-					<button class="pg-btn pg-btn-primary" onclick={submitFee} disabled={saving || !formName || formAmount <= 0}>
+					<Button variant="ghost" class="pg-btn pg-" onclick={() => showModal = false}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="pg-btn pg-" onclick={submitFee} disabled={saving || !formName || formAmount <= 0}>
 						{saving ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Tambah Fee')}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

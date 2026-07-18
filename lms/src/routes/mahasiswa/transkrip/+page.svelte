@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { DataTable, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
 
@@ -114,7 +114,7 @@
 			<p class="subtitle">{t('transkrip.subtitle')}</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
+			<Button variant="ghost" size="sm" onclick={loadData}>🔄</Button>
 		</div>
 	</div>
 
@@ -136,7 +136,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadData}>{t('common.retry')}</Button>
 		</div>
 	{:else if transkrip.length === 0}
 		<div class="empty-state">

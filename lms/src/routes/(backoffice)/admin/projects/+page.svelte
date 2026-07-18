@@ -96,13 +96,13 @@ import { addToast } from '$lib/stores/toast.svelte';
 <div class="projects-page">
 	<div class="header-row">
 		<h1>🚀 Project Management</h1>
-		<button onclick={loadProjects} class="btn btn-sm">🔄 Refresh</button>
+		<Button size="sm" class="btn" onclick={loadProjects}>🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
 		<div class="loading">Loading projects...</div>
 	{:else if error}
-		<div class="error-state"><p>{error}</p><button onclick={loadProjects} class="btn">{t('common.retry')}</button></div>
+		<div><p>{error}</p><Button class="error-state" onclick={loadProjects}>{t('common.retry')}</Button></div>
 	{:else}
 		<div class="section-header">
 			<div class="tabs">
@@ -110,7 +110,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 				<button class="tab" class:active={tab === 'published'} onclick={() => tab = 'published'}>Published ({projects.filter(p => p.status === 'published').length})</button>
 				<button class="tab" class:active={tab === 'draft'} onclick={() => tab = 'draft'}>Drafts ({projects.filter(p => p.status === 'draft' || !p.status).length})</button>
 			</div>
-			<button onclick={openNew} class="btn btn-primary">+ New Project</button>
+			<Button variant="primary" class="btn" onclick={openNew}>+ New Project</Button>
 		</div>
 
 		<div class="project-grid">
@@ -132,11 +132,11 @@ import { addToast } from '$lib/stores/toast.svelte';
 						{(Array.isArray(p.techs) ? p.techs : []).map((t: string) => `<span class="tech-tag">${t}</span>`).join(' ')}
 					</div>
 					<div class="card-actions">
-						<button onclick={() => openEdit(p)} class="btn btn-sm">✏️ Edit</button>
-						<button onclick={() => toggleStatus(p.key, p.status || 'draft')} class="btn btn-sm">
+						<Button size="sm" class="btn" onclick={() => openEdit(p)}>✏️ Edit</Button>
+						<Button size="sm" class="btn" onclick={() => toggleStatus(p.key, p.status || 'draft')}>
 							{p.status === 'published' ? '📥 Unpublish' : '📤 Publish'}
-						</button>
-						<button onclick={() => deleteProject(p.key)} class="btn btn-sm btn-danger">🗑️</button>
+						</Button>
+						<Button variant="danger" size="sm" class="btn" onclick={() => deleteProject(p.key)}>🗑️</Button>
 					</div>
 				</div>
 			{/each}
@@ -156,17 +156,17 @@ import { addToast } from '$lib/stores/toast.svelte';
 		<div class="modal modal-wide" onclick={(e) => e.stopPropagation()} role="dialog">
 			<div class="modal-header">
 				<h2>{d.key ? 'Edit' : 'New'} Project</h2>
-				<button onclick={() => editModal = null} class="modal-close">✕</button>
+				<Button class="modal-close" onclick={() => editModal = null}>✕</Button>
 			</div>
 			<div class="modal-body">
 				<div class="form-grid">
 					<label>
 						<span>Key (slug)</span>
-						<input type="text" bind:value={d.key} placeholder="my-project" disabled={!!d.key} />
+<Input bind:value={d.key} placeholder="my-project" disabled />
 					</label>
 					<label>
 						<span>Title</span>
-						<input type="text" bind:value={d.title} placeholder="Project Title" />
+<Input bind:value={d.title} placeholder="Project Title" />
 					</label>
 					<label class="full-width">
 						<span>Description</span>
@@ -178,19 +178,15 @@ import { addToast } from '$lib/stores/toast.svelte';
 					</label>
 					<label>
 						<span>Techs (comma separated)</span>
-						<input type="text" bind:value={d.techs} placeholder="HTML, CSS, JS" />
+<Input bind:value={d.techs} placeholder="HTML, CSS, JS" />
 					</label>
 					<label>
 						<span>Difficulty</span>
-						<select bind:value={d.difficulty}>
-							<option value="beginner">Beginner</option>
-							<option value="intermediate">Intermediate</option>
-							<option value="advanced">Advanced</option>
-						</select>
+<Select bind:value={d.difficulty} options={[{ value: "beginner", label: "Beginner" }, { value: "intermediate", label: "Intermediate" }, { value: "advanced", label: "Advanced" }]} />
 					</label>
 					<label>
 						<span>Time Estimate</span>
-						<input type="text" bind:value={d.timeEstimate} placeholder="2 hours" />
+<Input bind:value={d.timeEstimate} placeholder="2 hours" />
 					</label>
 				</div>
 
@@ -198,16 +194,16 @@ import { addToast } from '$lib/stores/toast.svelte';
 				<div class="steps-section">
 					<div class="steps-header">
 						<h3>Steps ({d.steps.length})</h3>
-						<button onclick={addStep} class="btn btn-sm">+ Add Step</button>
+						<Button size="sm" class="btn" onclick={addStep}>+ Add Step</Button>
 					</div>
 					{#each d.steps as step, idx}
 						<div class="step-editor">
 							<div class="step-header">
 								<span class="step-num">Step {idx + 1}</span>
-								<button onclick={() => removeStep(idx)} class="btn-sm btn-danger">✕</button>
+								<Button variant="danger" size="sm" onclick={() => removeStep(idx)}>✕</Button>
 							</div>
-							<input type="text" bind:value={step.id} placeholder="step-id" class="step-id" />
-							<input type="text" bind:value={step.title} placeholder="Step title" />
+<Input bind:value={step.id} placeholder="step-id" class="step-id" />
+<Input bind:value={step.title} placeholder="Step title" />
 							<RichEditor
 								content={step.instruction}
 								placeholder="Step instructions with rich formatting..."
@@ -218,8 +214,8 @@ import { addToast } from '$lib/stores/toast.svelte';
 				</div>
 
 				<div class="modal-actions">
-					<button onclick={() => editModal = null} class="btn">{t('common.cancel')}</button>
-					<button onclick={() => d.key ? updateProject(d.key, {
+					<Button class="btn" onclick={() => editModal = null}>{t('common.cancel')}</Button>
+					<Button onclick={() => d.key ? updateProject(d.key, {
 						title: d.title,
 						description: d.description,
 						techs: typeof d.techs === 'string' ? d.techs.split(',').map((t: string) => t.trim()).filter(Boolean) : d.techs,
@@ -236,7 +232,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 						timeEstimate: d.timeEstimate,
 						steps: d.steps,
 						status: d.status,
-					})} class="btn btn-primary">{t('common.save')}</button>
+					})}>{t('common.save')}</Button>
 				</div>
 			</div>
 		</div>

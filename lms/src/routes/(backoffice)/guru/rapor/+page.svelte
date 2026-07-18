@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Select } from '$lib/components/ui/index.js';
 
 	let classes: any[] = $state([]);
 	let loading = $state(true);
@@ -54,10 +54,7 @@
 			<p class="subtitle">Daftar kelas yang Anda ampu sebagai wali kelas</p>
 		</div>
 		<div class="header-actions">
-			<select class="sem-select" bind:value={selectedSemester} onchange={() => loadClasses()}>
-				<option value="1">Semester Ganjil</option>
-				<option value="2">Semester Genap</option>
-			</select>
+			<Select options={[{ value:'1', label:'Semester Ganjil' }, { value:'2', label:'Semester Genap' }]} bind:value={selectedSemester} onchange={() => loadClasses()} />
 		</div>
 	</div>
 

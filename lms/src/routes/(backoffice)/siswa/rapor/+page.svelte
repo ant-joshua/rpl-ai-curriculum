@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Select } from '$lib/components/ui/index.js';
 
 	let raporList: any[] = $state([]);
 	let loading = $state(true);

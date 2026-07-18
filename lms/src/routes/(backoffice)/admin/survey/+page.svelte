@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { StatCard } from '$lib/components/ui';
+	import { Button, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -96,13 +96,13 @@ const instanceColumns: ColumnDef<any, any>[] = [
 			<h1>📊 Survey & Feedback</h1>
 			<p class="subtitle">Dashboard survei: statistik, survei terbaru, dan aksi cepat</p>
 		</div>
-		<button class="btn-refresh" onclick={loadAll}>🔄</button>
+		<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
 	</div>
 
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -117,9 +117,9 @@ const instanceColumns: ColumnDef<any, any>[] = [
 		<div class="quick-actions">
 			<h3>Aksi Cepat</h3>
 			<div class="action-row">
-				<button class="btn-primary" onclick={() => goto('/admin/survey/templates')}>+ Template Baru</button>
-				<button class="btn-secondary" onclick={() => goto('/admin/survey/instances')}>+ Buat Survei</button>
-				<button class="btn-secondary" onclick={() => goto('/admin/survey/instances')}>Lihat Semua Instance</button>
+				<Button variant="primary" onclick={() => goto('/admin/survey/templates')}>+ Template Baru</Button>
+				<Button variant="secondary" onclick={() => goto('/admin/survey/instances')}>+ Buat Survei</Button>
+				<Button variant="secondary" onclick={() => goto('/admin/survey/instances')}>Lihat Semua Instance</Button>
 			</div>
 		</div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Button, Card, CardContent, Loading, EmptyState } from '$lib/components/ui';
+	import { Button, Card, CardContent, DataTable, EmptyState, Loading, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let offerings: any[] = $state([]);
@@ -158,7 +158,7 @@
 			<p class="subtitle">Atur instruktur untuk setiap course offering</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄 Refresh</button>
+			<Button class="btn-refresh" onclick={loadData}>🔄 Refresh</Button>
 		</div>
 	</div>
 

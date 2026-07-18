@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { DataTable, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
 
@@ -185,7 +185,7 @@
 			</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadData}>🔄</button>
+			<Button variant="ghost" size="sm" onclick={loadData}>🔄</Button>
 		</div>
 	</div>
 
@@ -219,7 +219,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadData}>Coba Lagi</button>
+			<Button variant="primary" onclick={loadData}>Coba Lagi</Button>
 		</div>
 	{:else if kelasList.length === 0}
 		<div class="empty-state">
@@ -234,16 +234,16 @@
 	{/if}
 
 	<div class="actions">
-		<button class="btn-secondary" onclick={simpanKrs} disabled={submitting || loading}>
+		<Button variant="secondary" onclick={simpanKrs} disabled={submitting || loading}>
 			{submitting ? 'Menyimpan...' : 'Simpan Draft'}
-		</button>
-		<button
-			class="btn-primary"
+		</Button>
+		<Button
+			variant="primary"
 			onclick={submitKrs}
 			disabled={submitting || loading || (krsStatus === 'disetujui' || krsStatus === 'approved' || krsStatus === 'pending')}
 		>
 			{submitting ? 'Mengirim...' : 'Ajukan ke Kaprodi'}
-		</button>
+		</Button>
 	</div>
 </div>
 

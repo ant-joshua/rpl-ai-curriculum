@@ -58,34 +58,26 @@
 		{/if}
 
 		<div class="field">
-			<label for="name">Nama Tenant</label>
-			<input id="name" type="text" bind:value={name} on:input={() => generateSlug(name)} required placeholder="Cth: SMA Kembang" />
+<Input label="Nama Tenant" bind:value={name} placeholder="Cth: SMA Kembang" required />
 		</div>
 
 		<div class="field">
-			<label for="slug">Slug (URL path)</label>
-			<div class="slug-preview">/t/<input id="slug" type="text" bind:value={slug} required placeholder="sma-kembang" />/...</div>
+<Input label="Slug (URL path)" bind:value={slug} placeholder="sma-kembang" required class="slug-preview" />
 		</div>
 
 		<div class="field">
-			<label for="type">Tipe Tenant</label>
-			<select id="type" bind:value={type}>
-				{#each types as t}
-					<option value={t.value}>{t.label}</option>
-				{/each}
-			</select>
+<Select label="Tipe Tenant" bind:value={type} options={types.map((t) => ({ value: t.value, label: t.label }))} />
 		</div>
 
 		<div class="field">
-			<label for="email">Email Admin</label>
-			<input id="email" type="email" bind:value={email} placeholder="admin@smakembang.sch.id" />
+<Input type="email" label="Email Admin" bind:value={email} placeholder="admin@smakembang.sch.id" />
 		</div>
 
 		<div class="actions">
 			<a href="/admin/tenants" class="btn-cancel">{t('common.cancel')}</a>
-			<button type="submit" class="btn-primary" disabled={saving}>
+			<Button variant="primary" type="submit" disabled={saving}>
 				{saving ? 'Menyimpan...' : 'Buat Tenant'}
-			</button>
+			</Button>
 		</div>
 	</form>
 </div>

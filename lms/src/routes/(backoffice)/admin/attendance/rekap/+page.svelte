@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Badge, Button, EmptyState, Loading, Select } from '$lib/components/ui/index.js';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -204,37 +204,21 @@ const recapColumns: ColumnDef<any, any>[] = [
 			<h1>📊 Rekap Absensi</h1>
 			<p class="subtitle">Rekapitulasi absensi semua kelas</p>
 		</div>
-		<button class="btn-outline" onclick={exportCsv} disabled={students.length === 0}>📥 Export CSV</button>
+		<Button class="btn-outline" onclick={exportCsv} disabled={students.length === 0}>📥 Export CSV</Button>
 	</div>
 
 	<div class="filters">
 		<div class="filter-group">
-			<label for="class-select">Filter Kelas</label>
-			<select id="class-select" bind:value={selectedClassId}>
-				<option value="">— Semua Kelas —</option>
-				{#each allClasses as c}
-					<option value={c.id}>{c.name}</option>
-				{/each}
-			</select>
+<Select label="Filter Kelas" bind:value={selectedClassId} options={allClasses.map((c) => ({ value: c.id, label: c.name }))} />
 		</div>
 		<div class="filter-group">
-			<label for="month-select">Bulan</label>
-			<select id="month-select" bind:value={selectedMonth}>
-				{#each months as m}
-					<option value={m.value}>{m.label}</option>
-				{/each}
-			</select>
+<Select label="Bulan" bind:value={selectedMonth} options={months.map((m) => ({ value: m.value, label: m.label }))} />
 		</div>
 		<div class="filter-group">
-			<label for="year-select">Tahun</label>
-			<select id="year-select" bind:value={selectedYear}>
-				{#each years as y}
-					<option value={y}>{y}</option>
-				{/each}
-			</select>
+<Select label="Tahun" bind:value={selectedYear} options={years.map((y) => ({ value: y, label: y }))} />
 		</div>
 		<div class="filter-action">
-			<button class="btn-secondary" onclick={loadRecap}>🔍 Tampilkan</button>
+			<Button variant="secondary" onclick={loadRecap}>🔍 Tampilkan</Button>
 		</div>
 	</div>
 
@@ -243,7 +227,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadRecap}>{t('common.retry')}</button>
+			<Button variant="secondary" onclick={loadRecap}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<div class="month-label">{monthName}</div>

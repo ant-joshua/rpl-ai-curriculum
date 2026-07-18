@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Button } from '$lib/components/ui';
+	import { Alert, Button, Card, CardContent, Input } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -169,7 +169,7 @@
 		<CardContent>
 			<h2>Restore Data</h2>
 			<p class="desc">Upload file backup JSON untuk mengembalikan data ke tenant saat ini. Data yang sudah ada akan dilewati (INSERT OR IGNORE).</p>
-			<input
+<Input  />
 				type="file"
 				accept=".json,.json.gz"
 				onchange={restoreBackup}

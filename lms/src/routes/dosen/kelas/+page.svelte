@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui';
 
 	let kelasList: any[] = $state([]);
 	let loading = $state(true);
@@ -41,7 +42,7 @@
 			<p class="subtitle">Daftar kelas perkuliahan yang Anda ampu</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadKelas}>🔄</button>
+			<Button variant="ghost" size="sm" onclick={loadKelas}>🔄</Button>
 		</div>
 	</div>
 

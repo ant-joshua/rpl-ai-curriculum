@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let file: File | null = $state(null);
@@ -125,7 +125,7 @@
 			<p class="subtitle">Import data siswa dari file CSV</p>
 		</div>
 		{#if step !== 'upload'}
-			<button class="btn-cancel" onclick={reset}>← Kembali</button>
+			<Button variant="secondary" onclick={reset}>← Kembali</Button>
 		{/if}
 	</div>
 
@@ -136,19 +136,13 @@
 	{#if step === 'upload'}
 		<div class="card upload-card">
 			<div class="field">
-				<label for="import-kelas">Kelas Tujuan</label>
-				<select id="import-kelas" bind:value={selectedKelas}>
-					<option value="">— Pilih Kelas —</option>
-					{#each kelasList as k}
-						<option value={k.id}>{k.name}</option>
-					{/each}
-				</select>
+<Select label="Kelas Tujuan" bind:value={selectedKelas} options={kelasList.map((k) => ({ value: k.id, label: k.name }))} />
 			</div>
 
 			<div class="field">
 				<label for="file-input">File CSV</label>
 				<div class="dropzone">
-					<input
+<Input  />
 						id="file-input"
 						type="file"
 						accept=".csv"
@@ -159,7 +153,7 @@
 						<div class="file-selected">
 							<span class="file-icon">📄</span>
 							<span class="file-name">{fileName}</span>
-							<button class="btn-small" onclick={() => { file = null; fileName = ''; }}>Ganti</button>
+							<Button class="btn-small" onclick={() => { file = null; fileName = ''; }}>Ganti</Button>
 						</div>
 					{:else}
 						<div class="dropzone-placeholder">
@@ -180,13 +174,13 @@
 			</div>
 
 			<div class="actions">
-				<button
+				<Button
 					class="btn-primary"
 					onclick={uploadAndPreview}
 					disabled={!file || !selectedKelas || uploading}
 				>
 					{uploading ? 'Membaca file...' : '📋 Pratinjau'}
-				</button>
+				</Button>
 			</div>
 		</div>
 
@@ -195,10 +189,10 @@
 			<div class="card-header">
 				<h2>Pratinjau Data ({previewData.length} baris)</h2>
 				<div class="card-header-actions">
-					<button class="btn-cancel" onclick={() => step = 'upload'}>{t('common.back')}</button>
-					<button class="btn-primary" onclick={doImport} disabled={importing || previewData.length === 0}>
+					<Button variant="secondary" onclick={() => step = 'upload'}>{t('common.back')}</Button>
+					<Button variant="primary" onclick={doImport} disabled={importing || previewData.length === 0}>
 						{importing ? 'Mengimport...' : '✅ Import ke Kelas'}
-					</button>
+					</Button>
 				</div>
 			</div>
 
@@ -243,7 +237,7 @@
 			{/if}
 
 			<div class="actions">
-				<button class="btn-primary" onclick={reset}>{t('admin.import_lagi')}</button>
+				<Button variant="primary" onclick={reset}>{t('admin.import_lagi')}</Button>
 				<a href="/admin/classes-structure/kelas/{selectedKelas}" class="btn-cancel">{t('admin.lihat_kelas')}</a>
 			</div>
 		</div>

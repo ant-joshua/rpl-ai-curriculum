@@ -257,7 +257,7 @@
 			<div class="class-list">
 				{#each classes as cls}
 					<label class="class-checkbox">
-						<input
+<Input  />
 							type="checkbox"
 							checked={selectedClassIds.includes(cls.id)}
 							onchange={() => toggleClass(cls.id)}

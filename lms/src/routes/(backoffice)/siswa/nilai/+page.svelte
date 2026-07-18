@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Loading, EmptyState } from '$lib/components/ui';
+	import { DataTable, Loading, EmptyState, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n.svelte';
 
 	let grades: any[] = $state([]);
 	let studentInfo: any = $state(null);

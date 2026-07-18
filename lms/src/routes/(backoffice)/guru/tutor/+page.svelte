@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Button } from '$lib/components/ui/index.js';
 	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);

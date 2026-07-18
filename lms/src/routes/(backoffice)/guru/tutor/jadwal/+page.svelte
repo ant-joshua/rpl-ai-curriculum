@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Modal } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Modal, Input, Textarea, Button, Select } from '$lib/components/ui/index.js';
 
 	type Session = {
 		id: string;

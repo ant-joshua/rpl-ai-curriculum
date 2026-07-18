@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { StatCard, PageHeader, DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -105,8 +105,8 @@ const queueColumns: ColumnDef<any, any>[] = [
 	<PageHeader title="🔔 Notifikasi" subtitle="Broadcast, queue monitoring, dan statistik notifikasi">
 		<svelte:fragment slot="action">
 			<div class="header-actions">
-				<button class="btn-refresh" onclick={loadAll}>🔄</button>
-				<button class="btn-primary" onclick={() => showBroadcast = true}>📢 Broadcast</button>
+				<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
+				<Button variant="primary" onclick={() => showBroadcast = true}>📢 Broadcast</Button>
 			</div>
 		</svelte:fragment>
 	</PageHeader>
@@ -114,7 +114,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{:else}
 		<!-- Stats Cards -->
@@ -166,10 +166,10 @@ const queueColumns: ColumnDef<any, any>[] = [
 						<span class="ql-icon">📨</span>
 						<span class="ql-text">Monitoring Queue</span>
 					</a>
-					<button class="quick-link" onclick={() => showBroadcast = true}>
+					<Button class="quick-link" onclick={() => showBroadcast = true}>
 						<span class="ql-icon">📢</span>
 						<span class="ql-text">Broadcast Baru</span>
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -185,7 +185,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 			<div class="modal" onclick={(e) => e.stopPropagation()}>
 				<div class="modal-header">
 					<h3>📢 Broadcast Notifikasi</h3>
-					<button class="btn-close" onclick={() => showBroadcast = false}>✕</button>
+					<Button class="btn-close" onclick={() => showBroadcast = false}>✕</Button>
 				</div>
 				<div class="modal-body">
 					{#if broadcastResult}
@@ -193,34 +193,26 @@ const queueColumns: ColumnDef<any, any>[] = [
 					{/if}
 					<div class="form-row">
 						<label class="form-label">{t('admin.tipe')}</label>
-						<select class="form-input" bind:value={broadcastType}>
-							{#each types as t}
-								<option value={t}>{t}</option>
-							{/each}
-						</select>
+<Select bind:value={broadcastType} options={types.map((t) => ({ value: t, label: t }))} />
 					</div>
 					<div class="form-row">
 						<label class="form-label">{t('admin.channel')}</label>
-						<select class="form-input" bind:value={broadcastChannel}>
-							<option value="in_app">In-App</option>
-							<option value="email">Email</option>
-							<option value="whatsapp">WhatsApp</option>
-						</select>
+<Select bind:value={broadcastChannel} options={[{ value: "in_app", label: "In-App" }, { value: "email", label: "Email" }, { value: "whatsapp", label: "WhatsApp" }]} />
 					</div>
 					<div class="form-row">
 						<label class="form-label">Judul *</label>
-						<input class="form-input" bind:value={broadcastTitle} placeholder="Judul notifikasi" />
+<Input bind:value={broadcastTitle} placeholder="Judul notifikasi" />
 					</div>
 					<div class="form-row">
 						<label class="form-label">Pesan (opsional)</label>
-						<textarea class="form-textarea" bind:value={broadcastBody} rows="4" placeholder="Isi pesan..."></textarea>
+<Textarea placeholder="Isi pesan..." bind:value={broadcastBody} rows=4 />
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={() => showBroadcast = false}>{t('common.cancel')}</button>
-					<button class="btn-primary" onclick={sendBroadcast} disabled={broadcasting || !broadcastTitle}>
+					<Button variant="secondary" onclick={() => showBroadcast = false}>{t('common.cancel')}</Button>
+					<Button variant="primary" onclick={sendBroadcast} disabled={broadcasting || !broadcastTitle}>
 						{broadcasting ? 'Mengirim...' : 'Kirim Broadcast'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { StatCard, DataTable } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, StatCard } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type SessionDetail = {
@@ -199,9 +199,9 @@
 		</div>
 		<div class="header-actions">
 			{#if session?.status === 'active'}
-				<button class="btn-danger" onclick={closeSession} disabled={closing}>
+				<Button variant="danger" onclick={closeSession} disabled={closing}>
 					{closing ? 'Menutup...' : 'Tutup Sesi'}
-				</button>
+				</Button>
 			{/if}
 		</div>
 	</div>
@@ -215,7 +215,7 @@
 		<div class="error-state">
 			<Icon name="alert-circle" size={24} />
 			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadSession}>{t('common.retry')}</button>
+			<Button variant="secondary" onclick={loadSession}>{t('common.retry')}</Button>
 		</div>
 	{:else if session}
 		<!-- Session Info -->
@@ -297,26 +297,19 @@
 					<div class="manual-form">
 						<div class="form-row">
 							<div class="form-group">
-								<label for="manual-student">Student ID</label>
-								<input id="manual-student" type="text" bind:value={manualStudentId} placeholder="ID siswa..." />
+<Input label="Student ID" bind:value={manualStudentId} placeholder="ID siswa..." />
 							</div>
 							<div class="form-group">
-								<label for="manual-status">{t('common.status')}</label>
-								<select id="manual-status" bind:value={manualStatus}>
-									<option value="present">{t('admin.hadir')}</option>
-									<option value="late">{t('admin.terlambat')}</option>
-									<option value="absent">{t('admin.absen')}</option>
-									<option value="excused">Izin/Sakit</option>
-								</select>
+<Select label={t('common.status')} bind:value={manualStatus} options={[{ value: "present", label: t('admin.hadir') }, { value: "late", label: t('admin.terlambat') }, { value: "absent", label: t('admin.absen') }, { value: "excused", label: "Izin/Sakit" }]} />
 							</div>
 							<div class="form-group">
-								<button
+								<Button
 									class="btn-primary"
 									onclick={manualCheckIn}
 									disabled={checkingIn || !manualStudentId.trim()}
 								>
 									{checkingIn ? '...' : 'Check-in'}
-								</button>
+								</Button>
 							</div>
 						</div>
 						{#if checkInResult}

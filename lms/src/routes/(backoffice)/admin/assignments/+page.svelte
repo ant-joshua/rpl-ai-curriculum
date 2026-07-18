@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, TableHeader, PageHeader, EmptyState, StatCard } from '$lib/components/ui';
+	import { Badge, Button, Card, CardContent, EmptyState, Input, PageHeader, Select, StatCard, TableHeader, Textarea } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -274,12 +274,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	</div>
 	<PageHeader title="📂 Manajemen Tugas" subtitle="{assignments.length} tugas">
 		{#snippet action()}
-			<select bind:value={selectedOfferingId} onchange={() => { loadLessons(selectedOfferingId); loadData(); }} class="select-input">
-				<option value="">Semua Kursus</option>
-				{#each offerings as o}
-					<option value={o.id}>{o.name}</option>
-				{/each}
-			</select>
+<Select bind:value={selectedOfferingId} onchange={loadData} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
 			<Button onclick={openCreate}>+ Buat Tugas</Button>
 		{/snippet}
 	</PageHeader>
@@ -379,46 +374,31 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
 			<div class="modal-header">
 				<h2>{editingId ? 'Edit Tugas' : 'Buat Tugas Baru'}</h2>
-				<button class="modal-close" onclick={closeModal}>✕</button>
+				<Button class="modal-close" onclick={closeModal}>✕</Button>
 			</div>
 			<div class="modal-body">
 				<div class="form-row">
 					<div class="form-group">
 						<label>Kursus</label>
-						<select bind:value={form.course_offering_id} onchange={() => loadLessons(form.course_offering_id)} class="select-input">
-							<option value="">— Pilih —</option>
-							{#each offerings as o}
-								<option value={o.id}>{o.name}</option>
-							{/each}
-						</select>
+<Select bind:value={form.course_offering_id} onchange={() => loadLessons(form.course_offering_id)} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
 					</div>
 					<div class="form-group">
 						<label>Pelajaran (opsional)</label>
-						<select bind:value={form.lesson_id} class="select-input">
-							<option value="">— Tidak Terkait —</option>
-							{#each lessons as l}
-								<option value={l.id}>{l.title}</option>
-							{/each}
-						</select>
+<Select bind:value={form.lesson_id} options={lessons.map((l) => ({ value: l.id, label: l.title }))} />
 					</div>
 				</div>
 				<div class="form-group">
 					<label>Judul Tugas</label>
-					<input type="text" bind:value={form.title} class="input" placeholder="Nama tugas..." />
+<Input bind:value={form.title} placeholder="Nama tugas..." />
 				</div>
 				<div class="form-group">
 					<label>{t('common.description')}</label>
-					<textarea bind:value={form.description} class="input" rows="3" placeholder="Deskripsi tugas..."></textarea>
+<Textarea placeholder="Deskripsi tugas..." bind:value={form.description} rows=3 class="input" />
 				</div>
 				<div class="form-row">
 					<div class="form-group">
 						<label>Tipe Pengumpulan</label>
-						<select bind:value={form.submission_type} class="select-input">
-							<option value="text">Teks</option>
-							<option value="file">File</option>
-							<option value="link">Link</option>
-							<option value="github">GitHub</option>
-						</select>
+<Select bind:value={form.submission_type} options={[{ value: "text", label: "Teks" }, { value: "file", label: "File" }, { value: "link", label: "Link" }, { value: "github", label: "GitHub" }]} />
 					</div>
 					<div class="form-group">
 						<label>Nilai Maksimal</label>
@@ -432,15 +412,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<div class="form-row">
 					<div class="form-group">
 						<label>Tenggat</label>
-						<input type="datetime-local" bind:value={form.due_date} class="input" />
+<Input type="datetime-local" bind:value={form.due_date} />
 					</div>
 					<div class="form-group">
 						<label>{t('common.status')}</label>
-						<select bind:value={form.status} class="select-input">
-							<option value="draft">{t('admin.draft')}</option>
-							<option value="published">{t('admin.published')}</option>
-							<option value="archived">Archived</option>
-						</select>
+<Select bind:value={form.status} options={[{ value: "draft", label: t('admin.draft') }, { value: "published", label: t('admin.published') }, { value: "archived", label: "Archived" }]} />
 					</div>
 				</div>
 				<div class="form-group checkbox-group">
@@ -476,7 +452,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<div class="modal-content modal-sm" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
 			<div class="modal-header">
 				<h2>Nilai Submission</h2>
-				<button class="modal-close" onclick={() => gradeId = null}>✕</button>
+				<Button class="modal-close" onclick={() => gradeId = null}>✕</Button>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
@@ -485,7 +461,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				</div>
 				<div class="form-group">
 					<label>Umpan Balik</label>
-					<textarea bind:value={gradeFeedback} class="input" rows="3" placeholder="Umpan balik untuk siswa..."></textarea>
+<Textarea placeholder="Umpan balik untuk siswa..." bind:value={gradeFeedback} rows=3 class="input" />
 				</div>
 			</div>
 			<div class="modal-footer">

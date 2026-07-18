@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Modal } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, Modal, Input, Button } from '$lib/components/ui/index.js';
 
 	type Tryout = {
 		id: string;
@@ -91,8 +91,8 @@
 	</div>
 
 	<div class="toolbar">
-		<button class="btn btn-secondary btn-sm" onclick={openCreate}>+ Buat Try Out</button>
-		<button class="btn btn-ghost btn-sm" onclick={loadTryouts}>🔄 Refresh</button>
+		<Button variant="primary" size="sm" onclick={openCreate}>+ Buat Try Out</Button>
+		<Button variant="ghost" size="sm" onclick={loadTryouts}>🔄 Refresh</Button>
 	</div>
 
 	{#if loading}
@@ -130,18 +130,17 @@
 
 <Modal open={showModal} title="Buat Try Out Baru" onclose={closeModal}>
 	<div class="form-group">
-		<label for="to-title">Judul</label>
-		<input id="to-title" class="input-field" bind:value={formTitle} placeholder="Contoh: Try Out UTBK #1" />
+		<Input label="Judul" bind:value={formTitle} placeholder="Contoh: Try Out UTBK #1" />
 	</div>
 	<div class="form-group">
 		<label for="to-date">Tanggal</label>
 		<input id="to-date" class="input-field" type="date" bind:value={formDate} />
 	</div>
 	<div class="modal-actions">
-		<button class="btn btn-ghost" onclick={closeModal}>Batal</button>
-		<button class="btn btn-secondary" onclick={createTryout} disabled={saving || !formTitle.trim() || !formDate}>
+		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="primary" onclick={createTryout} disabled={saving || !formTitle.trim() || !formDate}>
 			{saving ? 'Menyimpan...' : 'Buat'}
-		</button>
+		</Button>
 	</div>
 </Modal>
 

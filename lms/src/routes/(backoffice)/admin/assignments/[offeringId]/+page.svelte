@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { SearchBar, PageHeader, EmptyState } from '$lib/components/ui';
+	import { Button, EmptyState, Input, PageHeader, SearchBar, Textarea } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -224,7 +224,7 @@
 					{@const gradedCount = subs.filter((s: any) => s.status === 'graded').length}
 					{@const totalCount = subs.length}
 					<div class="assignment-card">
-						<button
+						<Button
 							class="assignment-header"
 							onclick={() => toggleAssignment(a.id)}
 						>
@@ -242,7 +242,7 @@
 								</span>
 								<span class="expand-icon">{expandedAssignment === a.id ? '▼' : '▶'}</span>
 							</div>
-						</button>
+						</Button>
 
 						{#if expandedAssignment === a.id}
 							<div class="assignment-body">
@@ -296,21 +296,21 @@
 														<td class="date-cell">{formatDate(sub.submitted_at)}</td>
 														<td class="feedback-preview">{sub.feedback ? sub.feedback.slice(0, 40) + (sub.feedback.length > 40 ? '…' : '') : '-'}</td>
 														<td class="actions-cell">
-															<button class="btn btn--grade" onclick={() => openGradeModal(sub, a.max_score)}>
+															<Button class="btn btn--grade" onclick={() => openGradeModal(sub, a.max_score)}>
 																{sub.score != null ? 'Edit' : 'Nilai'}
-															</button>
+															</Button>
 															{#if sub.status === 'graded'}
-																<button class="btn btn--return" onclick={() => markAsReturned(sub)}>
-																	↩
-																</button>
+																<Button class="btn btn--return" onclick={() => markAsReturned(sub)}>
+																										↩
+																									</Button>
 															{/if}
 															{#if sub.file_urls || sub.submission_text}
-																<button
+																<Button
 																	class="btn btn--view"
 																	onclick={() => openGradeModal(sub, a.max_score)}
 																>
 																	👁
-																</button>
+																</Button>
 															{/if}
 														</td>
 													</tr>
@@ -337,7 +337,7 @@
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
 			<div class="modal-header">
 				<h2>Penilaian</h2>
-				<button class="modal-close" onclick={closeGradeModal}>✕</button>
+				<Button class="modal-close" onclick={closeGradeModal}>✕</Button>
 			</div>
 
 			<div class="modal-body">
@@ -371,7 +371,7 @@
 				<div class="modal-section">
 					<label for="grade-score">{t('admin.nilai')}</label>
 					<div class="score-input-row">
-						<input
+<Input  />
 							id="grade-score"
 							type="number"
 							step="0.5"
@@ -386,14 +386,7 @@
 				</div>
 
 				<div class="modal-section">
-					<label for="grade-feedback">Feedback (opsional)</label>
-					<textarea
-						id="grade-feedback"
-						bind:value={gradeFeedback}
-						rows="4"
-						placeholder="Berikan komentar untuk mahasiswa..."
-						class="feedback-input"
-					></textarea>
+<Textarea label="Feedback (opsional)" placeholder="Berikan komentar untuk mahasiswa..." bind:value={gradeFeedback} rows=4 class="feedback-input" />
 				</div>
 
 				{#if gradeError}
@@ -402,10 +395,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn--cancel" onclick={closeGradeModal}>{t('common.cancel')}</button>
-				<button class="btn btn--save" onclick={saveGrade} disabled={savingGrade}>
+				<Button class="btn btn--cancel" onclick={closeGradeModal}>{t('common.cancel')}</Button>
+				<Button class="btn btn--save" onclick={saveGrade} disabled={savingGrade}>
 					{savingGrade ? 'Menyimpan...' : 'Simpan Nilai'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

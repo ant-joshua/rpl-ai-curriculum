@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { Button, Loading, EmptyState, Select } from '$lib/components/ui/index.js';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -168,10 +168,7 @@
 				<p class="meta">{classSubject?.class_name} — {classSubject?.subject_name}</p>
 			</div>
 			<div class="header-actions">
-				<select class="sem-select" bind:value={selectedSemester} onchange={() => { selectedKdId = ''; loadAll(); }}>
-					<option value="1">Semester Ganjil</option>
-					<option value="2">Semester Genap</option>
-				</select>
+				<Select options={[{ value:'1', label:'Semester Ganjil' }, { value:'2', label:'Semester Genap' }]} bind:value={selectedSemester} onchange={() => { selectedKdId = ''; loadAll(); }} />
 				<Button onclick={saveAll} disabled={saving} variant="secondary" size="sm">
 					{saving ? '⏳ Menyimpan...' : '💾 Simpan'}
 				</Button>

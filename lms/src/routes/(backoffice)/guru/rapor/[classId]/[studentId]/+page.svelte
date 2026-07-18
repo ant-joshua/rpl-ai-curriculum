@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Loading, Badge, Button, DataTable } from '$lib/components/ui/index.js';
+	import { Loading, Badge, Button, DataTable, Textarea } from '$lib/components/ui/index.js';
 import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 
@@ -371,12 +371,7 @@ import { t } from '$lib/stores/i18n.svelte';
 		<div class="section">
 			<h3 class="section-title">{t('rapor.catatan_wali')}</h3>
 			{#if rapor.status === 'draft'}
-				<textarea
-					class="notes-textarea"
-					bind:value={homeroomNotes}
-					placeholder={t('rapor.catatan_placeholder')}
-					rows="4"
-				></textarea>
+				<Textarea bind:value={homeroomNotes} placeholder={t('rapor.catatan_placeholder')} rows={4} />
 				<div class="notes-actions">
 					<Button onclick={saveNotes} disabled={savingNote} variant="secondary" size="sm">
 						{savingNote ? t('nilai.menyimpan') : t('rapor.simpan_catatan')}

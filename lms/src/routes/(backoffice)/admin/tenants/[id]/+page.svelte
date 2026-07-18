@@ -88,10 +88,10 @@
 				</div>
 			</div>
 			<div class="header-actions">
-				<button class="btn-small" onclick={toggleActive}>
+				<Button class="btn-small" onclick={toggleActive}>
 					{tenant.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-				</button>
-				<button class="btn-small btn-danger" onclick={deleteTenant}>{t('common.delete')}</button>
+				</Button>
+				<Button variant="danger" class="btn-small" onclick={deleteTenant}>{t('common.delete')}</Button>
 			</div>
 		</div>
 
@@ -107,9 +107,9 @@
 
 		<div class="card">
 			<h2>Raw Config (JSON)</h2>
-			<textarea bind:value={config} rows="12" class="config-json"></textarea>
+<Textarea bind:value={config} rows=12 class="config-json" />
 			<div class="actions">
-				<button class="btn-primary" onclick={saveConfig}>Simpan Config</button>
+				<Button variant="primary" onclick={saveConfig}>Simpan Config</Button>
 				{#if saved}<span class="saved">✓ Tersimpan</span>{/if}
 			</div>
 		</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-import { DataTable } from '$lib/components/ui';
+import { Button, DataTable, Input, Select } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let invoices: any[] = $state([]);
@@ -254,22 +254,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<h1 class="pg-title">Invoice</h1>
 			<p class="pg-subtitle">Daftar invoice & pencatatan pembayaran</p>
 		</div>
-		<button class="pg-btn pg-btn-primary" onclick={() => { resetForm(); showModal = true; }}>
+		<Button variant="primary" class="pg-btn pg-" onclick={() => { resetForm(); showModal = true; }}>
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 			Buat Invoice
-		</button>
+		</Button>
 	</div>
 
 	<!-- Filters -->
 	<div class="pg-filters">
-		<select class="pg-select" bind:value={statusFilter} onchange={() => { page = 1; loadInvoices(); }}>
-			<option value="">Semua Status</option>
-			<option value="unpaid">Belum Dibayar</option>
-			<option value="partial">Sebagian</option>
-			<option value="paid">Lunas</option>
-			<option value="overdue">Jatuh Tempo</option>
-			<option value="cancelled">Dibatalkan</option>
-		</select>
+<Select bind:value={statusFilter} onchange={() => { page = 1; loadInvoices(); }} options={[{ value: "", label: "Semua Status" }, { value: "unpaid", label: "Belum Dibayar" }, { value: "partial", label: "Sebagian" }, { value: "paid", label: "Lunas" }, { value: "overdue", label: "Jatuh Tempo" }, { value: "cancelled", label: "Dibatalkan" }]} />
 		<span class="pg-filter-count">{total} invoice</span>
 	</div>
 
@@ -278,13 +271,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	{:else if error}
 		<div class="pg-error-block">
 			<p>{error}</p>
-			<button class="pg-btn pg-btn-ghost" onclick={loadInvoices}>{t('common.retry')}</button>
+			<Button variant="ghost" class="pg-btn pg-" onclick={loadInvoices}>{t('common.retry')}</Button>
 		</div>
 	{:else if invoices.length === 0}
 		<div class="pg-empty">
 			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
 			<p>Belum ada invoice</p>
-			<button class="pg-btn pg-btn-primary pg-btn-sm" onclick={() => { resetForm(); showModal = true; }}>Buat Invoice Baru</button>
+			<Button variant="primary" size="sm" class="pg-btn pg-pg-" onclick={() => { resetForm(); showModal = true; }}>Buat Invoice Baru</Button>
 		</div>
 	{:else}
 		<div class="pg-table-wrap">
@@ -294,9 +287,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<!-- Pagination -->
 		{#if totalPages > 1}
 			<div class="pg-pagination">
-				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page <= 1} onclick={() => { page--; loadInvoices(); }}>{t('admin.prev')}</button>
+				<Button disabled={page <= 1} onclick={() => { page--; loadInvoices(); }}>{t('admin.prev')}</Button>
 				<span class="pg-page-info">Hal {page} / {totalPages}</span>
-				<button class="pg-btn pg-btn-ghost pg-btn-sm" disabled={page >= totalPages} onclick={() => { page++; loadInvoices(); }}>{t('admin.next_page')}</button>
+				<Button disabled={page >= totalPages} onclick={() => { page++; loadInvoices(); }}>{t('admin.next_page')}</Button>
 			</div>
 		{/if}
 	{/if}
@@ -307,9 +300,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<div class="pg-modal pg-modal-detail" onclick={(e) => e.stopPropagation()} role="document">
 				<div class="pg-modal-header">
 					<h2>Detail Invoice</h2>
-					<button class="pg-btn-icon" onclick={() => selectedInvoice = null}>
+					<Button class="pg-btn-icon" onclick={() => selectedInvoice = null}>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-					</button>
+					</Button>
 				</div>
 				<div class="pg-modal-body">
 					<div class="pg-detail-grid">
@@ -384,15 +377,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<div class="pg-modal" onclick={(e) => e.stopPropagation()} role="document">
 				<div class="pg-modal-header">
 					<h2>Buat Invoice Baru</h2>
-					<button class="pg-btn-icon" onclick={() => showModal = false}>
+					<Button class="pg-btn-icon" onclick={() => showModal = false}>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-					</button>
+					</Button>
 				</div>
 				<div class="pg-modal-body">
 					<div class="pg-form-grid">
 						<div class="pg-field pg-field-full">
 							<label class="pg-label">Student ID <span class="pg-required">*</span></label>
-							<input class="pg-input" bind:value={formStudentId} placeholder="ID mahasiswa" />
+<Input bind:value={formStudentId} placeholder="ID mahasiswa" />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">Jatuh Tempo</label>
@@ -408,7 +401,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						</div>
 						<div class="pg-field pg-field-full">
 							<label class="pg-label">{t('admin.catatan')}</label>
-							<input class="pg-input" bind:value={formNotes} placeholder="Catatan opsional" />
+<Input bind:value={formNotes} placeholder="Catatan opsional" />
 						</div>
 					</div>
 
@@ -416,22 +409,22 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					<div class="pg-items">
 						{#each formItems as item, i}
 							<div class="pg-item-row">
-								<input class="pg-input pg-input-grow" bind:value={item.description} placeholder="Deskripsi item" />
+<Input bind:value={item.description} placeholder="Deskripsi item" class="pg-input pg-input-grow" />
 								<input class="pg-input pg-input-num" type="number" bind:value={item.amount} min="0" placeholder="Harga" />
 								<input class="pg-input pg-input-num-sm" type="number" bind:value={item.quantity} min="1" placeholder="Qty" />
-								<button class="pg-btn-icon pg-btn-danger" onclick={() => removeItem(i)} disabled={formItems.length <= 1}>
+								<Button variant="danger" class="pg-btn-icon pg-" onclick={() => removeItem(i)} disabled={formItems.length <= 1}>
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-								</button>
+								</Button>
 							</div>
 						{/each}
-						<button class="pg-btn pg-btn-ghost pg-btn-sm" onclick={addItem}>+ Tambah Item</button>
+						<Button variant="ghost" size="sm" class="pg-btn pg-pg-" onclick={addItem}>+ Tambah Item</Button>
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showModal = false}>{t('common.cancel')}</button>
-					<button class="pg-btn pg-btn-primary" onclick={submitInvoice} disabled={saving || !formStudentId || formItems.length === 0}>
+					<Button variant="ghost" class="pg-btn pg-" onclick={() => showModal = false}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="pg-btn pg-" onclick={submitInvoice} disabled={saving || !formStudentId || formItems.length === 0}>
 						{saving ? 'Menyimpan...' : 'Buat Invoice'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -443,9 +436,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<div class="pg-modal" onclick={(e) => e.stopPropagation()} role="document">
 				<div class="pg-modal-header">
 					<h2>Catat Pembayaran</h2>
-					<button class="pg-btn-icon" onclick={() => showPaymentModal = false}>
+					<Button class="pg-btn-icon" onclick={() => showPaymentModal = false}>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-					</button>
+					</Button>
 				</div>
 				<div class="pg-modal-body">
 					{#if selectedInvoice}
@@ -464,29 +457,23 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">Metode Pembayaran</label>
-							<select class="pg-input" bind:value={payType}>
-								<option value="transfer">Transfer Bank</option>
-								<option value="cash">Tunai</option>
-								<option value="credit_card">Kartu Kredit</option>
-								<option value="e_wallet">E-Wallet</option>
-								<option value="virtual_account">Virtual Account</option>
-							</select>
+<Select bind:value={payType} options={[{ value: "transfer", label: "Transfer Bank" }, { value: "cash", label: "Tunai" }, { value: "credit_card", label: "Kartu Kredit" }, { value: "e_wallet", label: "E-Wallet" }, { value: "virtual_account", label: "Virtual Account" }]} />
 						</div>
 						<div class="pg-field">
 							<label class="pg-label">No. Referensi</label>
-							<input class="pg-input" bind:value={payRef} placeholder="No. referensi" />
+<Input bind:value={payRef} placeholder="No. referensi" />
 						</div>
 						<div class="pg-field pg-field-full">
 							<label class="pg-label">{t('admin.catatan')}</label>
-							<input class="pg-input" bind:value={payNotes} placeholder="Catatan opsional" />
+<Input bind:value={payNotes} placeholder="Catatan opsional" />
 						</div>
 					</div>
 				</div>
 				<div class="pg-modal-footer">
-					<button class="pg-btn pg-btn-ghost" onclick={() => showPaymentModal = false}>{t('common.cancel')}</button>
-					<button class="pg-btn pg-btn-primary" onclick={submitPayment} disabled={saving || payAmount <= 0}>
+					<Button variant="ghost" class="pg-btn pg-" onclick={() => showPaymentModal = false}>{t('common.cancel')}</Button>
+					<Button variant="primary" class="pg-btn pg-" onclick={submitPayment} disabled={saving || payAmount <= 0}>
 						{saving ? 'Menyimpan...' : 'Catat Pembayaran'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

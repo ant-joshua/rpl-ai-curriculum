@@ -247,20 +247,20 @@
 					</div>
 
 					<div class="lesson-move-btns">
-						<button
+						<Button
 							class="move-btn"
 							disabled={i === 0}
 							onclick={() => moveUp(i)}
 							aria-label="Pindahkan ke atas"
 							title="Naik"
-						>↑</button>
-						<button
+						>↑</Button>
+						<Button
 							class="move-btn"
 							disabled={i === lessons.length - 1}
 							onclick={() => moveDown(i)}
 							aria-label="Pindahkan ke bawah"
 							title="Turun"
-						>↓</button>
+						>↓</Button>
 					</div>
 				</div>
 			{/each}

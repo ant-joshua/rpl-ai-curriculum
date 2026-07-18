@@ -147,8 +147,8 @@
 			<p class="subtitle">Kelola instance survei dan status</p>
 		</div>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadAll}>🔄</button>
-			<button class="btn-primary" onclick={openCreate}>+ Survei Baru</button>
+			<Button class="btn-refresh" onclick={loadAll}>🔄</Button>
+			<Button variant="primary" onclick={openCreate}>+ Survei Baru</Button>
 		</div>
 	</div>
 
@@ -167,7 +167,7 @@
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadAll}>{t('common.retry')}</button>
+			<Button variant="primary" onclick={loadAll}>{t('common.retry')}</Button>
 		</div>
 	{/if}
 
@@ -181,35 +181,25 @@
 			<div class="modal" onclick={(e) => e.stopPropagation()}>
 				<div class="modal-header">
 					<h3>Buat Survei Baru</h3>
-					<button class="btn-close" onclick={cancelForm}>✕</button>
+					<Button class="btn-close" onclick={cancelForm}>✕</Button>
 				</div>
 				<div class="modal-body">
 					<div class="form-row">
 						<label class="form-label">Template</label>
-						<select class="form-input" bind:value={formTemplateId}>
-							<option value="">Pilih template...</option>
-							{#each templates as t}
-								<option value={t.id}>{t.name} ({t.survey_type})</option>
-							{/each}
-						</select>
+<Select bind:value={formTemplateId} options={templates.map((t) => ({ value: t.id, label: `${t.name} (${t.survey_type})` }))} />
 					</div>
 					<div class="form-row">
 						<label class="form-label">Judul Survei</label>
-						<input class="form-input" bind:value={formTitle} placeholder="e.g. Course Feedback Q1 2026" />
+<Input bind:value={formTitle} placeholder="e.g. Course Feedback Q1 2026" />
 					</div>
 					<div class="form-row-2col">
 						<div>
 							<label class="form-label">Target Type</label>
-							<select class="form-input" bind:value={formTargetType}>
-								<option value="">—</option>
-								{#each targetTypes.slice(1) as tt}
-									<option value={tt}>{tt}</option>
-								{/each}
-							</select>
+<Select bind:value={formTargetType} options={targetTypes.slice(1).map((tt) => ({ value: tt, label: tt }))} />
 						</div>
 						<div>
 							<label class="form-label">Target ID (opsional)</label>
-							<input class="form-input" bind:value={formTargetId} placeholder="course/class id" />
+<Input bind:value={formTargetId} placeholder="course/class id" />
 						</div>
 					</div>
 					<div class="form-row-2col">
@@ -224,10 +214,10 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={cancelForm}>{t('common.cancel')}</button>
-					<button class="btn-primary" onclick={saveInstance} disabled={saving || !formTitle || !formTemplateId}>
+					<Button variant="secondary" onclick={cancelForm}>{t('common.cancel')}</Button>
+					<Button variant="primary" onclick={saveInstance} disabled={saving || !formTitle || !formTemplateId}>
 						{saving ? 'Menyimpan...' : 'Buat Survei'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -239,7 +229,7 @@
 	{:else if instances.length === 0}
 		<div class="empty-state">
 			<p>Belum ada instance survei</p>
-			<button class="btn-primary" onclick={openCreate}>Buat Survei Pertama</button>
+			<Button variant="primary" onclick={openCreate}>Buat Survei Pertama</Button>
 		</div>
 	{:else}
 		<div class="instances-list">
@@ -268,14 +258,14 @@
 					</div>
 					<div class="instance-actions">
 						{#if inst.status === 'draft'}
-							<button class="btn-small btn-primary-small" onclick={() => updateStatus(inst.id, 'active')}>Aktifkan</button>
+							<Button variant="primary" class="btn-small -small" onclick={() => updateStatus(inst.id, 'active')}>Aktifkan</Button>
 						{/if}
 						{#if inst.status === 'active'}
-							<button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>{t('common.close')}</button>
+							<Button class="btn-small" onclick={() => updateStatus(inst.id, 'closed')}>{t('common.close')}</Button>
 							<a href={`/api/admin/survey/instances/${inst.id}/analytics`} target="_blank" class="btn-small">Analytics</a>
 						{/if}
 						{#if inst.status === 'closed'}
-							<button class="btn-small" onclick={() => updateStatus(inst.id, 'archived')}>Arsipkan</button>
+							<Button class="btn-small" onclick={() => updateStatus(inst.id, 'archived')}>Arsipkan</Button>
 						{/if}
 					</div>
 				</div>
