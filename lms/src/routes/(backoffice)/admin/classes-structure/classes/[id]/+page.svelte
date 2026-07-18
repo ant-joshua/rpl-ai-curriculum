@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let kelas: any = $state(null);
 	let siswa: any[] = $state([]);
@@ -27,15 +29,29 @@
 		finally { loading = false; }
 	}
 
-	function statusBadge(status: string) {
-		const styles: Record<string, string> = {
-			active: 'background: rgba(16,185,129,0.1); color: #10b981;',
-			inactive: 'background: rgba(239,68,68,0.1); color: #ef4444;',
-			alumni: 'background: rgba(94,106,210,0.1); color: #5e6ad2;',
-			mutasi: 'background: rgba(245,158,11,0.1); color: #f59e0b;',
-		};
-		return styles[status] || 'background: var(--bg-secondary); color: var(--text-secondary);';
-	}
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'NIS', accessorKey: 'nis', cell: ({ getValue }) => `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${(getValue() as string) || '—'}</code>` },
+		{ header: 'NISN', accessorKey: 'nisn', cell: ({ getValue }) => `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${(getValue() as string) || '—'}</code>` },
+		{ header: 'Nama', accessorKey: 'display_name', cell: ({ row }) => `<span style="font-weight:500">${row.original.display_name || row.original.username || row.original.name || row.original.user_name || '—'}</span>` },
+		{
+			header: 'Status', accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = (getValue() as string) || 'active';
+				const styles: Record<string, string> = {
+					active: 'background:rgba(16,185,129,0.1);color:#10b981',
+					inactive: 'background:rgba(239,68,68,0.1);color:#ef4444',
+					alumni: 'background:rgba(94,106,210,0.1);color:#5e6ad2',
+					mutasi: 'background:rgba(245,158,11,0.1);color:#f59e0b',
+				};
+				const label = s === 'active' ? 'Aktif' : s;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;${styles[s] || 'background:var(--bg-secondary);color:var(--text-secondary)'}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Bergabung', accessorKey: 'joined_at',
+			cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.joined_at || row.original.joinedAt ? new Date(row.original.joined_at || row.original.joinedAt).toLocaleDateString() : '—'}</span>`
+		},
+	];
 </script>
 
 <svelte:head>
@@ -95,34 +111,7 @@
 				</div>
 			{:else}
 				<div class="table-container">
-					<table>
-						<thead>
-							<tr>
-								<th>No</th>
-								<th>NIS</th>
-								<th>NISN</th>
-								<th>Nama</th>
-								<th>Status</th>
-								<th>Bergabung</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each siswa as s, i}
-								<tr>
-									<td class="cell-num">{i + 1}</td>
-									<td><code>{s.nis || '—'}</code></td>
-									<td><code>{s.nisn || '—'}</code></td>
-									<td class="cell-name">{s.display_name || s.username || s.name || s.user_name || '—'}</td>
-									<td>
-										<span class="status-badge" style={statusBadge(s.status || 'active')}>
-											{(s.status || 'active') === 'active' ? 'Aktif' : s.status || '—'}
-										</span>
-									</td>
-									<td class="cell-date">{s.joined_at || s.joinedAt ? new Date(s.joined_at || s.joinedAt).toLocaleDateString() : '—'}</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable {columns} data={siswa} pageSize={20} showSearch={true} searchPlaceholder="Cari siswa..." />
 				</div>
 			{/if}
 		</div>
@@ -156,13 +145,5 @@
 	.badge-count { font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); padding: 3px 10px; border-radius: 20px; }
 	.empty-sub { text-align: center; padding: 40px; color: var(--text-secondary); }
 
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 11px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
-	td { padding: 11px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-num { color: var(--text-secondary); text-align: center; width: 40px; }
-	.cell-name { font-weight: 500; }
-	.cell-date { color: var(--text-secondary); font-size: 12px; }
-	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+	.table-container { padding: 16px 18px; }
 </style>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { StatCard } from '$lib/components/ui';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Message = {
 		id: string;
@@ -47,6 +49,31 @@
 		return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 	}
 
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Tanggal',
+			accessorFn: (row) => formatDate(row.createdAt)
+		},
+		{
+			header: 'Pengirim',
+			accessorFn: (row) => row.senderName || row.senderId
+		},
+		{
+			header: 'Subjek',
+			accessorFn: (row) => row.subject || '(tanpa subjek)'
+		},
+		{
+			header: 'Status',
+			accessorKey: 'isRead',
+			cell: ({ getValue }) => {
+				const read = getValue() as number;
+				const cls = read === 1 ? 'pp-badge-read' : 'pp-badge-unread';
+				const label = read === 1 ? 'Dibaca' : 'Baru';
+				return `<span class="pp-badge ${cls}">${label}</span>`;
+			}
+		}
+	];
+
 	onMount(loadStats);
 </script>
 
@@ -82,30 +109,7 @@
 
 			{#if stats.recentMessages && stats.recentMessages.length > 0}
 				<div class="pp-table-wrap">
-					<table class="pp-table">
-						<thead>
-							<tr>
-								<th>Tanggal</th>
-								<th>Pengirim</th>
-								<th>Subjek</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats.recentMessages as msg}
-								<tr>
-									<td>{formatDate(msg.createdAt)}</td>
-									<td>{msg.senderName || msg.senderId}</td>
-									<td>{msg.subject || '(tanpa subjek)'}</td>
-									<td>
-										<span class="pp-badge" class:pp-badge-read={msg.isRead === 1} class:pp-badge-unread={msg.isRead === 0}>
-											{msg.isRead === 1 ? 'Dibaca' : 'Baru'}
-										</span>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable {columns} data={stats.recentMessages} pageSize={10} showSearch={false} showPagination={false} />
 				</div>
 			{:else}
 				<div class="pp-empty">

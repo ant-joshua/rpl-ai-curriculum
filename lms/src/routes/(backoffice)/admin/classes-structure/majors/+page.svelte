@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let jurusanList: any[] = $state([]);
 	let loading = $state(true);
@@ -64,6 +66,34 @@
 		olahraga: 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		seni: 'background: rgba(236,72,153,0.1); color: #ec4899',
 	};
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Nama Jurusan', accessorKey: 'name' },
+		{
+			header: 'Kode',
+			accessorKey: 'code',
+			cell: ({ getValue }) => `<code>${getValue() || '—'}</code>`
+		},
+		{
+			header: 'Tipe',
+			accessorKey: 'type',
+			cell: ({ getValue }) => {
+				const t = getValue() as string;
+				const style = typeColors[t] || typeColors['umum'];
+				const label = typeLabels[t] || t;
+				return `<span class="type-badge" style="${style}">${label}</span>`;
+			}
+		},
+		{
+			header: 'Kelas Terkait',
+			accessorFn: (row) => row.kelas_count ?? row.class_count ?? '—'
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?jurusan=${getValue()}" class="btn-small">Lihat Kelas</a>`
+		}
+	];
 </script>
 
 <svelte:head>
@@ -97,34 +127,7 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Jurusan</th>
-							<th>Kode</th>
-							<th>Tipe</th>
-							<th>Kelas Terkait</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each jurusanList as j}
-							<tr>
-								<td class="cell-name">{j.name}</td>
-								<td><code>{j.code || '—'}</code></td>
-								<td>
-									<span class="type-badge" style={typeColors[j.type] || typeColors['umum']}>
-										{typeLabels[j.type] || j.type}
-									</span>
-								</td>
-								<td class="cell-count">{j.kelas_count ?? j.class_count ?? '—'}</td>
-								<td>
-									<a href="/admin/classes-structure/kelas?jurusan={j.id}" class="btn-small">Lihat Kelas</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable {columns} data={jurusanList} pageSize={20} showSearch={true} searchPlaceholder="Cari jurusan..." emptyMessage="Belum ada jurusan" emptyIcon="📐" />
 			</div>
 		</div>
 	{/if}
@@ -189,12 +192,7 @@
 	.empty-state p { margin-bottom: 16px; }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
-	.cell-count { text-align: center; font-weight: 600; }
+	.btn-small { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
 	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
 	.type-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
 

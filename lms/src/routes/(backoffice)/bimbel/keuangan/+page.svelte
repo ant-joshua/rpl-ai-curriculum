@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Invoice = {
 		id: string;
@@ -18,6 +20,23 @@
 	let error = $state('');
 	let invoices: Invoice[] = $state([]);
 	let filterStatus = $state<string>('all');
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Invoice', accessorKey: 'invoiceNumber', cell: ({ getValue }) => `<code>${getValue()}</code>` },
+		{ header: 'Siswa', accessorKey: 'studentName' },
+		{ header: 'Batch', accessorFn: (row) => row.batchName || '-' },
+		{ header: 'Jumlah', accessorKey: 'amount', cell: ({ getValue }) => formatCurrency(getValue() as number) },
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				return `<span class="badge-inline">${getStatusLabel(s)}</span>`;
+			}
+		},
+		{ header: 'Jatuh Tempo', accessorKey: 'dueDate', cell: ({ getValue }) => formatDate(getValue() as string) },
+		{ header: 'Dibayar', accessorFn: (row) => row.paidAt ? formatDate(row.paidAt) : '-' }
+	];
 
 	onMount(() => {
 		if (!browser) return;
@@ -133,34 +152,7 @@
 		<EmptyState icon="🔍" title="Tidak Ditemukan" description="Tidak ada invoice dengan filter ini." />
 	{:else}
 		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Invoice</th>
-						<th>Siswa</th>
-						<th>Batch</th>
-						<th>Jumlah</th>
-						<th>Status</th>
-						<th>Jatuh Tempo</th>
-						<th>Dibayar</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filtered as inv}
-						<tr>
-							<td class="col-invoice">{inv.invoiceNumber}</td>
-							<td class="col-name">{inv.studentName}</td>
-							<td class="col-batch">{inv.batchName || '-'}</td>
-							<td class="col-amount">{formatCurrency(inv.amount)}</td>
-							<td class="col-status">
-								<Badge variant={getStatusBadge(inv.status)}>{getStatusLabel(inv.status)}</Badge>
-							</td>
-							<td class="col-date">{formatDate(inv.dueDate)}</td>
-							<td class="col-date">{inv.paidAt ? formatDate(inv.paidAt) : '-'}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+			<DataTable {columns} data={filtered} pageSize={20} showSearch={true} searchPlaceholder="Cari invoice..." />
 		</div>
 	{/if}
 </div>

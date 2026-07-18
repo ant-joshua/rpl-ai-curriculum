@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { StatCard, PageHeader } from '$lib/components/ui';
+	import { StatCard, PageHeader, DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let stats: any = $state(null);
 	let loading = $state(true);
@@ -59,6 +60,39 @@
 		return map[status] || 'badge-cancelled';
 	}
 
+	const paymentColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Tanggal',
+			accessorFn: (row) => formatDate(row.payment_date || row.created_at || '')
+		},
+		{
+			header: 'Mahasiswa',
+			accessorFn: (row) => row.student_name || '-'
+		},
+		{
+			header: 'No. Invoice',
+			accessorFn: (row) => row.invoice_number || '-',
+			cell: ({ getValue }) => `<code>${getValue()}</code>`
+		},
+		{
+			header: 'Nominal',
+			accessorKey: 'amount',
+			cell: ({ getValue }) => `<strong>${formatCurrency(getValue() as number)}</strong>`
+		},
+		{
+			header: 'Metode',
+			accessorFn: (row) => row.payment_method_name || '-'
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				return `<span class="pg-badge ${statusBadge(s)}">${s}</span>`;
+			}
+		}
+	];
+
 	onMount(loadStats);
 </script>
 
@@ -93,30 +127,7 @@
 
 			{#if stats.recentPayments && stats.recentPayments.length > 0}
 				<div class="pg-table-wrap">
-					<table class="pg-table">
-						<thead>
-							<tr>
-								<th>Tanggal</th>
-								<th>Mahasiswa</th>
-								<th>No. Invoice</th>
-								<th>Nominal</th>
-								<th>Metode</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each stats.recentPayments as payment}
-								<tr>
-									<td>{formatDate(payment.payment_date || payment.created_at || '')}</td>
-									<td>{payment.student_name || '-'}</td>
-									<td class="pg-mono">{payment.invoice_number || '-'}</td>
-									<td class="pg-amount">{formatCurrency(payment.amount)}</td>
-									<td>{payment.payment_method_name || '-'}</td>
-									<td><span class="pg-badge {statusBadge(payment.status)}">{payment.status}</span></td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
+					<DataTable columns={paymentColumns} data={stats.recentPayments} pageSize={10} showSearch={false} showPagination={false} />
 				</div>
 			{:else}
 				<div class="pg-empty">

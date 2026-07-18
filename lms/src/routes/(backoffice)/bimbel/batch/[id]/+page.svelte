@@ -2,6 +2,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { page } from '$app/stores';
 
 	type Student = {
@@ -15,10 +17,15 @@
 	let error = $state('');
 	let batch: any = $state(null);
 	let students: Student[] = $state([]);
-	let studentSearch = $state('');
 	let loadingEnroll = $state(false);
 
 	const batchId = $derived($page.params.id);
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Nama', accessorKey: 'name' },
+		{ header: 'NIS', accessorFn: (row) => row.nis || '-', cell: ({ getValue }) => `<code>${getValue()}</code>` },
+		{ header: 'Tanggal Daftar', accessorKey: 'joinedAt', cell: ({ getValue }) => formatDate(getValue() as string) }
+	];
 
 	onMount(() => {
 		if (!browser) return;
@@ -41,12 +48,6 @@
 		} catch { error = 'Gagal terhubung ke server'; }
 		finally { loading = false; }
 	}
-
-	const filteredStudents = $derived(
-		studentSearch
-			? students.filter(s => s.name.toLowerCase().includes(studentSearch.toLowerCase()))
-			: students
-	);
 
 	function formatDate(d: string) {
 		if (!d) return '-';

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Session = {
 		id: string;
@@ -84,12 +85,27 @@
 
 	function getSessionBadge(status: string) {
 		switch (status) {
-			case 'done': return 'success';
-			case 'cancelled': return 'danger';
-			case 'in_progress': return 'primary';
-			default: return 'default';
+			case 'done': return '#10b981';
+			case 'cancelled': return '#ef4444';
+			case 'in_progress': return '#5e6ad2';
+			default: return '#888';
 		}
 	}
+
+	const sessionColumns: ColumnDef<any, any>[] = [
+		{ header: 'Tanggal', accessorKey: 'date', cell: ({ getValue }) => `<span style="font-weight:500">${formatDate(getValue() as string)}</span>` },
+		{ header: 'Waktu', accessorKey: 'startTime', cell: ({ row }) => `<span style="color:var(--text-secondary)">${row.original.startTime?.slice(0,5)}-${row.original.endTime?.slice(0,5)}</span>` },
+		{ header: 'Mapel', accessorKey: 'subject', cell: ({ getValue }) => `<span style="color:var(--text-secondary)">${(getValue() as string) || '-'}</span>` },
+		{
+			header: 'Status', accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				const c = getSessionBadge(s);
+				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;background:${c}20;color:${c}">${s}</span>`;
+			}
+		},
+		{ header: 'Catatan', accessorKey: 'notes', cell: ({ getValue }) => `<span style="color:var(--text-tertiary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">${(getValue() as string) || '-'}</span>` },
+	];
 </script>
 
 <svelte:head>
@@ -131,32 +147,7 @@
 				{#if sessions.length === 0}
 					<EmptyState icon="📋" title="Belum Ada Sesi" description="Belum ada sesi untuk siswa ini." />
 				{:else}
-					<div class="table-wrap">
-						<table>
-							<thead>
-								<tr>
-									<th>Tanggal</th>
-									<th>Waktu</th>
-									<th>Mapel</th>
-									<th>Status</th>
-									<th>Catatan</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each sessions as s}
-									<tr>
-										<td class="col-date">{formatDate(s.date)}</td>
-										<td class="col-time">{s.startTime?.slice(0,5)}-{s.endTime?.slice(0,5)}</td>
-										<td class="col-subject">{s.subject || '-'}</td>
-										<td class="col-status">
-											<Badge variant={getSessionBadge(s.status)}>{s.status}</Badge>
-										</td>
-										<td class="col-notes">{s.notes || '-'}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+					<DataTable columns={sessionColumns} data={sessions} pageSize={10} showSearch={false} showPagination={true} />
 				{/if}
 			{:else}
 				{#if progressNotes.length === 0}
@@ -198,21 +189,6 @@
 	}
 	.tab:hover { color: var(--text); }
 	.tab--active { color: var(--accent); border-bottom-color: var(--accent); }
-
-	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary);
-	}
-	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-	.col-date { min-width: 120px; font-weight: 500; }
-	.col-time { color: var(--text-secondary); }
-	.col-subject { color: var(--text-secondary); }
-	.col-notes { color: var(--text-tertiary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 	.notes-list { display: flex; flex-direction: column; gap: 8px; }
 	.note-card {

@@ -1,8 +1,41 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let { data }: { data: any } = $props();
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Code',
+			accessorKey: 'code',
+			cell: ({ getValue }) => `<code>${getValue()}</code>`
+		},
+		{ header: 'Mata Pelajaran', accessorKey: 'subject_name' },
+		{
+			header: 'Tipe',
+			accessorKey: 'competence_type',
+			cell: ({ getValue }) => {
+				const t = getValue() as string;
+				const cls = t === 'pengetahuan' ? 'tag-pengetahuan' : 'tag-keterampilan';
+				return `<span class="tag ${cls}">${t}</span>`;
+			}
+		},
+		{
+			header: 'Deskripsi',
+			accessorKey: 'description',
+			cell: ({ getValue }) => {
+				const v = getValue() as string;
+				return v.length > 60 ? v.slice(0, 60) + '...' : v;
+			}
+		},
+		{
+			header: 'Semester',
+			accessorKey: 'semester',
+			cell: ({ getValue }) => (getValue() as number | null) ?? '—'
+		}
+	];
 
 	let showForm = $state(false);
 	let editingId = $state<string | null>(null);
@@ -114,32 +147,7 @@
 </div>
 
 <div class="table-wrap">
-	<table class="data-table">
-		<thead>
-			<tr>
-				<th>Code</th>
-				<th>Mata Pelajaran</th>
-				<th>Tipe</th>
-				<th>Deskripsi</th>
-				<th>Semester</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#if data.kds.length === 0}
-				<tr><td colspan="5" class="empty-cell">Belum ada Kompetensi Dasar</td></tr>
-			{:else}
-				{#each data.kds as kd (kd.id)}
-					<tr class="clickable" onclick={() => openForm(kd)}>
-						<td><code>{kd.code}</code></td>
-						<td>{kd.subject_name}</td>
-						<td><span class="tag tag-{kd.competence_type}">{kd.competence_type}</span></td>
-						<td class="desc-cell">{kd.description.length > 60 ? kd.description.slice(0, 60) + '...' : kd.description}</td>
-						<td>{kd.semester || '—'}</td>
-					</tr>
-				{/each}
-			{/if}
-		</tbody>
-	</table>
+	<DataTable {columns} data={data.kds} onRowClick={(row) => openForm(row)} pageSize={20} showSearch={true} searchPlaceholder="Cari kompetensi..." emptyMessage="Belum ada Kompetensi Dasar" emptyIcon="📋" />
 </div>
 
 {#if showForm}
@@ -209,13 +217,6 @@
 	.filters { padding: 0 24px 16px; display: flex; gap: 12px; }
 	.filter-select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px; }
 	.table-wrap { padding: 0 24px; }
-	.data-table { width: 100%; border-collapse: collapse; background: var(--bg-secondary); border-radius: 12px; overflow: hidden; }
-	.data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 13px; }
-	.data-table th { color: var(--text-secondary); font-weight: 500; background: var(--bg-tertiary); }
-	.data-table td { color: var(--text-primary); }
-	.data-table tr.clickable:hover { background: var(--bg-tertiary); cursor: pointer; }
-	.empty-cell { text-align: center; color: var(--text-secondary); padding: 32px; }
-	.desc-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); }
 	code { font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
 	.tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
 	.tag-pengetahuan { background: rgba(108, 92, 231, 0.15); color: #a29bfe; }

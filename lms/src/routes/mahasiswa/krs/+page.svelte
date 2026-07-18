@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let kelasList: any[] = $state([]);
 	let selectedKelas: any[] = $state([]);
@@ -52,6 +54,63 @@
 			selectedKelas = selectedKelas.filter(k => k !== id);
 		} else {
 			selectedKelas = [...selectedKelas, id];
+		}
+	}
+
+	const isApproved = $derived(krsStatus === 'disetujui' || krsStatus === 'approved');
+
+	const kelasTableData = $derived(
+		kelasList.map(k => ({
+			...k,
+			_selected: selectedKelas.includes(k.id),
+			_skss: k.sks ?? k.credits ?? 0,
+			_schedule: `${k.hari || '—'}${k.jam_mulai ? ` ${k.jam_mulai}–${k.jam_selesai || ''}` : ''}`,
+		}))
+	);
+
+	const columns: ColumnDef<any, any>[] = [
+		{
+			header: 'Pilih',
+			accessorKey: '_selected',
+			cell: ({ row }) => {
+				const k = row.original;
+				return `<input type="checkbox" ${k._selected ? 'checked' : ''} ${isApproved ? 'disabled' : ''} data-id="${k.id}" class="krs-checkbox" />`;
+			}
+		},
+		{
+			header: 'Kode',
+			accessorKey: 'kode',
+			cell: ({ getValue }) => {
+				const v = getValue();
+				return `<code>${v || '—'}</code>`;
+			}
+		},
+		{
+			header: 'Mata Kuliah',
+			accessorKey: 'nama',
+			cell: ({ row }) => {
+				const k = row.original;
+				return `<span style="font-weight:500">${k.nama || k.name || k.matkul_name || '—'}</span>`;
+			}
+		},
+		{
+			header: 'SKS',
+			accessorKey: '_skss',
+			cell: ({ getValue }) => `<span style="text-align:center;font-weight:600">${getValue()}</span>`
+		},
+		{ header: 'Dosen', accessorKey: 'dosen_name' },
+		{
+			header: 'Jadwal',
+			accessorKey: '_schedule',
+		},
+		{ header: 'Ruangan', accessorKey: 'ruangan' },
+	];
+
+	function handleTableChange(e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (target.classList.contains('krs-checkbox')) {
+			const id = target.getAttribute('data-id');
+			if (id) toggleKelas(id);
 		}
 	}
 
@@ -166,49 +225,9 @@
 			<p>Tidak ada kelas kuliah tersedia untuk semester ini</p>
 		</div>
 	{:else}
-		<div class="card">
+		<div class="card" onchange={handleTableChange}>
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th style="width: 40px;">Pilih</th>
-							<th>Kode</th>
-							<th>Mata Kuliah</th>
-							<th>SKS</th>
-							<th>Dosen</th>
-							<th>Jadwal</th>
-							<th>Ruangan</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each kelasList as k}
-							<tr
-								class:row-selected={selectedKelas.includes(k.id)}
-								class:row-disabled={krsStatus === 'disetujui' || krsStatus === 'approved'}
-							>
-								<td>
-									<input
-										type="checkbox"
-										checked={selectedKelas.includes(k.id)}
-										onchange={() => toggleKelas(k.id)}
-										disabled={krsStatus === 'disetujui' || krsStatus === 'approved'}
-									/>
-								</td>
-								<td><code>{k.kode || k.code || '—'}</code></td>
-								<td class="cell-name">{k.nama || k.name || k.matkul_name || '—'}</td>
-								<td class="cell-num">{k.sks ?? k.credits ?? '—'}</td>
-								<td>{k.dosen_name || k.lecturer_name || '—'}</td>
-								<td class="cell-schedule">
-									{k.hari || '—'}
-									{#if k.jam_mulai}
-										<br /><span class="time">{k.jam_mulai}–{k.jam_selesai || ''}</span>
-									{/if}
-								</td>
-								<td>{k.ruangan || '—'}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable {columns} data={kelasTableData} pageSize={20} showSearch={true} searchPlaceholder="Cari mata kuliah..." />
 			</div>
 		</div>
 	{/if}

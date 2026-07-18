@@ -1,10 +1,39 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let tingkatList: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state('');
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Nama', accessorKey: 'name' },
+		{
+			header: 'Slug',
+			accessorKey: 'slug',
+			cell: ({ getValue }) => `<code>${getValue()}</code>`
+		},
+		{
+			header: 'Jenjang',
+			accessorFn: (row) => row.education_level || row.educationLevel || 'menengah',
+			cell: ({ getValue }) => `<span class="badge">${getValue()}</span>`
+		},
+		{
+			header: 'Sequence',
+			accessorFn: (row) => row.sequence ?? '—'
+		},
+		{
+			header: 'Semester',
+			accessorFn: (row) => row.semester_count ?? 2
+		},
+		{
+			header: 'Aksi',
+			accessorKey: 'id',
+			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?tingkat=${getValue()}" class="btn-small">Lihat Kelas</a>`
+		}
+	];
 
 	let showForm = $state(false);
 	let formName = $state('');
@@ -86,32 +115,7 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama</th>
-							<th>Slug</th>
-							<th>Jenjang</th>
-							<th>Sequence</th>
-							<th>Semester</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each tingkatList as t}
-							<tr>
-								<td class="cell-name">{t.name}</td>
-								<td><code>{t.slug}</code></td>
-								<td><span class="badge">{t.education_level || t.educationLevel || 'menengah'}</span></td>
-								<td>{t.sequence ?? '—'}</td>
-								<td>{t.semester_count ?? 2}</td>
-								<td>
-									<a href="/admin/classes-structure/kelas?tingkat={t.id}" class="btn-small">Lihat Kelas</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable {columns} data={tingkatList} pageSize={20} showSearch={true} searchPlaceholder="Cari tingkat..." emptyMessage="Belum ada tingkat" emptyIcon="🏫" />
 			</div>
 		</div>
 	{/if}
@@ -176,11 +180,7 @@
 	.empty-state p { margin-bottom: 16px; }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
-	td { padding: 12px 14px; font-size: 14px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
-	.cell-name { font-weight: 500; }
+	.btn-small { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
 	code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
 	.badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--bg-secondary); color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
 

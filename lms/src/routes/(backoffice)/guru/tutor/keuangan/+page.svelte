@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Invoice = {
 		id: string;
@@ -54,29 +55,29 @@
 		return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 	}
 
-	function getStatusBadge(status: string) {
-		switch (status) {
-			case 'paid': return 'success';
-			case 'unpaid': return 'warning';
-			case 'overdue': return 'danger';
-			default: return 'default';
-		}
-	}
-
-	function getStatusLabel(status: string) {
-		switch (status) {
-			case 'paid': return 'Lunas';
-			case 'unpaid': return 'Belum Dibayar';
-			case 'overdue': return 'Jatuh Tempo';
-			default: return status;
-		}
-	}
-
 	const filterOptions = [
 		{ value: 'all', label: 'Semua' },
 		{ value: 'unpaid', label: 'Belum Dibayar' },
 		{ value: 'paid', label: 'Lunas' },
 		{ value: 'overdue', label: 'Jatuh Tempo' },
+	];
+
+	const columns: ColumnDef<any, any>[] = [
+		{ header: 'Invoice', accessorKey: 'invoiceNumber', cell: ({ getValue }) => `<code style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;font-size:12px">${getValue()}</code>` },
+		{ header: 'Siswa', accessorKey: 'studentName', cell: ({ getValue }) => `<span style="font-weight:500">${getValue()}</span>` },
+		{ header: 'Jumlah', accessorKey: 'amount', cell: ({ getValue }) => `<span style="font-weight:600">${formatCurrency(getValue() as number)}</span>` },
+		{
+			header: 'Status', accessorKey: 'status',
+			cell: ({ getValue }) => {
+				const s = getValue() as string;
+				const colors: Record<string, string> = { paid: '#10b981', unpaid: '#f59e0b', overdue: '#ef4444' };
+				const labels: Record<string, string> = { paid: 'Lunas', unpaid: 'Belum Dibayar', overdue: 'Jatuh Tempo' };
+				const c = colors[s] || '#888';
+				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;background:${c}20;color:${c}">${labels[s] || s}</span>`;
+			}
+		},
+		{ header: 'Jatuh Tempo', accessorKey: 'dueDate', cell: ({ getValue }) => `<span style="color:var(--text-tertiary);font-size:12px">${formatDate(getValue() as string)}</span>` },
+		{ header: 'Dibayar', accessorKey: 'paidAt', cell: ({ getValue }) => `<span style="color:var(--text-tertiary);font-size:12px">${getValue() ? formatDate(getValue() as string) : '-'}</span>` },
 	];
 </script>
 
@@ -131,34 +132,7 @@
 	{:else if filtered.length === 0}
 		<EmptyState icon="🔍" title="Tidak Ditemukan" description="Tidak ada invoice dengan filter ini." />
 	{:else}
-		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Invoice</th>
-						<th>Siswa</th>
-						<th>Jumlah</th>
-						<th>Status</th>
-						<th>Jatuh Tempo</th>
-						<th>Dibayar</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filtered as inv}
-						<tr>
-							<td class="col-invoice">{inv.invoiceNumber}</td>
-							<td class="col-name">{inv.studentName}</td>
-							<td class="col-amount">{formatCurrency(inv.amount)}</td>
-							<td class="col-status">
-								<Badge variant={getStatusBadge(inv.status)}>{getStatusLabel(inv.status)}</Badge>
-							</td>
-							<td class="col-date">{formatDate(inv.dueDate)}</td>
-							<td class="col-date">{inv.paidAt ? formatDate(inv.paidAt) : '-'}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<DataTable {columns} data={filtered} pageSize={15} showSearch={true} searchPlaceholder="Cari invoice..." />
 	{/if}
 </div>
 
@@ -188,22 +162,6 @@
 		background: var(--bg-secondary); color: var(--text); font-size: 13px; font-family: inherit;
 	}
 	.filter-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
-
-	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary);
-	}
-	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
-
-	.col-invoice { font-family: var(--font-mono); font-size: 12px; min-width: 120px; }
-	.col-name { font-weight: 500; }
-	.col-amount { font-weight: 600; }
-	.col-date { color: var(--text-tertiary); font-size: 12px; }
 
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary { background: var(--accent); color: #fff; }
