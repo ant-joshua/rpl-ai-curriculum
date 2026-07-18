@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import { StatCard } from '$lib/components/ui';
 	import { modules } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { stats } from '$lib/stores/stats.svelte';
@@ -156,51 +157,19 @@
 
 	<!-- Overall stats -->
 	<section class="stats-grid">
-		<div class="stat-card stat-primary">
-			<span class="stat-value">{overallPercent}%</span>
-			<span class="stat-label">Progres Keseluruhan</span>
-			<ProgressBar value={overallPercent} />
-		</div>
-		<div class="stat-card">
-			<span class="stat-value">{completedSessions}/{totalSessions}</span>
-			<span class="stat-label">Sesi Selesai</span>
-		</div>
-		<div class="stat-card">
-			<span class="stat-value">{progress.completedCount}/{progress.totalModules}</span>
-			<span class="stat-label">Modul Selesai</span>
-		</div>
+ 		<StatCard icon="📈" value="{overallPercent}%" label="Progres Keseluruhan">
+ 			<ProgressBar value={overallPercent} />
+ 		</StatCard>
+ 		<StatCard icon="✅" value="{completedSessions}/{totalSessions}" label="Sesi Selesai" />
+ 		<StatCard icon="📦" value="{progress.completedCount}/{progress.totalModules}" label="Modul Selesai" />
 	</section>
 
 	<!-- Time & streak -->
 	<section class="insight-grid">
-		<div class="insight-card">
-			<span class="insight-icon">⏱️</span>
-			<div>
-				<span class="insight-value">{formatMinutes(completedMinutes)}</span>
-				<span class="insight-label">Waktu belajar</span>
-			</div>
-		</div>
-		<div class="insight-card">
-			<span class="insight-icon">📊</span>
-			<div>
-				<span class="insight-value">{formatMinutes(estimatedTimeRemainingMin)}</span>
-				<span class="insight-label">Estimasi waktu tersisa</span>
-			</div>
-		</div>
-		<div class="insight-card">
-			<span class="insight-icon">🔥</span>
-			<div>
-				<span class="insight-value">{progress.getStreak()} hari</span>
-				<span class="insight-label">Streak belajar</span>
-			</div>
-		</div>
-		<div class="insight-card">
-			<span class="insight-icon">📅</span>
-			<div>
-				<span class="insight-value">{getCompletionDate()}</span>
-				<span class="insight-label">Estimasi selesai</span>
-			</div>
-		</div>
+ 		<StatCard icon="⏱️" value={formatMinutes(completedMinutes)} label="Waktu belajar" />
+ 		<StatCard icon="📊" value={formatMinutes(estimatedTimeRemainingMin)} label="Estimasi waktu tersisa" />
+ 		<StatCard icon="🔥" value="{progress.getStreak()} hari" label="Streak belajar" />
+ 		<StatCard icon="📅" value={getCompletionDate()} label="Estimasi selesai" />
 	</section>
 
 	<!-- Weekly activity chart -->

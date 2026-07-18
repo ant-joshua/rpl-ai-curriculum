@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	type Message = {
 		id: string;
@@ -68,35 +69,9 @@
 		</div>
 	{:else if stats}
 		<div class="pp-stats-grid">
-			<div class="pp-stat-card pp-stat-parents">
-				<div class="pp-stat-icon">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-				</div>
-				<div class="pp-stat-info">
-					<span class="pp-stat-label">Orang Tua Terdaftar</span>
-					<span class="pp-stat-value">{stats.totalParents}</span>
-				</div>
-			</div>
-
-			<div class="pp-stat-card pp-stat-links">
-				<div class="pp-stat-icon">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-				</div>
-				<div class="pp-stat-info">
-					<span class="pp-stat-label">Tautan Siswa Aktif</span>
-					<span class="pp-stat-value">{stats.totalLinks}</span>
-				</div>
-			</div>
-
-			<div class="pp-stat-card pp-stat-messages">
-				<div class="pp-stat-icon">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-				</div>
-				<div class="pp-stat-info">
-					<span class="pp-stat-label">Total Pesan</span>
-					<span class="pp-stat-value">{stats.totalMessages}</span>
-				</div>
-			</div>
+			<StatCard icon="👥" value={stats.totalParents} label="Orang Tua Terdaftar" color="#7170ff" />
+			<StatCard icon="🔗" value={stats.totalLinks} label="Tautan Siswa Aktif" color="#10b981" />
+			<StatCard icon="💬" value={stats.totalMessages} label="Total Pesan" color="#f59e0b" />
 		</div>
 
 		<div class="pp-section">

@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	type AttendanceStats = {
 		total_sessions: number;
@@ -141,42 +142,10 @@
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-grid">
-			<div class="stat-card stat-card--primary">
-				<div class="stat-icon">
-					<Icon name="calendar" size={20} />
-				</div>
-				<div class="stat-info">
-					<div class="stat-value">{stats?.total_sessions ?? 0}</div>
-					<div class="stat-label">Total Sesi</div>
-				</div>
-			</div>
-			<div class="stat-card stat-card--success">
-				<div class="stat-icon">
-					<Icon name="check-square" size={20} />
-				</div>
-				<div class="stat-info">
-					<div class="stat-value">{stats?.active_sessions ?? 0}</div>
-					<div class="stat-label">Sesi Aktif</div>
-				</div>
-			</div>
-			<div class="stat-card stat-card--warning">
-				<div class="stat-icon">
-					<Icon name="users" size={20} />
-				</div>
-				<div class="stat-info">
-					<div class="stat-value">{stats?.total_records ?? 0}</div>
-					<div class="stat-label">Total Presensi</div>
-				</div>
-			</div>
-			<div class="stat-card stat-card--accent">
-				<div class="stat-icon">
-					<Icon name="trending-up" size={20} />
-				</div>
-				<div class="stat-info">
-					<div class="stat-value">{stats?.average_rate ?? 0}%</div>
-					<div class="stat-label">Rata-rata Kehadiran</div>
-				</div>
-			</div>
+			<StatCard icon="📅" value={stats?.total_sessions ?? 0} label="Total Sesi" color="#7170ff" />
+			<StatCard icon="✅" value={stats?.active_sessions ?? 0} label="Sesi Aktif" color="#22c55e" />
+			<StatCard icon="👥" value={stats?.total_records ?? 0} label="Total Presensi" color="#f59e0b" />
+			<StatCard icon="📈" value={(stats?.average_rate ?? 0) + '%'} label="Rata-rata Kehadiran" color="#8b5cf6" />
 		</div>
 
 		<!-- Attendance Overview -->

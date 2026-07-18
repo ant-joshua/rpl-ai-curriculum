@@ -1,5 +1,6 @@
 <script lang="ts">
   import { flashcards } from '$lib/stores/flashcards.svelte';
+  import { StatCard } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { goto } from '$app/navigation';
@@ -96,18 +97,9 @@
       <p class="end-subtitle">Kamu telah mereview {reviewCount} kartu</p>
 
       <div class="end-stats">
-        <div class="end-stat">
-          <span class="end-stat-value">{correctCount}/{reviewCount}</span>
-          <span class="end-stat-label">Benar</span>
-        </div>
-        <div class="end-stat">
-          <span class="end-stat-value">{accuracy}%</span>
-          <span class="end-stat-label">Akurasi</span>
-        </div>
-        <div class="end-stat">
-          <span class="end-stat-value">🔥 {bestStreak}</span>
-          <span class="end-stat-label">Streak Terbaik</span>
-        </div>
+        <StatCard icon="✅" value="{correctCount}/{reviewCount}" label="Benar" />
+        <StatCard icon="📊" value="{accuracy}%" label="Akurasi" />
+        <StatCard icon="🔥" value={bestStreak} label="Streak Terbaik" />
       </div>
 
       <div class="end-actions">

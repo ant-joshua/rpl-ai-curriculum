@@ -2,9 +2,11 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import {
-		Button, Badge, Modal, Input, Textarea, Select, Alert, Loading, EmptyState
+		Button, Badge, Modal, Input, Textarea, Select, Alert, Loading, EmptyState,
+		DataTable
 	} from '$lib/components/ui';
 	import { PageHeader, SearchBar } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	interface Question {
 		id: string;
@@ -363,6 +365,39 @@
 		{ value: '', label: 'Semua Kelas' },
 		...offeringOptions,
 	]);
+
+	const questionColumns: ColumnDef<any, any>[] = [
+		{
+			header: 'Soal',
+			accessorKey: 'question',
+			cell: (ctx: any) => truncate(ctx.getValue()),
+		},
+		{
+			header: 'Tipe',
+			accessorKey: 'type',
+			cell: (ctx: any) => typeLabelMap[ctx.getValue()] || capitalize(ctx.getValue()),
+		},
+		{
+			header: 'Tingkat',
+			accessorKey: 'difficulty',
+			cell: (ctx: any) => capitalize(ctx.getValue()),
+		},
+		{
+			header: 'Status',
+			accessorKey: 'status',
+			cell: (ctx: any) => capitalize(ctx.getValue()),
+		},
+		{
+			header: 'Nilai',
+			accessorKey: 'points',
+			cell: (ctx: any) => String(ctx.getValue()),
+		},
+		{
+			header: 'Dibuat',
+			accessorKey: 'created_at',
+			cell: (ctx: any) => formatDate(ctx.getValue()),
+		},
+	];
 </script>
 
 <svelte:head>

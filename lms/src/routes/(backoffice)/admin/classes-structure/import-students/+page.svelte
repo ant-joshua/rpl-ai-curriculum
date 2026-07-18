@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { DataTable } from '$lib/components/ui';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let file: File | null = $state(null);
 	let fileName = $state('');
 	let previewData: any[] = $state([]);
 	let previewHeaders: string[] = $state([]);
+	let previewColumns: ColumnDef<any, any>[] = $state([]);
 	let importResult: any = $state(null);
 	let step: 'upload' | 'preview' | 'result' = $state('upload');
 
@@ -54,8 +57,12 @@
 			});
 			const json = await res.json();
 			if (json.success) {
-				previewData = json.data.rows || [];
+				previewData = (json.data.rows || []).map((r: any, i: number) => ({ ...r, _row_num: i + 1 }));
 				previewHeaders = json.data.headers || [];
+				previewColumns = [
+					{ header: '#', accessorKey: '_row_num', cell: (ctx: any) => ctx.getValue() },
+					...previewHeaders.map(h => ({ header: h, accessorKey: h })),
+				];
 				step = 'preview';
 			} else {
 				error = json.error || 'Gagal membaca file';
@@ -98,6 +105,7 @@
 		fileName = '';
 		previewData = [];
 		previewHeaders = [];
+		previewColumns = [];
 		importResult = null;
 		step = 'upload';
 		error = '';
@@ -194,26 +202,7 @@
 			</div>
 
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>#</th>
-							{#each previewHeaders as h}
-								<th>{h}</th>
-							{/each}
-						</tr>
-					</thead>
-					<tbody>
-						{#each previewData as row, i}
-							<tr>
-								<td class="cell-num">{i + 1}</td>
-								{#each previewHeaders as h}
-									<td>{row[h] ?? '—'}</td>
-								{/each}
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable columns={previewColumns} data={previewData} pageSize={20} showSearch={false} showPagination={true} />
 			</div>
 
 			{#if previewData.length > 50}
@@ -312,13 +301,6 @@
 	.card-header h2 { margin: 0; font-size: 15px; font-weight: 600; }
 	.card-header-actions { display: flex; gap: 8px; }
 
-	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 11px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 11px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); white-space: nowrap; }
-	tr:last-child td { border-bottom: none; }
-	tr:hover td { background: var(--hover); }
-	.cell-num { text-align: center; color: var(--text-secondary); width: 40px; }
 	.table-note { padding: 12px 18px; font-size: 13px; color: var(--text-secondary); text-align: center; border-top: 1px solid var(--border); }
 
 	.result-stats { display: flex; gap: 32px; margin: 8px 0; }

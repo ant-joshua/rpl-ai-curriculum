@@ -4,7 +4,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
-
+	import { StatCard } from '$lib/components/ui';
+ 
 	// State
 	let loading = $state(true);
 	let error = $state('');
@@ -345,18 +346,9 @@
 			<!-- Question Navigation Sidebar -->
 			<aside class="question-nav">
 				<div class="nav-stats">
-					<div class="stat-item">
-						<span class="stat-value">{answeredCount()}</span>
-						<span class="stat-label">Answered</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{flaggedCount()}</span>
-						<span class="stat-label">Flagged</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-value">{questions.length - answeredCount()}</span>
-						<span class="stat-label">Remaining</span>
-					</div>
+			<StatCard icon="✅" value={answeredCount()} label="Answered" />
+			<StatCard icon="🚩" value={flaggedCount()} label="Flagged" />
+			<StatCard icon="⏳" value={questions.length - answeredCount()} label="Remaining" />
 				</div>
 
 				<div class="nav-questions">

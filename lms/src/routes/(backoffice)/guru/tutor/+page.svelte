@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -50,22 +51,10 @@
 		</div>
 	{:else}
 		<div class="stats-grid">
-			<div class="stat-card">
-				<span class="stat-value">{stats.todaySessions}</span>
-				<span class="stat-label">Sesi Hari Ini</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.activeStudents}</span>
-				<span class="stat-label">Siswa Aktif</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.totalStudents}</span>
-				<span class="stat-label">Total Siswa</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-value">{stats.unpaidInvoices}</span>
-				<span class="stat-label">Tagihan Belum Dibayar</span>
-			</div>
+			<StatCard icon="📅" value={stats.todaySessions} label="Sesi Hari Ini" />
+			<StatCard icon="👨‍🎓" value={stats.activeStudents} label="Siswa Aktif" />
+			<StatCard icon="👥" value={stats.totalStudents} label="Total Siswa" />
+			<StatCard icon="💰" value={stats.unpaidInvoices} label="Tagihan Belum Dibayar" />
 		</div>
 	{/if}
 

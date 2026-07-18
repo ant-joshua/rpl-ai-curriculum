@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, Alert } from '$lib/components/ui';
+	import { Button, Card, CardContent, Alert, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -194,48 +194,12 @@
 		<!-- === OVERVIEW TAB === -->
 		{#if activeTab === 'overview'}
 			<div class="stats-grid">
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">👥</span>
-						<span class="stat-value">{overview?.totalUsers ?? 0}</span>
-						<span class="stat-label">Total Users</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📋</span>
-						<span class="stat-value">{overview?.activeEnrollments ?? 0}</span>
-						<span class="stat-label">Enrollments Aktif</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📚</span>
-						<span class="stat-value">{overview?.totalCourses ?? 0}</span>
-						<span class="stat-label">Total Kursus</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📖</span>
-						<span class="stat-value">{overview?.totalLessons ?? 0}</span>
-						<span class="stat-label">Pelajaran Publikasi</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">⏳</span>
-						<span class="stat-value">{overview?.pendingGrades ?? 0}</span>
-						<span class="stat-label">Menunggu Nilai</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">🆕</span>
-						<span class="stat-value">{overview?.newUsers ?? 0}</span>
-						<span class="stat-label">User Baru (7 hari)</span>
-					</CardContent>
-				</Card>
+				<StatCard icon="👥" value={overview?.totalUsers ?? 0} label="Total Users" />
+				<StatCard icon="📋" value={overview?.activeEnrollments ?? 0} label="Enrollments Aktif" />
+				<StatCard icon="📚" value={overview?.totalCourses ?? 0} label="Total Kursus" />
+				<StatCard icon="📖" value={overview?.totalLessons ?? 0} label="Pelajaran Publikasi" />
+				<StatCard icon="⏳" value={overview?.pendingGrades ?? 0} label="Menunggu Nilai" />
+				<StatCard icon="🆕" value={overview?.newUsers ?? 0} label="User Baru (7 hari)" />
 			</div>
 
 			<Card class="section-card">
@@ -347,34 +311,10 @@
 		<!-- === ATTENDANCE TAB === -->
 		{:else if activeTab === 'attendance'}
 			<div class="stats-grid">
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📅</span>
-						<span class="stat-value">{attendanceData?.totalSessions ?? 0}</span>
-						<span class="stat-label">Total Sesi</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">✅</span>
-						<span class="stat-value">{attendanceData?.totalCheckIns ?? 0}</span>
-						<span class="stat-label">Total Check-In</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">⚠️</span>
-						<span class="stat-value">{attendanceData?.totalExceptions ?? 0}</span>
-						<span class="stat-label">Eksepsi</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📊</span>
-						<span class="stat-value">{(attendanceData?.avgAttendanceRate ?? 0 * 100).toFixed(1)}%</span>
-						<span class="stat-label">Rata-rata Kehadiran</span>
-					</CardContent>
-				</Card>
+				<StatCard icon="📅" value={attendanceData?.totalSessions ?? 0} label="Total Sesi" />
+				<StatCard icon="✅" value={attendanceData?.totalCheckIns ?? 0} label="Total Check-In" />
+				<StatCard icon="⚠️" value={attendanceData?.totalExceptions ?? 0} label="Eksepsi" />
+				<StatCard icon="📊" value={(attendanceData?.avgAttendanceRate ?? 0 * 100).toFixed(1) + '%'} label="Rata-rata Kehadiran" />
 			</div>
 			<div class="card-header-actions" style="margin-bottom:12px">
 				<Button size="sm" variant="secondary" onclick={() => exportCSV('attendance')}>📥 Export CSV</Button>
@@ -398,34 +338,10 @@
 		<!-- === PAYMENTS TAB === -->
 		{:else if activeTab === 'payments'}
 			<div class="stats-grid">
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">💰</span>
-						<span class="stat-value">Rp {((paymentsData?.totalRevenue ?? 0)).toLocaleString()}</span>
-						<span class="stat-label">Total Pendapatan</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📄</span>
-						<span class="stat-value">{paymentsData?.totalInvoices ?? 0}</span>
-						<span class="stat-label">Total Invoice</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">💳</span>
-						<span class="stat-value">{paymentsData?.totalPayments ?? 0}</span>
-						<span class="stat-label">Pembayaran</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">⏳</span>
-						<span class="stat-value">{paymentsData?.pendingInvoices ?? 0}</span>
-						<span class="stat-label">Invoice Tertunda</span>
-					</CardContent>
-				</Card>
+				<StatCard icon="💰" value={'Rp ' + ((paymentsData?.totalRevenue ?? 0)).toLocaleString()} label="Total Pendapatan" />
+				<StatCard icon="📄" value={paymentsData?.totalInvoices ?? 0} label="Total Invoice" />
+				<StatCard icon="💳" value={paymentsData?.totalPayments ?? 0} label="Pembayaran" />
+				<StatCard icon="⏳" value={paymentsData?.pendingInvoices ?? 0} label="Invoice Tertunda" />
 			</div>
 			{#if paymentsData?.revenueByMethod?.length}
 			<Card class="section-card">
@@ -451,34 +367,10 @@
 		<!-- === GRADES TAB === -->
 		{:else if activeTab === 'grades'}
 			<div class="stats-grid">
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📝</span>
-						<span class="stat-value">{gradesData?.totalSubmissions ?? 0}</span>
-						<span class="stat-label">Total Pengumpulan</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">✅</span>
-						<span class="stat-value">{gradesData?.gradedCount ?? 0}</span>
-						<span class="stat-label">Sudah Dinilai</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">⏳</span>
-						<span class="stat-value">{gradesData?.pendingCount ?? 0}</span>
-						<span class="stat-label">Menunggu</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">🎯</span>
-						<span class="stat-value">{(gradesData?.avgScore ?? 0).toFixed(1)}</span>
-						<span class="stat-label">Rata-rata Nilai</span>
-					</CardContent>
-				</Card>
+				<StatCard icon="📝" value={gradesData?.totalSubmissions ?? 0} label="Total Pengumpulan" />
+				<StatCard icon="✅" value={gradesData?.gradedCount ?? 0} label="Sudah Dinilai" />
+				<StatCard icon="⏳" value={gradesData?.pendingCount ?? 0} label="Menunggu" />
+				<StatCard icon="🎯" value={(gradesData?.avgScore ?? 0).toFixed(1)} label="Rata-rata Nilai" />
 			</div>
 			<div class="card-header-actions" style="margin-bottom:12px">
 				<Button size="sm" variant="secondary" onclick={() => exportCSV('grades')}>📥 Export CSV</Button>
@@ -509,20 +401,8 @@
 		<!-- === DISTRIBUTION TAB === -->
 		{:else if activeTab === 'distribution'}
 			<div class="stats-grid">
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">🎯</span>
-						<span class="stat-value">{distributionData?.avgScore ?? 0}</span>
-						<span class="stat-label">Rata-rata Nilai</span>
-					</CardContent>
-				</Card>
-				<Card class="stat-card">
-					<CardContent>
-						<span class="stat-icon">📝</span>
-						<span class="stat-value">{distributionData?.totalSubmissions ?? 0}</span>
-						<span class="stat-label">Total Pengumpulan</span>
-					</CardContent>
-				</Card>
+				<StatCard icon="🎯" value={distributionData?.avgScore ?? 0} label="Rata-rata Nilai" />
+				<StatCard icon="📝" value={distributionData?.totalSubmissions ?? 0} label="Total Pengumpulan" />
 			</div>
 
 			<Card class="section-card">

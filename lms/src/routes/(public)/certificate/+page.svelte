@@ -4,6 +4,7 @@
 	import { certificate } from '$lib/stores/certificate.svelte';
 	import { user } from '$lib/stores/user.svelte';
 	import { onMount } from 'svelte';
+	import { StatCard } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	onMount(() => {
@@ -54,15 +55,8 @@
 					<span class="ring-text">{pct}%</span>
 				</div>
 				<div class="progress-stats">
-					<div class="stat">
-						<span class="stat-value">{completedMods}</span>
-						<span class="stat-label">Modul Selesai</span>
-					</div>
-					<div class="stat-divider"></div>
-					<div class="stat">
-						<span class="stat-value">{totalMods - completedMods}</span>
-						<span class="stat-label">Modul Tersisa</span>
-					</div>
+					<StatCard icon="✅" value={completedMods} label="Modul Selesai" />
+					<StatCard icon="⏳" value={totalMods - completedMods} label="Modul Tersisa" />
 				</div>
 			</div>
 

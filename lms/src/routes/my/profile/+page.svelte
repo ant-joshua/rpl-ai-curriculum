@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { api } from '$lib/utils/api';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Button, Card, Avatar } from '$lib/components/ui';
+	import { Button, Card, Avatar, StatCard } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -230,27 +230,9 @@
 
 	<!-- Stats Banner -->
 	<div class="stats-banner">
-		<div class="stat-item">
-			<span class="stat-icon">📅</span>
-			<div class="stat-body">
-				<span class="stat-label">Bergabung</span>
-				<span class="stat-value">{createdAt ? formatDate(createdAt) : '—'}</span>
-			</div>
-		</div>
-		<div class="stat-item">
-			<span class="stat-icon">🔑</span>
-			<div class="stat-body">
-				<span class="stat-label">Terakhir Login</span>
-				<span class="stat-value">{lastLogin ? timeAgo(lastLogin) : '—'}</span>
-			</div>
-		</div>
-		<div class="stat-item">
-			<span class="stat-icon">📚</span>
-			<div class="stat-body">
-				<span class="stat-label">Course Aktif</span>
-				<span class="stat-value">{enrolledCoursesCount} course</span>
-			</div>
-		</div>
+ 		<StatCard icon="📅" value={createdAt ? formatDate(createdAt) : '—'} label="Bergabung" />
+ 		<StatCard icon="🔑" value={lastLogin ? timeAgo(lastLogin) : '—'} label="Terakhir Login" />
+ 		<StatCard icon="📚" value="{enrolledCoursesCount} course" label="Course Aktif" />
 	</div>
 </div>
 

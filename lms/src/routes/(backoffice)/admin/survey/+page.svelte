@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -79,22 +80,10 @@
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-row">
-			<div class="stat-card stat-card--templates">
-				<span class="stat-number">{loading ? '—' : stats.totalTemplates}</span>
-				<span class="stat-label">Templates</span>
-			</div>
-			<div class="stat-card stat-card--active">
-				<span class="stat-number">{loading ? '—' : stats.activeInstances}</span>
-				<span class="stat-label">Active</span>
-			</div>
-			<div class="stat-card stat-card--closed">
-				<span class="stat-number">{loading ? '—' : stats.closedInstances}</span>
-				<span class="stat-label">Closed</span>
-			</div>
-			<div class="stat-card stat-card--responses">
-				<span class="stat-number">{loading ? '—' : stats.totalResponses}</span>
-				<span class="stat-label">Responses</span>
-			</div>
+			<StatCard icon="📄" value={loading ? '—' : stats.totalTemplates} label="Templates" color="#8b5cf6" />
+			<StatCard icon="✅" value={loading ? '—' : stats.activeInstances} label="Active" color="#10b981" />
+			<StatCard icon="🔒" value={loading ? '—' : stats.closedInstances} label="Closed" color="#f59e0b" />
+			<StatCard icon="💬" value={loading ? '—' : stats.totalResponses} label="Responses" color="#3b82f6" />
 		</div>
 
 		<!-- Quick Actions -->

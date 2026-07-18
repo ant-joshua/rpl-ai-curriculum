@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	type SessionDetail = {
 		id: string;
@@ -246,26 +247,11 @@
 
 		<!-- Stats -->
 		<div class="record-stats">
-			<div class="record-stat record-stat--present">
-				<div class="record-stat-value">{statusCounts().present}</div>
-				<div class="record-stat-label">Hadir</div>
-			</div>
-			<div class="record-stat record-stat--late">
-				<div class="record-stat-value">{statusCounts().late}</div>
-				<div class="record-stat-label">Terlambat</div>
-			</div>
-			<div class="record-stat record-stat--absent">
-				<div class="record-stat-value">{statusCounts().absent}</div>
-				<div class="record-stat-label">Absen</div>
-			</div>
-			<div class="record-stat record-stat--excused">
-				<div class="record-stat-value">{statusCounts().excused}</div>
-				<div class="record-stat-label">Izin/Sakit</div>
-			</div>
-			<div class="record-stat record-stat--total">
-				<div class="record-stat-value">{statusCounts().total}</div>
-				<div class="record-stat-label">Total Check-in</div>
-			</div>
+			<StatCard icon="✅" value={statusCounts().present} label="Hadir" color="#22c55e" />
+			<StatCard icon="🕐" value={statusCounts().late} label="Terlambat" color="#f59e0b" />
+			<StatCard icon="❌" value={statusCounts().absent} label="Absen" color="#ef4444" />
+			<StatCard icon="📝" value={statusCounts().excused} label="Izin/Sakit" color="#8b5cf6" />
+			<StatCard icon="📊" value={statusCounts().total} label="Total Check-in" />
 		</div>
 
 		<!-- Manual Check-In -->

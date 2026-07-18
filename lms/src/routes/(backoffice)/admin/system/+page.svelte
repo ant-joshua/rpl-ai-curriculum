@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Button } from '$lib/components/ui';
+	import { Button, Card, CardContent, Alert, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -102,30 +102,12 @@
 			<CardContent>
 				<h2>🗄️ Database Stats</h2>
 				<div class="stats-grid">
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.users ?? 0}</span>
-						<span class="stat-lbl">Users</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.tenants ?? 0}</span>
-						<span class="stat-lbl">Tenants</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.attendanceSessions ?? 0}</span>
-						<span class="stat-lbl">Attendance Sessions</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.payments ?? 0}</span>
-						<span class="stat-lbl">Payments</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.enrollments ?? 0}</span>
-						<span class="stat-lbl">Enrollments</span>
-					</div>
-					<div class="stat-item">
-						<span class="stat-val">{dbStats?.submissions ?? 0}</span>
-						<span class="stat-lbl">Submissions</span>
-					</div>
+					<StatCard value={dbStats?.users ?? 0} label="Users" />
+					<StatCard value={dbStats?.tenants ?? 0} label="Tenants" />
+					<StatCard value={dbStats?.attendanceSessions ?? 0} label="Attendance Sessions" />
+					<StatCard value={dbStats?.payments ?? 0} label="Payments" />
+					<StatCard value={dbStats?.enrollments ?? 0} label="Enrollments" />
+					<StatCard value={dbStats?.submissions ?? 0} label="Submissions" />
 				</div>
 				<div class="db-meta">
 					<span>Tables: <strong>{dbStats?.tableCount ?? 0}</strong></span>

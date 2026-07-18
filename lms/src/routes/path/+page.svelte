@@ -3,6 +3,7 @@
 	import { progress } from '$lib/stores/progress.svelte';
 	import { paths, computePathProgress } from '$lib/stores/paths';
 	import { goto } from '$app/navigation';
+	import { StatCard } from '$lib/components/ui';
 
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 
@@ -113,18 +114,9 @@
 				<p>Pilih jalur belajar yang sesuai dengan tujuan karirmu</p>
 			</div>
 			<div class="paths-header-stats">
-				<div class="header-stat">
-					<span class="header-stat-value">{paths.length}</span>
-					<span class="header-stat-label">Path</span>
-				</div>
-				<div class="header-stat">
-					<span class="header-stat-value">{completedModules}/{totalModules}</span>
-					<span class="header-stat-label">Modul</span>
-				</div>
-				<div class="header-stat">
-					<span class="header-stat-value">{totalSessions}</span>
-					<span class="header-stat-label">Sesi</span>
-				</div>
+				<StatCard icon="🗺️" value={paths.length} label="Path" />
+				<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Modul" />
+				<StatCard icon="📝" value={totalSessions} label="Sesi" />
 			</div>
 		</header>
 
@@ -259,34 +251,10 @@
 
 		<!-- Stats Footer -->
 		<section class="stats-footer">
-			<div class="stat-card">
-				<span class="stat-icon">📦</span>
-				<div class="stat-body">
-					<span class="stat-value">{totalModules}</span>
-					<span class="stat-label">Total Modul</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📝</span>
-				<div class="stat-body">
-					<span class="stat-value">{totalSessions}</span>
-					<span class="stat-label">Total Sesi</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">⏱️</span>
-				<div class="stat-body">
-					<span class="stat-value">{estimatedMinutes}</span>
-					<span class="stat-label">Perkiraan Menit</span>
-				</div>
-			</div>
-			<div class="stat-card stat-progress">
-				<span class="stat-icon">✅</span>
-				<div class="stat-body">
-					<span class="stat-value">{completedModules}/{totalModules}</span>
-					<span class="stat-label">Modul Selesai</span>
-				</div>
-			</div>
+		<StatCard icon="📦" value={totalModules} label="Total Modul" />
+		<StatCard icon="📝" value={totalSessions} label="Total Sesi" />
+		<StatCard icon="⏱️" value={estimatedMinutes} label="Perkiraan Menit" />
+		<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Modul Selesai" />
 		</section>
 	{/if}
 </div>

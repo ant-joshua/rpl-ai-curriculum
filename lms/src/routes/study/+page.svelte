@@ -3,6 +3,7 @@
 	import { modules } from '$lib/stores/modules';
 	import { dailyGoal } from '$lib/stores/daily-goal.svelte';
 	import { flashcards } from '$lib/stores/flashcards.svelte';
+	import { StatCard } from '$lib/components/ui';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { reminders, type ReminderSchedule } from '$lib/stores/reminders.svelte';
@@ -421,30 +422,12 @@
 			<p class="tool-desc">Rangkuman progress belajarmu</p>
 
 			<div class="stats-grid">
-				<div class="stat-item">
-					<span class="stat-value">{completedSessions}/{totalSessions}</span>
-					<span class="stat-label">Sesi selesai</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{overallPct}%</span>
-					<span class="stat-label">Progress total</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{streak}</span>
-					<span class="stat-label">Streak (hari)</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{todayCompletions}</span>
-					<span class="stat-label">Sesi hari ini</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">{totalModules}</span>
-					<span class="stat-label">Total modul</span>
-				</div>
-				<div class="stat-item">
-					<span class="stat-value">~{estimatedMinutes}</span>
-					<span class="stat-label">Menit belajar</span>
-				</div>
+			<StatCard icon="✅" value="{completedSessions}/{totalSessions}" label="Sesi selesai" />
+			<StatCard icon="📊" value="{overallPct}%" label="Progress total" />
+			<StatCard icon="🔥" value={streak} label="Streak (hari)" />
+			<StatCard icon="📅" value={todayCompletions} label="Sesi hari ini" />
+			<StatCard icon="📦" value={totalModules} label="Total modul" />
+			<StatCard icon="⏱️" value="~{estimatedMinutes}" label="Menit belajar" />
 			</div>
 		</section>
 	</div>

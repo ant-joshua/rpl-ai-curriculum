@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { StatCard } from '$lib/components/ui';
 
 	type DayRec = {
 		date: string;
@@ -161,30 +162,12 @@
 		<div class="month-label">{monthName}</div>
 
 		<div class="stats-cards">
-			<div class="stat-card stat-hadir">
-				<span class="stat-number">{stats.hadir}</span>
-				<span class="stat-label">Hadir</span>
-			</div>
-			<div class="stat-card stat-sakit">
-				<span class="stat-number">{stats.sakit}</span>
-				<span class="stat-label">Sakit</span>
-			</div>
-			<div class="stat-card stat-izin">
-				<span class="stat-number">{stats.izin}</span>
-				<span class="stat-label">Izin</span>
-			</div>
-			<div class="stat-card stat-alpha">
-				<span class="stat-number">{stats.alpha}</span>
-				<span class="stat-label">Alpha</span>
-			</div>
-			<div class="stat-card stat-dispensasi">
-				<span class="stat-number">{stats.dispensasi}</span>
-				<span class="stat-label">Dispensasi</span>
-			</div>
-			<div class="stat-card stat-terlambat">
-				<span class="stat-number">{stats.terlambat}</span>
-				<span class="stat-label">Terlambat</span>
-			</div>
+			<StatCard value={stats.hadir} label="Hadir" color="#22c55e" />
+			<StatCard value={stats.sakit} label="Sakit" color="#f59e0b" />
+			<StatCard value={stats.izin} label="Izin" color="#3b82f6" />
+			<StatCard value={stats.alpha} label="Alpha" color="#ef4444" />
+			<StatCard value={stats.dispensasi} label="Dispensasi" color="#8b5cf6" />
+			<StatCard value={stats.terlambat} label="Terlambat" color="#f97316" />
 		</div>
 
 		<div class="percent-cards">

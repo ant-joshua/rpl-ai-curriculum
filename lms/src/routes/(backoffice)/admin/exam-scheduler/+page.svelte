@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	type Tab = 'exams' | 'rooms' | 'types';
 	let activeTab = $state<Tab>('exams');
@@ -92,18 +93,9 @@
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-row">
-			<div class="stat-card">
-				<span class="stat-number">{loading ? '—' : examCount}</span>
-				<span class="stat-label">Total Ujian</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-number">{loading ? '—' : roomCount}</span>
-				<span class="stat-label">Ruangan</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-number">{loading ? '—' : typeCount}</span>
-				<span class="stat-label">Tipe Ujian</span>
-			</div>
+			<StatCard icon="📋" value={loading ? '—' : examCount} label="Total Ujian" />
+			<StatCard icon="🏫" value={loading ? '—' : roomCount} label="Ruangan" />
+			<StatCard icon="🏷️" value={loading ? '—' : typeCount} label="Tipe Ujian" />
 		</div>
 
 		<!-- Tabs -->
