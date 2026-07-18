@@ -183,6 +183,12 @@
 		$page.url.pathname;
 		window.scrollTo({ top: 0, behavior: 'instant' });
 	});
+
+	const isMinimalRoute = $derived(
+		$page.route.id?.startsWith('/(auth)') ||
+		$page.route.id?.startsWith('/(public)') ||
+		false
+	);
 </script>
 
 <svelte:head>
@@ -205,6 +211,7 @@
 </svelte:head>
 
 <!-- Mobile hamburger -->
+{#if !isMinimalRoute}
 <button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigation">
 	<Icon name="menu" size={20} />
 </button>
@@ -345,6 +352,9 @@
 		{/key}
 	</main>
 </div>
+{:else}
+	{@render children()}
+{/if}
 
 {#if offline && !dismissedOffline}
 	<div class="offline-badge" transition:fly={{ y: 20, duration: 300 }}>
@@ -395,7 +405,7 @@
 		border-radius: 6px;
 		padding: 10px;
 		cursor: pointer;
-		color: #d0d6e0;
+		color: #8a8f98;
 		transition: all 0.15s ease;
 	}
 	.hamburger:hover {
@@ -449,12 +459,12 @@
 	}
 
 	.logo-svg {
-		color: #7170ff;
+		color: #5e6ad2;
 		flex-shrink: 0;
 	}
 
 	.logo-text {
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #5e6ad2, #5e6ad2);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -562,7 +572,7 @@
 
 	.nav-item.active {
 		background: rgba(94, 106, 210, 0.12);
-		color: #7170ff;
+		color: #5e6ad2;
 	}
 
 	.nav-item-label {
@@ -572,9 +582,9 @@
 	.nav-active-indicator {
 		width: 3px;
 		height: 16px;
-		background: #7170ff;
+		background: #5e6ad2;
 		border-radius: 2px;
-		box-shadow: 0 0 8px rgba(113, 112, 255, 0.4);
+		box-shadow: 0 0 8px rgba(94, 106, 210, 0.4);
 		position: absolute;
 		right: -8px;
 		top: 50%;
@@ -605,7 +615,7 @@
 
 	.xp-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #7170ff);
+		background: linear-gradient(90deg, #5e6ad2, #5e6ad2);
 		border-radius: 2px;
 		transition: width 0.3s ease;
 	}
@@ -619,7 +629,7 @@
 	.xp-level-badge {
 		font-size: 11px;
 		font-weight: 590;
-		color: #7170ff;
+		color: #5e6ad2;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
@@ -647,7 +657,7 @@
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #5e6ad2, #5e6ad2);
 		color: #fff;
 		display: flex;
 		align-items: center;
