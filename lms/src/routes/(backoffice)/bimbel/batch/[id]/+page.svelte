@@ -67,7 +67,8 @@
 
 	let enrollStudentId = $state('');
 	let showEnroll = $state(false);
-
+	let enrollSaving = $state(false);
+	let studentSearch = $state('');
 	function toggleEnroll() { showEnroll = !showEnroll; }
 
 	async function enrollStudent() {

@@ -137,11 +137,6 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		a.click();
 		URL.revokeObjectURL(url);
 	}
-function getPercentColor(pct: number): string {
-	if (pct >= 90) return 'var(--success)';
-	if (pct >= 75) return 'var(--warning)';
-	return 'var(--danger)';
-}
 
 const recapColumns: ColumnDef<any, any>[] = [
 	{

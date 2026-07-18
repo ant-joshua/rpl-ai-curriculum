@@ -20,43 +20,43 @@
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
 
-	const navSections = [
+	const navSections = $derived.by(() => [
 		{
 			name: 'Main Nav',
 			links: [
-				{ href: '/', icon: 'home', label: 'Dashboard' },
-				{ href: '/catalog', icon: 'book', label: 'My Courses' },
-				{ href: '/planner', icon: 'calendar', label: 'Calendar' },
-				{ href: '/announcements', icon: 'message-square', label: 'Messages' },
+				{ href: '/', icon: 'home', label: t('nav.dashboard') },
+				{ href: '/catalog', icon: 'book', label: t('nav.courses') },
+				{ href: '/planner', icon: 'calendar', label: t('nav.calendar') },
+				{ href: '/announcements', icon: 'message-square', label: t('nav.messages') },
 			]
 		},
 		{
 			name: 'Learning',
 			links: [
-				{ href: '/catalog', icon: 'compass', label: 'Catalog' },
-				{ href: '/path', icon: 'map-pin', label: 'Path' },
-				{ href: '/progress', icon: 'trending-up', label: 'Progress' },
+				{ href: '/catalog', icon: 'compass', label: t('nav.catalog') },
+				{ href: '/path', icon: 'map-pin', label: t('nav.paths') },
+				{ href: '/progress', icon: 'trending-up', label: t('nav.progress') },
 			]
 		},
 		{
 			name: 'Tools',
 			links: [
-				{ href: '/tutor', icon: 'robot', label: 'AI Tutor' },
-				{ href: '/flashcards', icon: 'layers', label: 'Flashcards' },
-				{ href: '/exercises', icon: 'dumbbell', label: 'Exercises' },
-				{ href: '/projects', icon: 'rocket', label: 'Project Studio' },
+				{ href: '/tutor', icon: 'robot', label: t('nav.tutor') },
+				{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
+				{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
+				{ href: '/projects', icon: 'rocket', label: t('nav.projects') },
 			]
 		},
 		{
 			name: 'Account',
 			links: [
-				{ href: '/my/profile', icon: 'user', label: 'Profile' },
-				{ href: '/my/grades', icon: 'file-text', label: 'Grades' },
-				{ href: '/my/certificates', icon: 'award', label: 'Certificates' },
-				{ href: '/my/settings', icon: 'settings', label: 'Settings' },
+				{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
+				{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
+				{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
+				{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
 			]
 		},
-	] as const;
+	]);
 
 	let { children } = $props();
 
