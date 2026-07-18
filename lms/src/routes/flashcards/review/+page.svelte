@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/stores/i18n.svelte';
   import { flashcards } from '$lib/stores/flashcards.svelte';
   import { StatCard } from '$lib/components/ui';
   import { onMount } from 'svelte';

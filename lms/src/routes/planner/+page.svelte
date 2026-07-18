@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { planner, type StudyPlan, type DailySession } from '$lib/stores/planner.svelte';

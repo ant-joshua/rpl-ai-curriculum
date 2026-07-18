@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { projectsStore, type Project } from '$lib/stores/projects.svelte';
 	import { goto } from '$app/navigation';

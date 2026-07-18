@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { page } from '$app/stores';
 	import { Card, CardContent, Button, Alert, Avatar, Badge, Progress } from '$lib/components/ui';
 

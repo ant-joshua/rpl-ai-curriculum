@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { Button, Badge, DataTable } from '$lib/components/ui';
 	import type { PageData } from './$types';
 	import type { ColumnDef } from '@tanstack/svelte-table';

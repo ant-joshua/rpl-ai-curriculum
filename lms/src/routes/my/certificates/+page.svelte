@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { Button, Card, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();

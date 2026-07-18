@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import NotesPanel from '$lib/components/NotesPanel.svelte';
 import FontSizeControl from '$lib/components/FontSizeControl.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';

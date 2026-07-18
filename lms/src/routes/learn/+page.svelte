@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import type { PageData } from './$types';
 	import Skeleton from '$lib/components/Skeleton.svelte';
 	import { Button, SearchInput, Badge, EmptyState } from '$lib/components/ui/index.js';

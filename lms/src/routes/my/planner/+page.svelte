@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/stores/i18n.svelte';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import { Button, Card, EmptyState, PageHeader, StatCard } from '$lib/components/ui';

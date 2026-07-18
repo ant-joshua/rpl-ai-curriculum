@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { user } from '$lib/stores/user.svelte';

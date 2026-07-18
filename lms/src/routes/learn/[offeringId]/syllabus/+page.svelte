@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import type { PageData } from './$types';
 	import { getContext, onMount } from 'svelte';
 	import { Badge, Card, CardContent, ProgressBar } from '$lib/components/ui';

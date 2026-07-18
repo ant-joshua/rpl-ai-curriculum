@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	let { data }: { data: import('./$types').PageData } = $props();
 
 	let cert = $state(data.cert);

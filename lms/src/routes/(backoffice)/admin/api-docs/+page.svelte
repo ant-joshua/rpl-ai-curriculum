@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+	import { t } from '$lib/stores/i18n.svelte';
 	export const load = async ({ fetch }) => {
 		try {
 			const res = await fetch('/api/openapi.json');

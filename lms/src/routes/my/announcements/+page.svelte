@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/stores/i18n.svelte';
   import { Button, EmptyState, Badge, Alert, PageHeader } from '$lib/components/ui';
 
   interface Announcement {

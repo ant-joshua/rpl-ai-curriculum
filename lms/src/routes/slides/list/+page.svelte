@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/stores/i18n.svelte';
   import { modules } from '$lib/stores/modules';
   import { fade } from 'svelte/transition';
 

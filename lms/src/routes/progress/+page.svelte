@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import { StatCard } from '$lib/components/ui';
 	import { modules } from '$lib/stores/modules';

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/stores/i18n.svelte';
   import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
   import { onMount } from 'svelte';
 

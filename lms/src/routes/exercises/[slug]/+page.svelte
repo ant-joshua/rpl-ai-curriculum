@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { projectsStore, type Project, type Step } from '$lib/stores/projects.svelte';
 	import { browser } from '$app/environment';
 	import CodeSandbox from '$lib/components/CodeSandbox.svelte';

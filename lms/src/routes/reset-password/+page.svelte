@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { page } from '$app/stores';
