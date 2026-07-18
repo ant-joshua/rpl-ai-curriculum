@@ -153,11 +153,11 @@
 	</div>
 
 	<div class="week-nav">
-		<button class="btn btn-ghost btn-sm" onclick={prevWeek}>‹ Sebelumnya</button>
-		<button class="btn btn-ghost btn-sm" onclick={thisWeek}>Minggu Ini</button>
-		<button class="btn btn-ghost btn-sm" onclick={nextWeek}>Berikutnya ›</button>
+		<Button variant="ghost" size="sm" onclick={prevWeek}>‹ Sebelumnya</Button>
+		<Button variant="ghost" size="sm" onclick={thisWeek}>Minggu Ini</Button>
+		<Button variant="ghost" size="sm" onclick={nextWeek}>Berikutnya ›</Button>
 		<span class="week-label">{weekLabel()}</span>
-		<button class="btn btn-secondary btn-sm" onclick={openNewSession} style="margin-left: auto;">+ Tambah Sesi</button>
+		<Button variant="secondary" size="sm" onclick={openNewSession} style="margin-left: auto;">+ Tambah Sesi</Button>
 	</div>
 
 	{#if loading}
@@ -195,15 +195,12 @@
 </div>
 
 <Modal open={showModal} title={editingSession ? 'Edit Sesi' : 'Tambah Sesi'} onclose={closeModal}>
-	<div class="form-group">
-		<label for="form-student">Nama Siswa</label>
-		<input id="form-student" class="input-field" bind:value={formStudent} placeholder="Nama siswa" />
-	</div>
-	<div class="form-group">
-		<label for="form-date">Tanggal</label>
-		<input id="form-date" class="input-field" type="date" bind:value={formDate} />
-	</div>
+	<Input label="Nama Siswa" bind:value={formStudent} placeholder="Nama siswa" />
 	<div class="form-row">
+		<div class="form-group">
+			<label for="form-date">Tanggal</label>
+			<input id="form-date" class="input-field" type="date" bind:value={formDate} />
+		</div>
 		<div class="form-group">
 			<label for="form-start">Mulai</label>
 			<input id="form-start" class="input-field" type="time" bind:value={formStart} />
@@ -213,19 +210,13 @@
 			<input id="form-end" class="input-field" type="time" bind:value={formEnd} />
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="form-subject">Mata Pelajaran</label>
-		<input id="form-subject" class="input-field" bind:value={formSubject} placeholder="Matematika / Fisika / ..." />
-	</div>
-	<div class="form-group">
-		<label for="form-notes">Catatan</label>
-		<textarea id="form-notes" class="input-field textarea" bind:value={formNotes} placeholder="Catatan sesi" rows={3}></textarea>
-	</div>
+	<Input label="Mata Pelajaran" bind:value={formSubject} placeholder="Matematika / Fisika / ..." />
+	<Textarea label="Catatan" bind:value={formNotes} placeholder="Catatan sesi" rows={3} />
 	<div class="modal-actions">
-		<button class="btn btn-ghost" onclick={closeModal}>Batal</button>
-		<button class="btn btn-secondary" onclick={saveSession} disabled={saving}>
+		<Button variant="ghost" onclick={closeModal}>Batal</Button>
+		<Button variant="secondary" onclick={saveSession} disabled={saving}>
 			{saving ? 'Menyimpan...' : (editingSession ? 'Simpan' : 'Tambah')}
-		</button>
+		</Button>
 	</div>
 </Modal>
 
@@ -286,11 +277,5 @@
 	.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 	.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-ghost { background: transparent; color: var(--text-secondary); }
-	.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-	.btn-secondary { background: var(--accent); color: #fff; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

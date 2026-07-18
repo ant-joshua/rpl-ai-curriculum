@@ -3,6 +3,7 @@
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import { Input, Textarea, Button } from '$lib/components/ui';
 
   let announcements = $state<any[]>([]);
   let loading = $state(true);
@@ -127,15 +128,15 @@
     <div class="message" transition:fade={{ duration: 200 }}>{message}</div>
   {/if}
 
-  {#if isAdmin}
+    {#if isAdmin}
     <div class="admin-form" transition:fade={{ duration: 200 }}>
       <h3>Buat Pengumuman Baru</h3>
-      <input type="text" bind:value={newTitle} placeholder="Judul" class="af-input" />
-      <textarea bind:value={newContent} placeholder="Konten (markdown)" class="af-textarea" rows="4"></textarea>
-      <input type="text" bind:value={newPathSlug} placeholder="Path slug (opsional, misal: /module/js-fundamentals)" class="af-input" />
-      <button onclick={createAnnouncement} disabled={submitting} class="af-submit">
+      <Input label="Judul" bind:value={newTitle} placeholder="Judul" />
+      <Textarea label="Konten" bind:value={newContent} placeholder="Konten (markdown)" rows={4} />
+      <Input label="Path Slug (opsional)" bind:value={newPathSlug} placeholder="misal: /module/js-fundamentals" />
+      <Button onclick={createAnnouncement} disabled={submitting}>
         {submitting ? 'Menyimpan...' : '📢 Publikasikan'}
-      </button>
+      </Button>
     </div>
   {/if}
 
@@ -180,10 +181,6 @@
   .message { padding: 0.5rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
   .admin-form { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
   .admin-form h3 { font-size: 1rem; margin: 0; }
-  .af-input, .af-textarea { width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.85rem; }
-  .af-textarea { resize: vertical; min-height: 80px; }
-  .af-submit { align-self: flex-start; background: var(--accent); color: #fff; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  .af-submit:disabled { opacity: 0.5; }
   .announcements-list { display: flex; flex-direction: column; gap: 1rem; }
   .announcement-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
   .ann-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }

@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { user } from '$lib/stores/user.svelte';
+	import { Input, Textarea, Button } from '$lib/components/ui';
 
 	let showCreateForm = $state(false);
 	let newName = $state('');
@@ -44,32 +45,23 @@
 	<p class="subtitle">Belajar bareng teman-teman RPL</p>
 
 	<div class="actions-bar">
-		<button class="create-btn" onclick={() => showCreateForm = !showCreateForm}>
+		<Button variant="primary" onclick={() => showCreateForm = !showCreateForm}>
 			{showCreateForm ? '✕ Batal' : '➕ Buat Grup Baru'}
-		</button>
+		</Button>
 	</div>
 
 	{#if showCreateForm}
 		<div class="create-form">
 			<h3>Buat Grup Baru</h3>
-			<div class="form-field">
-				<label for="grp-name">Nama Grup</label>
-				<input id="grp-name" type="text" bind:value={newName} placeholder="Nama grup..." />
-			</div>
-			<div class="form-field">
-				<label for="grp-slug">Path Slug</label>
-				<input id="grp-slug" type="text" bind:value={newSlug} placeholder="misal: web-dev" />
-			</div>
-			<div class="form-field">
-				<label for="grp-desc">Deskripsi (opsional)</label>
-				<textarea id="grp-desc" bind:value={newDesc} placeholder="Deskripsi grup..."></textarea>
-			</div>
+			<Input label="Nama Grup" bind:value={newName} placeholder="Nama grup..." />
+			<Input label="Path Slug" bind:value={newSlug} placeholder="misal: web-dev" />
+			<Textarea label="Deskripsi (opsional)" bind:value={newDesc} placeholder="Deskripsi grup..." />
 			{#if createError}
 				<p class="form-error">{createError}</p>
 			{/if}
-			<button class="submit-btn" onclick={handleCreate} disabled={creating}>
+			<Button onclick={handleCreate} disabled={creating}>
 				{creating ? 'Membuat...' : 'Buat Grup'}
-			</button>
+			</Button>
 		</div>
 	{/if}
 
@@ -122,20 +114,6 @@
 	.actions-bar {
 		margin-bottom: 16px;
 	}
-	.create-btn {
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--accent);
-		background: var(--accent);
-		color: #fff;
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
-		font-family: inherit;
-	}
-	.create-btn:hover {
-		opacity: 0.9;
-	}
 	.create-form {
 		background: var(--surface);
 		border: 1px solid var(--border);
@@ -147,49 +125,10 @@
 		font-size: 16px;
 		margin-bottom: 16px;
 	}
-	.form-field {
-		margin-bottom: 12px;
-	}
-	.form-field label {
-		display: block;
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		margin-bottom: 4px;
-	}
-	.form-field input, .form-field textarea {
-		width: 100%;
-		padding: 8px 12px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--bg);
-		color: var(--text);
-		font-size: 14px;
-		font-family: inherit;
-	}
-	.form-field textarea {
-		min-height: 60px;
-		resize: vertical;
-	}
 	.form-error {
 		color: #ef4444;
 		font-size: 12px;
 		margin-bottom: 8px;
-	}
-	.submit-btn {
-		padding: 8px 20px;
-		border-radius: 8px;
-		border: none;
-		background: var(--accent);
-		color: #fff;
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
-		font-family: inherit;
-	}
-	.submit-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
 	}
 	.groups-list {
 		display: flex;
