@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { StatCard, PageHeader } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -78,16 +79,14 @@
 </svelte:head>
 
 <div class="page">
-	<div class="header">
-		<div>
-			<h1>🔔 Notifications</h1>
-			<p class="subtitle">Broadcast, queue monitoring, dan statistik notifikasi</p>
-		</div>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={loadAll}>🔄</button>
-			<button class="btn-primary" onclick={() => showBroadcast = true}>📢 Broadcast</button>
-		</div>
-	</div>
+	<PageHeader title="🔔 Notifikasi" subtitle="Broadcast, queue monitoring, dan statistik notifikasi">
+		<svelte:fragment slot="action">
+			<div class="header-actions">
+				<button class="btn-refresh" onclick={loadAll}>🔄</button>
+				<button class="btn-primary" onclick={() => showBroadcast = true}>📢 Broadcast</button>
+			</div>
+		</svelte:fragment>
+	</PageHeader>
 
 	{#if error}
 		<div class="error-state">
@@ -97,12 +96,10 @@
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-row">
-			{#each ['queued','processing','sent','failed'] as s}
-				<div class="stat-card stat-card--{s}">
-					<span class="stat-number">{loading ? '—' : (stats[s] ?? 0)}</span>
-					<span class="stat-label">{s}</span>
-				</div>
-			{/each}
+			<StatCard icon="📨" value={loading ? '—' : (stats['queued'] ?? 0)} label="Queued" color="#f59e0b" />
+			<StatCard icon="⚙️" value={loading ? '—' : (stats['processing'] ?? 0)} label="Processing" color="#3b82f6" />
+			<StatCard icon="✅" value={loading ? '—' : (stats['sent'] ?? 0)} label="Sent" color="#10b981" />
+			<StatCard icon="❌" value={loading ? '—' : (stats['failed'] ?? 0)} label="Failed" color="#ef4444" />
 		</div>
 
 		<div class="grid-2col">
@@ -209,9 +206,6 @@
 
 <style>
 	.page { max-width: 1100px; }
-	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
-	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
 	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -219,13 +213,6 @@
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 
 	.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-	.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
-	.stat-card--queued { border-top: 3px solid #f59e0b; }
-	.stat-card--processing { border-top: 3px solid #3b82f6; }
-	.stat-card--sent { border-top: 3px solid #10b981; }
-	.stat-card--failed { border-top: 3px solid #ef4444; }
-	.stat-number { display: block; font-size: 28px; font-weight: 700; color: var(--text); }
-	.stat-label { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
 
 	.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }

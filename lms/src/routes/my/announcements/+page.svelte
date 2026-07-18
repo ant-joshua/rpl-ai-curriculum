@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, EmptyState, Badge, Alert } from '$lib/components/ui';
+  import { Button, EmptyState, Badge, Alert, PageHeader } from '$lib/components/ui';
 
   interface Announcement {
     id: string;
@@ -89,15 +89,13 @@
 </svelte:head>
 
 <div class="page">
-  <header class="page-header">
-    <div>
-      <h1>📢 Pengumuman</h1>
-      <p class="subtitle">Pengumuman terbaru dari kursus yang kamu ikuti</p>
-    </div>
-    {#if !loading}
-      <Badge variant="info">{unreadCount} belum dibaca</Badge>
-    {/if}
-  </header>
+  <PageHeader title="Pengumuman" subtitle="Pengumuman terbaru dari kursus yang kamu ikuti">
+    {#snippet action()}
+      {#if !loading}
+        <Badge variant="info">{unreadCount} belum dibaca</Badge>
+      {/if}
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <div class="loading"><div class="spinner"></div><p>Memuat pengumuman...</p></div>

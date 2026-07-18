@@ -54,7 +54,7 @@
 	}
 
 	import {
-		SearchInput, Select, Button, Badge,
+		SearchInput, Select, Button, Badge, SearchBar, PageHeader, StatCard,
 		Table, TableHeader, TableBody, TableRow, TableCell, TableHead,
 		Modal, Input, Alert
 	} from '$lib/components/ui';
@@ -286,17 +286,12 @@
 </svelte:head>
 
 <div class="content-page">
-	<div class="page-header">
-		<div>
-			<h1>📚 Content Management</h1>
-			<p class="page-desc">Kelola modules, link content blocks ke lessons, edit metadata</p>
-		</div>
-		<div class="header-stats">
-			<span class="stat-badge">{data.modules.length} Modul</span>
-			<span class="stat-badge">{data.contentBlocks.length} Content Blocks</span>
-			<span class="stat-badge">{data.lessons.length} Lessons</span>
-		</div>
+	<div class="stats-row">
+		<StatCard icon="📦" value={data.modules.length} label="Modul" />
+		<StatCard icon="🧩" value={data.contentBlocks.length} label="Content Blocks" />
+		<StatCard icon="📖" value={data.lessons.length} label="Lessons" />
 	</div>
+	<PageHeader title="📚 Content Management" subtitle="Kelola modules, link content blocks ke lessons, edit metadata" />
 
 	<!-- Modules Accordion -->
 	<section class="section">
@@ -364,7 +359,7 @@
 		<h2 class="section-title">🧩 Content Blocks ({filteredBlocks.length})</h2>
 
 		<div class="filter-bar">
-			<SearchInput bind:value={searchQuery} placeholder="Cari title atau ID..." />
+			<SearchBar bind:value={searchQuery} placeholder="Cari title atau ID..." />
 			<Select options={visibilityOptions} bind:value={visibilityFilter} />
 			<Select options={moduleOptions} bind:value={selectedModule} />
 		</div>
@@ -526,6 +521,13 @@
 
 <style>
 	.content-page { max-width: 1200px; }
+
+	.stats-row {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 16px;
+		flex-wrap: wrap;
+	}
 
 	h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
 	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }

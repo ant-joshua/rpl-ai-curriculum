@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, Loading, EmptyState } from '$lib/components/ui';
+	import { Button, Badge, Card, Loading, EmptyState, StatCard, PageHeader } from '$lib/components/ui';
 
 	let courses: any[] = $state([]);
 	let loading = $state(true);
@@ -36,13 +36,11 @@
 </svelte:head>
 
 <div class="instructor-dashboard">
-	<div class="page-header">
-		<div>
-			<h1>🧑‍🏫 Instructor Dashboard</h1>
-			<p class="subtitle">Manage your courses, grade assignments, and view student progress.</p>
-		</div>
-		<Button variant="secondary" onclick={loadCourses}>🔄 Refresh</Button>
-	</div>
+	<PageHeader title="🧑‍🏫 Manajemen Guru" subtitle="Kelola kursus, beri nilai tugas, dan pantau perkembangan siswa">
+		<svelte:fragment slot="action">
+			<Button variant="secondary" onclick={loadCourses}>🔄 Refresh</Button>
+		</svelte:fragment>
+	</PageHeader>
 
 	{#if loading}
 		<Loading />
@@ -53,27 +51,9 @@
 	{:else}
 		<!-- Stats overview -->
 		<div class="stats-row">
-			<Card>
-				<div class="stat-inner">
-					<span class="stat-icon">📚</span>
-					<span class="stat-value">{courses.length}</span>
-					<span class="stat-label">Active Courses</span>
-				</div>
-			</Card>
-			<Card>
-				<div class="stat-inner">
-					<span class="stat-icon">👥</span>
-					<span class="stat-value">{totalStudents}</span>
-					<span class="stat-label">Total Students</span>
-				</div>
-			</Card>
-			<Card>
-				<div class="stat-inner">
-					<span class="stat-icon">📝</span>
-					<span class="stat-value">{totalAssignments}</span>
-					<span class="stat-label">Assignments</span>
-				</div>
-			</Card>
+			<StatCard icon="📚" value={courses.length} label="Kursus Aktif" />
+			<StatCard icon="👥" value={totalStudents} label="Total Siswa" />
+			<StatCard icon="📝" value={totalAssignments} label="Tugas" />
 		</div>
 
 		<!-- Course list -->
@@ -115,23 +95,6 @@
 		max-width: 1100px;
 	}
 
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 24px;
-		gap: 16px;
-	}
-	.page-header h1 {
-		font-size: 24px;
-		margin: 0 0 4px;
-	}
-	.subtitle {
-		color: var(--text-secondary);
-		font-size: 14px;
-		margin: 0;
-	}
-
 	.empty-hint { font-size: 13px; margin-top: 8px; }
 
 	.stats-row {
@@ -140,16 +103,6 @@
 		gap: 14px;
 		margin-bottom: 28px;
 	}
-	.stat-inner {
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-	}
-	.stat-icon { font-size: 28px; }
-	.stat-value { font-size: 28px; font-weight: 700; color: var(--accent); }
-	.stat-label { font-size: 12px; color: var(--text-secondary); }
 
 	.course-grid {
 		display: grid;

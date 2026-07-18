@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card, CardContent, Button, Badge } from '$lib/components/ui';
+	import { Card, CardContent, Button, Badge, StatCard, PageHeader } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -57,49 +57,14 @@
 </svelte:head>
 
 <div class="instructor-page">
-	<header class="page-header">
-		<h1>📊 Dashboard Instruktur</h1>
-		<p class="subtitle">Kelola kursus, tugas, dan pantau perkembangan siswa</p>
-	</header>
+	<PageHeader title="📊 Dashboard Guru" subtitle="Kelola kursus, tugas, dan pantau perkembangan siswa" />
 
 	<!-- Overview Stats -->
 	<section class="stats-grid">
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-icon">📚</span>
-					<span class="stat-value">{courseCount}</span>
-					<span class="stat-label">Kursus Diajar</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-icon">👥</span>
-					<span class="stat-value">{totalStudents}</span>
-					<span class="stat-label">Siswa Aktif</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-icon">📝</span>
-					<span class="stat-value">{pendingCount}</span>
-					<span class="stat-label">Menunggu Penilaian</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-icon">✅</span>
-					<span class="stat-value">{avgCompletion}%</span>
-					<span class="stat-label">Rata-rata Penyelesaian</span>
-				</div>
-			</CardContent>
-		</Card>
+		<StatCard icon="📚" value={courseCount} label="Kursus Diajar" />
+		<StatCard icon="👥" value={totalStudents} label="Siswa Aktif" />
+		<StatCard icon="📝" value={pendingCount} label="Menunggu Penilaian" />
+		<StatCard icon="✅" value="{avgCompletion}%" label="Rata-rata Penyelesaian" />
 	</section>
 
 	<!-- Content Grid -->
@@ -233,18 +198,6 @@
 		animation: fadeIn 0.4s ease both;
 	}
 
-	.page-header { margin-bottom: 24px; }
-	.page-header h1 {
-		font-size: 24px;
-		font-weight: 700;
-		margin: 0 0 4px;
-	}
-	.subtitle {
-		font-size: 14px;
-		color: var(--text-secondary);
-		margin: 0;
-	}
-
 	/* Stats */
 	.stats-grid {
 		display: grid;
@@ -253,16 +206,6 @@
 		margin-bottom: 24px;
 	}
 	@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-	.stat-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 2px;
-		text-align: center;
-	}
-	.stat-icon { font-size: 28px; }
-	.stat-value { font-size: 24px; font-weight: 700; color: var(--accent); }
-	.stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
 
 	/* Content Grid */
 	.content-grid {

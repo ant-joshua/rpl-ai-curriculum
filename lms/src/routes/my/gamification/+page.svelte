@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar } from '$lib/components/ui';
+	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
 
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
 	function authFetch(url: string, opts?: RequestInit) {
@@ -127,6 +127,7 @@
 </svelte:head>
 
 <div class="gamification-page">
+	<PageHeader title="Gamification" subtitle="Pantau level, badge, dan pencapaian belajar kamu" />
 	{#if loading}
 		<div class="loading"><Spinner /> Memuat data gamification...</div>
 	{:else if error}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Progress, Button } from '$lib/components/ui';
+	import { Card, CardContent, Progress, Button, PageHeader, StatCard, EmptyState } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -174,49 +174,14 @@
 </svelte:head>
 
 <div class="progress-page">
-	<header class="page-header">
-		<h1>📈 Progres Belajar Saya</h1>
-		<p class="subtitle">Pantau perkembangan belajar kamu secara detail</p>
-	</header>
+	<PageHeader title="Progres Belajar Saya" subtitle="Pantau perkembangan belajar kamu secara detail" />
 
 	<!-- Overview Stats -->
 	<section class="stats-grid">
-		<Card>
-			<CardContent>
-				<div class="stat-card-inner">
-					<span class="stat-icon">📊</span>
-					<span class="stat-value">{avgProgress}%</span>
-					<span class="stat-label">Rata-rata Progres</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card-inner">
-					<span class="stat-icon">🎯</span>
-					<span class="stat-value">{avgScore}</span>
-					<span class="stat-label">Rata-rata Nilai</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card-inner">
-					<span class="stat-icon">✅</span>
-					<span class="stat-value">{attendanceRate}%</span>
-					<span class="stat-label">Kehadiran</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card-inner">
-					<span class="stat-icon">🎓</span>
-					<span class="stat-value">{completedCourseCount}/{enrollmentCount}</span>
-					<span class="stat-label">Kursus Selesai</span>
-				</div>
-			</CardContent>
-		</Card>
+		<StatCard icon="📊" value="{avgProgress}%" label="Rata-rata Progres" />
+		<StatCard icon="🎯" value={avgScore} label="Rata-rata Nilai" />
+		<StatCard icon="✅" value="{attendanceRate}%" label="Kehadiran" />
+		<StatCard icon="🎓" value="{completedCourseCount}/{enrollmentCount}" label="Kursus Selesai" />
 	</section>
 
 	<!-- XP & Level -->
@@ -376,27 +341,7 @@
 	@media (max-width: 768px) {
 		.stats-grid { grid-template-columns: repeat(2, 1fr); }
 	}
-	.stat-card-inner {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 2px;
-		text-align: center;
-	}
-	.stat-icon { font-size: 24px; opacity: 0.9; }
-	.stat-value {
-		font-size: 22px;
-		font-weight: 590;
-		color: #7170ff;
-		font-feature-settings: 'cv01', 'ss03';
-		line-height: 1.2;
-	}
-	.stat-label {
-		font-size: 11px;
-		color: #62666d;
-		font-weight: 510;
-		font-feature-settings: 'cv01', 'ss03';
-	}
+
 
 	/* XP Section */
 	.xp-section {

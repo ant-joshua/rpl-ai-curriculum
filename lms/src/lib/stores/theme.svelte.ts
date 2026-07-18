@@ -38,7 +38,7 @@ function createThemeStore() {
 			root.style.setProperty('--muted-foreground', '#80868b');
 			root.style.setProperty('--border', 'rgba(0, 0, 0, 0.08)');
 			root.style.setProperty('--border-subtle', 'rgba(0, 0, 0, 0.04)');
-			root.style.setProperty('--border-solid', '#e0e0e0');
+			root.style.setProperty('--border-solid', '#f7f8f8');
 			root.style.setProperty('--hover', 'rgba(0, 0, 0, 0.04)');
 			root.style.setProperty('--danger', '#ef4444');
 			root.style.setProperty('--success', '#10b981');

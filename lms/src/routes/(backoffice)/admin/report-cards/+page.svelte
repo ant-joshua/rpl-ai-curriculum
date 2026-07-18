@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, CardTitle, Badge, Loading, EmptyState, Alert } from '$lib/components/ui/index.js';
+	import { Button, Card, CardContent, CardTitle, Badge, Loading, EmptyState, Alert, StatCard, PageHeader } from '$lib/components/ui/index.js';
 
 	let recentBatches: any[] = $state([]);
 	let templates: any[] = $state([]);
@@ -105,20 +105,18 @@
 </svelte:head>
 
 <div class="report-cards-dashboard">
-	<div class="page-header">
-		<div>
-			<h1>📄 Report Cards</h1>
-			<p class="page-desc">Generate and manage student report cards</p>
-		</div>
-		<div class="header-actions">
-			<Button href="/admin/report-cards/templates" variant="secondary">📝 Templates</Button>
-			<Button href="/admin/report-cards/batches" variant="secondary">📦 Batches</Button>
-			<Button href="/admin/report-cards/teacher-comments" variant="secondary">💬 Comments</Button>
-			<Button onclick={quickGenerate} disabled={generating || templates.length === 0}>
-				{generating ? 'Creating...' : '⚡ Quick Generate'}
-			</Button>
-		</div>
-	</div>
+	<PageHeader title="📄 Report Cards" subtitle="Generate and manage student report cards">
+		<svelte:fragment slot="action">
+			<div class="header-actions">
+				<Button href="/admin/report-cards/templates" variant="secondary">📝 Templates</Button>
+				<Button href="/admin/report-cards/batches" variant="secondary">📦 Batches</Button>
+				<Button href="/admin/report-cards/teacher-comments" variant="secondary">💬 Comments</Button>
+				<Button onclick={quickGenerate} disabled={generating || templates.length === 0}>
+					{generating ? 'Creating...' : '⚡ Quick Generate'}
+				</Button>
+			</div>
+		</svelte:fragment>
+	</PageHeader>
 
 	{#if success}
 		<Alert variant="success">{success}</Alert>
@@ -129,30 +127,9 @@
 
 	<div class="dashboard-grid">
 		<!-- Stats Cards -->
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-value">{templates.length}</span>
-					<span class="stat-label">Templates</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-value">{recentBatches.filter((b: any) => b.status === 'completed').length}</span>
-					<span class="stat-label">Completed Batches</span>
-				</div>
-			</CardContent>
-		</Card>
-		<Card>
-			<CardContent>
-				<div class="stat-card">
-					<span class="stat-value">{recentBatches.filter((b: any) => b.status === 'pending' || b.status === 'generating').length}</span>
-					<span class="stat-label">Active Batches</span>
-				</div>
-			</CardContent>
-		</Card>
+		<StatCard icon="📝" value={templates.length} label="Templates" />
+		<StatCard icon="✅" value={recentBatches.filter((b: any) => b.status === 'completed').length} label="Batch Selesai" />
+		<StatCard icon="⏳" value={recentBatches.filter((b: any) => b.status === 'pending' || b.status === 'generating').length} label="Batch Aktif" />
 	</div>
 
 	<!-- Recent Batches -->
@@ -193,17 +170,6 @@
 <style>
 	.report-cards-dashboard { max-width: 1000px; }
 
-	h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
-
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 24px;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
 	.header-actions {
 		display: flex;
 		gap: 8px;
@@ -216,15 +182,6 @@
 		gap: 16px;
 		margin-bottom: 32px;
 	}
-	.stat-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 20px;
-		gap: 4px;
-	}
-	.stat-value { font-size: 32px; font-weight: 700; color: var(--accent); }
-	.stat-label { font-size: 13px; color: var(--text-secondary); }
 
 	.section { margin-top: 24px; }
 	.section h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }

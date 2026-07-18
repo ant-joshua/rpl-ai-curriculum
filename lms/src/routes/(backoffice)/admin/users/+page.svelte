@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, Input, Badge, Table, Modal, SearchInput, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { Button, Card, Input, Badge, Table, Modal, SearchInput, Loading, EmptyState, PageHeader, SearchBar } from '$lib/components/ui/index.js';
 
 	let users: any[] = $state([]);
 	let loading = $state(true);
@@ -144,10 +144,11 @@
 </svelte:head>
 
 <div class="users-page">
-	<div class="header-row">
-		<h1>👥 User Management</h1>
-		<Button onclick={loadUsers} variant="secondary" size="sm">🔄 Refresh</Button>
-	</div>
+	<PageHeader title="👥 User Management">
+		{#snippet action()}
+			<Button onclick={loadUsers} variant="secondary" size="sm">🔄 Refresh</Button>
+		{/snippet}
+	</PageHeader>
 
 	{#if loading}
 		<Loading message="Loading users..." />
@@ -158,7 +159,7 @@
 		</div>
 	{:else}
 		<div class="toolbar">
-			<SearchInput bind:value={searchQuery} placeholder="Search by username or ID..." />
+			<SearchBar bind:value={searchQuery} placeholder="Cari username atau ID..." />
 			<div class="sort-group">
 				<span class="sort-label">Sort:</span>
 				<Button

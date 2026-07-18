@@ -55,8 +55,8 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 48px 24px;
-    min-height: 200px;
+    padding: 40px 24px;
+    min-height: 160px;
   }
 
   .empty-state-icon {
@@ -70,9 +70,9 @@
   }
 
   .empty-state-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #d0d6e0;
+    font-size: 16px;
+    font-weight: 510;
+    color: #f7f8f8;
     margin: 0 0 8px;
   }
 

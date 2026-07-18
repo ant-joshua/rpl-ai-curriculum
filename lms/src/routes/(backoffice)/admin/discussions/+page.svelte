@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Button, Badge, SearchInput, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { Button, Badge, SearchBar, Loading, EmptyState, PageHeader } from '$lib/components/ui/index.js';
 
 	interface Discussion {
 		id: string;

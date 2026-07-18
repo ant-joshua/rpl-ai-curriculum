@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Card, Alert, Badge } from '$lib/components/ui';
+	import { Card, Alert, Badge, PageHeader, EmptyState } from '$lib/components/ui';
 
 	let invoices: any[] = $state([]);
 	let loading = $state(true);
@@ -157,10 +157,7 @@
 </svelte:head>
 
 <div class="payment-page">
-	<div class="page-header">
-		<h1>Pembayaran</h1>
-		<p class="subtitle">Kelola tagihan dan lakukan pembayaran SPP</p>
-	</div>
+	<PageHeader title="Pembayaran" subtitle="Kelola tagihan dan lakukan pembayaran SPP" />
 
 	{#if error}
 		<Alert variant="danger">
@@ -174,13 +171,7 @@
 			<p>Memuat data tagihan...</p>
 		</div>
 	{:else if invoices.length === 0}
-		<Card>
-			<div class="empty-state">
-				<span class="empty-icon">💰</span>
-				<h3>Tidak Ada Tagihan</h3>
-				<p>Saat ini tidak ada tagihan yang perlu dibayarkan.</p>
-			</div>
-		</Card>
+		<EmptyState icon="💰" title="Tidak Ada Tagihan" description="Saat ini tidak ada tagihan yang perlu dibayarkan." />
 	{:else}
 		<div class="invoice-list">
 			{#each invoices as inv}

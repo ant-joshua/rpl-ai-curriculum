@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { PageHeader, DataTable } from '$lib/components/ui';
+	import { Button } from '$lib/components/ui';
 
 	let fakultasList: any[] = $state([]);
 	let loading = $state(true);
@@ -78,16 +80,12 @@
 </svelte:head>
 
 <div class="page">
-	<div class="header">
-		<div>
-			<h1>🏛️ Fakultas</h1>
-			<p class="subtitle">Kelola data fakultas</p>
-		</div>
-		<div class="header-actions">
+	<PageHeader title="🏛️ Fakultas" subtitle="Kelola data fakultas">
+		{#snippet action()}
 			<button class="btn-refresh" onclick={loadData}>🔄</button>
 			<button class="btn-primary" onclick={openCreate}>+ Fakultas Baru</button>
-		</div>
-	</div>
+		{/snippet}
+	</PageHeader>
 
 	{#if loading}
 		<div class="loading">Memuat data...</div>
@@ -104,29 +102,31 @@
 	{:else}
 		<div class="card">
 			<div class="table-container">
-				<table>
-					<thead>
-						<tr>
-							<th>Nama Fakultas</th>
-							<th>Kode</th>
-							<th>Prodi Terkait</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each fakultasList as f}
-							<tr>
-								<td class="cell-name">{f.name}</td>
-								<td><code>{f.code || '—'}</code></td>
-								<td class="cell-count">{f.prodi_count ?? f.major_count ?? '—'}</td>
-								<td class="cell-actions">
-									<button class="btn-edit" onclick={() => openEdit(f)}>Edit</button>
-									<button class="btn-delete" onclick={() => deleteFakultas(f.id)}>Hapus</button>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				<DataTable
+					columns={[
+						{ key: 'name', label: 'Nama Fakultas' },
+						{ key: 'code', label: 'Kode' },
+						{ key: 'prodi_count', label: 'Prodi Terkait' },
+						{ key: 'actions', label: 'Aksi' }
+					]}
+					data={fakultasList.map(f => ({ ...f, code: f.code || '—', prodi_count: f.prodi_count ?? f.major_count ?? '—' }))}
+					emptyMessage="Belum ada fakultas"
+				>
+					{#snippet cell({ column, row })}
+						{#if column.key === 'name'}
+							<span class="cell-name">{row.name}</span>
+						{:else if column.key === 'code'}
+							<code>{row.code}</code>
+						{:else if column.key === 'prodi_count'}
+							<span class="cell-count">{row.prodi_count}</span>
+						{:else if column.key === 'actions'}
+							<div class="cell-actions">
+								<button class="btn-edit" onclick={() => openEdit(row)}>Edit</button>
+								<button class="btn-delete" onclick={() => deleteFakultas(row.id)}>Hapus</button>
+							</div>
+						{/if}
+					{/snippet}
+				</DataTable>
 			</div>
 		</div>
 	{/if}

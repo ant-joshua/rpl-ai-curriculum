@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Card, CardContent, EmptyState, Loading } from '$lib/components/ui';
+  import { Card, CardContent, EmptyState, Loading, PageHeader } from '$lib/components/ui';
 
   let schedules = $state<any[]>([]);
   let loading = $state(true);
@@ -76,14 +76,15 @@
 </svelte:head>
 
 <div class="schedule-page">
-  <header class="page-header">
-    <h1>📅 Jadwal Saya</h1>
-    <div class="filter-row">
-      <button class="filter-btn" class:active={filter === 'upcoming'} onclick={() => filter = 'upcoming'}>Akan Datang</button>
-      <button class="filter-btn" class:active={filter === 'today'} onclick={() => filter = 'today'}>Hari Ini</button>
-      <button class="filter-btn" class:active={filter === 'all'} onclick={() => filter = 'all'}>Semua</button>
-    </div>
-  </header>
+  <PageHeader title="Jadwal Saya" subtitle="Pantau jadwal kuliah dan kegiatan belajar">
+    {#snippet action()}
+      <div class="filter-row">
+        <button class="filter-btn" class:active={filter === 'upcoming'} onclick={() => filter = 'upcoming'}>Akan Datang</button>
+        <button class="filter-btn" class:active={filter === 'today'} onclick={() => filter = 'today'}>Hari Ini</button>
+        <button class="filter-btn" class:active={filter === 'all'} onclick={() => filter = 'all'}>Semua</button>
+      </div>
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <Loading />

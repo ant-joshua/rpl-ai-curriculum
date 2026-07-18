@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Badge, Card, Button, EmptyState } from '$lib/components/ui';
+	import { Badge, Card, Button, EmptyState, PageHeader } from '$lib/components/ui';
 
 	let { data } = $props();
 	let bookmarks = $derived(data.bookmarks ?? []);
@@ -22,10 +22,7 @@
 </svelte:head>
 
 <div class="bookmarks-page">
-	<header class="page-header">
-		<h1>My Bookmarks</h1>
-		<p class="text-secondary">{bookmarks.length} bookmarked lesson{bookmarks.length !== 1 ? 's' : ''}</p>
-	</header>
+	<PageHeader title="My Bookmarks" subtitle="{bookmarks.length} bookmarked lesson{bookmarks.length !== 1 ? 's' : ''}" />
 
 	{#if bookmarks.length === 0}
 		<EmptyState

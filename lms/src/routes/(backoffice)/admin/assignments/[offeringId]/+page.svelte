@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { SearchBar, PageHeader, EmptyState } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -201,31 +202,19 @@
 		<div class="error">{error}</div>
 	{:else}
 		<!-- Header -->
-		<div class="page-header">
-			<div>
-				<div class="breadcrumb">
-					<a href="/admin/assignments">← Assignment Management</a>
-				</div>
-				<h1>{offering?.name}</h1>
-				<p class="offering-meta">
-					{#if offering?.code}<span>{offering.code}</span>{/if}
-					<span>{assignments.length} assignment(s)</span>
-					<span class="status-badge status--{offering?.status}">{offering?.status}</span>
-				</p>
-			</div>
-			<div class="header-actions">
-				<input
-					type="text"
-					class="search-input"
-					placeholder="Cari mahasiswa..."
-					bind:value={searchQuery}
-				/>
-			</div>
+		<div class="breadcrumb">
+			<a href="/admin/assignments">← Assignment Management</a>
 		</div>
+		<PageHeader title={offering?.name || ''} subtitle="{assignments.length} assignment(s){offering?.code ? ' — ' + offering.code : ''}">
+			{#snippet action()}
+				<span class="status-badge status--{offering?.status}">{offering?.status}</span>
+			{/snippet}
+		</PageHeader>
+				<SearchBar bind:value={searchQuery} placeholder="Cari mahasiswa..." />
 
 		<!-- Assignments list -->
 		{#if assignments.length === 0}
-			<div class="empty-state">Belum ada assignment di offering ini.</div>
+			<EmptyState icon="📋" title="Belum ada assignment" description="Belum ada assignment di offering ini." />
 		{:else}
 			<div class="assignments-list">
 				{#each assignments as a}

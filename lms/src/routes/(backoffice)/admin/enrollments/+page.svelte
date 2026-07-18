@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent } from '$lib/components/ui';
+	import { Button, Badge, Card, CardContent, SearchBar, PageHeader, EmptyState } from '$lib/components/ui';
 
 	let enrollments: any[] = $state([]);
 	let offerings: any[] = $state([]);
@@ -159,29 +159,16 @@
 </svelte:head>
 
 <div class="page">
-	<div class="page-header">
-		<div>
-			<h1>📋 Manajemen Pendaftaran</h1>
-			<p class="subtitle">Total {totalEnrollments} pendaftaran</p>
-		</div>
-		<div class="header-actions">
+	<PageHeader title="📋 Manajemen Pendaftaran" subtitle="Total {totalEnrollments} pendaftaran">
+		{#snippet action()}
 			<Button variant="secondary" onclick={exportCsv}>📤 Export CSV</Button>
 			<Button onclick={openAddModal}>+ Tambah Pendaftaran</Button>
-		</div>
-	</div>
+		{/snippet}
+	</PageHeader>
 
 	<!-- Filters -->
 	<div class="filters">
-		<div class="search-box">
-			<input
-				type="text"
-				placeholder="Cari nama/email siswa..."
-				bind:value={searchQuery}
-				onkeydown={(e) => e.key === 'Enter' && doSearch()}
-				class="search-input"
-			/>
-			<Button variant="secondary" size="sm" onclick={doSearch}>🔍 Cari</Button>
-		</div>
+		<SearchBar bind:value={searchQuery} placeholder="Cari nama/email siswa..." onSearch={doSearch} />
 		<div class="filter-selects">
 			<select bind:value={selectedOfferingId} onchange={() => { page = 1; loadData(); }} class="select-input">
 				<option value="">Semua Offering</option>
@@ -198,7 +185,7 @@
 	{:else if error}
 		<Card><CardContent><div class="error-state">{error}</div></CardContent></Card>
 	{:else if enrollments.length === 0}
-		<Card><CardContent><div class="empty-state">Belum ada pendaftaran.</div></CardContent></Card>
+		<EmptyState icon="📋" title="Belum ada enrollment" description="Belum ada data pendaftaran." />
 	{:else}
 		<div class="table-wrapper">
 			<table class="enroll-table">

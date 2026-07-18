@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Card, EmptyState, ProgressBar } from '$lib/components/ui';
+	import { Button, Card, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -54,10 +54,7 @@
 </svelte:head>
 
 <div class="certs-page">
-	<header class="page-header">
-		<h1>🎓 Sertifikat Saya</h1>
-		<p class="subtitle">Sertifikat kelulusan yang telah Anda terima</p>
-	</header>
+	<PageHeader title="Sertifikat Saya" subtitle="Sertifikat kelulusan yang telah Anda terima" />
 
 	{#if loading}
 		<div class="loading">

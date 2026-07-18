@@ -4,6 +4,7 @@
 	import {
 		Button, Badge, Modal, Input, Textarea, Select, Alert, Loading, EmptyState
 	} from '$lib/components/ui';
+	import { PageHeader, SearchBar } from '$lib/components/ui';
 
 	interface Question {
 		id: string;
@@ -369,16 +370,12 @@
 </svelte:head>
 
 <div class="page">
-	<div class="page-header">
-		<div>
-			<h1>🗂️ Bank Soal</h1>
-			<p class="page-desc">Kelola soal untuk kuis, ujian, dan latihan</p>
-		</div>
-		<div class="header-actions">
+	<PageHeader title="🗂️ Bank Soal" subtitle="Kelola soal untuk kuis, ujian, dan latihan">
+		{#snippet action()}
 			<Button onclick={openGenerate}>🤖 Generate Soal AI</Button>
 			<Button onclick={openAdd}>➕ Buat Soal Baru</Button>
-		</div>
-	</div>
+		{/snippet}
+	</PageHeader>
 
 	{#if error}
 		<Alert variant="error">{error}</Alert>
@@ -391,7 +388,7 @@
 			<Select options={difficultyOptions} bind:value={filterDifficulty} />
 			<Select options={offeringFilterOptions} bind:value={filterOffering} />
 			<Select options={statusOptions} bind:value={filterStatus} />
-			<Input placeholder="Cari soal atau tag..." bind:value={searchText} />
+			<SearchBar bind:value={searchText} placeholder="Cari soal atau tag..." onSearch={applyFilters} />
 			<Button onclick={applyFilters}>Cari</Button>
 		</div>
 		<span class="filter-count">{total} soal</span>

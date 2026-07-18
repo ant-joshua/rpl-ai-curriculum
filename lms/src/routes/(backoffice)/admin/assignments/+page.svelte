@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, TableHeader } from '$lib/components/ui';
+	import { Button, Badge, Card, CardContent, TableHeader, PageHeader, EmptyState, StatCard } from '$lib/components/ui';
 
 	let assignments: any[] = $state([]);
 	let offerings: any[] = $state([]);
@@ -187,12 +187,11 @@
 <svelte:head><title>Manajemen Tugas — Admin</title></svelte:head>
 
 <div class="page">
-	<div class="page-header">
-		<div>
-			<h1>📂 Manajemen Tugas</h1>
-			<p class="subtitle">{assignments.length} tugas</p>
-		</div>
-		<div class="header-actions">
+	<div class="stats-row">
+		<StatCard icon="📝" value={assignments.length} label="Total Tugas" />
+	</div>
+	<PageHeader title="📂 Manajemen Tugas" subtitle="{assignments.length} tugas">
+		{#snippet action()}
 			<select bind:value={selectedOfferingId} onchange={() => { loadLessons(selectedOfferingId); loadData(); }} class="select-input">
 				<option value="">Semua Kursus</option>
 				{#each offerings as o}
@@ -200,15 +199,15 @@
 				{/each}
 			</select>
 			<Button onclick={openCreate}>+ Buat Tugas</Button>
-		</div>
-	</div>
+		{/snippet}
+	</PageHeader>
 
 	{#if loading}
 		<Card><CardContent><div class="loading-state">Memuat data...</div></CardContent></Card>
 	{:else if error}
 		<Card><CardContent><div class="error-state">{error}</div></CardContent></Card>
 	{:else if assignments.length === 0}
-		<Card><CardContent><div class="empty-state">Belum ada tugas. Klik "Buat Tugas" untuk membuat baru.</div></CardContent></Card>
+		<EmptyState icon="📝" title="Belum ada tugas" description="Klik &quot;Buat Tugas&quot; untuk membuat baru." />
 	{:else}
 		<div class="table-wrapper">
 			<table class="assign-table">
@@ -417,6 +416,14 @@
 
 <style>
 	.page { max-width: 1000px; }
+
+	.stats-row {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 16px;
+		flex-wrap: wrap;
+	}
+
 	h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; }
 	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Button, Card, EmptyState } from '$lib/components/ui';
+  import { Button, Card, EmptyState, PageHeader, StatCard } from '$lib/components/ui';
 
   let { data }: { data: import('./$types').PageData } = $props();
 
@@ -268,12 +268,7 @@
 
 <div class="planner-page">
   <!-- Header -->
-  <header class="planner-header">
-    <div>
-      <h1>📅 Study Planner</h1>
-      <p class="subtitle">Atur target belajar mingguan, pantau progres, dan catat waktu belajar</p>
-    </div>
-  </header>
+  <PageHeader title="Study Planner" subtitle="Atur target belajar mingguan, pantau progres, dan catat waktu belajar" />
 
   <!-- Course selector + error -->
   <div class="controls">
@@ -325,33 +320,9 @@
       <!-- Overview -->
       <section class="overview-section">
         <div class="overview-cards">
-          <div class="overview-card">
-            <div class="overview-icon">📊</div>
-            <div>
-              <div class="overview-value">{progress?.percentage || 0}%</div>
-              <div class="overview-label">Progres Total</div>
-              <div class="overview-sub">{progress?.completed_lessons || 0}/{progress?.total_lessons || 0} sesi</div>
-            </div>
-          </div>
-
-          <div class="overview-card">
-            <div class="overview-icon">🎯</div>
-            <div>
-              <div class="overview-value">{plan?.target_lessons_per_week || 0}/minggu</div>
-              <div class="overview-label">Target</div>
-              <div class="overview-sub">{recommendations?.remaining_this_week ?? '-'} sisa minggu ini</div>
-            </div>
-          </div>
-
-          <div class="overview-card" style="border-color: {statusColor(recommendations?.overall_status || 'on_track')}30">
-            <div class="overview-icon">{recommendations?.overall_status === 'behind' ? '⚠️' : '✅'}</div>
-            <div>
-              <div class="overview-value" style="color: {statusColor(recommendations?.overall_status || 'on_track')}">
-                {statusLabel(recommendations?.overall_status || 'on_track')}
-              </div>
-              <div class="overview-label">Status</div>
-            </div>
-          </div>
+          <StatCard icon="📊" value="{progress?.percentage || 0}%" label="Progres Total" />
+          <StatCard icon="🎯" value="{plan?.target_lessons_per_week || 0}/minggu" label="Target" />
+          <StatCard icon={recommendations?.overall_status === 'behind' ? '⚠️' : '✅'} value={statusLabel(recommendations?.overall_status || 'on_track')} label="Status" color={statusColor(recommendations?.overall_status || 'on_track')} />
         </div>
       </section>
 
@@ -969,24 +940,7 @@
 
   .overview-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
-  .overview-card {
-    background: var(--gradient-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: all 0.2s ease;
-  }
 
-  .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(108, 92, 231, 0.1); }
-
-  .overview-icon { font-size: 28px; }
-  .overview-card div { display: flex; flex-direction: column; gap: 2px; }
-  .overview-value { font-size: 20px; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .overview-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
-  .overview-sub { font-size: 11px; color: var(--text-secondary); opacity: 0.8; }
 
   /* Setup form */
   .setup-form { display: flex; flex-direction: column; gap: 14px; }
