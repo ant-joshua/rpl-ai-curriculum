@@ -6,7 +6,14 @@
 	import { addToast } from '$lib/stores/toast.svelte';
 
 	let name = $state('');
+	let password = $state('');
 	let error = $state('');
+
+	// 2FA challenge state
+	let need2fa = $state(false);
+	let tempToken = $state('');
+	let code = $state('');
+	let verifying2fa = $state(false);
 
 	onMount(() => {
 		if (user.isLoggedIn) {
@@ -14,7 +21,7 @@
 		}
 	});
 
-	function handleLogin(e: Event) {
+	async function handleLogin(e: Event) {
 		e.preventDefault();
 		const trimmed = name.trim();
 		if (!trimmed) {
@@ -22,13 +29,82 @@
 			addToast('Silakan masukkan nama kamu', 'warning');
 			return;
 		}
-		user.username = trimmed;
-		progress.updateStreak();
-		addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
 
-		setTimeout(() => {
-			window.location.href = '/dashboard';
-		}, 50);
+		try {
+			const res = await fetch('/api/auth/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username: trimmed, password }),
+			});
+			const data = await res.json();
+
+			if (!data.success) {
+				error = data.error || 'Login gagal';
+				addToast(error, 'error');
+				return;
+			}
+
+			if (data.need2fa) {
+				// Show 2FA challenge input
+				need2fa = true;
+				tempToken = data.temp_token;
+				error = '';
+				return;
+			}
+
+			// Normal login — set session
+			if (data.token && data.user) {
+				auth.setSession(data.token, data.user);
+				user.username = trimmed;
+				progress.updateStreak();
+				addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
+				setTimeout(() => {
+					window.location.href = '/dashboard';
+				}, 50);
+			}
+		} catch {
+			error = 'Network error';
+			addToast('Network error', 'error');
+		}
+	}
+
+	async function handle2faVerify(e: Event) {
+		e.preventDefault();
+		const trimmed = code.trim();
+		if (!trimmed || trimmed.length !== 6) {
+			error = 'Masukkan kode 6 digit dari aplikasi authenticator';
+			addToast('Kode 6 digit diperlukan', 'warning');
+			return;
+		}
+
+		verifying2fa = true;
+		error = '';
+		try {
+			const res = await fetch('/api/auth/2fa/challenge', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ temp_token: tempToken, code: trimmed }),
+			});
+			const data = await res.json();
+
+			if (data.success && data.token && data.user) {
+				auth.setSession(data.token, data.user);
+				user.username = name;
+				progress.updateStreak();
+				addToast('Verifikasi 2FA berhasil!', 'success');
+				setTimeout(() => {
+					window.location.href = '/dashboard';
+				}, 50);
+			} else {
+				error = data.error || 'Kode verifikasi salah';
+				addToast(error, 'error');
+			}
+		} catch {
+			error = 'Network error';
+			addToast('Network error', 'error');
+		} finally {
+			verifying2fa = false;
+		}
 	}
 
 	function redirectOAuth(provider: string) {
@@ -40,49 +116,80 @@
 	<div class="login-card">
 		<div class="login-icon">📘</div>
 		<h1>RPL AI Curriculum</h1>
-		<p class="login-desc">Masukkan nama kamu untuk mulai belajar</p>
 
-		<form onsubmit={handleLogin}>
-			<input
-				type="text"
-				bind:value={name}
-				placeholder="Nama kamu..."
-				class="login-input"
-				autocomplete="name"
-			/>
-			{#if error}
-				<p class="login-error">{error}</p>
-			{/if}
-			<button type="submit" class="login-submit">
-				Mulai Belajar
-			</button>
-		</form>
+		{#if need2fa}
+			<!-- 2FA Challenge -->
+			<p class="login-desc">Masukkan kode dari aplikasi authenticator kamu</p>
+			<form onsubmit={handle2faVerify}>
+				<input
+					type="text"
+					bind:value={code}
+					placeholder="000000"
+					maxlength={6}
+					class="login-input login-code-input"
+					autocomplete="one-time-code"
+					inputmode="numeric"
+					pattern="[0-9]*"
+				/>
+				{#if error}
+					<p class="login-error">{error}</p>
+				{/if}
+				<button type="submit" class="login-submit" disabled={verifying2fa}>
+					{verifying2fa ? 'Memverifikasi...' : 'Verifikasi & Masuk'}
+				</button>
+			</form>
+		{:else}
+			<!-- Normal Login -->
+			<p class="login-desc">Masukkan nama kamu untuk mulai belajar</p>
+			<form onsubmit={handleLogin}>
+				<input
+					type="text"
+					bind:value={name}
+					placeholder="Nama kamu..."
+					class="login-input"
+					autocomplete="username"
+				/>
+				<input
+					type="password"
+					bind:value={password}
+					placeholder="Password (opsional)"
+					class="login-input"
+					autocomplete="current-password"
+				/>
+				{#if error}
+					<p class="login-error">{error}</p>
+				{/if}
+				<button type="submit" class="login-submit">
+					Mulai Belajar
+				</button>
+			</form>
 
-		<div class="oauth-divider">
-			<span class="divider-line"></span>
-			<span class="divider-text">atau</span>
-			<span class="divider-line"></span>
-		</div>
+			<div class="oauth-divider">
+				<span class="divider-line"></span>
+				<span class="divider-text">atau</span>
+				<span class="divider-line"></span>
+			</div>
 
-		<div class="oauth-buttons">
-			<a href="/api/auth/oauth/redirect/google" class="oauth-btn google" role="button">
-				<span class="oauth-icon">🔵</span>
-				<span>Login dengan Google</span>
-			</a>
-			<a href="/api/auth/oauth/redirect/github" class="oauth-btn github" role="button">
-				<span class="oauth-icon">🐙</span>
-				<span>Login dengan GitHub</span>
-			</a>
-		</div>
+			<div class="oauth-buttons">
+				<a href="/api/auth/oauth/redirect/google" class="oauth-btn google" role="button">
+					<span class="oauth-icon">🔵</span>
+					<span>Login dengan Google</span>
+				</a>
+				<a href="/api/auth/oauth/redirect/github" class="oauth-btn github" role="button">
+					<span class="oauth-icon">🐙</span>
+					<span>Login dengan GitHub</span>
+				</a>
+			</div>
 
-		<p class="reset-link">
-			<a href="/reset-password">Lupa Password?</a>
-		</p>
+			<p class="reset-link">
+				<a href="/reset-password">Lupa Password?</a>
+			</p>
 
-		<p class="oauth-note">
-			Login via OAuth akan mengirim kamu ke Google/GitHub untuk verifikasi.
-			Data kamu aman dan tidak dibagikan.
-		</p>
+			<p class="oauth-note">
+				Login via OAuth akan mengirim kamu ke Google/GitHub untuk verifikasi.
+				Data kamu aman dan tidak dibagikan.
+			</p>
+		{/if}
 	</div>
 </div>
 
@@ -144,6 +251,7 @@
 		font-feature-settings: 'cv01', 'ss03';
 		outline: none;
 		transition: all 0.15s ease;
+		box-sizing: border-box;
 	}
 
 	.login-input:focus {
@@ -153,6 +261,13 @@
 
 	.login-input::placeholder {
 		color: #62666d;
+	}
+
+	.login-code-input {
+		font-size: 24px;
+		text-align: center;
+		letter-spacing: 8px;
+		font-family: monospace;
 	}
 
 	.login-error {
@@ -183,6 +298,11 @@
 
 	.login-submit:active {
 		transform: scale(0.98);
+	}
+
+	.login-submit:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.oauth-divider {

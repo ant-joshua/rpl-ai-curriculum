@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { api } from '$lib/utils/api';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { Button, Card, Avatar, StatCard } from '$lib/components/ui';
+	import QRCode from 'qrcode';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -20,6 +22,30 @@
 	let editAvatarValue = $state(avatarUrl);
 	let saving = $state(false);
 	let avatarError = $state(false);
+
+	// 2FA state
+	let totpVerified = $state((data as any).totpVerified || false);
+	let hasPassword = $state((data as any).hasPassword || false);
+	let settingUp2FA = $state(false);
+	let totpSecret = $state('');
+	let totpAuthUrl = $state('');
+	let verifyCode = $state('');
+	let verifying2FA = $state(false);
+	let disabling2FA = $state(false);
+	let disablePassword = $state('');
+	let qrCanvas = $state<HTMLCanvasElement | null>(null);
+	let setupError = $state('');
+	let setupStep = $state<'idle' | 'show_qr' | 'verified'>('idle');
+
+	$effect(() => {
+		if (qrCanvas && totpAuthUrl && setupStep === 'show_qr') {
+			QRCode.toCanvas(qrCanvas, totpAuthUrl, { width: 200, margin: 2 }, (err: Error | null) => {
+				if (err) {
+					console.error('QR Code render error:', err);
+				}
+			});
+		}
+	});
 
 	function formatDate(iso: string): string {
 		try {
@@ -131,6 +157,101 @@
 		};
 		return map[r] || r;
 	}
+
+	// 2FA functions
+	async function startSetup() {
+		setupError = '';
+		settingUp2FA = true;
+		try {
+			const res = await api('/api/auth/2fa/setup');
+			if (res.success) {
+				totpSecret = res.secret;
+				totpAuthUrl = res.otpauth_url;
+				setupStep = 'show_qr';
+			} else {
+				setupError = res.error || 'Gagal memulai setup 2FA';
+				addToast(setupError, 'error');
+			}
+		} catch {
+			setupError = 'Network error';
+			addToast('Network error', 'error');
+		} finally {
+			settingUp2FA = false;
+		}
+	}
+
+	async function verifySetup() {
+		const trimmed = verifyCode.trim();
+		if (!trimmed || trimmed.length !== 6) {
+			addToast('Masukkan kode 6 digit', 'warning');
+			return;
+		}
+		verifying2FA = true;
+		setupError = '';
+		try {
+			const res = await api('/api/auth/2fa/verify', {
+				method: 'POST',
+				body: JSON.stringify({ code: trimmed }),
+			});
+			if (res.success) {
+				totpVerified = true;
+				setupStep = 'verified';
+				settingUp2FA = false;
+				addToast('2FA berhasil diaktifkan!', 'success');
+			} else {
+				setupError = res.error || 'Kode verifikasi salah';
+				addToast(setupError, 'error');
+			}
+		} catch {
+			setupError = 'Network error';
+			addToast('Network error', 'error');
+		} finally {
+			verifying2FA = false;
+		}
+	}
+
+	async function disable2FA() {
+		const trimmed = disablePassword.trim();
+		if (!trimmed) {
+			addToast('Masukkan password untuk menonaktifkan 2FA', 'warning');
+			return;
+		}
+		disabling2FA = true;
+		setupError = '';
+		try {
+			const res = await api('/api/auth/2fa/disable', {
+				method: 'POST',
+				body: JSON.stringify({ password: trimmed }),
+			});
+			if (res.success) {
+				totpVerified = false;
+				setupStep = 'idle';
+				settingUp2FA = false;
+				totpSecret = '';
+				totpAuthUrl = '';
+				verifyCode = '';
+				disablePassword = '';
+				addToast('2FA berhasil dinonaktifkan', 'success');
+			} else {
+				setupError = res.error || 'Gagal menonaktifkan 2FA';
+				addToast(setupError, 'error');
+			}
+		} catch {
+			setupError = 'Network error';
+			addToast('Network error', 'error');
+		} finally {
+			disabling2FA = false;
+		}
+	}
+
+	function cancelSetup() {
+		settingUp2FA = false;
+		setupStep = 'idle';
+		totpSecret = '';
+		totpAuthUrl = '';
+		verifyCode = '';
+		setupError = '';
+	}
 </script>
 
 <svelte:head>
@@ -233,6 +354,90 @@
  		<StatCard icon="📅" value={createdAt ? formatDate(createdAt) : '—'} label="Bergabung" />
  		<StatCard icon="🔑" value={lastLogin ? timeAgo(lastLogin) : '—'} label="Terakhir Login" />
  		<StatCard icon="📚" value="{enrolledCoursesCount} course" label="Course Aktif" />
+	</div>
+
+	<!-- 2FA Section -->
+	<div class="fa-section">
+		<Card padding="lg">
+			<h2 class="fa-section-title">🔐 Keamanan Dua Faktor (2FA)</h2>
+			<p class="fa-section-desc">
+				Tingkatkan keamanan akun kamu dengan verifikasi dua faktor menggunakan aplikasi authenticator seperti Google Authenticator atau Authy.
+			</p>
+
+			{#if !totpVerified}
+				<!-- Setup 2FA -->
+				{#if !settingUp2FA && setupStep === 'idle'}
+					<Button onclick={startSetup} disabled={!hasPassword}>
+						Aktifkan 2FA
+					</Button>
+					{#if !hasPassword}
+						<p class="fa-note">Kamu perlu memiliki password untuk mengaktifkan 2FA.</p>
+					{/if}
+				{/if}
+
+				{#if setupStep === 'show_qr'}
+					<div class="fa-setup">
+						<p class="fa-setup-step">1. Scan QR code berikut dengan aplikasi authenticator kamu:</p>
+						<canvas bind:this={qrCanvas} class="fa-qr-canvas"></canvas>
+						<p class="fa-setup-step">2. Atau masukkan kode rahasia ini secara manual:</p>
+						<div class="fa-secret-box">
+							<code class="fa-secret">{totpSecret}</code>
+							<button
+								class="fa-copy-btn"
+								onclick={() => { navigator.clipboard.writeText(totpSecret); addToast('Kode rahasia disalin', 'info'); }}
+							>📋 Salin</button>
+						</div>
+						<p class="fa-setup-step">3. Masukkan kode 6 digit dari aplikasi authenticator untuk verifikasi:</p>
+						<div class="fa-verify-row">
+							<input
+								type="text"
+								bind:value={verifyCode}
+								placeholder="000000"
+								maxlength={6}
+								class="fa-code-input"
+								onkeydown={(e) => { if (e.key === 'Enter') verifySetup(); }}
+							/>
+							<Button onclick={verifySetup} disabled={verifying2FA}>
+								{verifying2FA ? 'Memverifikasi...' : 'Verifikasi'}
+							</Button>
+							<Button variant="ghost" onclick={cancelSetup}>Batal</Button>
+						</div>
+						{#if setupError}
+							<p class="fa-error">{setupError}</p>
+						{/if}
+					</div>
+				{/if}
+
+				{#if setupStep === 'verified'}
+					<div class="fa-success">
+						<p class="fa-success-text">✅ 2FA berhasil diaktifkan!</p>
+					</div>
+				{/if}
+			{:else}
+				<!-- 2FA Already Active: Disable -->
+				<div class="fa-active">
+					<p class="fa-active-badge">✅ 2FA aktif</p>
+					<div class="fa-disable-section">
+						<p class="fa-disable-label">Nonaktifkan 2FA</p>
+						<div class="fa-disable-row">
+							<input
+								type="password"
+								bind:value={disablePassword}
+								placeholder="Masukkan password"
+								class="fa-password-input"
+								onkeydown={(e) => { if (e.key === 'Enter') disable2FA(); }}
+							/>
+							<Button onclick={disable2FA} disabled={disabling2FA} variant="danger">
+								{disabling2FA ? 'Menonaktifkan...' : 'Nonaktifkan'}
+							</Button>
+						</div>
+						{#if setupError}
+							<p class="fa-error">{setupError}</p>
+						{/if}
+					</div>
+				</div>
+			{/if}
+		</Card>
 	</div>
 </div>
 
@@ -505,5 +710,179 @@
 		.stats-banner {
 			grid-template-columns: 1fr;
 		}
+	}
+
+	/* 2FA Section */
+	.fa-section {
+		margin-top: 24px;
+	}
+
+	.fa-section-title {
+		font-size: 18px;
+		font-weight: 700;
+		margin: 0 0 8px;
+	}
+
+	.fa-section-desc {
+		font-size: 13px;
+		color: var(--text-secondary);
+		margin: 0 0 20px;
+		line-height: 1.5;
+	}
+
+	.fa-note {
+		font-size: 12px;
+		color: var(--text-secondary);
+		margin-top: 8px;
+	}
+
+	.fa-setup {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.fa-setup-step {
+		font-size: 13px;
+		color: var(--text);
+		margin: 0;
+		font-weight: 500;
+	}
+
+	.fa-qr-canvas {
+		border-radius: 8px;
+		background: #fff;
+		padding: 8px;
+		align-self: center;
+	}
+
+	.fa-secret-box {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 8px 12px;
+	}
+
+	.fa-secret {
+		font-size: 13px;
+		font-family: monospace;
+		letter-spacing: 0.5px;
+		word-break: break-all;
+		color: var(--accent);
+	}
+
+	.fa-copy-btn {
+		background: var(--accent-dim);
+		border: none;
+		padding: 4px 10px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 12px;
+		font-family: inherit;
+		white-space: nowrap;
+		transition: all 0.15s;
+		flex-shrink: 0;
+	}
+
+	.fa-copy-btn:hover {
+		background: var(--accent);
+		color: #fff;
+	}
+
+	.fa-verify-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.fa-code-input {
+		width: 120px;
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: transparent;
+		color: var(--text);
+		font-size: 16px;
+		font-family: monospace;
+		text-align: center;
+		letter-spacing: 4px;
+		outline: none;
+		transition: border-color 0.15s;
+	}
+
+	.fa-code-input:focus {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+	}
+
+	.fa-error {
+		font-size: 13px;
+		color: #ef4444;
+		margin: 4px 0 0;
+	}
+
+	.fa-success {
+		text-align: center;
+		padding: 12px 0;
+	}
+
+	.fa-success-text {
+		font-size: 16px;
+		font-weight: 600;
+		color: #22c55e;
+	}
+
+	.fa-active {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.fa-active-badge {
+		font-size: 15px;
+		font-weight: 600;
+		color: #22c55e;
+		margin: 0;
+	}
+
+	.fa-disable-section {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.fa-disable-label {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text-secondary);
+		margin: 0;
+	}
+
+	.fa-disable-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.fa-password-input {
+		width: 200px;
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: transparent;
+		color: var(--text);
+		font-size: 14px;
+		outline: none;
+		transition: border-color 0.15s;
+	}
+
+	.fa-password-input:focus {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
 	}
 </style>

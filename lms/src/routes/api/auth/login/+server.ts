@@ -2,6 +2,8 @@ import { getDB, jsonResponse } from '$lib/server/d1';
 import { createSession } from '$lib/server/auth';
 import bcrypt from 'bcryptjs';
 
+const TEMP_SESSION_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
@@ -30,7 +32,20 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			}
 		} else if (password !== 'password123') {
 			// Fallback for legacy users without password_hash
-			// In production, this would only be for seeded test accounts
+		}
+
+		// If user has 2FA enabled, issue temp_token instead of full session
+		if (user.totp_verified === 1) {
+			const tempToken = crypto.randomUUID();
+			await db.prepare(
+				'INSERT INTO temp_sessions (id, user_id, created_at) VALUES (?, ?, ?)'
+			).bind(tempToken, user.id, new Date().toISOString()).run();
+
+			return jsonResponse({
+				success: true,
+				need2fa: true,
+				temp_token: tempToken,
+			});
 		}
 
 		// Create session token
