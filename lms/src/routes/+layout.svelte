@@ -19,6 +19,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
+	import AchievementToast from '$lib/components/toast/AchievementToast.svelte';
 
 	const navSections = $derived.by(() => [
 		{
@@ -386,6 +387,8 @@
 </div>
 
 <NotificationToast />
+
+<AchievementToast />
 
 <ConfirmDialog />
 
