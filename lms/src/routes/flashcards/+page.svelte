@@ -1,301 +1,746 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n.svelte';
-  import { flashcards } from '$lib/stores/flashcards.svelte';
-  import type { FlashcardDeckMeta } from '$lib/stores/flashcards.svelte';
-  import { modules } from '$lib/stores/modules';
-  import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
-  import { StatCard } from '$lib/components/ui';
+	import { browser } from '$app/environment';
+	import { flashcards, type Flashcard } from '$lib/stores/flashcards.svelte';
+	import { modules } from '$lib/stores/modules';
+	import { EmptyState, Skeleton } from '$lib/components/ui';
+	import { fade } from 'svelte/transition';
 
-  let selectedModule = $state('');
-  let selectedDifficulty = $state<string>('all');
-  let deckFilter = $state<string>('all');
-  let isGenerating = $state(false);
-  let generationResult = $state<{ slug: string; count: number } | null>(null);
-  let refreshKey = $state(0);
+	let cards = $state<Flashcard[]>([]);
+	let decks = $state<{ slug: string; title: string; count: number }[]>([]);
+	let loading = $state(true);
+	let currentIndex = $state(0);
+	let flipped = $state(false);
+	let selectedDeck = $state<string>('all');
+	let sideBarOpen = $state(true);
 
-  let counts = $derived.by(() => {
-    void refreshKey;
-    void flashcards.version;
-    return flashcards.getCardCounts();
-  });
+	$effect(() => {
+		if (browser) {
+			loadData();
+			loading = false;
+		}
+	});
 
-  let decks = $derived.by(() => {
-    void refreshKey;
-    void flashcards.version;
-    return flashcards.getDecks();
-  });
+	function loadData() {
+		const deckList = (flashcards as any).getDecks();
+		decks = deckList.map((d: any) => ({
+			slug: d.slug,
+			title: d.title,
+			count: d.cardCount,
+		}));
+		const store = (flashcards as any);
+		if (selectedDeck === 'all') {
+			cards = store.getCardsDueToday();
+		} else if (selectedDeck === 'new') {
+			cards = store.getCards().filter((c: Flashcard) => c.repetitions === 0);
+		} else if (selectedDeck) {
+			cards = store.getCardsDueByDeck(selectedDeck);
+		} else {
+			cards = store.getCardsDueToday();
+		}
+		if (cards.length > 0 && currentIndex >= cards.length) {
+			currentIndex = 0;
+		}
+	}
 
-  let reviewStats = $derived.by(() => {
-    void refreshKey;
-    return flashcards.getReviewStats();
-  });
+	function selectDeck(slug: string) {
+		selectedDeck = slug;
+		flipped = false;
+		currentIndex = 0;
+		loadData();
+	}
 
-  function refresh() { refreshKey++; }
+	let currentCard = $derived(cards[currentIndex] || null);
 
-  onMount(() => { refresh(); });
+	let cardCounts = $derived.by(() => {
+		if (!browser) return { total: 0, dueToday: 0, known: 0, learning: 0, newCards: 0, decks: 0 };
+		return (flashcards as any).getCardCounts();
+	});
 
-  async function generateFlashcards() {
-    if (!selectedModule || isGenerating) return;
-    isGenerating = true;
-    generationResult = null;
-    const count = await flashcards.generateFromModule(selectedModule);
-    if (count > 0) {
-      generationResult = { slug: selectedModule, count };
-    }
-    isGenerating = false;
-    refresh();
-  }
+	let total = $derived(cards.length);
 
-  function startReview() {
-    goto('/flashcards/review');
-  }
+	function handleFlip() {
+		flipped = !flipped;
+	}
 
-  function reviewDeck(slug: string) {
-    goto(`/flashcards/review?deck=${slug}`);
-  }
+	function handleRating(rating: 1 | 2 | 3 | 4) {
+		if (!currentCard) return;
+		flipped = false;
+		(flashcards as any).reviewCard(currentCard.id, rating);
+		if (currentIndex < cards.length - 1) {
+			currentIndex++;
+		} else {
+			// Reached end, reload to get fresh due cards
+			loadData();
+			currentIndex = 0;
+		}
+	}
 
-  function deleteDeckCards(slug: string) {
-    if (!confirm(`Hapus semua kartu dari deck ${slug}?`)) {
-      return;
-    }
-    const cards = flashcards.getCardsByDeck(slug);
-    for (const c of cards) flashcards.deleteCard(c.id);
-    refresh();
-  }
+	function handleNext() {
+		if (currentIndex < cards.length - 1) {
+			currentIndex++;
+			flipped = false;
+		}
+	}
+
+	function handlePrev() {
+		if (currentIndex > 0) {
+			currentIndex--;
+			flipped = false;
+		}
+	}
+
+	function handleShuffle() {
+		cards = [...cards].sort(() => Math.random() - 0.5);
+		currentIndex = 0;
+		flipped = false;
+	}
+
+	function formatDifficulty(d: string): string {
+		const map: Record<string, string> = {
+			easy: 'Mudah',
+			medium: 'Sedang',
+			hard: 'Sulit',
+		};
+		return map[d] || d;
+	}
+
+	let progressPercent = $derived(total > 0 ? Math.round((currentIndex / total) * 100) : 0);
 </script>
 
-<div class="page">
-  <h1>{t('flashcards.page_title')}</h1>
-  <p class="subtitle">{t('flashcards.subtitle')}</p>
+<svelte:head>
+	<title>Flashcards — RPL AI Curriculum</title>
+</svelte:head>
 
-  <!-- Stats Dashboard -->
-  <div class="stats-grid">
-    <StatCard icon="📅" value={counts.dueToday} label="{t('flashcards.due_today')}" color="var(--accent)" />
-    <StatCard icon="🎴" value={counts.total} label="{t('flashcards.total_cards')}" />
-    <StatCard icon="✅" value={counts.known} label="{t('flashcards.known')}" color="#22c55e" />
-    <StatCard icon="📖" value={counts.learning} label="{t('flashcards.learning')}" color="#f59e0b" />
-    <StatCard icon="🆕" value={counts.newCards} label="{t('flashcards.new_cards')}" color="#3b82f6" />
-    <StatCard icon="📂" value={counts.decks} label="Deck" color="#64748b" />
-  </div>
+<div class="flashcards-page">
+	<header class="page-header">
+		<h1>🃏 Flashcards</h1>
+		<p class="page-desc">Kartu belajar dengan spaced repetition. Balik kartu dan nilai pemahamanmu.</p>
+	</header>
 
-  <!-- Review Stats -->
-  {#if reviewStats.totalReviewed > 0}
-    <div class="review-stats">
-      <span class="rs-item">✅ {reviewStats.totalCorrect} {t('flashcards.correct')}</span>
-      <span class="rs-item">📊 {t('flashcards.accuracy', { pct: counts.total > 0 ? Math.round((reviewStats.totalCorrect / Math.max(reviewStats.totalReviewed, 1)) * 100) : 0 })}</span>
-      <span class="rs-item">{t('flashcards.streak', { streak: reviewStats.streak, best: reviewStats.bestStreak })}</span>
-      <span class="rs-item">{t('flashcards.total_reviewed', { count: reviewStats.totalReviewed })}</span>
-    </div>
-  {/if}
+	{#if loading}
+		<div class="skeleton-wrapper">
+			<div style="display:flex;gap:16px">
+				<div style="width:220px">
+					<Skeleton variant="card" />
+				</div>
+				<div style="flex:1">
+					<Skeleton variant="card" />
+				</div>
+			</div>
+		</div>
+	{:else if cards.length === 0}
+		<EmptyState
+			icon="🃏"
+			title="Belum ada kartu"
+			description="Generate flashcards dari modul atau import dari quiz untuk mulai belajar."
+		/>
+	{:else}
+		<div class="layout">
+			<!-- Sidebar -->
+			<aside class="sidebar" class:hidden={!sideBarOpen}>
+				<div class="sidebar-header">
+					<h3>Deck</h3>
+					<button class="close-sidebar" onclick={() => sideBarOpen = false}>&times;</button>
+				</div>
 
-  <!-- Deck Categories -->
-  {#if decks.length > 0}
-    <div class="decks-section">
-      <h2>{t('flashcards.decks_by_module')}</h2>
-      <div class="decks-grid">
-        {#each decks as deck}
-          <div class="deck-card">
-            <div class="deck-header">
-              <span class="deck-title">{deck.title}</span>
-              <span class="deck-count">{t('flashcards.cards_count', { count: deck.cardCount })}</span>
-            </div>
-            <div class="deck-category">
-              {#if deck.category === 'quiz'}
-                <span class="cat-badge quiz">{t('flashcards.cat_quiz')}</span>
-              {:else if deck.category === 'summary'}
-                <span class="cat-badge summary">{t('flashcards.cat_summary')}</span>
-              {:else}
-                <span class="cat-badge custom">{t('flashcards.cat_custom')}</span>
-              {/if}
-            </div>
-            <div class="deck-actions">
-              <button class="btn small accent" onclick={() => reviewDeck(deck.slug)}>
-                Review
-              </button>
-              <button class="btn small danger" onclick={() => deleteDeckCards(deck.slug)}>
-                Hapus
-              </button>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-  {/if}
+				<div class="deck-list">
+					<button
+						class="deck-item"
+						class:active={selectedDeck === 'all'}
+						onclick={() => selectDeck('all')}
+					>
+						<span class="deck-icon">📚</span>
+						<span>Semua Kartu</span>
+						<span class="deck-count">{cardCounts.total}</span>
+					</button>
+					<button
+						class="deck-item"
+						class:active={selectedDeck === 'new'}
+						onclick={() => selectDeck('new')}
+					>
+						<span class="deck-icon">🆕</span>
+						<span>Kartu Baru</span>
+						<span class="deck-count">{cardCounts.newCards}</span>
+					</button>
+					{#each decks as deck}
+						<button
+							class="deck-item"
+							class:active={selectedDeck === deck.slug}
+							onclick={() => selectDeck(deck.slug)}
+						>
+							<span class="deck-icon">📦</span>
+							<span class="deck-title">{deck.title}</span>
+							<span class="deck-count">{deck.count}</span>
+						</button>
+					{/each}
+				</div>
 
-  <!-- Actions -->
-  <div class="actions-card">
-    <h2>{t('flashcards.manage_title')}</h2>
+				<div class="sidebar-stats">
+					<div class="stat-row">
+						<span>Total</span>
+						<span>{cardCounts.total}</span>
+					</div>
+					<div class="stat-row">
+						<span>Hari ini</span>
+						<span>{cardCounts.dueToday}</span>
+					</div>
+					<div class="stat-row">
+						<span>Diketahui</span>
+						<span>{cardCounts.known}</span>
+					</div>
+					<div class="stat-row">
+						<span>Diproses</span>
+						<span>{cardCounts.learning}</span>
+					</div>
+				</div>
+			</aside>
 
-    <div class="generate-section">
-      <label for="module-select">{t('flashcards.select_module')}</label>
-      <select id="module-select" bind:value={selectedModule}>
-        <option value="">{t('flashcards.select_placeholder')}</option>
-        {#each modules as mod}
-          <option value={mod.slug}>{mod.title}</option>
-        {/each}
-      </select>
-      <button
-        class="btn primary"
-        onclick={generateFlashcards}
-        disabled={!selectedModule || isGenerating}
-      >
-        {isGenerating ? t('flashcards.generating') : t('flashcards.generate_btn')}
-      </button>
-    </div>
+			<!-- Main area -->
+			<main class="main-area">
+				<!-- Progress bar -->
+				<div class="progress-row">
+					<button class="toggle-sidebar" onclick={() => sideBarOpen = !sideBarOpen}>
+						{sideBarOpen ? '◀' : '▶'}
+					</button>
+					<div class="progress-info">
+						<span>{currentIndex + 1}/{total} kartu</span>
+						<span class="progress-pct">{progressPercent}%</span>
+					</div>
+					<div class="progress-bar-track">
+						<div class="progress-bar-fill" style="width: {progressPercent}%"></div>
+					</div>
+					<div class="progress-actions">
+						<button class="action-btn" onclick={handleShuffle} title="Acak">
+							🔀
+						</button>
+					</div>
+				</div>
 
-    {#if generationResult}
-      <div class="result-banner">
-        {t('flashcards.generated', { count: generationResult.count })}
-      </div>
-    {/if}
+				<!-- Card -->
+				{#if currentCard}
+					<div class="card-area" in:fade={{ duration: 200 }}>
+						<button
+							class="flashcard flip-card"
+							class:flipped
+							onclick={handleFlip}
+							tabindex={0}
+							onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(); } }}
+						>
+							<div class="flip-inner">
+								<div class="flip-front">
+									<div class="card-content">
+										<p class="card-question">{currentCard.front}</p>
+										<span class="flip-hint">Klik untuk balik</span>
+									</div>
+								</div>
+								<div class="flip-back">
+									<div class="card-content">
+										<p class="card-answer">{currentCard.back}</p>
+										<div class="card-tags">
+											{#if currentCard.moduleSlug}
+												<span class="card-tag module-tag">
+													📦 {modules.find(m => m.slug === currentCard.moduleSlug)?.title || currentCard.moduleSlug}
+												</span>
+											{/if}
+											<span class="card-tag difficulty-tag">{formatDifficulty(currentCard.difficulty)}</span>
+											{#if currentCard.repetitions > 0}
+												<span class="card-tag">Ulang ke-{currentCard.repetitions}</span>
+											{/if}
+										</div>
+									</div>
+								</div>
+							</div>
+						</button>
+					</div>
 
-    {#if counts.total > 0}
-      <div class="review-section">
-        <button class="btn big primary" onclick={startReview}>
-          {t('flashcards.start_review', { count: counts.dueToday })}
-        </button>
-      </div>
-    {/if}
-  </div>
+					<!-- Rating buttons (shown when flipped) -->
+					{#if flipped}
+						<div class="rating-row" in:fade={{ duration: 200 }}>
+							<button
+								class="rating-btn btn-again"
+								onclick={() => handleRating(4)}
+							>
+								<span class="rating-emoji">🔄</span>
+								<span class="rating-label">Sulit</span>
+							</button>
+							<button
+								class="rating-btn btn-hard"
+								onclick={() => handleRating(3)}
+							>
+								<span class="rating-emoji">🤔</span>
+								<span class="rating-label">Sedang</span>
+							</button>
+							<button
+								class="rating-btn btn-good"
+								onclick={() => handleRating(2)}
+							>
+								<span class="rating-emoji">✅</span>
+								<span class="rating-label">Mudah</span>
+							</button>
+							<button
+								class="rating-btn btn-easy"
+								onclick={() => handleRating(1)}
+							>
+								<span class="rating-emoji">⚡</span>
+								<span class="rating-label">Sangat Mudah</span>
+							</button>
+						</div>
+					{/if}
+
+					<!-- Navigation -->
+					<div class="nav-row">
+						<button
+							class="nav-btn"
+							disabled={currentIndex === 0}
+							onclick={handlePrev}
+						>◀ Sebelumnya</button>
+						<button
+							class="nav-btn"
+							disabled={currentIndex >= total - 1}
+							onclick={handleNext}
+						>Berikutnya ▶</button>
+					</div>
+				{/if}
+			</main>
+		</div>
+	{/if}
 </div>
 
 <style>
-  .page { max-width: 800px; margin: 0 auto; }
-  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+	.flashcards-page {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-  }
+	.page-header {
+		margin-bottom: 24px;
+	}
 
-  /* Review stats bar */
-  .review-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-  .rs-item { font-weight: 500; }
+	.page-header h1 {
+		font-size: 28px;
+		font-weight: 800;
+		margin-bottom: 4px;
+	}
 
-  /* Decks */
-  .decks-section { margin-bottom: 20px; }
-  .decks-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-  .decks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-  }
-  .deck-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: border-color 0.15s;
-  }
-  .deck-card:hover { border-color: var(--accent); }
-  .deck-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .deck-title { font-size: 14px; font-weight: 600; color: var(--text); }
-  .deck-count { font-size: 11px; color: var(--text-secondary); }
-  .deck-actions {
-    display: flex;
-    gap: 6px;
-  }
+	.page-desc {
+		font-size: 14px;
+		color: var(--text-secondary);
+	}
 
-  .cat-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-  .cat-badge.quiz { background: rgba(59,130,246,0.1); color: #3b82f6; }
-  .cat-badge.summary { background: rgba(139,92,246,0.1); color: #8b5cf6; }
-  .cat-badge.custom { background: rgba(107,114,128,0.1); color: var(--text-secondary); }
+	.skeleton-wrapper {
+		padding: 40px 0;
+	}
 
-  .btn.small { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
-  .btn.danger { border-color: #ef4444; color: #ef4444; }
-  .btn.danger:hover { background: rgba(239,68,68,0.1); }
+	/* Layout */
+	.layout {
+		display: flex;
+		gap: 20px;
+		align-items: flex-start;
+	}
 
-  .actions-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-  }
-  .actions-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+	/* Sidebar */
+	.sidebar {
+		width: 240px;
+		min-width: 240px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 16px;
+		position: sticky;
+		top: 24px;
+		transition: all 0.2s;
+	}
 
-  .generate-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .generate-section label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
-  select {
-    flex: 1;
-    min-width: 200px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 13px;
-    font-family: inherit;
-  }
+	.sidebar.hidden {
+		display: none;
+	}
 
-  .btn {
-    padding: 8px 20px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
-  }
-  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  .btn.primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn.primary:hover:not(:disabled) { opacity: 0.9; }
-  .btn:disabled { opacity: 0.4; cursor: default; }
-  .btn.big { padding: 12px 24px; font-size: 15px; width: 100%; }
+	.sidebar-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
 
-  .result-banner {
-    padding: 10px 16px;
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
+	.sidebar-header h3 {
+		font-size: 14px;
+		font-weight: 600;
+		margin: 0;
+	}
 
-  .review-section { margin-top: 8px; }
+	.close-sidebar {
+		background: none;
+		border: none;
+		font-size: 20px;
+		color: var(--text-secondary);
+		cursor: pointer;
+		padding: 0;
+		line-height: 1;
+	}
 
-  @media (max-width: 600px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .decks-grid { grid-template-columns: 1fr; }
-  }
+	.deck-list {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin-bottom: 16px;
+	}
+
+	.deck-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 10px;
+		border-radius: 8px;
+		border: none;
+		background: transparent;
+		color: var(--text-secondary);
+		font-size: 13px;
+		cursor: pointer;
+		text-align: left;
+		width: 100%;
+		transition: all 0.15s;
+	}
+
+	.deck-item:hover {
+		background: var(--hover);
+		color: var(--text);
+	}
+
+	.deck-item.active {
+		background: var(--accent-dim);
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	.deck-icon {
+		font-size: 16px;
+	}
+
+	.deck-title {
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.deck-count {
+		font-size: 11px;
+		background: var(--bg-secondary);
+		padding: 1px 6px;
+		border-radius: 10px;
+		color: var(--text-secondary);
+	}
+
+	.deck-item.active .deck-count {
+		background: var(--accent);
+		color: #fff;
+	}
+
+	.sidebar-stats {
+		border-top: 1px solid var(--border);
+		padding-top: 12px;
+	}
+
+	.stat-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 12px;
+		padding: 4px 0;
+		color: var(--text-secondary);
+	}
+
+	/* Main area */
+	.main-area {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+	}
+
+	/* Progress */
+	.progress-row {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.toggle-sidebar {
+		background: none;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		font-size: 12px;
+		color: var(--text-secondary);
+	}
+
+	.toggle-sidebar:hover {
+		background: var(--hover);
+	}
+
+	.progress-info {
+		font-size: 13px;
+		color: var(--text-secondary);
+		white-space: nowrap;
+		display: flex;
+		gap: 6px;
+	}
+
+	.progress-pct {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	.progress-bar-track {
+		flex: 1;
+		height: 6px;
+		background: var(--bg-secondary);
+		border-radius: 99px;
+		overflow: hidden;
+	}
+
+	.progress-bar-fill {
+		height: 100%;
+		background: var(--accent);
+		border-radius: 99px;
+		transition: width 0.3s ease;
+	}
+
+	.progress-actions {
+		display: flex;
+		gap: 4px;
+	}
+
+	.action-btn {
+		background: none;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		font-size: 14px;
+		transition: all 0.15s;
+	}
+
+	.action-btn:hover {
+		background: var(--hover);
+		border-color: var(--accent);
+	}
+
+	/* Flashcard */
+	.card-area {
+		width: 100%;
+		max-width: 520px;
+		perspective: 1000px;
+	}
+
+	.flashcard {
+		width: 100%;
+		min-height: 280px;
+		cursor: pointer;
+		background: transparent;
+		border: none;
+		padding: 0;
+	}
+
+	.flip-inner {
+		position: relative;
+		width: 100%;
+		min-height: 280px;
+		transition: transform 0.5s ease;
+		transform-style: preserve-3d;
+	}
+
+	.flashcard.flipped .flip-inner {
+		transform: rotateY(180deg);
+	}
+
+	.flip-front, .flip-back {
+		position: absolute;
+		inset: 0;
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+		border-radius: 16px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 280px;
+	}
+
+	.flip-back {
+		transform: rotateY(180deg);
+	}
+
+	.card-content {
+		padding: 32px 28px;
+		text-align: center;
+		width: 100%;
+	}
+
+	.card-question {
+		font-size: 18px;
+		font-weight: 600;
+		line-height: 1.5;
+		margin: 0;
+		color: var(--text);
+	}
+
+	.card-answer {
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 1.6;
+		margin: 0;
+		color: var(--accent);
+	}
+
+	.flip-hint {
+		display: block;
+		margin-top: 24px;
+		font-size: 12px;
+		color: var(--text-secondary);
+		opacity: 0.6;
+	}
+
+	.card-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		justify-content: center;
+		margin-top: 20px;
+	}
+
+	.card-tag {
+		font-size: 11px;
+		padding: 3px 10px;
+		border-radius: 20px;
+		background: var(--bg-secondary);
+		color: var(--text-secondary);
+	}
+
+	.module-tag {
+		background: var(--accent-dim);
+		color: var(--accent);
+	}
+
+	.difficulty-tag {
+		background: rgba(245, 158, 11, 0.15);
+		color: #d97706;
+	}
+
+	/* Rating buttons */
+	.rating-row {
+		display: flex;
+		gap: 10px;
+		width: 100%;
+		max-width: 520px;
+	}
+
+	.rating-btn {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 12px 8px;
+		border-radius: 12px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.rating-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	}
+
+	.rating-emoji {
+		font-size: 24px;
+	}
+
+	.rating-label {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-secondary);
+	}
+
+	.btn-again:hover {
+		border-color: #ef4444;
+		background: rgba(239, 68, 68, 0.08);
+	}
+
+	.btn-hard:hover {
+		border-color: #f59e0b;
+		background: rgba(245, 158, 11, 0.08);
+	}
+
+	.btn-good:hover {
+		border-color: #3b82f6;
+		background: rgba(59, 130, 246, 0.08);
+	}
+
+	.btn-easy:hover {
+		border-color: #10b981;
+		background: rgba(16, 185, 129, 0.08);
+	}
+
+	/* Navigation */
+	.nav-row {
+		display: flex;
+		gap: 12px;
+		width: 100%;
+		max-width: 520px;
+		justify-content: space-between;
+	}
+
+	.nav-btn {
+		padding: 8px 16px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--surface);
+		color: var(--text-secondary);
+		font-size: 13px;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.nav-btn:hover:not(:disabled) {
+		background: var(--hover);
+		border-color: var(--accent);
+		color: var(--text);
+	}
+
+	.nav-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.layout {
+			flex-direction: column;
+		}
+		.sidebar {
+			width: 100%;
+			min-width: 100%;
+			position: static;
+		}
+		.sidebar.hidden {
+			display: none;
+		}
+		.card-question, .card-answer {
+			font-size: 16px;
+		}
+		.rating-row {
+			flex-wrap: wrap;
+		}
+		.rating-btn {
+			min-width: calc(50% - 6px);
+		}
+	}
 </style>

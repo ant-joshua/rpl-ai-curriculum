@@ -178,6 +178,34 @@
 		return () => window.removeEventListener('resize', onResize);
 	});
 
+	// Small screen detection for viewport banner
+	let isSmallScreen = $state(false);
+	let isPortrait = $state(false);
+
+	$effect(() => {
+		if (!browser) return;
+		function checkScreen() {
+			isSmallScreen = window.innerWidth < 400;
+			isPortrait = window.innerHeight > window.innerWidth;
+		}
+		checkScreen();
+		window.addEventListener('resize', checkScreen);
+		return () => window.removeEventListener('resize', checkScreen);
+	});
+
+	// Prevent body scroll when sidebar is open on mobile
+	$effect(() => {
+		if (!browser) return;
+		if (sidebarOpen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
+
 	// Keyboard shortcuts
 	$effect(() => {
 		if (!browser) return;
@@ -216,6 +244,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="manifest" href="/manifest.json" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 	<meta name="theme-color" content="#FFFFFF" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -401,6 +430,17 @@
 </div>
 {:else}
 	{@render children()}
+{/if}
+
+<!-- Small screen landscape suggestion -->
+{#if browser && isSmallScreen && isPortrait && !isMinimalRoute}
+	<div class="viewport-banner" transition:fly={{ y: -20, duration: 300 }}>
+		<Icon name="rotate-ccw" size={14} />
+		<span>Putar ponsel ke mode landscape untuk pengalaman lebih baik</span>
+		<button class="viewport-banner-dismiss" onclick={() => { isSmallScreen = false; }}>
+			<Icon name="x" size={12} />
+		</button>
+	</div>
 {/if}
 
 {#if offline && !dismissedOffline}
@@ -1151,7 +1191,43 @@
 		pointer-events: auto;
 	}
 
-	/* ===== Mobile Responsive ===== */
+	/* ===== Viewport Banner ===== */
+.viewport-banner {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10001;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background: #1a1a2e;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 510;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.viewport-banner-dismiss {
+	background: rgba(255,255,255,0.15);
+	border: none;
+	color: #fff;
+	cursor: pointer;
+	padding: 4px 6px;
+	border-radius: 4px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.viewport-banner-dismiss:hover {
+	background: rgba(255,255,255,0.25);
+}
+
+/* ===== Mobile Responsive ===== */
 	@media (max-width: 768px) {
 		.hamburger {
 			display: flex;
@@ -1166,7 +1242,8 @@
 			left: 0;
 			top: 0;
 			height: 100vh;
-			width: 260px;
+			width: 100vw;
+			max-width: 100vw;
 			transform: translateX(-100%);
 			transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 			z-index: 200;
@@ -1192,6 +1269,27 @@
 			padding-top: 60px;
 			width: 100%;
 			max-width: 100%;
+		}
+
+		.quick-actions {
+			bottom: 16px;
+			right: 16px;
+		}
+
+		.floating-action-btn {
+			width: 40px;
+			height: 40px;
+		}
+
+		.toast-container {
+			bottom: 16px;
+			right: 16px;
+			left: 16px;
+		}
+
+		.offline-badge {
+			bottom: 12px;
+			left: 12px;
 		}
 	}
 

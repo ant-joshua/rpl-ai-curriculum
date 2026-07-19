@@ -284,4 +284,33 @@
 	}
 
 	.dt-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+	@media (max-width: 768px) {
+		.dt-search {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.dt-pagination {
+			flex-direction: column;
+			gap: 8px;
+			align-items: flex-start;
+		}
+		.dt-page-controls {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+		}
+		.dt-page-btn {
+			flex: 1;
+			text-align: center;
+		}
+		th, td {
+			padding: 8px 10px;
+			font-size: 13px;
+			white-space: nowrap;
+		}
+		.dt-empty {
+			padding: 24px 16px;
+		}
+	}
 </style>

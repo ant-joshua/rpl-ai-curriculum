@@ -3,17 +3,22 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import { Card, EmptyState, SearchInput } from '$lib/components/ui';
+	import { Card, EmptyState, SearchInput, Skeleton } from '$lib/components/ui';
+
+	type FilterType = 'all' | 'lesson' | 'course' | 'offering' | 'exercise' | 'video' | 'flashcard' | 'project';
 
 	interface SearchResultItem {
-		type: 'lesson' | 'course' | 'offering';
+		type: 'lesson' | 'course' | 'offering' | 'exercise' | 'video' | 'flashcard' | 'project';
 		title: string;
 		url: string;
 		snippet: string;
 		icon: string;
+		moduleSlug?: string;
+		difficulty?: string;
 	}
 
-	// svelte-ignore state_referenced_locally
+	const RECENT_KEY = 'lms-recent-searches';
+
 	let { data: pageData } = $props() as { data: { query: string; results: SearchResultItem[]; total: number } };
 	const { query: initialQuery, results: initialResults, total: initialTotal } = pageData;
 
@@ -24,6 +29,58 @@
 	let hasSearched = $state(initialQuery.length >= 2);
 	let inputEl: HTMLInputElement | undefined = $state();
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+	// Recent searches (stored in localStorage)
+	let recentSearches = $state<string[]>([]);
+
+	// Filter toggles
+	let activeFilter = $state<FilterType>('all');
+
+	$effect(() => {
+		if (browser) {
+			recentSearches = loadRecentSearches();
+		}
+	});
+
+	function loadRecentSearches(): string[] {
+		try {
+			const raw = localStorage.getItem(RECENT_KEY);
+			return raw ? JSON.parse(raw).slice(0, 8) : [];
+		} catch { return []; }
+	}
+
+	function saveRecentSearch(q: string) {
+		try {
+			const list = loadRecentSearches();
+			const filtered = list.filter(s => s !== q);
+			filtered.unshift(q);
+			localStorage.setItem(RECENT_KEY, JSON.stringify(filtered.slice(0, 8)));
+			recentSearches = filtered.slice(0, 8);
+		} catch { /* ignore */ }
+	}
+
+	function removeRecentSearch(q: string) {
+		try {
+			const list = loadRecentSearches();
+			const filtered = list.filter(s => s !== q);
+			localStorage.setItem(RECENT_KEY, JSON.stringify(filtered));
+			recentSearches = filtered;
+		} catch { /* ignore */ }
+	}
+
+	function clearRecentSearches() {
+		localStorage.removeItem(RECENT_KEY);
+		recentSearches = [];
+	}
+
+	// Filtered results (client-side)
+	let filteredResults = $derived(
+		activeFilter === 'all'
+			? results
+			: results.filter(r => r.type === activeFilter)
+	);
+
+	let filteredTotal = $derived(filteredResults.length);
 
 	async function doSearch(q: string) {
 		if (!q.trim() || q.length < 2) {
@@ -40,6 +97,7 @@
 			results = data.results || [];
 			total = data.total || 0;
 			hasSearched = true;
+			if (results.length > 0) saveRecentSearch(q);
 		} catch {
 			results = [];
 			total = 0;
@@ -81,11 +139,20 @@
 		}
 	}
 
+	function rerunSearch(q: string) {
+		query = q;
+		doSearch(q);
+	}
+
 	function typeIcon(type: string): string {
 		const icons: Record<string, string> = {
 			lesson: '📖',
 			course: '📚',
 			offering: '🗓️',
+			exercise: '💻',
+			video: '🎬',
+			flashcard: '🃏',
+			project: '📦',
 		};
 		return icons[type] || '📌';
 	}
@@ -95,6 +162,10 @@
 			lesson: ''+t('search.lessons')+'',
 			course: ''+t('search.courses')+'',
 			offering: ''+t('search.classes')+'',
+			exercise: 'Latihan',
+			video: 'Video',
+			flashcard: 'Kartu',
+			project: 'Proyek',
 		};
 		return labels[type] || type;
 	}
@@ -104,6 +175,10 @@
 			lesson: 'badge-lesson',
 			course: 'badge-course',
 			offering: 'badge-offering',
+			exercise: 'badge-exercise',
+			video: 'badge-video',
+			flashcard: 'badge-flashcard',
+			project: 'badge-project',
 		};
 		return colors[type] || 'badge-content';
 	}
@@ -148,20 +223,87 @@
 		/>
 	</div>
 
+	<!-- Recent Searches -->
+	{#if !hasSearched && !loading && recentSearches.length > 0}
+		<div class="recent-searches" in:fade={{ duration: 150 }}>
+			<div class="recent-header">
+				<span class="recent-label">Pencarian terakhir</span>
+				<button class="recent-clear" onclick={clearRecentSearches}>Hapus</button>
+			</div>
+			<div class="recent-chips">
+				{#each recentSearches as q}
+					<button class="recent-chip" onclick={() => rerunSearch(q)}>
+						<span>🕐</span> {q}
+						<span class="recent-remove" onclick={(e) => { e.stopPropagation(); removeRecentSearch(q); }}>&times;</span>
+					</button>
+				{/each}
+			</div>
+		</div>
+	{/if}
+
+	<!-- Filter toggles (shown when has results) -->
+	{#if hasSearched && !loading}
+		<div class="filter-toggles" in:fade={{ duration: 150 }}>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'all'}
+				onclick={() => activeFilter = 'all'}
+			>Semua</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'lesson'}
+				onclick={() => activeFilter = 'lesson'}
+			>📖 Pelajaran</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'course'}
+				onclick={() => activeFilter = 'course'}
+			>📚 Kursus</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'exercise'}
+				onclick={() => activeFilter = 'exercise'}
+			>💻 Latihan</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'video'}
+				onclick={() => activeFilter = 'video'}
+			>🎬 Video</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'flashcard'}
+				onclick={() => activeFilter = 'flashcard'}
+			>🃏 Kartu</button>
+			<button
+				class="filter-chip"
+				class:active={activeFilter === 'project'}
+				onclick={() => activeFilter = 'project'}
+			>📦 Proyek</button>
+		</div>
+	{/if}
+
 	<div class="search-results">
 		{#if loading}
-			<div class="search-state" in:fade={{ duration: 150 }}>
-				<div class="spinner"></div>
-				<p>{t('search.loading')}</p>
+			<div class="skeleton-results" in:fade={{ duration: 150 }}>
+				{#each Array(3) as _}
+					<Skeleton variant="card" />
+				{/each}
 			</div>
-		{:else if hasSearched && total > 0}
-			<p class="result-count">Hasil untuk "<strong>{query}</strong>" — {total} hasil</p>
+		{:else if hasSearched && filteredTotal > 0}
+			<p class="result-count">
+				Hasil untuk "<strong>{query}</strong>"
+				{#if activeFilter !== 'all'}
+					— {filteredTotal} hasil ({total} total)
+				{:else}
+					— {total} hasil
+				{/if}
+			</p>
 
 			<div class="results-list">
-				{#each results as result, i (result.url + result.type + i)}
+				{#each filteredResults as result, i (result.url + result.type + i)}
 					<a href={result.url} class="result-card" style="--i: {i}">
 						<div class="result-header">
-							<span class="result-icon">{result.icon}</span>
+							<span class="result-icon">{result.icon || typeIcon(result.type)}</span>
 							<span class="result-title">{result.title}</span>
 							<span class="badge {typeColor(result.type)}">{typeLabel(result.type)}</span>
 						</div>
@@ -206,7 +348,108 @@
 	}
 
 	.search-input-wrapper {
-		margin-bottom: 20px;
+		margin-bottom: 16px;
+	}
+
+	/* Recent Searches */
+	.recent-searches {
+		margin-bottom: 16px;
+	}
+
+	.recent-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 8px;
+	}
+
+	.recent-label {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text-secondary);
+	}
+
+	.recent-clear {
+		font-size: 12px;
+		color: var(--accent);
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 2px 6px;
+		border-radius: 4px;
+	}
+	.recent-clear:hover {
+		background: var(--accent-dim);
+	}
+
+	.recent-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.recent-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 10px;
+		font-size: 12px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 20px;
+		color: var(--text);
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+	.recent-chip:hover {
+		border-color: var(--accent);
+		background: var(--accent-dim);
+	}
+	.recent-remove {
+		margin-left: 2px;
+		font-size: 14px;
+		opacity: 0.5;
+		line-height: 1;
+	}
+	.recent-remove:hover {
+		opacity: 1;
+	}
+
+	/* Filter toggles */
+	.filter-toggles {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-bottom: 12px;
+	}
+
+	.filter-chip {
+		padding: 5px 12px;
+		font-size: 12px;
+		font-weight: 500;
+		border: 1px solid var(--border);
+		border-radius: 20px;
+		background: var(--surface);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+	.filter-chip:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+	.filter-chip.active {
+		background: var(--accent);
+		color: #fff;
+		border-color: var(--accent);
+	}
+
+	/* Skeleton */
+	.skeleton-results {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 20px 0;
 	}
 
 	.search-results {
@@ -275,31 +518,6 @@
 		line-clamp: 2;
 	}
 
-	.search-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		text-align: center;
-		color: var(--text-secondary);
-		gap: 8px;
-	}
-
-	.spinner {
-		width: 32px;
-		height: 32px;
-		border: 3px solid var(--border);
-		border-top-color: var(--accent);
-		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
-		margin-bottom: 12px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
 	.badge {
 		font-size: 11px;
 		font-weight: 600;
@@ -331,6 +549,26 @@
 	:global(.dark) .badge-offering {
 		background: rgba(230, 81, 0, 0.2);
 		color: #ffb74d;
+	}
+
+	.badge-exercise {
+		background: rgba(139, 92, 246, 0.15);
+		color: #8b5cf6;
+	}
+
+	.badge-video {
+		background: rgba(59, 130, 246, 0.15);
+		color: #3b82f6;
+	}
+
+	.badge-flashcard {
+		background: rgba(236, 72, 153, 0.15);
+		color: #ec4899;
+	}
+
+	.badge-project {
+		background: rgba(34, 197, 94, 0.15);
+		color: #16a34a;
 	}
 
 	@keyframes stagger-in {

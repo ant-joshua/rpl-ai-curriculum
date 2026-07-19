@@ -25,4 +25,15 @@
 		border-radius: 8px;
 		overflow: hidden;
 	}
+
+	@media (max-width: 768px) {
+		.table-root {
+			font-size: 0.8125rem;
+		}
+		:global(.table-root) th,
+		:global(.table-root) td {
+			padding: 6px 8px;
+			white-space: nowrap;
+		}
+	}
 </style>

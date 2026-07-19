@@ -2,6 +2,8 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { onMount } from 'svelte';
+	import { Card, EmptyState, SkeletonCard } from '$lib/components/ui';
+	import { fade } from 'svelte/transition';
 
 	let videosJson = $state<Record<string, {
 		title: string;
@@ -89,6 +91,11 @@
 		selectedVideo = null;
 	}
 
+	// Keyboard close
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') closePlayer();
+	}
+
 	let totalModules = $derived(Object.keys(videosJson).length);
 	let totalVideos = $derived(
 		Object.values(videosJson).reduce((s, m) => s + m.videos.length, 0)
@@ -99,9 +106,10 @@
 	<title>{t('videos.page_title')} — RPL AI</title>
 </svelte:head>
 
-<div class="video-page">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="videos-page" onkeydown={handleKeydown} role="document">
 	<header class="page-header">
-		<h1>{t('videos.page_title')}</h1>
+		<h1>🎬 {t('videos.page_title')}</h1>
 		<p class="subtitle">
 			{t('videos.subtitle', { modules: totalModules, videos: totalVideos })}
 		</p>
@@ -124,25 +132,32 @@
 
 		<input
 			type="search"
-			placeholder="{t('videos.search')}"
+			placeholder="🔍 Cari video..."
 			bind:value={searchQuery}
 			class="search-input"
 		/>
 	</div>
 
 	{#if loading}
-		<div class="loading">
-			<p>{t('videos.loading')}</p>
+		<div class="grid-skeleton" in:fade={{ duration: 150 }}>
+			{#each Array(6) as _}
+				<SkeletonCard />
+			{/each}
 		</div>
 	{:else if errorMsg}
-		<div class="empty">
-			<p>{errorMsg}</p>
-		</div>
+		<EmptyState
+			icon="❌"
+			title="Gagal memuat video"
+			description={errorMsg}
+		/>
 	{:else if flatVideos.length === 0}
-		<div class="empty">
-			<p>{t('videos.empty')}</p>
-		</div>
+		<EmptyState
+			icon="🎬"
+			title="Tidak ada video"
+			description={searchQuery || filterModule || filterLevel ? 'Coba ubah filter pencarian' : 'Belum ada video untuk kurikulum ini'}
+		/>
 	{:else}
+		<p class="result-count">Menampilkan {flatVideos.length} video</p>
 		<div class="video-grid">
 			{#each flatVideos as v (v.moduleSlug + v.id)}
 				<button
@@ -168,7 +183,7 @@
 									class:level-intermediate={v.level === 'Intermediate'}
 									class:level-advanced={v.level === 'Advanced'}
 								>
-									{v.level}
+									{v.level === 'Beginner' ? 'Beginner' : v.level === 'Intermediate' ? 'Intermediate' : 'Advanced'}
 								</span>
 							{/if}
 							{#if v.duration}
@@ -186,7 +201,7 @@
 {#if selectedVideo}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={closePlayer} role="button" tabindex="-1">
+	<div class="modal-overlay" onclick={closePlayer} role="button" tabindex="-1" transition:fade={{ duration: 150 }}>
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
 			<button class="modal-close" onclick={closePlayer}>&times;</button>
 			<h2 class="modal-title">{selectedVideo.title}</h2>
@@ -218,7 +233,7 @@
 {/if}
 
 <style>
-	.video-page {
+	.videos-page {
 		max-width: 1100px;
 		margin: 0 auto;
 	}
@@ -228,9 +243,9 @@
 	}
 
 	.page-header h1 {
-		font-size: 24px;
-		font-weight: 700;
-		margin-bottom: 6px;
+		font-size: 28px;
+		font-weight: 800;
+		margin-bottom: 4px;
 	}
 
 	.subtitle {
@@ -268,10 +283,16 @@
 		border-color: var(--accent);
 	}
 
-	.loading {
-		text-align: center;
-		padding: 60px 20px;
+	.grid-skeleton {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 16px;
+	}
+
+	.result-count {
+		font-size: 13px;
 		color: var(--text-secondary);
+		margin-bottom: 12px;
 	}
 
 	.video-grid {
@@ -384,12 +405,6 @@
 
 	.duration {
 		font-size: 11px;
-		color: var(--text-secondary);
-	}
-
-	.empty {
-		text-align: center;
-		padding: 60px 20px;
 		color: var(--text-secondary);
 	}
 

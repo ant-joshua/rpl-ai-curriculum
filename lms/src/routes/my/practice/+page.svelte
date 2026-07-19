@@ -5,6 +5,7 @@
 	import {
 		Button, Badge, Select, Alert, Skeleton, EmptyState, Textarea
 	} from '$lib/components/ui';
+	import { fade } from 'svelte/transition';
 
 	interface Question {
 		id: string;
@@ -177,7 +178,7 @@
 	{:else}
 		<div class="questions-list">
 			{#each questions as q (q.id)}
-				<div class="question-card" class:answered={!!feedback[q.id]}>
+				<div class="question-card" class:answered={!!feedback[q.id]} in:fade={{ duration: 200, delay: 30 }}>
 					<div class="q-header">
 						<div class="q-badges">
 							<Badge variant="info">{typeLabelMap[q.type] || capitalize(q.type)}</Badge>
@@ -274,7 +275,12 @@
 
 <style>
 	.practice-page { max-width: 800px; }
-	h1 { font-size: 24px; font-weight: 590; margin-bottom: 4px; font-feature-settings: 'cv01', 'ss03'; }
+	h1 {
+		font-size: 28px;
+		font-weight: 800;
+		margin-bottom: 4px;
+		color: var(--text);
+	}
 	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
 
 	.page-header { margin-bottom: 24px; }
@@ -287,20 +293,20 @@
 		flex-wrap: wrap;
 	}
 	.search-input {
-		padding: 0.5rem 0.75rem;
-		font-size: 0.875rem;
-		color: #1a1a2e;
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
-		border-radius: 6px;
+		padding: 8px 12px;
+		font-size: 13px;
+		color: var(--text);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 8px;
 		font-family: inherit;
 		min-width: 200px;
 		flex: 1;
 	}
 	.search-input:focus {
 		outline: none;
-		border-color: #4F46E5;
-		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px var(--accent-dim);
 	}
 	.filter-count {
 		font-size: 13px;
@@ -339,8 +345,8 @@
 	}
 	.tag {
 		font-size: 11px;
-		background: rgba(79, 70, 229, 0.12);
-		color: #4F46E5;
+		background: var(--accent-dim);
+		color: var(--accent);
 		padding: 2px 8px;
 		border-radius: 10px;
 	}
@@ -371,9 +377,9 @@
 		font-size: 14px;
 		transition: all 0.15s;
 	}
-	.mc-option:hover { border-color: var(--accent-dim); background: rgba(79,70,229,0.08); }
-	.mc-option.selected { border-color: #4F46E5; background: rgba(79,70,229,0.08); }
-	.mc-option input { accent-color: #4F46E5; }
+	.mc-option:hover { border-color: var(--accent-dim); background: var(--accent-dim); }
+	.mc-option.selected { border-color: var(--accent); background: var(--accent-dim); }
+	.mc-option input { accent-color: var(--accent); }
 
 	.code-block {
 		background: rgba(0,0,0,0.3);
@@ -425,13 +431,12 @@
 	}
 
 	.stats-bar {
-		position: fixed;
+		position: sticky;
 		bottom: 0;
-		left: 50%;
-		transform: translateX(-50%);
+		margin-top: 20px;
 		background: var(--surface);
 		border: 1px solid var(--border);
-		border-radius: 10px 10px 0 0;
+		border-radius: 10px;
 		padding: 10px 20px;
 		display: flex;
 		align-items: center;
@@ -439,5 +444,6 @@
 		font-size: 13px;
 		color: var(--text-secondary);
 		z-index: 50;
+		backdrop-filter: blur(8px);
 	}
 </style>
