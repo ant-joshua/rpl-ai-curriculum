@@ -13,6 +13,7 @@ export const SHORTCUTS = {
 	'g v': '/videos',
 	'g x': '/export',
 	'?': 'showHelp',
+	'Ctrl+K': 'showCommandPalette',
 } as const;
 
 export type ShortcutKey = keyof typeof SHORTCUTS;
@@ -36,6 +37,13 @@ export function initShortcuts() {
 	if (!browser || cleanup) return;
 
 	function handler(e: KeyboardEvent) {
+		// Ctrl+K / Cmd+K → command palette
+		if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+			e.preventDefault();
+			listeners.forEach(l => l('showCommandPalette'));
+			return;
+		}
+
 		// Ignore if in input/textarea
 		const tag = (e.target as HTMLElement).tagName;
 		if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;

@@ -11,7 +11,9 @@
 	import { t, toggleLang, getLang } from '$lib/stores/i18n.svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
+	import ScrollProgress from '$lib/components/ui/ScrollProgress.svelte';
 	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
+	import CommandPalette from '$lib/components/ui/CommandPalette.svelte';
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 	import Toast from '$lib/components/Toast.svelte';
@@ -67,6 +69,7 @@
 	let showBackToTop = $state(false);
 	let dismissedOffline = $state(false);
 	let showShortcuts = $state(false);
+	let showCommandPalette = $state(false);
 
 	function closeSidebar() {
 		sidebarOpen = false;
@@ -211,10 +214,13 @@
 		if (!browser) return;
 		initShortcuts();
 		const unsub = onShortcut((action) => {
-			if (action === 'showHelp') {
-				showShortcuts = true;
-			}
-		});
+				if (action === 'showHelp') {
+					showShortcuts = true;
+				}
+				if (action === 'showCommandPalette') {
+					showCommandPalette = true;
+				}
+			});
 		return () => {
 			unsub();
 			destroyShortcuts();
@@ -473,6 +479,12 @@
 </div>
 
 <PWAInstallPrompt />
+
+{#key $page.url.pathname}
+	<ScrollProgress />
+{/key}
+
+<CommandPalette show={showCommandPalette} onclose={() => showCommandPalette = false} />
 
 <ShortcutHelp show={showShortcuts} onclose={() => showShortcuts = false} />
 

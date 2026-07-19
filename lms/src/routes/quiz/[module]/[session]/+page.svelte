@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Confetti from '$lib/components/ui/Confetti.svelte';
   import { t } from '$lib/stores/i18n.svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
@@ -135,6 +136,7 @@
       <button class="btn-secondary" onclick={() => goto('/quiz')}>Kembali</button>
     </div>
   {:else if finished}
+    <Confetti active={finished && score >= Math.ceil(questions.length * 0.7)} duration={4000} density="low" />
     <div class="result-card">
       <div class="result-icon">
         {score >= Math.ceil(questions.length * 0.7) ? '🎉' : '💪'}
