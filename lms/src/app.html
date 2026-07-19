@@ -24,32 +24,74 @@
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 		<script>
-			// Enhance code blocks globally: lang badge + copy button
+			// Enhance code blocks globally: wrapper, top bar (lang badge + copy btn with checkmark), line numbers gutter
 			function enhanceCodeBlocks() {
-				document.querySelectorAll('.markdown-content pre').forEach(pre => {
-					if (pre.querySelector('.copy-btn')) return;
+				document.querySelectorAll('.markdown-content pre, .text-content.prose pre').forEach(pre => {
+					if (pre.hasAttribute('data-enhanced') || pre.querySelector('.copy-btn')) return;
+					pre.setAttribute('data-enhanced', 'true');
+
 					const code = pre.querySelector('code');
 					if (!code) return;
+
+					// Detect language from class
 					const cls = [...code.classList].find(c => c.startsWith('language-'));
-					if (cls && !pre.hasAttribute('data-lang')) {
-						pre.setAttribute('data-lang', cls.replace('language-', ''));
+					const lang = cls ? cls.replace('language-', '') : '';
+
+					// Wrap pre in a wrapper div
+					const wrapper = document.createElement('div');
+					wrapper.className = 'code-block-wrapper';
+					pre.parentNode.insertBefore(wrapper, pre);
+					wrapper.appendChild(pre);
+
+					// Top bar
+					const bar = document.createElement('div');
+					bar.className = 'code-block-bar';
+
+					// Language badge
+					if (lang) {
+						const badge = document.createElement('span');
+						badge.className = 'code-lang-badge';
+						badge.textContent = lang;
+						bar.appendChild(badge);
 					}
+
+					// Copy button with SVG clipboard icon —> checkmark on copy
 					const btn = document.createElement('button');
 					btn.className = 'copy-btn';
-					btn.textContent = 'Copy';
+					btn.innerHTML = '<svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-text">Copy</span>';
 					btn.onclick = async e => {
 						e.stopPropagation();
 						try {
 							await navigator.clipboard.writeText(code.textContent || '');
-							btn.textContent = '✓ Copied!';
 							btn.classList.add('copied');
-							setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-						} catch { btn.textContent = 'Failed'; }
+							setTimeout(() => btn.classList.remove('copied'), 1500);
+						} catch {
+							btn.querySelector('.copy-text').textContent = 'Failed';
+						}
 					};
-					pre.appendChild(btn);
+					bar.appendChild(btn);
+
+					wrapper.insertBefore(bar, pre);
+
+					// Line numbers gutter
+					const text = code.textContent || '';
+					const lines = text.split('\n');
+					// Remove trailing empty line from final newline
+					if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+					if (lines.length > 1) {
+						const gutter = document.createElement('div');
+						gutter.className = 'line-numbers-gutter';
+						gutter.setAttribute('aria-hidden', 'true');
+						let gutterHtml = '';
+						for (let i = 1; i <= lines.length; i++) {
+							gutterHtml += '<span>' + i + '</span>';
+						}
+						gutter.innerHTML = gutterHtml;
+						pre.insertBefore(gutter, code);
+						pre.classList.add('has-line-numbers');
+					}
 				});
 			}
-			// Run after DOM ready and after SvelteKit navigation
 			document.addEventListener('DOMContentLoaded', enhanceCodeBlocks);
 			document.addEventListener('sveltekit:navigation-end', enhanceCodeBlocks);
 		</script>

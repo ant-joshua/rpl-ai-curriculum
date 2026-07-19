@@ -103,23 +103,18 @@
     if (!code) return;
     const text = code.textContent || '';
     navigator.clipboard.writeText(text);
-    const original = btn.innerHTML;
-    const prevWidth = btn.offsetWidth;
-    btn.textContent = '✅ Copied!';
-    btn.style.minWidth = prevWidth + 'px';
     btn.classList.add('copied');
     setTimeout(() => {
-      btn.innerHTML = original;
-      btn.style.minWidth = '';
       btn.classList.remove('copied');
-    }, 1800);
+    }, 1500);
   }
 
   function renderWithCopyButtons(content: string): string {
     let html = parseMarkdown(content);
     // Wrap in markdown-content div for app.css styling
     // Inject copy button into each <pre> block
-    html = '<div class="markdown-content">' + html.replace(/<pre(?=\s|>)/g, '<pre><button class="copy-btn" data-copy-btn>Copy</button>') + '</div>';
+    // Inject copy button with SVG icons into each <pre> block
+    html = '<div class="markdown-content">' + html.replace(/<pre(?=\s|>)/g, '<pre><button class="copy-btn" data-copy-btn><svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-text">Copy</span></button>') + '</div>';
     return html;
   }
 
