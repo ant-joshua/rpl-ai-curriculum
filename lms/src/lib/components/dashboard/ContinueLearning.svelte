@@ -42,10 +42,11 @@
 		</EmptyState>
 	{:else}
 		<div class="course-grid">
-			{#each inProgress as course}
+			{#each inProgress as course, i}
 				<a
 					href={course.nextLessonSlug ? `/lessons/${course.nextLessonSlug}` : '#'}
 					class="course-card"
+					style="animation-delay: {i * 0.08}s"
 				>
 					<div class="course-card-header">
 						<span class="course-icon">{course.courseIcon}</span>
@@ -92,19 +93,24 @@
 	}
 
 	.course-card {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
-		border-radius: 8px;
-		padding: 16px;
-		text-decoration: none;
-		transition: border-color 0.15s ease;
+	  display: flex;
+	  flex-direction: column;
+	  gap: 12px;
+	  background: rgba(0, 0, 0, 0.02);
+	  border: 1px solid rgba(0, 0, 0, 0.06);
+	  border-radius: 8px;
+	  padding: 16px;
+	  text-decoration: none;
+	  transition: all 0.2s ease;
+	  animation: fadeSlideIn 0.35s ease both;
+	  opacity: 0;
 	}
 
 	.course-card:hover {
-		border-color: rgba(113, 112, 255, 0.4);
+	  border-color: rgba(113, 112, 255, 0.4);
+	  background: rgba(0, 0, 0, 0.03);
+	  transform: translateY(-1px);
+	  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 	}
 
 	.course-card-header {

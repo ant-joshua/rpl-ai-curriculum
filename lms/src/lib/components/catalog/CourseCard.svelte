@@ -45,7 +45,7 @@
   }
 </script>
 
-<article class="course-card" class:enrolled={offering.isEnrolled} class:locked={hasUnmetPrereqs}>
+<article class="course-card" class:enrolled={offering.isEnrolled} class:locked={hasUnmetPrereqs} style="animation-delay: 0s">
   <!-- Top: category badge -->
   <div class="card-top">
     {#if offering.category}
@@ -136,20 +136,26 @@
     border: 1px solid rgba(0,0,0,0.06);
     border-radius: 8px;
     padding: 20px;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    animation: fadeSlideIn 0.35s ease both;
+    opacity: 0;
   }
 
   .course-card:hover {
     background: rgba(0,0,0,0.04);
     border-color: rgba(79,70,229,0.25);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(79,70,229,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(79,70,229,0.1);
   }
 
   .course-card.enrolled {
     border-color: rgba(79,70,229,0.3);
+  }
+
+  .course-card.enrolled:hover {
+    border-color: rgba(79,70,229,0.5);
   }
 
   .course-card.locked {
@@ -158,6 +164,8 @@
 
   .course-card.locked:hover {
     border-color: rgba(0,0,0,0.06);
+    transform: none;
+    box-shadow: none;
   }
 
   .card-top {

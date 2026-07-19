@@ -58,7 +58,7 @@
 		padding: 12px 14px;
 		border-radius: 8px;
 		border: 1px solid;
-		transition: opacity 0.2s ease;
+		transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 		font-size: 14px;
 		line-height: 1.5;
 		font-feature-settings: 'cv01', 'ss03';
@@ -68,6 +68,7 @@
 		background: rgba(79, 70, 229, 0.08);
 		border-color: rgba(79, 70, 229, 0.2);
 		color: #1a1a2e;
+		animation: slideDown 0.25s ease both;
 	}
 	.alert-info .alert-icon { color: #4F46E5; }
 
@@ -75,6 +76,7 @@
 		background: rgba(16, 185, 129, 0.08);
 		border-color: rgba(16, 185, 129, 0.2);
 		color: #1a1a2e;
+		animation: slideDown 0.25s ease both;
 	}
 	.alert-success .alert-icon { color: #10b981; }
 
@@ -82,6 +84,7 @@
 		background: rgba(245, 158, 11, 0.08);
 		border-color: rgba(245, 158, 11, 0.2);
 		color: #1a1a2e;
+		animation: slideDown 0.25s ease both;
 	}
 	.alert-warning .alert-icon { color: #f59e0b; }
 
@@ -89,6 +92,7 @@
 		background: rgba(239, 68, 68, 0.08);
 		border-color: rgba(239, 68, 68, 0.2);
 		color: #1a1a2e;
+		animation: slideDown 0.25s ease both;
 	}
 	.alert-danger .alert-icon { color: #ef4444; }
 

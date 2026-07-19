@@ -6,6 +6,7 @@
     value,
     label,
     color = '#4F46E5',
+    delay = 0,
     class: className = '',
     children,
     ...rest
@@ -14,13 +15,14 @@
     value: string | number;
     label: string;
     color?: string;
+    delay?: number;
     class?: string;
     children?: Snippet;
     [key: string]: unknown;
   } = $props();
 </script>
 
-<div class="stat-card {className}" {...rest}>
+<div class="stat-card {className}" style="animation-delay: {delay}s" {...rest}>
   <div class="stat-card-header">
     {#if icon}
       <div class="stat-card-icon" style:background="{color}12" style:color={color}>
@@ -41,13 +43,20 @@
   .stat-card {
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid rgba(0, 0, 0, 0.06);
+    border-left: 3px solid transparent;
     border-radius: 8px;
     padding: 16px;
-    transition: background 0.15s;
+    transition: all 0.2s ease;
+    animation: fadeSlideIn 0.3s ease both;
+    opacity: 0;
   }
 
   .stat-card:hover {
     background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(79, 70, 229, 0.2);
+    border-left-color: #4F46E5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .stat-card-header {
@@ -90,5 +99,10 @@
     font-feature-settings: 'cv01', 'ss03';
     font-family: var(--font-sans);
     margin-top: 2px;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>

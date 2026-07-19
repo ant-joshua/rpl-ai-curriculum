@@ -56,9 +56,9 @@
 		/>
 	{:else}
 		<div class="deadline-list">
-			{#each deadlines as dl}
+			{#each deadlines as dl, i}
 				{@const countdown = getCountdown(dl.due_date)}
-				<div class="deadline-item">
+				<div class="deadline-item" style="animation-delay: {i * 0.06}s">
 					<div class="deadline-left">
 						<div class="deadline-kind">
 							{#if dl.kind === 'assessment'}
@@ -124,10 +124,22 @@
 		gap: 10px;
 		padding: 10px 0;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		transition: all 0.15s ease;
+		animation: fadeSlideIn 0.3s ease both;
+		opacity: 0;
+		padding-left: 6px;
+		padding-right: 6px;
+		border-radius: 4px;
+		margin: 0 -6px;
 	}
 
 	.deadline-item:last-child {
 		border-bottom: none;
+	}
+
+	.deadline-item:hover {
+		background: rgba(255, 255, 255, 0.03);
+		padding-left: 10px;
 	}
 
 	.deadline-left {

@@ -133,9 +133,25 @@ button, input, textarea, select { font-family: inherit; }
 	from { opacity: 0; transform: translateY(16px); }
 	to { opacity: 1; transform: translateY(0); }
 }
+@keyframes fadeSlideIn {
+	from { opacity: 0; transform: translateY(12px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideInRight {
+	from { opacity: 0; transform: translateX(-12px); }
+	to { opacity: 1; transform: translateX(0); }
+}
 @keyframes scaleIn {
 	from { opacity: 0; transform: scale(0.95); }
 	to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideDown {
+	from { opacity: 0; transform: translateY(-8px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+	from { opacity: 0; transform: translateY(8px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 @keyframes shimmer {
 	0% { background-position: 200% 0; }
@@ -181,7 +197,9 @@ button, input, textarea, select { font-family: inherit; }
 	pointer-events: none;
 }
 .animate-in {
-	animation: fadeInUp 0.4s ease both;
+	opacity: 0;
+	animation: fadeInUp 0.4s ease forwards;
+	animation-delay: calc(var(--stagger, 0) * 0.06s);
 }
 .animate-in-d1 { animation-delay: 0.05s; }
 .animate-in-d2 { animation-delay: 0.1s; }
@@ -191,6 +209,39 @@ button, input, textarea, select { font-family: inherit; }
 .animate-in-d6 { animation-delay: 0.3s; }
 .animate-in-d7 { animation-delay: 0.35s; }
 .animate-in-d8 { animation-delay: 0.4s; }
+.animate-in-d9 { animation-delay: 0.45s; }
+.animate-in-d10 { animation-delay: 0.5s; }
+.animate-in-d11 { animation-delay: 0.55s; }
+.animate-in-d12 { animation-delay: 0.6s; }
+
+/* ===== Hover Effect Utilities ===== */
+.hover-lift {
+	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.hover-lift:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.hover-lift-sm:hover {
+	transform: translateY(-1px);
+}
+.hover-glow:hover {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 1px var(--accent-dim);
+}
+.hover-glow-accent:hover {
+	border-color: var(--accent-secondary);
+	box-shadow: 0 0 0 1px rgba(94, 106, 210, 0.15);
+}
+.hover-brighten:hover {
+	filter: brightness(1.15);
+}
+.hover-scale {
+	transition: transform 0.15s ease;
+}
+.hover-scale:hover {
+	transform: scale(1.02);
+}
 
 /* ===== Skeleton Loading ===== */
 .skeleton-block {
@@ -260,6 +311,10 @@ button, input, textarea, select { font-family: inherit; }
 .btn-primary:hover:not(:disabled) {
 	background: rgba(255, 255, 255, 0.04);
 	border-color: rgba(255, 255, 255, 0.12);
+	transform: scale(1.02);
+}
+.btn-primary:active:not(:disabled) {
+	transform: scale(0.98);
 }
 
 /* Brand Primary */
@@ -316,7 +371,7 @@ button, input, textarea, select { font-family: inherit; }
 	background: rgba(255, 255, 255, 0.02);
 	border: 1px solid rgba(255, 255, 255, 0.08);
 	border-radius: 8px;
-	transition: all 0.15s ease;
+	transition: all 0.2s ease;
 	text-align: left;
 	font-family: inherit;
 	color: inherit;
@@ -329,6 +384,8 @@ button, input, textarea, select { font-family: inherit; }
 .card-hover:hover {
 	border-color: rgba(255, 255, 255, 0.15);
 	background: rgba(255, 255, 255, 0.03);
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 .card-glass {
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
@@ -340,6 +397,8 @@ button, input, textarea, select { font-family: inherit; }
 .card-interactive:hover {
 	border-color: #7170ff;
 	background: rgba(94, 106, 210, 0.06);
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 .card-interactive {
 	cursor: pointer;

@@ -62,7 +62,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="module-card" onclick={onclick} role="button" tabindex={0}>
+<div class="module-card" onclick={onclick} role="button" tabindex={0} style="animation-delay: {index * 0.06}s">
 	<div class="card-thumb">
 		<img
 			src="/assets/thumbnails/{slug}.svg"
@@ -124,6 +124,8 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
+		animation: fadeSlideIn 0.35s ease both;
+		opacity: 0;
 	}
 
 	.module-card:hover {

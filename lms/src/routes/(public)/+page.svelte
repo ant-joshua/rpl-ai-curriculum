@@ -11,8 +11,35 @@
 </svelte:head>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="hero">
 	<div class="hero-bg" />
+
+	<!-- Floating geometric shapes (pure CSS) -->
+	<div class="floating-shapes" aria-hidden="true">
+		<div class="shape shape-1"></div>
+		<div class="shape shape-2"></div>
+		<div class="shape shape-3"></div>
+		<div class="shape shape-4"></div>
+		<div class="shape shape-5"></div>
+	</div>
+
+	<!-- Animated gradient mesh overlay (pure CSS) -->
+	<div class="mesh-overlay" aria-hidden="true"></div>
+
+	<!-- Particles (pure CSS) -->
+	<div class="particles" aria-hidden="true">
+		<div class="particle" style="left:10%;animation-delay:0s;animation-duration:12s;"></div>
+		<div class="particle" style="left:25%;animation-delay:2s;animation-duration:15s;"></div>
+		<div class="particle" style="left:40%;animation-delay:4s;animation-duration:10s;"></div>
+		<div class="particle" style="left:55%;animation-delay:1s;animation-duration:14s;"></div>
+		<div class="particle" style="left:70%;animation-delay:3s;animation-duration:11s;"></div>
+		<div class="particle" style="left:85%;animation-delay:5s;animation-duration:13s;"></div>
+		<div class="particle" style="left:15%;animation-delay:6s;animation-duration:16s;"></div>
+		<div class="particle" style="left:50%;animation-delay:7s;animation-duration:9s;"></div>
+		<div class="particle" style="left:75%;animation-delay:0.5s;animation-duration:12s;"></div>
+		<div class="particle" style="left:35%;animation-delay:3.5s;animation-duration:11s;"></div>
+	</div>
+
 	<div class="hero-content">
 		<div class="hero-icon">
 			<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +106,7 @@
 <section class="stats">
 	<div class="stats-grid">
 		<div class="stat-item">
-			<span class="stat-value">57+</span>
+			<span class="stat-value">57+ <span class="badge-new">New</span></span>
 			<span class="stat-label">Modul Pembelajaran</span>
 		</div>
 		<div class="stat-divider" />
@@ -257,7 +284,7 @@
 		<p>Gabung dengan 5.000+ siswa yang sudah belajar di RPL AI Curriculum. Gratis, tanpa kartu kredit.</p>
 		<div class="cta-actions">
 			<a href="/register" class="cta-primary">
-				Daftar Gratis
+				Daftar Gratis <span class="badge-new">New</span>
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
 				</svg>
@@ -287,6 +314,73 @@
 </footer>
 
 <style>
+	/* ── KEYFRAMES ── */
+	@keyframes float-slow {
+		0%, 100% { transform: translateY(0) rotate(0deg); }
+		33% { transform: translateY(-18px) rotate(2deg); }
+		66% { transform: translateY(-8px) rotate(-1deg); }
+	}
+	@keyframes float-medium {
+		0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+		50% { transform: translateY(-24px) rotate(3deg) scale(1.05); }
+	}
+	@keyframes float-fast {
+		0%, 100% { transform: translateY(0) rotate(0deg); }
+		50% { transform: translateY(-12px) rotate(-2deg); }
+	}
+	@keyframes mesh-shift {
+		0% { background-position: 0% 0%, 50% 50%, 100% 100%; }
+		33% { background-position: 50% 50%, 100% 0%, 0% 100%; }
+		66% { background-position: 100% 100%, 0% 50%, 50% 0%; }
+		100% { background-position: 0% 0%, 50% 50%, 100% 100%; }
+	}
+	@keyframes particle-rise {
+		0% { transform: translateY(100%) translateX(0) scale(0); opacity: 0; }
+		10% { opacity: 0.8; }
+		90% { opacity: 0.6; }
+		100% { transform: translateY(-10vh) translateX(-20px) scale(1); opacity: 0; }
+	}
+	@keyframes pulse-badge {
+		0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.5); }
+		50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
+	}
+	@keyframes gradient-shift {
+		0% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+		100% { background-position: 0% 50%; }
+	}
+	@keyframes fade-in-up {
+		from { opacity: 0; transform: translateY(30px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+	@keyframes shimmer-cta {
+		0% { background-position: -200% center; }
+		100% { background-position: 200% center; }
+	}
+	@keyframes shape-glow {
+		0%, 100% { opacity: 0.4; filter: blur(0px); }
+		50% { opacity: 0.7; filter: blur(1px); }
+	}
+
+	/* ── SMOOTH SCROLL ── */
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+
+	/* ── SECTION ENTRANCE ── */
+	section {
+		animation: fade-in-up 0.6s ease both;
+	}
+	section:nth-of-type(1) { animation-delay: 0s; }
+	section:nth-of-type(2) { animation-delay: 0.1s; }
+	section:nth-of-type(3) { animation-delay: 0.2s; }
+	section:nth-of-type(4) { animation-delay: 0.3s; }
+	section:nth-of-type(5) { animation-delay: 0.4s; }
+	section:nth-of-type(6) { animation-delay: 0.5s; }
+	footer {
+		animation: fade-in-up 0.6s ease 0.6s both;
+	}
+
 	/* ── HERO ── */
 	.hero {
 		position: relative;
@@ -303,6 +397,111 @@
 		background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79,70,229,0.12), transparent);
 		pointer-events: none;
 	}
+
+	/* ── FLOATING SHAPES ── */
+	.floating-shapes {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+		z-index: 0;
+	}
+	.shape {
+		position: absolute;
+		border-radius: 50%;
+		opacity: 0.35;
+	}
+	.shape-1 {
+		top: 10%;
+		left: 5%;
+		width: 60px;
+		height: 60px;
+		background: rgba(79,70,229,0.2);
+		border: 2px solid rgba(79,70,229,0.15);
+		border-radius: 16px;
+		animation: float-slow 12s ease-in-out infinite;
+	}
+	.shape-2 {
+		top: 15%;
+		right: 8%;
+		width: 45px;
+		height: 45px;
+		background: rgba(79,70,229,0.15);
+		border: 2px solid rgba(79,70,229,0.12);
+		border-radius: 50%;
+		animation: float-medium 10s ease-in-out infinite;
+	}
+	.shape-3 {
+		bottom: 20%;
+		left: 10%;
+		width: 35px;
+		height: 35px;
+		background: rgba(99,102,241,0.2);
+		border: 2px solid rgba(99,102,241,0.15);
+		border-radius: 8px;
+		transform: rotate(45deg);
+		animation: float-fast 8s ease-in-out infinite;
+	}
+	.shape-4 {
+		bottom: 25%;
+		right: 12%;
+		width: 50px;
+		height: 50px;
+		background: rgba(79,70,229,0.1);
+		border: 2px solid rgba(79,70,229,0.12);
+		border-radius: 50%;
+		animation: float-slow 14s ease-in-out infinite;
+	}
+	.shape-5 {
+		top: 50%;
+		left: 50%;
+		width: 30px;
+		height: 30px;
+		background: transparent;
+		border: 2px solid rgba(79,70,229,0.15);
+		border-radius: 4px;
+		transform: translate(-50%, -50%) rotate(45deg);
+		animation: float-medium 11s ease-in-out infinite;
+	}
+
+	/* ── GRADIENT MESH OVERLAY ── */
+	.mesh-overlay {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		opacity: 0.3;
+		background:
+			radial-gradient(ellipse 600px 400px at 15% 10%, rgba(79,70,229,0.08) 0%, transparent 70%),
+			radial-gradient(ellipse 500px 300px at 85% 20%, rgba(99,102,241,0.06) 0%, transparent 70%),
+			radial-gradient(ellipse 400px 400px at 50% 80%, rgba(79,70,229,0.05) 0%, transparent 70%);
+		background-size: 200% 200%, 200% 200%, 200% 200%;
+		animation: mesh-shift 20s ease-in-out infinite;
+	}
+
+	/* ── PARTICLES ── */
+	.particles {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 0;
+		overflow: hidden;
+	}
+	.particle {
+		position: absolute;
+		bottom: 0;
+		width: 4px;
+		height: 4px;
+		background: rgba(79,70,229,0.4);
+		border-radius: 50%;
+		animation: particle-rise linear infinite;
+	}
+	.particle:nth-child(odd) {
+		width: 3px;
+		height: 3px;
+		background: rgba(99,102,241,0.3);
+	}
+
 	.hero-content {
 		position: relative;
 		z-index: 1;
@@ -375,33 +574,47 @@
 	.hero-input::placeholder {
 		color: #94a3b8;
 	}
+
+	/* ── HERO CTA (upgraded: gradient + 3D) ── */
 	.hero-cta {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		padding: 12px 20px;
+		padding: 12px 24px;
 		font-size: 15px;
 		font-weight: 600;
 		font-family: inherit;
 		color: #fff;
-		background: #4F46E5;
+		background: linear-gradient(135deg, #4F46E5, #6366F1);
 		border: none;
-		border-radius: 8px;
-		box-shadow: 0 4px 0 #3730A3;
+		border-radius: 10px;
+		box-shadow: 0 4px 0 #3730A3, 0 8px 24px rgba(79,70,229,0.25);
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
 		white-space: nowrap;
 		position: relative;
 		top: 0;
+		overflow: hidden;
+	}
+	.hero-cta::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+		background-size: 200% 100%;
+		animation: shimmer-cta 3s ease-in-out infinite;
+		pointer-events: none;
 	}
 	.hero-cta:hover:not(:disabled) {
-		background: #4338CA;
-		top: -1px;
-		box-shadow: 0 5px 0 #3730A3;
+		background: linear-gradient(135deg, #4338CA, #4F46E5);
+		top: -2px;
+		box-shadow: 0 6px 0 #3730A3, 0 12px 32px rgba(79,70,229,0.35);
+		transform: translateY(-1px);
 	}
 	.hero-cta:active:not(:disabled) {
 		top: 2px;
-		box-shadow: 0 2px 0 #3730A3;
+		box-shadow: 0 2px 0 #3730A3, 0 4px 12px rgba(79,70,229,0.2);
+		transform: translateY(0);
 	}
 	.hero-cta:disabled {
 		opacity: 0.35;
@@ -467,6 +680,7 @@
 		background: #2d333b;
 	}
 
+	/* ── LINK WITH ANIMATED UNDERLINE ── */
 	.hero-register-link {
 		display: inline-flex;
 		align-items: center;
@@ -475,10 +689,26 @@
 		color: #64748b;
 		text-decoration: none;
 		margin-bottom: 12px;
-		transition: color 0.15s;
+		transition: color 0.2s;
+		position: relative;
+	}
+	.hero-register-link::after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 100%;
+		height: 1.5px;
+		background: #4F46E5;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
 	}
 	.hero-register-link:hover {
 		color: #1a1a2e;
+	}
+	.hero-register-link:hover::after {
+		transform: scaleX(1);
 	}
 	.hero-register-link strong {
 		color: #4F46E5;
@@ -490,6 +720,33 @@
 		line-height: 1.5;
 		margin: 0;
 		max-width: 380px;
+	}
+
+	/* ── BADGE "NEW" ── */
+	.badge-new {
+		display: inline-block;
+		font-size: 9px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		padding: 2px 6px;
+		border-radius: 999px;
+		color: #fff;
+		background: linear-gradient(135deg, #4F46E5, #6366F1);
+		vertical-align: super;
+		margin-left: 4px;
+		line-height: 1.2;
+		animation: pulse-badge 2s ease-in-out infinite;
+		position: relative;
+	}
+	.stat-value .badge-new {
+		font-size: 8px;
+		padding: 1px 5px;
+		vertical-align: super;
+	}
+	.cta-primary .badge-new {
+		font-size: 9px;
+		padding: 2px 7px;
 	}
 
 	/* ── STATS ── */
@@ -547,11 +804,13 @@
 		margin: 0 0 48px;
 	}
 
-	/* ── HOW IT WORKS ── */
+	/* ── HOW IT WORKS (alternating bg: indigo tint) ── */
 	.how-it-works {
 		padding: 80px 20px;
 		max-width: 900px;
 		margin: 0 auto;
+		background: rgba(79,70,229,0.03);
+		border-radius: 24px;
 	}
 	.steps-grid {
 		display: flex;
@@ -568,10 +827,12 @@
 		background: #FFFFFF;
 		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 12px;
-		transition: border-color 0.2s;
+		transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 	}
 	.step-card:hover {
 		border-color: rgba(79,70,229,0.3);
+		box-shadow: 0 4px 20px rgba(79,70,229,0.08);
+		transform: translateY(-2px);
 	}
 	.step-number {
 		width: 32px;
@@ -582,7 +843,7 @@
 		font-size: 14px;
 		font-weight: 700;
 		color: #fff;
-		background: #4F46E5;
+		background: linear-gradient(135deg, #4F46E5, #6366F1);
 		border-radius: 50%;
 		margin-bottom: 16px;
 	}
@@ -612,7 +873,7 @@
 		flex-shrink: 0;
 	}
 
-	/* ── FEATURES ── */
+	/* ── FEATURES (alternating bg: white) ── */
 	.features {
 		padding: 80px 20px;
 		background: #FFFFFF;
@@ -629,10 +890,12 @@
 		background: #F4F7FA;
 		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 10px;
-		transition: border-color 0.2s;
+		transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 	}
 	.feature-card:hover {
 		border-color: rgba(79,70,229,0.3);
+		box-shadow: 0 4px 20px rgba(79,70,229,0.06);
+		transform: translateY(-2px);
 	}
 	.feature-icon {
 		width: 40px;
@@ -660,7 +923,7 @@
 		margin: 0;
 	}
 
-	/* ── WHY ── */
+	/* ── WHY (alternating bg: transparent) ── */
 	.why {
 		padding: 80px 20px;
 		max-width: 960px;
@@ -677,10 +940,12 @@
 		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 12px;
 		text-align: center;
-		transition: border-color 0.2s;
+		transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 	}
 	.why-card:hover {
 		border-color: rgba(79,70,229,0.3);
+		box-shadow: 0 4px 24px rgba(79,70,229,0.08);
+		transform: translateY(-2px);
 	}
 	.why-icon {
 		color: #4F46E5;
@@ -711,6 +976,8 @@
 		border: 1px solid rgba(79,70,229,0.15);
 		border-radius: 16px;
 		text-align: center;
+		position: relative;
+		overflow: hidden;
 	}
 	.cta-card h2 {
 		font-size: 24px;
@@ -731,41 +998,73 @@
 		align-items: center;
 		gap: 12px;
 	}
+
+	/* ── CTA PRIMARY (upgraded: gradient + 3D) ── */
 	.cta-primary {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		padding: 14px 32px;
+		padding: 14px 36px;
 		font-size: 16px;
 		font-weight: 600;
+		font-family: inherit;
 		color: #fff;
-		background: var(--accent, #4F46E5);
+		background: linear-gradient(135deg, #4F46E5, #6366F1);
 		border: none;
-		border-radius: 10px;
-		box-shadow: 0 4px 0 #3730A3;
+		border-radius: 12px;
+		box-shadow: 0 5px 0 #3730A3, 0 10px 28px rgba(79,70,229,0.3);
 		text-decoration: none;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
 		position: relative;
 		top: 0;
+		overflow: hidden;
+	}
+	.cta-primary::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+		background-size: 200% 100%;
+		animation: shimmer-cta 3s ease-in-out infinite;
+		pointer-events: none;
 	}
 	.cta-primary:hover {
-		background: var(--accent-hover, #4338CA);
-		top: -1px;
-		box-shadow: 0 5px 0 #3730A3;
+		background: linear-gradient(135deg, #4338CA, #4F46E5);
+		top: -2px;
+		box-shadow: 0 7px 0 #3730A3, 0 16px 40px rgba(79,70,229,0.4);
+		transform: translateY(-1px);
 		text-decoration: none;
 	}
 	.cta-primary:active {
 		top: 2px;
-		box-shadow: 0 2px 0 #3730A3;
+		box-shadow: 0 2px 0 #3730A3, 0 4px 12px rgba(79,70,229,0.2);
 	}
+
+	/* ── CTA SECONDARY with animated underline ── */
 	.cta-secondary {
 		font-size: 14px;
 		color: #64748b;
 		text-decoration: none;
-		transition: color 0.15s;
+		transition: color 0.2s;
+		position: relative;
+	}
+	.cta-secondary::after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 100%;
+		height: 1.5px;
+		background: #1a1a2e;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
 	}
 	.cta-secondary:hover {
 		color: #1a1a2e;
+	}
+	.cta-secondary:hover::after {
+		transform: scaleX(1);
 	}
 
 	/* ── FOOTER ── */
@@ -793,15 +1092,34 @@
 		display: flex;
 		gap: 20px;
 	}
+
+	/* ── FOOTER LINKS with animated underline ── */
 	.footer-links a {
 		font-size: 13px;
 		color: #64748b;
 		text-decoration: none;
-		transition: color 0.15s;
+		transition: color 0.2s;
+		position: relative;
+	}
+	.footer-links a::after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 100%;
+		height: 1.5px;
+		background: #4F46E5;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
 	}
 	.footer-links a:hover {
 		color: #1a1a2e;
 	}
+	.footer-links a:hover::after {
+		transform: scaleX(1);
+	}
+
 	.footer-copy {
 		font-size: 12px;
 		color: #94a3b8;
@@ -831,11 +1149,19 @@
 		.features { padding: 60px 16px; }
 		.why { padding: 60px 16px; }
 		.cta-card { padding: 36px 20px; }
+
+		/* hide floating shapes on mobile */
+		.floating-shapes { display: none; }
+		.particles { display: none; }
+		.mesh-overlay { opacity: 0.15; }
 	}
 
 	@media (max-width: 480px) {
 		.hero-title-main { font-size: 24px; }
 		.stat-value { font-size: 22px; }
 		.section-title { font-size: 22px; }
+
+		.floating-shapes { display: none; }
+		.particles { display: none; }
 	}
 </style>

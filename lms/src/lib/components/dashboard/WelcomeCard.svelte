@@ -116,11 +116,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
-		transition: box-shadow 0.2s ease, transform 0.2s ease;
+		transition: all 0.2s ease;
+		animation: fadeSlideIn 0.35s ease both;
 	}
 	.welcome-card:hover {
-		box-shadow: var(--shadow-lg, 0 4px 12px rgba(0,0,0,0.08));
+		box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 		transform: translateY(-1px);
+		border-color: rgba(79, 70, 229, 0.15);
 	}
 
 	.welcome-left {
@@ -230,11 +232,14 @@
 		align-items: center;
 		gap: 10px;
 		color: var(--accent, #4F46E5);
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		transition: all 0.15s ease;
+		animation: fadeSlideIn 0.3s ease both;
+		opacity: 0;
 	}
 	.stat-card:hover {
 		transform: translateY(-2px);
-		box-shadow: var(--shadow, 0 1px 3px rgba(0,0,0,0.08));
+		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+		border-color: rgba(79, 70, 229, 0.2);
 	}
 
 	.stat-body {

@@ -354,11 +354,14 @@
 		align-items: center;
 		gap: 10px;
 		box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		transition: all 0.15s ease;
+		animation: fadeSlideIn 0.3s ease both;
+		opacity: 0;
 	}
 	.stat-card:hover {
 		transform: translateY(-1px);
-		box-shadow: var(--shadow, 0 1px 3px rgba(0,0,0,0.08));
+		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+		border-color: rgba(79, 70, 229, 0.2);
 	}
 	.stat-icon { font-size: 22px; }
 	.stat-body { display: flex; flex-direction: column; }
@@ -382,6 +385,7 @@
 		padding: 20px;
 		margin-bottom: 14px;
 		box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+		animation: fadeSlideIn 0.4s ease both;
 	}
 	.chart-title {
 		font-size: 15px;

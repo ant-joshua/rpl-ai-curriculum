@@ -57,6 +57,7 @@
     text-align: center;
     padding: 40px 24px;
     min-height: 160px;
+    animation: fadeSlideIn 0.35s ease both;
   }
 
   .empty-state-icon {

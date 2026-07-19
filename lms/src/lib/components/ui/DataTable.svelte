@@ -130,6 +130,7 @@
 						<tr
 							class:clickable={!!onRowClick}
 							onclick={onRowClick ? () => onRowClick(row.original, i) : undefined}
+							style="animation-delay: {i * 0.04}s"
 						>
 							{#each row.getVisibleCells() as cell}
 								<td>
@@ -234,8 +235,10 @@
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
-	tbody tr { transition: background 0.15s; }
+	tbody tr { transition: all 0.15s ease; animation: fadeSlideIn 0.25s ease both; opacity: 0; }
 	tbody tr:hover { background: rgba(0, 0, 0, 0.02); }
+	tbody tr:hover td:first-child { padding-left: 20px; }
+	tbody tr td { transition: padding 0.15s ease; }
 	tbody tr:last-child td { border-bottom: none; }
 	tbody tr.clickable { cursor: pointer; }
 

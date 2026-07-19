@@ -468,7 +468,7 @@
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
 		position: relative;
 		top: 0;
 	}
@@ -476,10 +476,12 @@
 		background: var(--accent-hover);
 		top: -1px;
 		box-shadow: 0 5px 0 #3730A3;
+		transform: scale(1.02);
 	}
 	:global(.btn-primary:active:not(:disabled)) {
 		top: 2px;
 		box-shadow: 0 2px 0 #3730A3;
+		transform: scale(0.98);
 	}
 	:global(.btn-primary:disabled) {
 		opacity: 0.5;
