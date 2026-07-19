@@ -8,10 +8,10 @@
 
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 
-	const LEVEL_META: Record<Level, { icon: string; color: string; gradient: string }> = {
-		Beginner: { icon: '🌱', color: 'var(--level-beginner)', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
-		Intermediate: { icon: '📐', color: 'var(--level-intermediate)', gradient: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-		Advanced: { icon: '🚀', color: 'var(--level-advanced)', gradient: 'linear-gradient(135deg, #a855f7, #7c3aed)' },
+	const LEVEL_META: Record<Level, { icon: string; color: string; bg: string; gradient: string }> = {
+		Beginner: { icon: '🌱', color: '#22C55E', bg: 'rgba(34,197,94,0.08)', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
+		Intermediate: { icon: '📐', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+		Advanced: { icon: '🚀', color: '#EF4444', bg: 'rgba(239,68,68,0.08)', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
 	};
 
 	let isCompleted = $derived((modSlug: string, sessionId: string) =>
@@ -28,10 +28,8 @@
 	let totalModules = $derived(modules.length);
 	let completedModules = $derived(progress.completedCount);
 
-	// --- Tab state ---
-	let activeTab = $state<'paths' | 'timeline'>('paths');
+	let activeTab = $state<'paths' | 'timeline'>('timeline');
 
-	// --- Timeline data (preserved from old page) ---
 	let levelModules = $derived<Record<Level, Module[]>>({
 		Beginner: modules.filter((m) => m.level === 'Beginner'),
 		Intermediate: modules.filter((m) => m.level === 'Intermediate'),
@@ -45,8 +43,7 @@
 				level,
 				count: mods.length,
 				sessions: mods.reduce((acc: number, m: Module) => acc + m.sessions.length, 0),
-				icon: LEVEL_META[level].icon,
-				gradient: LEVEL_META[level].gradient,
+				completed: mods.filter((m: Module) => progress.getModuleProgress(m.slug) === 100).length,
 			};
 		})
 	);
@@ -54,192 +51,155 @@
 	interface TimelineModule {
 		index: number;
 		slug: string;
-		dirName: string;
 		title: string;
 		description: string;
 		level: Level;
 		sessions: Session[];
 		pct: number;
+		completedSessions: number;
 	}
 
 	let moduleProgress = $derived<TimelineModule[]>(
-		modules.map((m) => ({
-			index: m.index,
-			slug: m.slug,
-			dirName: m.dirName,
-			title: m.title,
-			description: m.description,
-			level: m.level as Level,
-			sessions: m.sessions,
-			pct: progress.getModuleProgress(m.slug),
-		}))
+		modules.map((m) => {
+			const pct = progress.getModuleProgress(m.slug);
+			const completedCount = Math.round((pct / 100) * m.sessions.length);
+			return {
+				index: m.index,
+				slug: m.slug,
+				title: m.title,
+				description: m.description,
+				level: m.level as Level,
+				sessions: m.sessions,
+				pct,
+				completedSessions: completedCount,
+			};
+		})
 	);
 
 	let estimatedMinutes = $derived(Math.ceil((totalSessions * 500) / 200));
 
-	function getLevelMeta(level: string) {
-		return LEVEL_META[level as Level];
+	function goToModule(slug: string) {
+		goto(`/module/${slug}`);
 	}
 
 	function goToPath(slug: string) {
 		goto(`/path/${slug}`);
 	}
-
-	function goToModule(slug: string) {
-		goto(`/module/${slug}`);
-	}
 </script>
 
 <div class="path-page">
+	<!-- Header -->
+	<header class="page-header">
+		<div class="header-text">
+			<h1>{t('path.header_title')}</h1>
+			<p class="header-subtitle">{t('path.subtitle')}</p>
+		</div>
+		<div class="header-stats">
+			<StatCard icon="📦" value={totalModules} label="Modul" />
+			<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Selesai" />
+			<StatCard icon="📝" value={totalSessions} label="Sesi" />
+			<StatCard icon="⏱️" value={estimatedMinutes} label="Menit" />
+		</div>
+	</header>
+
+	<!-- Level Overview -->
+	<section class="level-overview">
+		<div class="level-cards">
+			{#each levelStats as stat, i}
+				{@const meta = LEVEL_META[stat.level]}
+				<div class="level-card" style="--level-color: {meta.color}; --level-bg: {meta.bg}; --anim-delay: {i * 0.1}s">
+					<div class="level-card-header">
+						<span class="level-icon">{meta.icon}</span>
+						<div class="level-info">
+							<h2 class="level-name">
+								{stat.level === 'Beginner' ? t('path.beginner') : stat.level === 'Intermediate' ? t('path.intermediate') : t('path.advanced')}
+							</h2>
+							<span class="level-meta-text">{stat.count} modul · {stat.sessions} sesi</span>
+						</div>
+						<span class="level-completed-badge" class:all-done={stat.completed === stat.count}>
+							{stat.completed}/{stat.count}
+						</span>
+					</div>
+					<div class="level-progress-track">
+						<div
+							class="level-progress-fill"
+							style="width: {stat.count > 0 ? (stat.completed / stat.count) * 100 : 0}%; background: {meta.color}"
+						></div>
+					</div>
+					{#if i < levelStats.length - 1}
+						<div class="level-arrow" aria-hidden="true">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+								<path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	</section>
+
 	<!-- Tab bar -->
 	<div class="tab-bar">
 		<button
 			class="tab-btn"
-			class:active={activeTab === 'paths'}
-			onclick={() => activeTab = 'paths'}
-		>{t('path.tab_paths')}</button>
-		<button
-			class="tab-btn"
 			class:active={activeTab === 'timeline'}
 			onclick={() => activeTab = 'timeline'}
-		>{t('path.tab_timeline')}</button>
+		>📋 {t('path.tab_timeline')}</button>
+		<button
+			class="tab-btn"
+			class:active={activeTab === 'paths'}
+			onclick={() => activeTab = 'paths'}
+		>🗺️ {t('path.tab_paths')}</button>
 	</div>
 
-	{#if activeTab === 'paths'}
-		<!-- === PATHS HUB === -->
-
-		<!-- Header with stats -->
-		<header class="paths-header">
-			<div class="paths-header-text">
-				<h1>{t('path.header_title')}</h1>
-				<p>{t('path.header_desc')}</p>
-			</div>
-			<div class="paths-header-stats">
-				<StatCard icon="🗺️" value={paths.length} label="Path" />
-				<StatCard icon="✅" value="{completedModules}/{totalModules}" label="Modul" />
-				<StatCard icon="📝" value={totalSessions} label="{t('path.stat_session')}" />
-			</div>
-		</header>
-
-		<!-- Path cards grid -->
-		<section class="paths-grid">
-			{#each paths as path, i}
-				{@const pp = pathProgressMap[path.slug]}
-				<button
-					class="path-card"
-					style="--path-color: {path.color}; --path-color-end: {path.colorEnd}; --anim-delay: {i * 0.08}s"
-					onclick={() => goToPath(path.slug)}
-				>
-					<div class="path-card-bg" style="background: linear-gradient(135deg, {path.color}15, {path.colorEnd}15)"></div>
-					<div class="path-card-top">
-						<span class="path-card-icon">{path.icon}</span>
-						<span class="path-card-level">{path.level}</span>
-					</div>
-					<h3 class="path-card-title">{path.title}</h3>
-					<p class="path-card-desc">{path.description}</p>
-					<div class="path-card-meta">
-						<span class="path-card-sessions">{path.estimatedSessions} {t('path.sessions_unit')}</span>
-						{#if path.prerequisites && path.prerequisites.length > 0}
-							<span class="path-card-prereq">{t('path.prereq')}</span>
-						{/if}
-					</div>
-					<div class="path-card-progress">
-						<div class="progress-track">
-							<div
-								class="progress-fill"
-								style="width: {pp.pct}%; background: linear-gradient(90deg, {path.color}, {path.colorEnd})"
-							></div>
-						</div>
-						<span class="progress-pct">{pp.pct}%</span>
-					</div>
-					{#if pp.completed > 0 && pp.pct < 100}
-						<div class="path-card-footer">
-							<span class="continue-path-btn" style="color: {path.color}">{t('path.continue')}</span>
-						</div>
-					{/if}
-				</button>
-			{/each}
-		</section>
-	{:else}
-		<!-- === TIMELINE (preserved from original) === -->
-
-		<!-- Level Overview -->
-		<section class="level-overview">
-			<div class="level-cards">
-				{#each levelStats as stat, i}
-					<div
-						class="level-card animate-in"
-						style="--level-grad: {stat.gradient}; --anim-delay: {i * 0.12}s"
-					>
-						<div class="level-card-bg" style="background: {stat.gradient}"></div>
-						<div class="level-card-content">
-							<span class="level-icon">{stat.icon}</span>
-							<h2 class="level-name">{stat.level}</h2>
-							<div class="level-meta">
-								<span class="level-stat">
-									<strong>{stat.count}</strong> {t('path.module_count', { count: stat.count })}
-								</span>
-								<span class="level-stat">
-									<strong>{stat.sessions}</strong> {t('path.session_count', { count: stat.sessions })}
-								</span>
-							</div>
-						</div>
-						{#if i < levelStats.length - 1}
-							<div class="level-arrow" aria-hidden="true">
-								<svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-									<path d="M8 20h22M22 12l10 8-10 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-								</svg>
-							</div>
-						{/if}
-					</div>
-				{/each}
-			</div>
-		</section>
-
-		<!-- {t('path.timeline_title')} -->
+	{#if activeTab === 'timeline'}
+		<!-- === TIMELINE VIEW === -->
 		<section class="module-timeline">
 			<h2 class="section-title">
-				<span class="section-icon">📋</span>
-				Module Timeline
-				<span class="section-badge">{t('path.timeline_badge', { count: totalModules })}</span>
+				<span>{t('path.timeline_title')}</span>
+				<span class="section-badge">{totalModules} modul</span>
 			</h2>
 
 			<div class="timeline-track">
 				{#each moduleProgress as mod, i (mod.slug)}
-					{@const levelMeta = getLevelMeta(mod.level)}
+					{@const meta = LEVEL_META[mod.level]}
 					{@const prevLevel = i > 0 ? moduleProgress[i - 1].level : null}
 
 					{#if i > 0 && prevLevel !== mod.level}
 						<div class="level-separator">
 							<div class="separator-line"></div>
-							<span class="separator-label" style="--label-color: {levelMeta.color}">
-								{levelMeta.icon} {mod.level}
+							<span class="separator-label" style="--label-color: {meta.color}">
+								{meta.icon}
+								{mod.level === 'Beginner' ? t('path.beginner') : mod.level === 'Intermediate' ? t('path.intermediate') : t('path.advanced')}
 							</span>
+							<div class="separator-line"></div>
 						</div>
 					{/if}
 
 					<button
 						class="timeline-module"
 						onclick={() => goToModule(mod.slug)}
-						style="--level-color: {levelMeta.color}"
+						style="--level-color: {meta.color}"
 					>
 						<div class="timeline-line-connector"></div>
-						<div class="timeline-dot" style="background: {levelMeta.color}">
+						<div class="timeline-dot" style="background: {meta.color}">
 							<span class="timeline-index">{mod.index + 1}</span>
 						</div>
 						<div class="timeline-card">
 							<div class="timeline-card-top">
-								<span class="timeline-level-badge" style="background: {levelMeta.color}">
-									{levelMeta.icon} {mod.level}
+								<span class="timeline-level-badge" style="background: {meta.bg}; color: {meta.color}">
+									{meta.icon}
+									{mod.level === 'Beginner' ? t('path.beginner') : mod.level === 'Intermediate' ? t('path.intermediate') : t('path.advanced')}
 								</span>
-								<span class="timeline-sessions">{t('path.session_count', { count: mod.sessions.length })}</span>
+								<span class="timeline-sessions">{mod.completedSessions}/{mod.sessions.length} {t('path.sessions_unit')}</span>
 							</div>
 							<h3 class="timeline-title">{mod.title}</h3>
+							<p class="timeline-desc">{mod.description}</p>
 							<div class="timeline-progress">
 								<div class="progress-track">
 									<div
 										class="progress-fill"
-										style="width: {mod.pct}%; background: {levelMeta.color}"
+										style="width: {mod.pct}%; background: {meta.color}"
 									></div>
 								</div>
 								<span class="progress-pct">{mod.pct}%</span>
@@ -249,35 +209,199 @@
 				{/each}
 			</div>
 		</section>
+	{:else}
+		<!-- === PATHS VIEW === -->
+		<section class="paths-section">
+			<h2 class="section-title">
+				<span>{t('path.header_title')}</span>
+				<span class="section-badge">{paths.length} Path</span>
+			</h2>
 
-		<!-- Stats Footer -->
-		<section class="stats-footer">
-		<StatCard icon="📦" value={totalModules} label="{t('path.total_modules')}" />
-		<StatCard icon="📝" value={totalSessions} label="{t('path.total_sessions')}" />
-		<StatCard icon="⏱️" value={estimatedMinutes} label="{t('path.est_minutes')}" />
-		<StatCard icon="✅" value="{completedModules}/{totalModules}" label="{t('path.modules_completed')}" />
+			<div class="paths-grid">
+				{#each paths as path, i}
+					{@const pp = pathProgressMap[path.slug]}
+					<button
+						class="path-card"
+						style="--path-color: {path.color}; --path-color-end: {path.colorEnd}; --anim-delay: {i * 0.06}s"
+						onclick={() => goToPath(path.slug)}
+					>
+						<div class="path-card-bg" style="background: linear-gradient(135deg, {path.color}12, {path.colorEnd}12)"></div>
+						<div class="path-card-top">
+							<span class="path-card-icon">{path.icon}</span>
+							<span class="path-card-level" style="color: {path.color}; background: {path.color}15">{path.level}</span>
+						</div>
+						<h3 class="path-card-title">{path.title}</h3>
+						<p class="path-card-desc">{path.description}</p>
+						<div class="path-card-meta">
+							<span class="path-card-sessions">{path.estimatedSessions} {t('path.sessions_unit')}</span>
+							{#if path.prerequisites && path.prerequisites.length > 0}
+								<span class="path-card-prereq">Prasyarat</span>
+							{/if}
+						</div>
+						<div class="path-card-progress">
+							<div class="progress-track">
+								<div
+									class="progress-fill"
+									style="width: {pp.pct}%; background: linear-gradient(90deg, {path.color}, {path.colorEnd})"
+								></div>
+							</div>
+							<span class="progress-pct">{pp.pct}%</span>
+						</div>
+						{#if pp.completed > 0 && pp.pct < 100}
+							<div class="path-card-footer">
+								<span class="continue-link" style="color: {path.color}">{t('path.continue')} →</span>
+							</div>
+						{/if}
+					</button>
+				{/each}
+			</div>
 		</section>
 	{/if}
 </div>
 
 <style>
-	/* ─── CSS Variables ─── */
+	/* ─── Page ─── */
 	.path-page {
-		--level-beginner: #22c55e;
-		--level-intermediate: #3b82f6;
-		--level-advanced: #a855f7;
 		max-width: 960px;
 		margin: 0 auto;
+		padding: 24px 16px;
+	}
+
+	/* ─── Header ─── */
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 20px;
+		margin-bottom: 28px;
+	}
+
+	.header-text h1 {
+		font-size: 24px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 4px;
+	}
+
+	.header-subtitle {
+		font-size: 14px;
+		color: var(--text-secondary);
+		margin: 0;
+	}
+
+	.header-stats {
+		display: flex;
+		gap: 12px;
+		flex-shrink: 0;
+	}
+
+	/* ─── Level Overview ─── */
+	.level-overview {
+		margin-bottom: 28px;
+	}
+
+	.level-cards {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.level-card {
+		position: relative;
+		flex: 1;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 16px;
+		transition: all 0.2s ease;
+		animation: fadeSlideIn 0.4s ease forwards;
+		animation-delay: var(--anim-delay, 0s);
+		opacity: 0;
+		transform: translateY(12px);
+	}
+
+	.level-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+		border-color: var(--level-color);
+	}
+
+	.level-card-header {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 10px;
+	}
+
+	.level-icon {
+		font-size: 28px;
+		line-height: 1;
+	}
+
+	.level-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.level-name {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+
+	.level-meta-text {
+		font-size: 11px;
+		color: var(--text-secondary);
+	}
+
+	.level-completed-badge {
+		font-size: 12px;
+		font-weight: 700;
+		color: var(--text-secondary);
+		background: var(--bg);
+		padding: 2px 8px;
+		border-radius: 8px;
+		white-space: nowrap;
+	}
+
+	.level-completed-badge.all-done {
+		color: #22C55E;
+		background: rgba(34, 197, 94, 0.1);
+	}
+
+	.level-progress-track {
+		height: 4px;
+		background: var(--bg);
+		border-radius: 2px;
+		overflow: hidden;
+	}
+
+	.level-progress-fill {
+		height: 100%;
+		border-radius: 2px;
+		transition: width 0.5s ease;
+	}
+
+	.level-arrow {
+		position: absolute;
+		right: -20px;
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--text-secondary);
+		opacity: 0.3;
+		z-index: 2;
+		pointer-events: none;
 	}
 
 	/* ─── Tab bar ─── */
 	.tab-bar {
 		display: flex;
-		gap: 8px;
+		gap: 4px;
 		margin-bottom: 24px;
 		background: var(--surface);
 		border: 1px solid var(--border);
-		border-radius: 12px;
+		border-radius: 10px;
 		padding: 4px;
 	}
 
@@ -288,79 +412,251 @@
 		border-radius: 8px;
 		background: transparent;
 		color: var(--text-secondary);
-		font-size: 14px;
+		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.15s ease;
 		font-family: inherit;
 	}
+
 	.tab-btn:hover {
 		color: var(--text);
+		background: var(--bg);
 	}
+
 	.tab-btn.active {
-		background: var(--accent-dim);
-		color: var(--accent);
+		background: var(--accent-dim, rgba(79, 70, 229, 0.1));
+		color: var(--accent, #4F46E5);
+	}
+
+	/* ─── Section title ─── */
+	.section-title {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--text);
+		margin-bottom: 20px;
+	}
+
+	.section-badge {
+		margin-left: auto;
+		font-size: 11px;
+		font-weight: 600;
+		background: var(--bg);
+		color: var(--text-secondary);
+		padding: 3px 10px;
+		border-radius: 12px;
 	}
 
 	/* ════════════════════════════════════════════
-	   PATHS HUB
+	   TIMELINE
 	   ════════════════════════════════════════════ */
 
-	.paths-header {
+	.module-timeline {
+		margin-bottom: 48px;
+	}
+
+	.timeline-track {
+		position: relative;
+		padding-left: 50px;
+		max-height: 75vh;
+		overflow-y: auto;
+		scroll-snap-type: y proximity;
+		padding-right: 8px;
+	}
+
+	.timeline-track::-webkit-scrollbar { width: 4px; }
+	.timeline-track::-webkit-scrollbar-track { background: transparent; }
+	.timeline-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+	.timeline-track::before {
+		content: '';
+		position: absolute;
+		left: 23px;
+		top: 8px;
+		bottom: 8px;
+		width: 2px;
+		background: var(--border);
+		z-index: 0;
+	}
+
+	/* Level separator */
+	.level-separator {
 		display: flex;
-		justify-content: space-between;
+		align-items: center;
+		gap: 12px;
+		margin: 24px 0 16px -50px;
+		scroll-snap-align: start;
+	}
+
+	.separator-line {
+		flex: 1;
+		height: 1px;
+		background: var(--border);
+	}
+
+	.separator-label {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		padding: 4px 14px;
+		border-radius: 20px;
+		background: var(--level-bg, var(--bg));
+		color: var(--level-color);
+		white-space: nowrap;
+	}
+
+	/* Module card */
+	.timeline-module {
+		position: relative;
+		display: flex;
 		align-items: flex-start;
-		gap: 16px;
-		margin-bottom: 24px;
+		gap: 14px;
+		margin-bottom: 10px;
+		border: none;
+		background: none;
+		padding: 0;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+		scroll-snap-align: start;
+		font-family: inherit;
 	}
 
-	.paths-header-text h1 {
-		font-size: 22px;
-		font-weight: 700;
-		margin-bottom: 4px;
+	.timeline-line-connector {
+		position: absolute;
+		left: -27px;
+		top: 18px;
+		width: 14px;
+		height: 2px;
+		background: var(--border);
 	}
 
-	.paths-header-text p {
-		font-size: 13px;
-		color: var(--text-secondary);
-	}
-
-	.paths-header-stats {
+	.timeline-dot {
+		position: relative;
+		z-index: 1;
+		width: 34px;
+		min-width: 34px;
+		height: 34px;
+		border-radius: 50%;
 		display: flex;
-		gap: 16px;
+		align-items: center;
+		justify-content: center;
+		margin-top: 14px;
+		transition: transform 0.2s ease;
+		box-shadow: 0 0 0 3px var(--surface);
 	}
 
-	.header-stat {
-		text-align: center;
+	.timeline-module:hover .timeline-dot {
+		transform: scale(1.12);
 	}
 
-	.header-stat-value {
-		display: block;
-		font-size: 20px;
+	.timeline-index {
+		font-size: 11px;
 		font-weight: 700;
-		color: var(--text);
-		line-height: 1.2;
+		color: #fff;
 	}
 
-	.header-stat-label {
-		display: block;
+	.timeline-card {
+		flex: 1;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 14px 16px;
+		transition: all 0.2s ease;
+	}
+
+	.timeline-module:hover .timeline-card {
+		border-color: var(--level-color);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+		transform: translateY(-1px);
+	}
+
+	.timeline-card-top {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 6px;
+	}
+
+	.timeline-level-badge {
+		font-size: 10px;
+		font-weight: 700;
+		padding: 2px 8px;
+		border-radius: 6px;
+		white-space: nowrap;
+	}
+
+	.timeline-sessions {
 		font-size: 11px;
 		color: var(--text-secondary);
-		font-weight: 500;
+		margin-left: auto;
 	}
 
-	/* Path cards grid */
+	.timeline-title {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--text);
+		margin: 0 0 2px;
+		line-height: 1.4;
+	}
+
+	.timeline-desc {
+		font-size: 12px;
+		color: var(--text-secondary);
+		margin: 0 0 8px;
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.timeline-progress {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.progress-track {
+		flex: 1;
+		height: 4px;
+		background: var(--bg);
+		border-radius: 2px;
+		overflow: hidden;
+	}
+
+	.progress-fill {
+		height: 100%;
+		border-radius: 2px;
+		transition: width 0.4s ease;
+	}
+
+	.progress-pct {
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--text-secondary);
+		min-width: 32px;
+		text-align: right;
+	}
+
+	/* ════════════════════════════════════════════
+	   PATHS GRID
+	   ════════════════════════════════════════════ */
+
 	.paths-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 16px;
-		margin-bottom: 24px;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 14px;
 	}
 
 	.path-card {
 		position: relative;
-		padding: 24px;
-		border-radius: 16px;
+		padding: 20px;
+		border-radius: 12px;
 		border: 1px solid var(--border);
 		background: var(--surface);
 		cursor: pointer;
@@ -369,52 +665,50 @@
 		color: var(--text);
 		overflow: hidden;
 		transition: all 0.2s ease;
-		animation: cardEntrance 0.4s ease forwards;
+		animation: fadeSlideIn 0.4s ease forwards;
 		animation-delay: var(--anim-delay, 0s);
 		opacity: 0;
-		transform: translateY(16px);
+		transform: translateY(12px);
 		width: 100%;
 	}
+
 	.path-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 		border-color: var(--path-color);
 	}
 
 	.path-card-bg {
 		position: absolute;
 		inset: 0;
-		opacity: 0.06;
 		pointer-events: none;
 	}
 
 	.path-card-top {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		margin-bottom: 12px;
+		gap: 8px;
+		margin-bottom: 10px;
 		position: relative;
 	}
 
 	.path-card-icon {
-		font-size: 32px;
+		font-size: 28px;
 		line-height: 1;
 	}
 
 	.path-card-level {
 		font-size: 10px;
 		font-weight: 600;
-		color: var(--accent);
-		background: var(--accent-dim);
 		padding: 2px 8px;
-		border-radius: 8px;
+		border-radius: 6px;
 		white-space: nowrap;
 	}
 
 	.path-card-title {
-		font-size: 16px;
+		font-size: 15px;
 		font-weight: 700;
-		margin-bottom: 6px;
+		margin: 0 0 4px;
 		position: relative;
 	}
 
@@ -422,7 +716,7 @@
 		font-size: 12px;
 		color: var(--text-secondary);
 		line-height: 1.5;
-		margin-bottom: 12px;
+		margin: 0 0 10px;
 		position: relative;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -434,7 +728,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		margin-bottom: 12px;
+		margin-bottom: 10px;
 		position: relative;
 	}
 
@@ -447,10 +741,10 @@
 	.path-card-prereq {
 		font-size: 10px;
 		font-weight: 600;
-		color: #f59e0b;
-		background: rgba(245, 158, 11, 0.1);
+		color: #F59E0B;
+		background: rgba(245, 158, 11, 0.08);
 		padding: 2px 8px;
-		border-radius: 8px;
+		border-radius: 6px;
 	}
 
 	.path-card-progress {
@@ -463,7 +757,7 @@
 	.path-card-progress .progress-track {
 		flex: 1;
 		height: 6px;
-		background: var(--border);
+		background: var(--bg);
 		border-radius: 3px;
 		overflow: hidden;
 	}
@@ -478,7 +772,7 @@
 		font-size: 12px;
 		font-weight: 600;
 		color: var(--text-secondary);
-		min-width: 36px;
+		min-width: 32px;
 		text-align: right;
 	}
 
@@ -487,229 +781,82 @@
 		position: relative;
 	}
 
-	.continue-path-btn {
+	.continue-link {
 		font-size: 12px;
 		font-weight: 600;
 	}
 
-	/* ════════════════════════════════════════════
-	   TIMELINE (preserved)
-	   ════════════════════════════════════════════ */
-
-	.level-overview { margin-bottom: 48px; }
-
-	.level-cards {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 24px;
-		position: relative;
+	/* ─── Animations ─── */
+	@keyframes fadeSlideIn {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
-	.level-card {
-		position: relative;
-		flex: 1;
-		max-width: 320px;
-		border-radius: 16px;
-		overflow: hidden;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		cursor: default;
-		opacity: 0;
-		transform: translateY(24px);
-		animation: cardEntrance 0.5s ease forwards;
-		animation-delay: var(--anim-delay, 0s);
-		transition: transform 0.25s ease, box-shadow 0.25s ease;
-	}
-
-	.level-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-	}
-
-	.level-card-bg {
-		position: absolute;
-		inset: 0;
-		opacity: 0.08;
-	}
-
-	.level-card-content {
-		position: relative;
-		padding: 28px 24px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 10px;
-		text-align: center;
-		z-index: 1;
-	}
-
-	.level-icon { font-size: 40px; line-height: 1; }
-	.level-name { font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 0; }
-
-	.level-meta {
-		display: flex;
-		gap: 16px;
-		margin-top: 4px;
-	}
-
-	.level-stat { font-size: 0.85rem; color: var(--text-secondary); }
-	.level-stat strong { color: var(--text); font-weight: 700; font-size: 1rem; }
-
-	.level-arrow {
-		position: absolute;
-		right: -36px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: var(--text-secondary);
-		opacity: 0.4;
-		z-index: 2;
-		pointer-events: none;
-	}
-
-	.module-timeline { margin-bottom: 48px; }
-
-	.section-title {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-size: 1.35rem;
-		font-weight: 700;
-		color: var(--text);
-		margin-bottom: 28px;
-	}
-	.section-icon { font-size: 1.4rem; }
-	.section-badge {
-		margin-left: auto;
-		font-size: 0.75rem;
-		font-weight: 600;
-		background: var(--accent-dim);
-		color: var(--accent-secondary);
-		padding: 4px 12px;
-		border-radius: 20px;
-	}
-
-	.timeline-track {
-		position: relative;
-		padding-left: 50px;
-		max-height: 70vh;
-		overflow-y: auto;
-		scroll-snap-type: y proximity;
-		padding-right: 8px;
-	}
-
-	.timeline-track::-webkit-scrollbar { width: 5px; }
-	.timeline-track::-webkit-scrollbar-track { background: transparent; }
-	.timeline-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-	.timeline-track::before {
-		content: '';
-		position: absolute;
-		left: 24px;
-		top: 8px;
-		bottom: 8px;
-		width: 2px;
-		background: var(--border);
-		z-index: 0;
-	}
-
-	.level-separator {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		margin: 20px 0 12px -50px;
-		scroll-snap-align: start;
-	}
-	.separator-line { flex: 1; height: 2px; border-radius: 1px; background: var(--border); }
-	.separator-label {
-		font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-		padding: 4px 14px; border-radius: 20px;
-		background: color-mix(in srgb, var(--label-color) 12%, var(--surface));
-		color: var(--label-color); white-space: nowrap;
-	}
-
-	.timeline-module {
-		position: relative; display: flex; align-items: flex-start; gap: 16px;
-		margin-bottom: 12px; border: none; background: none; padding: 0;
-		width: 100%; text-align: left; cursor: pointer; scroll-snap-align: start;
-	}
-
-	.timeline-line-connector {
-		position: absolute; left: -26px; top: 20px; width: 14px; height: 2px;
-		background: var(--border);
-	}
-
-	.timeline-dot {
-		position: relative; z-index: 1; width: 36px; min-width: 36px;
-		height: 36px; border-radius: 50%; display: flex; align-items: center;
-		justify-content: center; margin-top: 8px; transition: transform 0.2s ease;
-	}
-	.timeline-module:hover .timeline-dot { transform: scale(1.15); }
-	.timeline-index { font-size: 0.72rem; font-weight: 700; color: #fff; }
-
-	.timeline-card {
-		flex: 1; background: var(--surface); border: 1px solid var(--border);
-		border-radius: 12px; padding: 12px 16px; transition: border-color 0.2s ease, box-shadow 0.2s ease;
-	}
-	.timeline-module:hover .timeline-card {
-		border-color: var(--level-color);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-	}
-
-	.timeline-card-top {
-		display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
-	}
-	.timeline-level-badge {
-		font-size: 0.65rem; font-weight: 700; padding: 2px 8px;
-		border-radius: 10px; color: #fff; white-space: nowrap;
-	}
-	.timeline-sessions { font-size: 0.75rem; color: var(--text-secondary); margin-left: auto; }
-	.timeline-title { font-size: 0.92rem; font-weight: 600; color: var(--text); margin: 0 0 8px; line-height: 1.4; }
-	.timeline-progress { display: flex; align-items: center; gap: 8px; }
-	.timeline-progress .progress-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-	.timeline-progress .progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
-	.timeline-progress .progress-pct { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); min-width: 30px; text-align: right; }
-
-	/* Stats Footer */
-	.stats-footer {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 16px;
-		padding: 24px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-	}
-
-	.stat-card { display: flex; align-items: center; gap: 14px; }
-	.stat-icon { font-size: 28px; line-height: 1; }
-	.stat-body { display: flex; flex-direction: column; }
-	.stat-value { font-size: 1.3rem; font-weight: 800; color: var(--text); line-height: 1.2; }
-	.stat-label { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; }
-	.stat-progress .stat-value { color: var(--accent); }
-
-	@keyframes cardEntrance {
-		to { opacity: 1; transform: translateY(0); }
-	}
-
-	/* Responsive */
+	/* ─── Responsive ─── */
 	@media (max-width: 900px) {
-		.level-cards { flex-direction: column; gap: 12px; }
-		.level-card { max-width: 100%; width: 100%; }
-		.level-arrow { position: relative; right: auto; top: auto; transform: rotate(90deg); display: flex; justify-content: center; padding: 4px 0; }
-		.stats-footer { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+		.level-cards {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.level-arrow {
+			position: relative;
+			right: auto;
+			top: auto;
+			transform: rotate(90deg);
+			display: flex;
+			justify-content: center;
+			padding: 2px 0;
+		}
+
+		.paths-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.paths-header { flex-direction: column; }
-		.paths-grid { grid-template-columns: 1fr; }
-		.paths-header-stats { width: 100%; justify-content: space-around; }
+		.path-page {
+			padding: 16px 12px;
+		}
 
-		.stats-footer { grid-template-columns: 1fr; }
-		.timeline-track { padding-left: 40px; }
-		.timeline-track::before { left: 18px; }
-		.timeline-line-connector { left: -20px; width: 10px; }
-		.timeline-dot { width: 30px; min-width: 30px; height: 30px; margin-top: 6px; }
-		.timeline-index { font-size: 0.65rem; }
+		.page-header {
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.header-stats {
+			width: 100%;
+			justify-content: space-around;
+		}
+
+		.paths-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.timeline-track {
+			padding-left: 40px;
+		}
+
+		.timeline-track::before {
+			left: 17px;
+		}
+
+		.timeline-line-connector {
+			left: -21px;
+			width: 10px;
+		}
+
+		.timeline-dot {
+			width: 28px;
+			min-width: 28px;
+			height: 28px;
+			margin-top: 12px;
+		}
+
+		.timeline-index {
+			font-size: 10px;
+		}
 	}
 </style>
