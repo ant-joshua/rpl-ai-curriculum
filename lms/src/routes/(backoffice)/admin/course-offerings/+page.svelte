@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, DataTable, EmptyState, Loading, Select } from '$lib/components/ui';
+	import { Button, Card, CardContent, DataTable, EmptyState, Skeleton, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let offerings: any[] = $state([]);
@@ -163,7 +163,7 @@
 	</div>
 
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<Card>
 			<CardContent>

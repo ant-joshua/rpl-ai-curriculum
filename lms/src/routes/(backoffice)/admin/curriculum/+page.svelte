@@ -21,7 +21,7 @@
 		offering_name: string | null;
 	}
 
-	import { Button, Select, Badge, Alert, Loading, EmptyState } from '$lib/components/ui';
+	import { Button, Select, Badge, Alert, Skeleton, EmptyState } from '$lib/components/ui';
 
 	let { data }: {
 		data: {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, Badge, Modal, Input, Textarea, Select, EmptyState, Alert, Loading } from '$lib/components/ui/index.js';
+	import { Button, Card, CardContent, Badge, Modal, Input, Textarea, Select, EmptyState, Alert, Skeleton } from '$lib/components/ui/index.js';
 
 	interface Template {
 		id: string;
@@ -180,7 +180,7 @@
 	{/if}
 
 	{#if loading}
-		<Loading message="Loading templates..." />
+		<Skeleton variant="block" count={1} />
 	{:else if templates.length === 0}
 		<EmptyState icon="📝" title="No Templates" description="Create your first report card template." />
 	{:else}

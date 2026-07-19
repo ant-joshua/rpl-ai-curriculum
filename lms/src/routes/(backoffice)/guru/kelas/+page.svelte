@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge } from '$lib/components/ui/index.js';
 
 	let classes: any[] = $state([]);
 	let loading = $state(true);
@@ -47,7 +47,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat kelas..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if classes.length === 0}

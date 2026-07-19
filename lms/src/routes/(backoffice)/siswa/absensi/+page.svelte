@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Loading, EmptyState, StatCard } from '$lib/components/ui';
+	import { DataTable, Skeleton, EmptyState, StatCard } from '$lib/components/ui';
 import { t } from '$lib/stores/i18n.svelte';
 
 	type DayRec = {
@@ -177,7 +177,7 @@ const dayColumns: ColumnDef<any, any>[] = [
 	</div>
 
 	{#if loading}
-		<Loading message={t('common.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else}

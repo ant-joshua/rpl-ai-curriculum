@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import {
-		Button, Badge, Select, Alert, Loading, EmptyState, Textarea
+		Button, Badge, Select, Alert, Skeleton, EmptyState, Textarea
 	} from '$lib/components/ui';
 
 	interface Question {
@@ -168,7 +168,7 @@
 
 	<!-- Questions -->
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if questions.length === 0}
 		<EmptyState
 			title="Tidak Ada Soal"

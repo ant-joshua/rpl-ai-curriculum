@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, Badge, Modal, Input, Select, EmptyState, Alert, Loading } from '$lib/components/ui/index.js';
+	import { Button, Card, CardContent, Badge, Modal, Input, Select, EmptyState, Alert, Skeleton } from '$lib/components/ui/index.js';
 
 	interface Batch {
 		id: string;
@@ -202,7 +202,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Loading batches..." />
+		<Skeleton variant="block" count={1} />
 	{:else if filteredBatches.length === 0}
 		<EmptyState icon="📦" title="No Batches" description="Create a batch to start generating report cards." />
 	{:else}

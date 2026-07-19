@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 
 	type Student = {
@@ -207,13 +207,13 @@
 	</div>
 
 	{#if loadingClasses}
-		<Loading message="Memuat kelas..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error && students.length === 0}
 		<div class="error-state">{error}</div>
 	{:else if !selectedClassId}
 		<EmptyState icon="📋" title={t('absensi.pilih_kelas_title')} description="Pilih kelas dan tanggal untuk mulai mencatat absensi." />
 	{:else if loadingStudents}
-		<Loading message="Memuat data siswa..." />
+		<Skeleton variant="block" count={1} />
 	{:else if students.length === 0}
 		<EmptyState icon="👤" title="Tidak Ada Data" description="Tidak ada siswa ditemukan untuk kelas dan tanggal ini." />
 	{:else}

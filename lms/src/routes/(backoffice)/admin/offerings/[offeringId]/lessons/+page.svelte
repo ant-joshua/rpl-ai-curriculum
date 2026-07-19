@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Modal, Input, Select, Textarea, Alert, EmptyState, Loading } from '$lib/components/ui';
+	import { Button, Badge, Modal, Input, Select, Textarea, Alert, EmptyState, Skeleton } from '$lib/components/ui';
 
 	interface Lesson {
 		id: string;
@@ -200,7 +200,7 @@
 
 <div class="lessons-page">
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

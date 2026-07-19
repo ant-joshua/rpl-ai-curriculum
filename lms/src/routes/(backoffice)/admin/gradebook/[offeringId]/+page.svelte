@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Card, Badge, Input, Loading, EmptyState, ProgressBar } from '$lib/components/ui/index.js';
+	import { Button, Card, Badge, Input, Skeleton, EmptyState, ProgressBar } from '$lib/components/ui/index.js';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -405,7 +405,7 @@
 
 <div class="gradebook-detail">
 	{#if loading}
-		<Loading message="Memuat gradebook..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Loading, EmptyState, Badge } from '$lib/components/ui/index.js';
+	import { DataTable, Skeleton, EmptyState, Badge } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
@@ -143,7 +143,7 @@
 		<div class="breadcrumb"><a href="/bimbel/tryout">← {t('tryout.breadcrumb')}</a></div>
 
 		{#if loading}
-			<Loading message={t('common.loading')} />
+			<Skeleton variant="block" count={1} />
 		{:else if error}
 			<div class="error-state">{error}</div>
 		{:else if tryout}

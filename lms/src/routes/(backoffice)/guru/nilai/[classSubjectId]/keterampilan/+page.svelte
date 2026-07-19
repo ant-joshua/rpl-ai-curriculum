@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Loading, EmptyState, Select } from '$lib/components/ui/index.js';
+	import { Button, Skeleton, EmptyState, Select } from '$lib/components/ui/index.js';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -156,7 +156,7 @@
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat data keterampilan..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error && !classSubject}
 		<div class="error-state">{error}</div>
 	{:else}

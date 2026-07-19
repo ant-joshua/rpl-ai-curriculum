@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Modal, Input, Textarea, Select, Alert, Loading } from '$lib/components/ui';
+	import { Button, Badge, Modal, Input, Textarea, Select, Alert, Skeleton } from '$lib/components/ui';
 
 	interface ContentBlock {
 		id: string;
@@ -289,7 +289,7 @@
 
 <div class="content-editor-page">
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

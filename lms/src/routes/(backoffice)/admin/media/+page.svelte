@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Modal, Input, Alert, EmptyState, Loading, SearchInput, Select } from '$lib/components/ui';
+	import { Button, Badge, Modal, Input, Alert, EmptyState, Skeleton, SearchInput, Select } from '$lib/components/ui';
 
 	interface MediaFile {
 		id: string;
@@ -226,7 +226,7 @@
 	</div>
 
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

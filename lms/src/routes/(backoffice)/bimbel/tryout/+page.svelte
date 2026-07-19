@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Modal, Input, Button } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, Modal, Input, Button } from '$lib/components/ui/index.js';
 
 	type Tryout = {
 		id: string;
@@ -97,7 +97,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat try out..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if tryouts.length === 0}

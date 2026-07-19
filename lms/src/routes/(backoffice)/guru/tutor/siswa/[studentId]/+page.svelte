@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
@@ -118,7 +118,7 @@ import { t } from '$lib/stores/i18n.svelte';
 		<div class="breadcrumb"><a href="/tutor/siswa">← {t('tutor.data_siswa')}</a></div>
 
 		{#if loading}
-			<Loading message={t('common.loading')} />
+			<Skeleton variant="block" count={1} />
 		{:else if error}
 			<div class="error-state">{error}</div>
 		{:else if student}

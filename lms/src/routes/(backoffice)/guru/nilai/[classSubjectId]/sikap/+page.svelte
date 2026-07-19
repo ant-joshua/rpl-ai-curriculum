@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { DataTable, Button, Loading, EmptyState, Select } from '$lib/components/ui';
+	import { DataTable, Button, Skeleton, EmptyState, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 
@@ -178,7 +178,7 @@ import { t } from '$lib/stores/i18n.svelte';
 
 <div class="page">
 	{#if loading}
-		<Loading message={t('common.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error && !classSubject}
 		<div class="error-state">{error}</div>
 	{:else}

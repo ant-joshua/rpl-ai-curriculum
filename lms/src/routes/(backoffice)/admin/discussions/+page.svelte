@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { page } from '$app/stores';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Button, Badge, SearchBar, Loading, EmptyState, PageHeader } from '$lib/components/ui/index.js';
+	import { Button, Badge, SearchBar, Skeleton, EmptyState, PageHeader } from '$lib/components/ui/index.js';
 
 	interface Discussion {
 		id: string;
@@ -171,7 +171,7 @@
 	<!-- List -->
 	<div class="discussion-list">
 		{#if loading}
-			<Loading message="Loading discussions..." />
+			<Skeleton variant="block" count={1} />
 		{:else if discussions.length === 0}
 			<EmptyState icon="💬" message="No discussions found." />
 		{:else}

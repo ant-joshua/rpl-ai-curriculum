@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Loading, Badge, Button, DataTable } from '$lib/components/ui/index.js';
+	import { Skeleton, Badge, Button, DataTable } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n.svelte';
 
@@ -138,7 +138,7 @@ import { t } from '$lib/stores/i18n.svelte';
 
 <div class="page">
 	{#if loading}
-		<Loading message="Memuat rapor..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if rapor}

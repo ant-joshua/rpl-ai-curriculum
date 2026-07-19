@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, Badge, Loading, EmptyState } from '$lib/components/ui/index.js';
+	import { Button, Card, Badge, Skeleton, EmptyState } from '$lib/components/ui/index.js';
 
 	let offerings: any[] = $state([]);
 	let loading = $state(true);
@@ -37,7 +37,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat offerings..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else if offerings.length === 0}

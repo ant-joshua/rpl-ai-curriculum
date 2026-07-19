@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Modal, Input, Textarea, Select, EmptyState, Alert, Loading } from '$lib/components/ui/index.js';
+	import { Button, Badge, Modal, Input, Textarea, Select, EmptyState, Alert, Skeleton } from '$lib/components/ui/index.js';
 
 	interface Comment {
 		id: string;
@@ -216,7 +216,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Loading comments..." />
+		<Skeleton variant="block" count={1} />
 	{:else if filteredComments.length === 0}
 		<EmptyState icon="💬" title="No Comments" description="Add teacher comments for report cards." />
 	{:else}

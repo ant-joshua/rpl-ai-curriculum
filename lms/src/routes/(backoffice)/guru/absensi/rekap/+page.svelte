@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Loading, EmptyState, Select, Button } from '$lib/components/ui';
+	import { DataTable, Skeleton, EmptyState, Select, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
 
@@ -221,13 +221,13 @@
 	</div>
 
 	{#if loadingClasses}
-		<Loading message={t('common.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if !selectedClassId}
 		<EmptyState icon="📊" title={t('absensi.pilih_kelas')} description={t('absensi.pilih_kelas_desc')} />
 	{:else if loading}
-		<Loading message={t('common.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else if students.length === 0}
 		<EmptyState icon="📋" title={t('absensi.belum_ada_data')} description={t('absensi.belum_ada_data_desc')} />
 	{:else}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, EmptyState, Loading, Select } from '$lib/components/ui/index.js';
+	import { Badge, Button, EmptyState, Skeleton, Select } from '$lib/components/ui/index.js';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -223,7 +223,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 	</div>
 
 	{#if loadingClasses}
-		<Loading message={t('admin.memuat_data')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -233,7 +233,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 		<div class="month-label">{monthName}</div>
 
 		{#if loading}
-			<Loading message="Memuat rekap absensi..." />
+			<Skeleton variant="block" count={1} />
 		{:else if students.length === 0}
 			<EmptyState icon="📋" title={t('absensi.belum_ada_data')} description="Belum ada data absensi untuk periode ini." />
 		{:else}

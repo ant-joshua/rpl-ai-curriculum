@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n.svelte';
@@ -143,7 +143,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message={t('finance.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if invoices.length === 0}

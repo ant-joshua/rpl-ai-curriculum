@@ -2,7 +2,7 @@
   import { t } from '$lib/stores/i18n.svelte';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Card, CardContent, EmptyState, Loading, PageHeader } from '$lib/components/ui';
+  import { Card, CardContent, EmptyState, Skeleton, PageHeader } from '$lib/components/ui';
 
   let schedules = $state<any[]>([]);
   let loading = $state(true);
@@ -88,7 +88,7 @@
   </PageHeader>
 
   {#if loading}
-    <Loading />
+    <Skeleton variant="card" count={3} />
   {:else if error}
     <Card>
       <CardContent>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardHeader, CardContent, Modal, Input, Select, Alert, EmptyState, Loading } from '$lib/components/ui';
+	import { Button, Badge, Card, CardHeader, CardContent, Modal, Input, Select, Alert, EmptyState, Skeleton } from '$lib/components/ui';
 
 	let course = $state<any>(null);
 	let offerings = $state<any[]>([]);
@@ -165,7 +165,7 @@
 
 <div class="course-detail-page">
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

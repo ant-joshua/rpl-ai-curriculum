@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Badge, Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Modal, Input, Textarea, EmptyState, Loading } from '$lib/components/ui';
+	import { Button, Badge, Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Modal, Input, Textarea, EmptyState, Skeleton } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let course: any = $state(null);
@@ -214,7 +214,7 @@
 </svelte:head>
 
 {#if loading}
-	<Loading />
+	<Skeleton variant="card" count={3} />
 {:else if error}
 	<EmptyState icon="⚠️" title="Error" description={error}>
 		<Button onclick={loadCourseDetail}>{t('common.retry')}</Button>

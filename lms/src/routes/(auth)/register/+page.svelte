@@ -130,7 +130,6 @@
 		align-items: center;
 		justify-content: center;
 		padding: 24px;
-		background: var(--bg, #F4F7FA);
 	}
 
 	.register-card {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, Loading, EmptyState, StatCard, PageHeader } from '$lib/components/ui';
+	import { Button, Badge, Card, Skeleton, EmptyState, StatCard, PageHeader } from '$lib/components/ui';
 
 	let courses: any[] = $state([]);
 	let loading = $state(true);
@@ -44,7 +44,7 @@
 	</PageHeader>
 
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<EmptyState title="Error" description={error}>
 			<Button onclick={loadCourses}>{t('common.retry')}</Button>

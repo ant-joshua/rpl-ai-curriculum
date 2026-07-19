@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import {
-		Button, Badge, Modal, Input, Textarea, Select, Alert, Loading
+		Button, Badge, Modal, Input, Textarea, Select, Alert, Skeleton
 	} from '$lib/components/ui';
 
 	interface Question {
@@ -259,7 +259,7 @@
 	</div>
 
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<Alert variant="error">{error}</Alert>
 	{:else if q}

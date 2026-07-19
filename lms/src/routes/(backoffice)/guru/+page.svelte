@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, Loading } from '$lib/components/ui/index.js';
+	import { Card, Skeleton } from '$lib/components/ui/index.js';
 
 	let user: any = $state(null);
 	let loading = $state(true);
@@ -46,7 +46,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message={t('common.loading')} />
+		<Skeleton variant="block" count={1} />
 	{:else}
 		<div class="card-grid">
 			{#each menuCards as card}

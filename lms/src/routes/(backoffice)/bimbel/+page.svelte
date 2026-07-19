@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading } from '$lib/components/ui/index.js';
+	import { Skeleton } from '$lib/components/ui/index.js';
 	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
@@ -43,7 +43,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat statistik..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

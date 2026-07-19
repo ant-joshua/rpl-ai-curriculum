@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, Card, EmptyState, Input, Loading, Modal, PageHeader, SearchBar, SearchInput, Select, Table, Textarea } from '$lib/components/ui/index.js';
+	import { Badge, Button, Card, EmptyState, Input, Skeleton, Modal, PageHeader, SearchBar, SearchInput, Select, Table, Textarea } from '$lib/components/ui/index.js';
 
 	let users: any[] = $state([]);
 	let loading = $state(true);
@@ -152,7 +152,7 @@
 	</PageHeader>
 
 	{#if loading}
-		<Loading message={t('admin.loading_users')} />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>

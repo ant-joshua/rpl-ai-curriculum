@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardContent, CardTitle, Badge, Loading, EmptyState, Alert, StatCard, PageHeader } from '$lib/components/ui/index.js';
+	import { Button, Card, CardContent, CardTitle, Badge, Skeleton, EmptyState, Alert, StatCard, PageHeader } from '$lib/components/ui/index.js';
 
 	let recentBatches: any[] = $state([]);
 	let templates: any[] = $state([]);
@@ -137,7 +137,7 @@
 	<div class="section">
 		<h2>Recent Batches</h2>
 		{#if loading}
-			<Loading message="Loading batches..." />
+			<Skeleton variant="block" count={1} />
 		{:else if recentBatches.length === 0}
 			<EmptyState icon="📦" title="No Batches Yet" description="Create a batch to start generating report cards." />
 		{:else}

@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Loading, EmptyState, Badge, Select } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, Select } from '$lib/components/ui/index.js';
 
 	let raporList: any[] = $state([]);
 	let loading = $state(true);
@@ -62,7 +62,7 @@
 	</div>
 
 	{#if loading}
-		<Loading message="Memuat rapor..." />
+		<Skeleton variant="block" count={1} />
 	{:else if error}
 		<div class="error-state">{error}</div>
 	{:else if raporList.length === 0}

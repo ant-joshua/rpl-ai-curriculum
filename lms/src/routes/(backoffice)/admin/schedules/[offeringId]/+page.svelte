@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Button, Card, CardHeader, CardContent, Modal, Input, Textarea, Select, Alert, EmptyState, Loading } from '$lib/components/ui';
+  import { Button, Card, CardHeader, CardContent, Modal, Input, Textarea, Select, Alert, EmptyState, Skeleton } from '$lib/components/ui';
 
   let { data }: { data: { offeringId?: string } } = $props();
 
@@ -183,7 +183,7 @@
   </div>
 
   {#if loading}
-    <Loading />
+    <Skeleton variant="card" count={3} />
   {:else if !offeringId}
     <EmptyState icon="📅" title="Pilih Offering" description="Kunjungi halaman ini dari halaman detail kursus" />
   {:else}

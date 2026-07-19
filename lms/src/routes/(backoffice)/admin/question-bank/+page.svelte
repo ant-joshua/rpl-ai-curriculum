@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import {
-		Button, Badge, Modal, Input, Textarea, Select, Alert, Loading, EmptyState,
+		Button, Badge, Modal, Input, Textarea, Select, Alert, Skeleton, EmptyState,
 		DataTable
 	} from '$lib/components/ui';
 	import { PageHeader, SearchBar } from '$lib/components/ui';
@@ -432,7 +432,7 @@
 
 	<!-- Table -->
 	{#if loading}
-		<Loading />
+		<Skeleton variant="card" count={3} />
 	{:else if questions.length === 0}
 		<EmptyState
 			title="Belum Ada Soal"
