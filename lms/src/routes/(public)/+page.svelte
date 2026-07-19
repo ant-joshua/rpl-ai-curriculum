@@ -63,9 +63,9 @@
 				<input
 					type="text"
 					class="hero-input"
-					placeholder="Masukkan nama kamu"
+					placeholder="Email atau username..."
 					bind:value={name}
-					aria-label="Nama"
+					aria-label="Email atau username"
 				/>
 				<button type="submit" class="hero-cta" disabled={!name.trim()}>
 					Mulai Belajar

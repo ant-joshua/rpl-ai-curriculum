@@ -26,8 +26,8 @@
 		e.preventDefault();
 		const trimmed = name.trim();
 		if (!trimmed) {
-			error = 'Silakan masukkan nama kamu';
-			addToast('Silakan masukkan nama kamu', 'warning');
+			error = 'Silakan masukkan email atau username';
+			addToast('Silakan masukkan email atau username', 'warning');
 			return;
 		}
 
@@ -146,7 +146,7 @@
 				<input
 					type="text"
 					bind:value={name}
-					placeholder="Nama kamu..."
+					placeholder="Email atau username..."
 					class="login-input"
 					autocomplete="username"
 				/>
@@ -247,10 +247,10 @@
 	.login-input {
 		width: 100%;
 		padding: 10px 14px;
-		border: 1px solid rgba(0,0,0,0.06);
-		border-radius: 6px;
-		background: transparent;
-		color: #1a1a2e;
+		border: 1px solid var(--border, #E2E8F0);
+		border-radius: 8px;
+		background: var(--surface, #FFFFFF);
+		color: var(--text, #1a1a2e);
 		font-size: 14px;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
@@ -284,10 +284,10 @@
 	.login-submit {
 		width: 100%;
 		padding: 10px;
-		background: linear-gradient(135deg, #4F46E5, #4F46E5);
+		background: var(--accent, #4F46E5);
 		color: #fff;
 		border: none;
-		border-radius: 6px;
+		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 510;
 		font-family: inherit;
@@ -297,7 +297,7 @@
 	}
 
 	.login-submit:hover {
-		background: linear-gradient(135deg, #4F46E5, #828fff);
+		background: var(--accent-hover, #4338CA);
 		box-shadow: 0 2px 12px rgba(79,70,229,0.3);
 	}
 
@@ -343,10 +343,10 @@
 		gap: 8px;
 		width: 100%;
 		padding: 10px;
-		border: 1px solid rgba(0,0,0,0.06);
-		border-radius: 6px;
-		background: transparent;
-		color: #d0d6e0;
+		border: 1px solid var(--border, #E2E8F0);
+		border-radius: 8px;
+		background: var(--surface, #FFFFFF);
+		color: #64748b;
 		font-size: 13px;
 		font-weight: 510;
 		font-family: inherit;
@@ -357,9 +357,9 @@
 	}
 
 	.oauth-btn:hover {
-		background: rgba(0,0,0,0.04);
-		border-color: rgba(255,255,255,0.15);
-		color: #1a1a2e;
+		background: rgba(79,70,229,0.04);
+		border-color: var(--accent, #4F46E5);
+		color: var(--accent, #4F46E5);
 	}
 
 	.oauth-icon {
