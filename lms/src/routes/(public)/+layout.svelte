@@ -32,6 +32,16 @@
 		flex-direction: column;
 		background: var(--bg, #F4F7FA);
 		color: var(--text, #1a1a2e);
+		/* Force light theme on public pages */
+		--bg: #F4F7FA !important;
+		--surface: #FFFFFF !important;
+		--text: #1a1a2e !important;
+		--text-secondary: #64748b !important;
+		--text-muted: #94a3b8 !important;
+		--border: #E2E8F0 !important;
+		--accent: #4F46E5 !important;
+		--accent-hover: #4338CA !important;
+		--success: #22C55E !important;
 	}
 
 	.topbar {
