@@ -23,7 +23,7 @@
 			const json = await res.json();
 			items = json.items || [];
 		} catch (e) {
-			errorMsg = 'Gagal memuat data challenges';
+			errorMsg = t('challenges.error_load_data');
 		} finally {
 			loading = false;
 		}

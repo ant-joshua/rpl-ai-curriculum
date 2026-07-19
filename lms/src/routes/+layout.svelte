@@ -428,6 +428,7 @@
 
 	:global(html) {
 		background: var(--bg);
+		transition: background-color 0.3s ease, color 0.3s ease;
 	}
 
 	:global(body) {
@@ -437,6 +438,7 @@
 		line-height: 1.5;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+		transition: background-color 0.3s ease, color 0.3s ease;
 	}
 
 	:global(a) {
@@ -531,6 +533,16 @@
 	}
 	:global(.card:hover) {
 		box-shadow: var(--shadow-lg);
+	}
+
+	:global(.card),
+	:global(.welcome-card),
+	:global(.stat-card),
+	:global(.feature-card),
+	:global(.step-card),
+	:global(.why-card),
+	:global(.cta-card) {
+		transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
 	}
 
 	:global(input),
