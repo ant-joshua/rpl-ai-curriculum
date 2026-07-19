@@ -365,8 +365,8 @@
 		line-height: 1;
 	}
 	.search-toggle-btn:hover {
-		background: rgba(0,0,0,0.06);
-		border-color: rgba(255,255,255,0.15);
+		background: rgba(79,70,229,0.06);
+		border-color: rgba(79,70,229,0.15);
 	}
 
 	/* Responsive */

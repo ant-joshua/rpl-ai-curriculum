@@ -230,7 +230,7 @@
 
 	td {
 		font-size: 14px;
-		color: #d0d6e0;
+		color: #64748b;
 		padding: 12px 16px;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
@@ -272,7 +272,7 @@
 		padding: 4px 12px;
 		font-size: 13px;
 		font-weight: 510;
-		color: #d0d6e0;
+		color: #64748b;
 		cursor: pointer;
 		font-family: inherit;
 		transition: all 0.15s;

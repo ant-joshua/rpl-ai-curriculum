@@ -132,11 +132,11 @@ import { t } from '$lib/stores/i18n.svelte';
 				const studentId = getValue() || row.original.user_id;
 				const isDraft = !row.original.rapor_status || row.original.rapor_status === 'draft';
 				const genBtn = isDraft
-					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;background:rgba(0,0,0,0.04);color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
+					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid #E2E8F0;border-radius:6px;background:#FFFFFF;color:#64748b;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
 					: '';
 				const prevHref = `/guru/rapor/${classId}/${studentId}?semester=${selectedSemester}`;
 				const prevStyle = isDraft
-					? 'padding:4px 12px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;background:transparent;color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
+					? 'padding:4px 12px;border:1px solid #E2E8F0;border-radius:6px;background:#FFFFFF;color:#64748b;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
 					: 'padding:4px 12px;border:1px solid rgba(79,70,229,0.3);border-radius:6px;background:rgba(79,70,229,0.1);color:#4F46E5;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
 				return `<div style="display:flex;gap:6px;justify-content:flex-end">${genBtn}<a href="${prevHref}" style="${prevStyle}">Preview</a></div>`;
 			}

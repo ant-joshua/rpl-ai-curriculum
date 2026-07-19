@@ -506,7 +506,7 @@
 		border: 1px solid rgba(0,0,0,0.08);
 	}
 	.preview-area h4 { margin: 0 0 8px; color: #64748b; font-size: 12px; text-transform: uppercase; }
-	.markdown-preview { line-height: 1.7; font-size: 14px; color: #d0d6e0; }
+	.markdown-preview { line-height: 1.7; font-size: 14px; color: #64748b; }
 	.markdown-preview :global(h1), .markdown-preview :global(h2), .markdown-preview :global(h3) { margin: 8px 0; color: #1a1a2e; }
 	.markdown-preview :global(code) { background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 	.markdown-preview :global(pre) { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; overflow-x: auto; }

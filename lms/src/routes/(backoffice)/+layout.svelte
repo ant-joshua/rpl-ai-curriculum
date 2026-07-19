@@ -254,7 +254,7 @@
 		border-radius: 6px;
 		padding: 10px;
 		cursor: pointer;
-		color: #d0d6e0;
+		color: #64748b;
 		transition: all 0.15s ease;
 	}
 	.sidebar-toggle:hover {
@@ -381,7 +381,7 @@
 			background: rgba(0, 0, 0, 0.04);
 			border: 1px solid rgba(0, 0, 0, 0.06);
 			border-radius: 6px;
-			color: #d0d6e0;
+			color: #64748b;
 			cursor: pointer;
 			appearance: none;
 			-webkit-appearance: none;

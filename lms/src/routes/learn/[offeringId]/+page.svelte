@@ -442,7 +442,7 @@
 
 	.progress-label {
 		font-weight: 510;
-		color: #d0d6e0;
+		color: #64748b;
 		font-size: 14px;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -500,7 +500,7 @@
 	.instructor-name {
 		font-size: 15px;
 		font-weight: 510;
-		color: #d0d6e0;
+		color: #64748b;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
@@ -676,7 +676,7 @@
 	.lesson-title {
 		font-size: 14px;
 		font-weight: 510;
-		color: #d0d6e0;
+		color: #64748b;
 		margin-bottom: 2px;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -786,7 +786,7 @@
 	.quick-title {
 		font-size: 13px;
 		font-weight: 510;
-		color: #d0d6e0;
+		color: #64748b;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 

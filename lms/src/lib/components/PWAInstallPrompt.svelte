@@ -49,8 +49,9 @@
 		bottom: 1rem;
 		left: 50%;
 		transform: translateX(-50%);
-		background: #0f1011;
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface, #FFFFFF);
+		border: 1px solid var(--border, #E2E8F0);
+		box-shadow: 0 2px 16px rgba(0,0,0,0.08);
 		border-radius: 12px;
 		padding: 0.75rem 1.25rem;
 		display: flex;

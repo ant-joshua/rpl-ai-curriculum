@@ -170,7 +170,7 @@
     cursor: pointer;
     transition: all 0.15s;
   }
-  .filter-btn:hover { color: #1a1a2e; border-color: rgba(255,255,255,0.15); }
+  .filter-btn:hover { color: #4F46E5; border-color: #4F46E5; }
   .filter-btn.active {
     background: rgba(79,70,229,0.12);
     color: #4F46E5;

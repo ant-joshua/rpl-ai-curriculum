@@ -208,7 +208,7 @@
     background: transparent;
     border: 1px solid rgba(0,0,0,0.06);
     border-radius: 6px;
-    color: #d0d6e0;
+    color: #64748b;
     outline: none;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -258,9 +258,9 @@
   }
 
   .clear-btn:hover {
-    background: rgba(0,0,0,0.04);
-    border-color: rgba(255,255,255,0.15);
-    color: #1a1a2e;
+    background: rgba(79,70,229,0.06);
+    border-color: rgba(79,70,229,0.15);
+    color: #4F46E5;
   }
 
   /* Responsive */
