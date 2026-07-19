@@ -6,7 +6,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { modules } from '$lib/stores/modules';
 	import { api, getDeviceId } from '$lib/utils/api';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, Skeleton, EmptyState } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let userData = $state<{ username: string; created_at: string } | null>(null);
@@ -72,7 +72,17 @@
 
 <div class="profile-page">
 	{#if loading}
-		<div class="loading-state">{t('profile.loading')}</div>
+		<div class="skeleton-wrapper">
+			<div class="stats-grid">
+				{#each Array(6) as _}
+					<Skeleton variant="card" height="100px" />
+				{/each}
+			</div>
+			<div style="height:24px"></div>
+			<Skeleton variant="block" height="80px" />
+			<div style="height:24px"></div>
+			<Skeleton variant="block" height="160px" />
+		</div>
 	{:else}
 		<!-- User Stats Card -->
 		<div class="stats-card">
@@ -126,7 +136,7 @@
 		<div class="section-card">
 			<h2>{t('profile.badges_section', { count: badges.length })}</h2>
 			{#if badges.length === 0}
-				<p class="empty-state">{t('profile.badges_empty')}</p>
+				<EmptyState icon="🏆" title={t('profile.badges_empty')} description="Complete lessons and challenges to earn badges." />
 			{:else}
 				<div class="badge-grid">
 					{#each badges as badge}
@@ -143,7 +153,7 @@
 		<div class="section-card">
 			<h2>{t('profile.recent_activity')}</h2>
 			{#if activityData.length === 0}
-				<p class="empty-state">{t('profile.no_activity')}</p>
+				<EmptyState icon="🕐" title={t('profile.no_activity')} description="Start learning to see your activity here." />
 			{:else}
 				<div class="timeline">
 					{#each activityData.filter(a => a.action === 'complete') as act}
@@ -190,11 +200,15 @@
 
 	.loading-state {
 		text-align: center;
-		padding: 60px 20px;
+		padding: 60px;
 		color: var(--text-secondary);
 	}
 
-	.stats-card {
+	.skeleton-wrapper {
+		padding: 20px 0;
+	}
+
+	.empty-state {
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 16px;

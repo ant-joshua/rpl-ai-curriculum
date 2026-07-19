@@ -182,6 +182,38 @@
 	</section>
 
 	<!-- Grid: Courses + Side panel -->
+	<!-- XP Progress Ring widget -->
+	<section class="xp-ring-section">
+		<div class="section-header">
+			<h2>⭐ XP Progress</h2>
+		</div>
+		<div class="xp-ring-card">
+			<div class="xp-ring-svg">
+				<svg width="100" height="100" viewBox="0 0 36 36">
+					<path d="M18 2.0845
+						a 15.9155 15.9155 0 0 1 0 31.831
+						a 15.9155 15.9155 0 0 1 0 -31.831"
+						fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="3" />
+					<path d="M18 2.0845
+						a 15.9155 15.9155 0 0 1 0 31.831
+						a 15.9155 15.9155 0 0 1 0 -31.831"
+						fill="none" stroke="#4F46E5" stroke-width="3"
+						stroke-dasharray="{Math.min(Math.round((totalXp % 1000) / 10), 100)}, 100"
+						stroke-linecap="round"
+						style="transition: stroke-dasharray 0.6s ease" />
+				</svg>
+				<div class="xp-ring-center">
+					<span class="xp-ring-value">{totalXp}</span>
+					<span class="xp-ring-label">XP</span>
+				</div>
+			</div>
+			<div class="xp-ring-info">
+				<span class="xp-ring-stat">{Math.round((totalXp % 1000) / 10)}% ke level {Math.floor(totalXp / 1000) + 1}</span>
+				<span class="xp-ring-sub">{1000 - (totalXp % 1000)} XP tersisa</span>
+			</div>
+		</div>
+	</section>
+
 	<div class="content-grid">
 		<!-- Active Courses -->
 		<section class="courses-section">
@@ -361,7 +393,7 @@
 				{/if}
 			</section>
 
-			<!-- Recent Activity -->
+			<!-- Recent Activity with timeline -->
 			<section class="activity-section">
 				<div class="section-header">
 					<h2>🕐 Aktivitas Terbaru</h2>
@@ -376,10 +408,15 @@
 						</CardContent>
 					</Card>
 				{:else}
-					<div class="activity-list">
-						{#each recentActivity as act}
-							<div class="activity-item">
-								<span class="activity-dot"></span>
+					<div class="timeline">
+						{#each recentActivity as act, i}
+							<div class="timeline-item">
+								<div class="timeline-marker">
+									<span class="timeline-dot" class:timeline-dot--first={i === 0}></span>
+									{#if i < recentActivity.length - 1}
+										<span class="timeline-line"></span>
+									{/if}
+								</div>
 								<div class="activity-body">
 									<span class="activity-action">{activityLabel(act.action, act.entityType)}</span>
 									{#if act.metadata?.title}
@@ -499,7 +536,116 @@
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
-	/* Content grid layout */
+	/* XP Ring widget */
+	.xp-ring-section {
+		margin-bottom: 24px;
+	}
+
+	.xp-ring-card {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		background: linear-gradient(135deg, rgba(79,70,229,0.06), rgba(79,70,229,0.02));
+		border: 1px solid rgba(79,70,229,0.15);
+		border-radius: 12px;
+		padding: 20px 24px;
+	}
+
+	.xp-ring-svg {
+		position: relative;
+		width: 100px;
+		height: 100px;
+		flex-shrink: 0;
+	}
+
+	.xp-ring-center {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.xp-ring-value {
+		font-size: 22px;
+		font-weight: 700;
+		color: #4F46E5;
+		line-height: 1;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.xp-ring-label {
+		font-size: 10px;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		font-weight: 510;
+	}
+
+	.xp-ring-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.xp-ring-stat {
+		font-size: 15px;
+		font-weight: 590;
+		color: #1a1a2e;
+		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.xp-ring-sub {
+		font-size: 12px;
+		color: #64748b;
+	}
+
+	/* Timeline */
+	.timeline {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.timeline-item {
+		display: flex;
+		gap: 10px;
+		min-height: 44px;
+	}
+
+	.timeline-marker {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 14px;
+		flex-shrink: 0;
+	}
+
+	.timeline-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #cbd5e1;
+		flex-shrink: 0;
+		margin-top: 8px;
+		transition: all 0.2s ease;
+	}
+	.timeline-dot--first {
+		width: 10px;
+		height: 10px;
+		background: #4F46E5;
+		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+		margin-top: 7px;
+	}
+
+	.timeline-line {
+		width: 2px;
+		flex: 1;
+		background: linear-gradient(180deg, #e2e8f0, transparent);
+		margin: 2px 0;
+	}
+
 	.content-grid {
 		display: grid;
 		grid-template-columns: 1fr 340px;
@@ -642,6 +788,10 @@
 	.empty-state { text-align: center; padding: 20px; }
 	.empty-state h3 { margin: 8px 0 4px; font-size: 16px; font-weight: 590; color: #1a1a2e; font-feature-settings: 'cv01', 'ss03'; }
 	.empty-state p { color: #64748b; font-size: 13px; margin: 0 0 16px; }
+
+	/* Empty mini */
+	.empty-mini { text-align: center; padding: 20px; }
+	.empty-text { color: #64748b; font-size: 13px; margin: 0; }
 
 	/* Side panel */
 	.side-panel {

@@ -350,8 +350,10 @@
 
 	<main class="main-content animate-in">
 		{#key $page.url.pathname}
-			<div in:fade={{ duration: 150 }}>
-				{@render children()}
+			<div transition:fade={{ duration: 150 }}>
+				<div transition:fly={{ duration: 200, x: 10 }}>
+					{@render children()}
+				</div>
 			</div>
 		{/key}
 	</main>

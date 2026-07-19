@@ -214,6 +214,20 @@ button, input, textarea, select { font-family: inherit; }
 .animate-in-d11 { animation-delay: 0.55s; }
 .animate-in-d12 { animation-delay: 0.6s; }
 
+/* ===== anim-delay — stagger utility for skeleton groups ===== */
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.1s; }
+.anim-delay-3 { animation-delay: 0.15s; }
+.anim-delay-4 { animation-delay: 0.2s; }
+.anim-delay-5 { animation-delay: 0.25s; }
+.anim-delay-6 { animation-delay: 0.3s; }
+.anim-delay-7 { animation-delay: 0.35s; }
+.anim-delay-8 { animation-delay: 0.4s; }
+.anim-delay-9 { animation-delay: 0.45s; }
+.anim-delay-10 { animation-delay: 0.5s; }
+.anim-delay-11 { animation-delay: 0.55s; }
+.anim-delay-12 { animation-delay: 0.6s; }
+
 /* ===== Hover Effect Utilities ===== */
 .hover-lift {
 	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;

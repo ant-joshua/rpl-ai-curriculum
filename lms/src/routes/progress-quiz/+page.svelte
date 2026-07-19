@@ -6,6 +6,7 @@
   import { user } from '$lib/stores/user.svelte';
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
+  import { Skeleton } from '$lib/components/ui/index.js';
 
   const BLOCK_SIZE = 5;
   const totalModules = modules.length;

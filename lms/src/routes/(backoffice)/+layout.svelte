@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
+	import type { Snippet } from 'svelte';
+	import { setContext } from 'svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 	import type { PageData } from './$types';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: PageData } = $props();
 
@@ -12,6 +15,35 @@
 	let tenantLoading = $state(true);
 
 	const userRole = $derived(data?.role || '');
+
+	// --- Page header context ---
+	let headerTitle = $state('');
+	let headerActions = $state<Snippet | undefined>(undefined);
+	setContext('backoffice:headerTitle', {
+		get value() { return headerTitle; },
+		set value(v: string) { headerTitle = v; }
+	});
+	setContext('backoffice:headerActions', {
+		get value() { return headerActions; },
+		set value(v: Snippet | undefined) { headerActions = v; }
+	});
+
+	// --- Breadcrumb from URL ---
+	const breadcrumbItems = $derived.by(() => {
+		const path = $page.url.pathname;
+		const segments = path.split('/').filter(Boolean);
+		// Skip 't/{tenant}' prefix if present
+		let start = 0;
+		if (segments[0] === 't' && segments[1]) start = 2;
+		return segments.slice(start).map((seg, i, arr) => {
+			const href = '/' + segments.slice(0, start + i + 1).join('/');
+			const label = seg.replace(/-/g, ' ')
+				.split(' ')
+				.map(w => w.charAt(0).toUpperCase() + w.slice(1))
+				.join(' ');
+			return { label, href, isLast: i === arr.length - 1 };
+		});
+	});
 
 	type NavItem = { path: string; icon: string; label: string; roles: string[] };
 
@@ -163,11 +195,45 @@
 	</aside>
 
 	<main class="main-content">
-		<div class="admin-topbar">
-			<div class="admin-topbar-spacer"></div>
-			<NotificationBell />
+		<!-- Page header area with gradient -->
+		<div class="page-header-area">
+			<div class="header-breadcrumb">
+				<a href="/admin" class="breadcrumb-home">
+					<Icon name="home" size={14} />
+				</a>
+				{#each breadcrumbItems as crumb}
+					<span class="breadcrumb-sep">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+					</span>
+					{#if crumb.isLast}
+						<span class="breadcrumb-current">{crumb.label}</span>
+					{:else}
+						<a href={crumb.href} class="breadcrumb-link">{crumb.label}</a>
+					{/if}
+				{/each}
+			</div>
+
+			<div class="header-row">
+				<h1 class="page-title">
+					{#if headerTitle}
+						{headerTitle}
+					{:else}
+						{breadcrumbItems.length > 0 ? breadcrumbItems[breadcrumbItems.length - 1].label : 'Dashboard'}
+					{/if}
+				</h1>
+				<div class="header-actions">
+					{#if headerActions}
+						{@render headerActions()}
+					{/if}
+					<NotificationBell />
+				</div>
+			</div>
 		</div>
-		{@render children()}
+
+		<!-- Main content in Card container -->
+		<Card variant="default" padding="lg">
+			{@render children()}
+		</Card>
 	</main>
 </div>
 
@@ -349,15 +415,95 @@
 		color: #1a1a2e;
 	}
 
-	.admin-topbar {
+	/* === Page header area with gradient === */
+	.page-header-area {
+		background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 50%, #1a1a2e 100%);
+		border-radius: 12px;
+		padding: 20px 24px 18px;
+		margin-bottom: 20px;
+		position: relative;
+		overflow: hidden;
+	}
+	.page-header-area::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at 0% 100%, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+		pointer-events: none;
+	}
+	.page-header-area::after {
+		content: '';
+		position: absolute;
+		top: -50%;
+		right: -10%;
+		width: 300px;
+		height: 300px;
+		background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+		pointer-events: none;
+	}
+
+	.header-breadcrumb {
 		display: flex;
 		align-items: center;
-		justify-content: flex-end;
-		margin-bottom: 16px;
-		gap: 8px;
+		gap: 4px;
+		margin-bottom: 10px;
+		font-size: 12px;
+		position: relative;
+		z-index: 1;
 	}
-	.admin-topbar-spacer {
-		flex: 1;
+	.breadcrumb-home {
+		color: #94a3b8;
+		display: flex;
+		align-items: center;
+		padding: 2px;
+		border-radius: 4px;
+		transition: color 0.15s;
+		text-decoration: none !important;
+	}
+	.breadcrumb-home:hover { color: #e2e8f0; }
+	.breadcrumb-sep {
+		color: #475569;
+		display: flex;
+		align-items: center;
+	}
+	.breadcrumb-link {
+		color: #94a3b8;
+		text-decoration: none !important;
+		transition: color 0.15s;
+		padding: 2px 4px;
+		border-radius: 4px;
+	}
+	.breadcrumb-link:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+	.breadcrumb-current {
+		color: #e2e8f0;
+		font-weight: 510;
+		padding: 2px 4px;
+	}
+
+	.header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		position: relative;
+		z-index: 1;
+	}
+
+	.page-title {
+		font-size: 22px;
+		font-weight: 590;
+		color: #ffffff;
+		margin: 0;
+		letter-spacing: -0.24px;
+		font-feature-settings: 'cv01', 'ss03';
+		text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-shrink: 0;
 	}
 
 	.main-content {

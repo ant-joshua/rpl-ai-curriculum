@@ -6,7 +6,7 @@
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
   import { api } from '$lib/utils/api';
-  import { StatCard } from '$lib/components/ui';
+  import { StatCard, Skeleton } from '$lib/components/ui';
   import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 
   let loading = $state(true);
@@ -114,7 +114,19 @@
 
 <div class="insights-page">
   {#if loading}
-    <div class="loading">{t('insights.loading')}</div>
+    <div class="skeleton-wrapper">
+      <div class="stats-row">
+        {#each Array(4) as _}
+          <Skeleton variant="card" height="100px" />
+        {/each}
+      </div>
+      <div style="height:20px"></div>
+      <Skeleton variant="block" height="160px" />
+      <div style="height:16px"></div>
+      <Skeleton variant="block" height="180px" />
+      <div style="height:16px"></div>
+      <Skeleton variant="block" height="200px" />
+    </div>
   {:else if error}
     <div class="error-card">{error}</div>
   {:else}
@@ -265,6 +277,10 @@
     text-align: center;
     padding: 40px;
     color: var(--text-secondary);
+  }
+
+  .skeleton-wrapper {
+    padding: 20px 0;
   }
   .error-card {
     color: #ef4444;

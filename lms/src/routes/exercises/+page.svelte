@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n.svelte';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { adaptive } from '$lib/stores/adaptive.svelte';
-	import { onMount } from 'svelte';
-
-	let { data } = $props();
+	import { Skeleton, EmptyState } from '$lib/components/ui/index.js';
 
 	let exercisesData = $state<{ exercises: any[] } | null>(null);
 	let loading = $state(true);
@@ -91,7 +91,13 @@
 	</header>
 
 	{#if loading}
-		<div class="loading">{t('exercises.loading')}</div>
+		<div class="skeleton-wrapper">
+			<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+				{#each Array(6) as _}
+					<Skeleton variant="card" />
+				{/each}
+			</div>
+		</div>
 	{:else if !exercisesData}
 		<div class="error">{t('exercises.error')}</div>
 	{:else}
@@ -155,7 +161,7 @@
 		<hr class="section-sep" />
 
 		{#if filtered.length === 0}
-			<div class="empty">{t('exercises.empty_filtered')}</div>
+			<EmptyState icon="🔍" title={t('exercises.empty_filtered')} description="Try different search terms or filters." />
 		{:else}
 			<div class="grid">
 				{#each filtered as exercise}
@@ -205,6 +211,10 @@
 		padding: 48px 24px;
 		color: var(--text-secondary);
 		font-size: 16px;
+	}
+
+	.skeleton-wrapper {
+		padding: 40px 0;
 	}
 
 	.controls {

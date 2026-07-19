@@ -2,6 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { onMount } from 'svelte';
 	import { parseMarkdown } from '$lib/utils/markdown';
+	import { Skeleton, EmptyState } from '$lib/components/ui/index.js';
 
 	let items = $state<{ title: string; content: string; slug: string }[]>([]);
 	let activeSlug = $state<string | null>(null);
@@ -63,13 +64,17 @@
 				{/each}
 			</ul>
 			{#if filteredItems.length === 0 && !loading}
-				<p class="empty">{t('challenges.no_results')}</p>
+				<EmptyState icon="🔍" title={t('challenges.no_results')} description="Try adjusting your search." />
 			{/if}
 		</aside>
 
 		<main class="content-area">
 			{#if loading}
-				<div class="loading">{t('challenges.loading')}</div>
+				<div class="skeleton-wrapper">
+					<Skeleton variant="title" count={1} />
+					<div style="height:16px"></div>
+					<Skeleton variant="text" count={6} />
+				</div>
 			{:else if errorMsg}
 				<div class="error"><p>{errorMsg}</p></div>
 			{:else if activeSlug}
@@ -205,6 +210,13 @@
 		padding: 80px 20px;
 		color: var(--text-secondary);
 		font-size: 15px;
+	}
+
+	.skeleton-wrapper {
+		padding: 40px 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 	}
 
 	.markdown-content {
