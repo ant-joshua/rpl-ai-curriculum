@@ -166,7 +166,7 @@
     align-items: center;
     gap: 10px;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
   .search-icon { font-size: 16px; flex-shrink: 0; }
   .search-input {
@@ -174,21 +174,21 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #f7f8f8;
+    color: #1a1a2e;
     font-size: 15px;
     font-family: inherit;
   }
-  .search-input::placeholder { color: #62666d; }
+  .search-input::placeholder { color: #94a3b8; }
   .search-status { font-size: 14px; }
   .search-clear {
     background: none;
     border: none;
-    color: #8a8f98;
+    color: #64748b;
     cursor: pointer;
     font-size: 14px;
     padding: 4px;
   }
-  .search-clear:hover { color: #f7f8f8; }
+  .search-clear:hover { color: #1a1a2e; }
   .search-results {
     flex: 1;
     overflow-y: auto;
@@ -197,13 +197,13 @@
   .search-hint, .search-status-msg, .search-empty {
     text-align: center;
     padding: 24px 16px;
-    color: #8a8f98;
+    color: #64748b;
     font-size: 13px;
   }
   .result-count {
     padding: 4px 16px 10px;
     font-size: 12px;
-    color: #62666d;
+    color: #94a3b8;
     font-weight: 500;
   }
   .result-item {
@@ -212,18 +212,18 @@
     text-decoration: none;
     transition: background 0.1s;
   }
-  .result-item:hover { background: rgba(255,255,255,0.04); }
+  .result-item:hover { background: rgba(0,0,0,0.04); }
   .result-header {
     display: flex;
     align-items: baseline;
     gap: 6px;
     flex-wrap: wrap;
   }
-  .result-lesson-title { font-size: 14px; font-weight: 600; color: #f7f8f8; }
-  .result-block-title { font-size: 12px; color: #8a8f98; }
+  .result-lesson-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+  .result-block-title { font-size: 12px; color: #64748b; }
   .result-snippet {
     font-size: 12px;
-    color: #8a8f98;
+    color: #64748b;
     margin-top: 2px;
     line-height: 1.4;
     display: -webkit-box;
@@ -233,5 +233,5 @@
     overflow: hidden;
   }
   .result-meta { margin-top: 4px; }
-  .result-offering { font-size: 11px; color: #62666d; }
+  .result-offering { font-size: 11px; color: #94a3b8; }
 </style>

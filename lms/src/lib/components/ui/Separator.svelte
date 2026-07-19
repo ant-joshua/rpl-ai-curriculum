@@ -19,7 +19,7 @@
 		flex-shrink: 0;
 		border: none;
 		margin: 0;
-		background: var(--border, rgba(255,255,255,0.08));
+		background: var(--border, rgba(0,0,0,0.06));
 	}
 
 	.separator-horizontal {

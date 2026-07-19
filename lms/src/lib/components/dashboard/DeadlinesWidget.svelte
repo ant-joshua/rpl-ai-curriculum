@@ -75,13 +75,13 @@
 					<div class="deadline-right">
 						<span
 							class="deadline-date"
-							style="color: {countdown.urgent === 'danger' ? '#ef4444' : countdown.urgent === 'warning' ? '#f59e0b' : '#8a8f98'}"
+							style="color: {countdown.urgent === 'danger' ? '#ef4444' : countdown.urgent === 'warning' ? '#f59e0b' : '#64748b'}"
 						>
 							{formatDate(dl.due_date)}
 						</span>
 						<span
 							class="deadline-countdown"
-							style="color: {countdown.urgent === 'danger' ? '#ef4444' : countdown.urgent === 'warning' ? '#f59e0b' : '#8a8f98'}"
+							style="color: {countdown.urgent === 'danger' ? '#ef4444' : countdown.urgent === 'warning' ? '#f59e0b' : '#64748b'}"
 						>
 							{countdown.label}
 						</span>
@@ -94,8 +94,8 @@
 
 <style>
 	.deadlines-section {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		padding: 20px;
 	}
@@ -123,7 +123,7 @@
 		justify-content: space-between;
 		gap: 10px;
 		padding: 10px 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
 	.deadline-item:last-child {
@@ -159,7 +159,7 @@
 	.deadline-course {
 		font-size: 11px;
 		font-weight: 400;
-		color: #8a8f98;
+		color: #64748b;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

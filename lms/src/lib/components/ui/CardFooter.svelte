@@ -22,6 +22,6 @@
 		align-items: center;
 		gap: 8px;
 		padding-top: 12px;
-		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		border-top: 1px solid rgba(0, 0, 0, 0.04);
 	}
 </style>

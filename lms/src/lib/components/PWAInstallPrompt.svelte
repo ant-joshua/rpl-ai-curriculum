@@ -50,7 +50,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		background: #0f1011;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 12px;
 		padding: 0.75rem 1.25rem;
 		display: flex;
@@ -68,11 +68,11 @@
 	.pwa-install-content { display: flex; align-items: center; gap: 0.75rem; }
 	.pwa-icon { font-size: 1.5rem; }
 	.pwa-install-content div { display: flex; flex-direction: column; }
-	.pwa-install-content strong { color: #f7f8f8; font-size: 0.9rem; }
-	.pwa-install-content small { color: #8a8f98; font-size: 0.8rem; }
+	.pwa-install-content strong { color: #1a1a2e; font-size: 0.9rem; }
+	.pwa-install-content small { color: #64748b; font-size: 0.8rem; }
 	.pwa-install-actions { display: flex; align-items: center; gap: 0.5rem; }
 	.install-btn {
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		color: #fff;
 		border: none;
 		padding: 0.5rem 1rem;
@@ -86,11 +86,11 @@
 	.dismiss-btn {
 		background: none;
 		border: none;
-		color: #62666d;
+		color: #94a3b8;
 		cursor: pointer;
 		font-size: 1.1rem;
 		padding: 0.25rem;
 		line-height: 1;
 	}
-	.dismiss-btn:hover { color: #8a8f98; }
+	.dismiss-btn:hover { color: #64748b; }
 </style>

@@ -20,8 +20,8 @@
 
 <style>
   .skeleton-card {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: 8px;
     padding: 20px;
     display: flex;
@@ -35,7 +35,7 @@
     width: 60px;
     height: 20px;
     border-radius: 4px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+    background: linear-gradient(90deg, rgba(0,0,0,0.02) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.02) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
@@ -56,7 +56,7 @@
   .sc-line {
     height: 14px;
     border-radius: 6px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+    background: linear-gradient(90deg, rgba(0,0,0,0.02) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.02) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }

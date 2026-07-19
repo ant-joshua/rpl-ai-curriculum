@@ -52,7 +52,7 @@
 <style>
 	.select-label {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 4px;
@@ -65,9 +65,9 @@
 		padding: 0.5rem 2rem 0.5rem 0.75rem;
 		font-size: 0.875rem;
 		line-height: 1.25rem;
-		color: #f7f8f8;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: #1a1a2e;
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
 		transition: border-color 0.15s ease, box-shadow 0.15s ease;
 		font-family: var(--font-sans);
@@ -82,8 +82,8 @@
 	}
 	.select-field:focus {
 		outline: none;
-		border-color: #5e6ad2;
-		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
+		border-color: #4F46E5;
+		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 	}
 	.select-field:disabled {
 		opacity: 0.4;

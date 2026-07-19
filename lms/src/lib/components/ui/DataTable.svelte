@@ -159,8 +159,8 @@
 
 <style>
 	.dt-wrapper {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		overflow: hidden;
 		font-family: var(--font-sans);
@@ -172,19 +172,19 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
 	.dt-search-icon { font-size: 14px; opacity: 0.5; }
 
 	.dt-search-input {
 		flex: 1;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
 		padding: 6px 12px;
 		font-size: 13px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
 		outline: none;
@@ -192,11 +192,11 @@
 	}
 
 	.dt-search-input:focus {
-		border-color: #5e6ad2;
-		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
+		border-color: #4F46E5;
+		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 	}
 
-	.dt-search-input::placeholder { color: #8a8f98; }
+	.dt-search-input::placeholder { color: #64748b; }
 
 	.dt-scroll { overflow-x: auto; }
 
@@ -205,37 +205,37 @@
 		border-collapse: collapse;
 	}
 
-	thead tr { background: rgba(255, 255, 255, 0.04); }
+	thead tr { background: rgba(0, 0, 0, 0.04); }
 
 	th {
 		text-align: left;
 		font-size: 13px;
 		font-weight: 510;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		padding: 10px 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 		white-space: nowrap;
 		user-select: none;
 	}
 
 	th.sortable { cursor: pointer; transition: color 0.15s; }
-	th.sortable:hover { color: #f7f8f8; }
+	th.sortable:hover { color: #1a1a2e; }
 
 	.th-inner { display: flex; align-items: center; gap: 4px; }
-	.sort-arrow { font-size: 11px; color: #7170ff; }
-	.sort-arrow.faded { color: #62666d; }
+	.sort-arrow { font-size: 11px; color: #4F46E5; }
+	.sort-arrow.faded { color: #94a3b8; }
 
 	td {
 		font-size: 14px;
 		color: #d0d6e0;
 		padding: 12px 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
 	tbody tr { transition: background 0.15s; }
-	tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+	tbody tr:hover { background: rgba(0, 0, 0, 0.02); }
 	tbody tr:last-child td { border-bottom: none; }
 	tbody tr.clickable { cursor: pointer; }
 
@@ -249,22 +249,22 @@
 	}
 
 	.dt-empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
-	.dt-empty-text { font-size: 14px; color: #8a8f98; margin: 0; }
+	.dt-empty-text { font-size: 14px; color: #64748b; margin: 0; }
 
 	.dt-pagination {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 16px;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
-	.dt-page-info { font-size: 13px; color: #8a8f98; }
+	.dt-page-info { font-size: 13px; color: #64748b; }
 	.dt-page-controls { display: flex; gap: 6px; }
 
 	.dt-page-btn {
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.04);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
 		padding: 4px 12px;
 		font-size: 13px;
@@ -276,8 +276,8 @@
 	}
 
 	.dt-page-btn:hover:not(:disabled) {
-		background: rgba(255, 255, 255, 0.06);
-		color: #f7f8f8;
+		background: rgba(0, 0, 0, 0.08);
+		color: #1a1a2e;
 	}
 
 	.dt-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }

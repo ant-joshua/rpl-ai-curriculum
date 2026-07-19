@@ -55,7 +55,7 @@
 	);
 	let gradientEnd = $derived(
 		level === 'Beginner' ? '#10b981' :
-		level === 'Intermediate' ? '#5e6ad2' :
+		level === 'Intermediate' ? '#4F46E5' :
 		level === 'Advanced' ? '#a855f7' : '#10b981'
 	);
 </script>

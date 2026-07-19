@@ -298,7 +298,7 @@
 
 	.item-user {
 		font-weight: 600;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		white-space: nowrap;
 	}
 
@@ -329,7 +329,7 @@
 
 	.load-more:hover {
 		border-color: #6c5ce7;
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	.load-more:disabled {

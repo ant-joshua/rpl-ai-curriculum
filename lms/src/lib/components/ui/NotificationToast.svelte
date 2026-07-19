@@ -83,9 +83,9 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 12px 14px;
-		background: var(--surface, #191a1b);
-		border: 1px solid var(--accent-dim, rgba(94,106,210,0.3));
-		border-left: 4px solid var(--accent, #5e6ad2);
+		background: var(--surface, #F1F5F9);
+		border: 1px solid var(--accent-dim, rgba(79,70,229,0.3));
+		border-left: 4px solid var(--accent, #4F46E5);
 		border-radius: 10px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 		pointer-events: auto;
@@ -107,12 +107,12 @@
 	.nt-title {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--text, #f7f8f8);
+		color: var(--text, #1a1a2e);
 		line-height: 1.3;
 	}
 	.nt-desc {
 		font-size: 12px;
-		color: var(--text-secondary, #8a8f98);
+		color: var(--text-secondary, #64748b);
 		margin-top: 2px;
 		line-height: 1.4;
 		overflow: hidden;
@@ -125,7 +125,7 @@
 		flex-shrink: 0;
 		background: none;
 		border: none;
-		color: var(--text-secondary, #8a8f98);
+		color: var(--text-secondary, #64748b);
 		cursor: pointer;
 		font-size: 14px;
 		padding: 2px;
@@ -134,6 +134,6 @@
 		transition: color 0.15s;
 	}
 	.nt-close:hover {
-		color: var(--text, #f7f8f8);
+		color: var(--text, #1a1a2e);
 	}
 </style>

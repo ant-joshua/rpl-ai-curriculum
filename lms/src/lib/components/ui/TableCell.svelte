@@ -23,7 +23,7 @@
 	}
 	:global(.table-header) .table-cell {
 		font-weight: 510;
-		color: #8a8f98;
+		color: #64748b;
 		font-size: 0.8125rem;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;

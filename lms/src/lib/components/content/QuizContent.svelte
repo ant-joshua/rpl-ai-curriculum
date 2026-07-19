@@ -98,7 +98,7 @@
 		line-height: 1.6;
 	}
 	.question-card {
-		background: rgba(255,255,255,0.02);
+		background: rgba(0,0,0,0.02);
 		border: 1px solid var(--border);
 		border-radius: 10px;
 		padding: 16px;
@@ -158,7 +158,7 @@
 		width: 24px;
 		height: 24px;
 		border-radius: 6px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 		font-size: 12px;
 		font-weight: 700;
 		flex-shrink: 0;

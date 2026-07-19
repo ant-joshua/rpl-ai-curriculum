@@ -315,7 +315,7 @@
 
 	.console-panel {
 		border-top: 1px solid var(--border);
-		background: #191a1b;
+		background: #F1F5F9;
 		color: #d4d4d4;
 		flex-shrink: 0;
 		height: 200px;

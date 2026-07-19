@@ -132,8 +132,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: 8px;
     padding: 20px;
     transition: all 0.15s ease;
@@ -142,14 +142,14 @@
   }
 
   .course-card:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(94,106,210,0.25);
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(79,70,229,0.25);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(94,106,210,0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(79,70,229,0.1);
   }
 
   .course-card.enrolled {
-    border-color: rgba(94,106,210,0.3);
+    border-color: rgba(79,70,229,0.3);
   }
 
   .course-card.locked {
@@ -157,7 +157,7 @@
   }
 
   .course-card.locked:hover {
-    border-color: rgba(255,255,255,0.08);
+    border-color: rgba(0,0,0,0.06);
   }
 
   .card-top {
@@ -174,21 +174,21 @@
   .card-title {
     font-size: 16px;
     font-weight: 590;
-    color: #f7f8f8;
+    color: #1a1a2e;
     margin: 0 0 4px;
     line-height: 1.3;
   }
 
   .card-offering-name {
     font-size: 12px;
-    color: #62666d;
+    color: #94a3b8;
     margin: 0 0 6px;
   }
 
   .card-desc {
     font-size: 13px;
     font-weight: 400;
-    color: #8a8f98;
+    color: #64748b;
     line-height: 1.5;
     margin: 0;
     display: -webkit-box;
@@ -245,7 +245,7 @@
 
   .meta-instructor {
     font-size: 12px;
-    color: #8a8f98;
+    color: #64748b;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -255,8 +255,8 @@
   .meta-level {
     font-size: 11px;
     font-weight: 500;
-    color: #8a8f98;
-    background: rgba(255,255,255,0.04);
+    color: #64748b;
+    background: rgba(0,0,0,0.04);
     padding: 2px 8px;
     border-radius: 4px;
   }
@@ -264,7 +264,7 @@
   .meta-xp {
     font-size: 11px;
     font-weight: 600;
-    color: #7170ff;
+    color: #4F46E5;
     display: inline-flex;
     align-items: center;
     gap: 3px;

@@ -93,8 +93,8 @@
 
 <style>
 	.activity-section {
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		padding: 20px;
 	}
@@ -121,7 +121,7 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 10px 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 
 	.activity-item:last-child {
@@ -135,9 +135,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.04);
+		background: rgba(0, 0, 0, 0.04);
 		border-radius: 6px;
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.activity-body {
@@ -158,13 +158,13 @@
 	.activity-course {
 		font-size: 11px;
 		font-weight: 400;
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.activity-time {
 		font-size: 11px;
 		font-weight: 400;
-		color: #8a8f98;
+		color: #64748b;
 		flex-shrink: 0;
 		white-space: nowrap;
 	}

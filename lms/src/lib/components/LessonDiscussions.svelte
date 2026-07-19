@@ -374,7 +374,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--accent-dim, rgba(94, 106, 210, 0.2));
+    background: var(--accent-dim, rgba(79, 70, 229, 0.2));
     color: var(--accent);
     display: flex;
     align-items: center;
@@ -413,7 +413,7 @@
     font-weight: 600;
     padding: 1px 8px;
     border-radius: 4px;
-    background: rgba(94, 106, 210, 0.15);
+    background: rgba(79, 70, 229, 0.15);
     color: var(--accent);
   }
 
@@ -467,7 +467,7 @@
   .reply-form-inline {
     margin-top: 12px;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.03);
     border-radius: 8px;
   }
 

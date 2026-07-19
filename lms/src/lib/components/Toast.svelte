@@ -53,8 +53,8 @@
 		gap: 10px;
 		padding: 12px 16px;
 		border-radius: 10px;
-		background: var(--surface, #191a1b);
-		color: var(--text, #f7f8f8);
+		background: var(--surface, #F1F5F9);
+		color: var(--text, #1a1a2e);
 		font-size: 14px;
 		font-weight: 500;
 		line-height: 1.4;
@@ -102,6 +102,6 @@
 		transition: color 0.15s ease;
 	}
 	.toast-close:hover {
-		color: var(--text, #f7f8f8);
+		color: var(--text, #1a1a2e);
 	}
 </style>

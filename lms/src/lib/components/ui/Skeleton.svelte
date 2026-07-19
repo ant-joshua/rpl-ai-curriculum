@@ -77,9 +77,9 @@
 	.skeleton {
 		background: linear-gradient(
 			90deg,
-			rgba(255,255,255,0.02) 25%,
-			rgba(255,255,255,0.06) 50%,
-			rgba(255,255,255,0.02) 75%
+			rgba(0,0,0,0.02) 25%,
+			rgba(0,0,0,0.08) 50%,
+			rgba(0,0,0,0.02) 75%
 		);
 		background-size: 200% 100%;
 	}

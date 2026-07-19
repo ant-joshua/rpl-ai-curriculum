@@ -32,8 +32,8 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		padding: 3px;
 	}
@@ -43,7 +43,7 @@
 		font-weight: 510;
 		font-family: var(--font-sans);
 		font-feature-settings: 'cv01', 'ss03';
-		color: #8a8f98;
+		color: #64748b;
 		background: none;
 		border: none;
 		border-radius: 6px;
@@ -52,10 +52,10 @@
 		white-space: nowrap;
 	}
 	.ui-toggle-btn:hover {
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 	.ui-toggle-btn.active {
-		background: #5e6ad2;
+		background: #4F46E5;
 		color: #ffffff;
 	}
 </style>

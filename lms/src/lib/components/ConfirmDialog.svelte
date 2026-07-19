@@ -85,8 +85,8 @@
 	}
 
 	.dialog {
-		background: var(--surface, rgba(255,255,255,0.02));
-		border: 1px solid var(--border, rgba(255,255,255,0.08));
+		background: var(--surface, rgba(0,0,0,0.02));
+		border: 1px solid var(--border, rgba(0,0,0,0.06));
 		border-radius: 14px;
 		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
 		max-width: 400px;
@@ -153,9 +153,9 @@
 	}
 
 	.btn-cancel {
-		background: var(--hover, rgba(255,255,255,0.05));
+		background: var(--hover, rgba(0,0,0,0.05));
 		color: var(--text-secondary, #8b8fa3);
-		border: 1px solid var(--border, rgba(255,255,255,0.08));
+		border: 1px solid var(--border, rgba(0,0,0,0.06));
 	}
 	.btn-cancel:hover {
 		background: var(--surface-hover, #242638);

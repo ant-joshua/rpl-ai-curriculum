@@ -106,7 +106,7 @@
 		min-width: 280px;
 		height: 100%;
 		background: #0f1011;
-		border-right: 1px solid rgba(255, 255, 255, 0.06);
+		border-right: 1px solid rgba(0, 0, 0, 0.08);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -120,13 +120,13 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 16px 12px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 	}
 
 	.sidebar-title {
 		font-size: 13px;
 		font-weight: 600;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -140,13 +140,13 @@
 		border-radius: 6px;
 		border: none;
 		background: transparent;
-		color: #8a8f98;
+		color: #64748b;
 		cursor: pointer;
 		transition: all 0.15s;
 	}
 	.sidebar-close:hover {
-		background: rgba(255,255,255,0.06);
-		color: #f7f8f8;
+		background: rgba(0,0,0,0.08);
+		color: #1a1a2e;
 	}
 
 	.sidebar-nav {
@@ -167,27 +167,27 @@
 		text-decoration: none;
 		font-size: 13px;
 		font-weight: 510;
-		color: #8a8f98;
+		color: #64748b;
 		transition: all 0.15s ease;
 		position: relative;
 	}
 
 	.sidebar-item:hover:not(.locked) {
-		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
+		background: rgba(0, 0, 0, 0.04);
+		color: #1a1a2e;
 	}
 
 	.sidebar-item.current {
-		color: #7170ff;
-		background: rgba(94, 106, 210, 0.12);
+		color: #4F46E5;
+		background: rgba(79, 70, 229, 0.12);
 	}
 
 	.sidebar-item.completed {
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.sidebar-item.locked {
-		color: #62666d;
+		color: #94a3b8;
 		opacity: 0.5;
 		cursor: default;
 		pointer-events: none;
@@ -203,12 +203,12 @@
 		font-size: 11px;
 		font-weight: 600;
 		flex-shrink: 0;
-		background: rgba(255,255,255,0.04);
+		background: rgba(0,0,0,0.04);
 		color: inherit;
 	}
 	.sidebar-item.current .item-number {
-		background: rgba(94, 106, 210, 0.2);
-		color: #7170ff;
+		background: rgba(79, 70, 229, 0.2);
+		color: #4F46E5;
 	}
 	.sidebar-item.completed .item-number {
 		background: rgba(16, 185, 129, 0.12);
@@ -237,14 +237,14 @@
 		color: #10b981;
 	}
 	.sidebar-item.locked .item-status-icon {
-		color: #62666d;
+		color: #94a3b8;
 	}
 
 	.current-dot {
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: #7170ff;
+		background: #4F46E5;
 		display: block;
 	}
 

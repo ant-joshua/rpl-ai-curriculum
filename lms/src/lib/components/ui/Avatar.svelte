@@ -66,10 +66,10 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 50%;
-		background: var(--hover, rgba(255,255,255,0.05));
+		background: var(--hover, rgba(0,0,0,0.05));
 		overflow: hidden;
 		flex-shrink: 0;
-		border: 2px solid var(--border, rgba(255,255,255,0.08));
+		border: 2px solid var(--border, rgba(0,0,0,0.06));
 	}
 
 	.avatar-img {
@@ -87,6 +87,6 @@
 	}
 
 	.avatar-fallback {
-		color: var(--muted, #8a8f98);
+		color: var(--muted, #64748b);
 	}
 </style>

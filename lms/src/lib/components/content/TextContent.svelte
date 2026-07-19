@@ -65,37 +65,37 @@
 		font-size: 22px;
 		font-weight: 700;
 		margin: 32px 0 12px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		letter-spacing: -0.01em;
 	}
 	.prose :global(h3) {
 		font-size: 18px;
 		font-weight: 600;
 		margin: 28px 0 8px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 	.prose :global(h4) {
 		font-size: 16px;
 		font-weight: 600;
 		margin: 24px 0 8px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	/* Inline code */
 	.prose :global(code) {
-		background: rgba(255, 255, 255, 0.06);
+		background: rgba(0, 0, 0, 0.08);
 		padding: 2px 6px;
 		border-radius: 4px;
 		font-size: 0.875em;
 		font-family: var(--font-mono, 'JetBrains Mono', monospace);
 		color: #e2e4e7;
-		border: 1px solid rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(0, 0, 0, 0.04);
 	}
 
 	/* Code blocks — dark bg with syntax highlight */
 	.prose :global(pre) {
 		background: #0d0e17;
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(0, 0, 0, 0.08);
 		border-radius: 8px;
 		padding: 20px;
 		overflow-x: auto;
@@ -120,14 +120,14 @@
 
 	/* Links */
 	.prose :global(a) {
-		color: #5e6ad2;
+		color: #4F46E5;
 		text-decoration: none;
-		border-bottom: 1px solid rgba(94, 106, 210, 0.3);
+		border-bottom: 1px solid rgba(79, 70, 229, 0.3);
 		transition: border-color 0.15s;
 	}
 	.prose :global(a:hover) {
-		color: #7170ff;
-		border-bottom-color: #7170ff;
+		color: #4F46E5;
+		border-bottom-color: #4F46E5;
 	}
 
 	/* Images */
@@ -136,15 +136,15 @@
 		border-radius: 8px;
 		margin: 20px auto;
 		display: block;
-		border: 1px solid rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(0, 0, 0, 0.04);
 	}
 
 	/* Blockquotes */
 	.prose :global(blockquote) {
-		border-left: 3px solid #5e6ad2;
+		border-left: 3px solid #4F46E5;
 		margin: 20px 0;
 		padding: 12px 20px;
-		background: rgba(94, 106, 210, 0.04);
+		background: rgba(79, 70, 229, 0.04);
 		border-radius: 0 8px 8px 0;
 		color: #a0a5b0;
 		font-style: italic;
@@ -168,7 +168,7 @@
 	/* Horizontal rule */
 	.prose :global(hr) {
 		border: none;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		border-top: 1px solid rgba(0, 0, 0, 0.08);
 		margin: 32px 0;
 	}
 
@@ -180,20 +180,20 @@
 		font-size: 14px;
 	}
 	.prose :global(th), .prose :global(td) {
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		padding: 10px 14px;
 		text-align: left;
 	}
 	.prose :global(th) {
-		background: rgba(255, 255, 255, 0.04);
+		background: rgba(0, 0, 0, 0.04);
 		font-weight: 600;
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 	.prose :global(td) {
 		color: #d0d6e0;
 	}
 	.prose :global(tr:nth-child(even) td) {
-		background: rgba(255, 255, 255, 0.02);
+		background: rgba(0, 0, 0, 0.02);
 	}
 
 	/* Video embeds */
@@ -205,7 +205,7 @@
 		margin: 20px 0;
 		aspect-ratio: 16 / 9;
 		background: #000;
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(0, 0, 0, 0.08);
 	}
 	.prose :global(.video-embed-wrapper iframe) {
 		position: absolute;
@@ -219,14 +219,14 @@
 	.prose :global(figcaption),
 	.prose :global(.image-caption) {
 		font-size: 13px;
-		color: #62666d;
+		color: #94a3b8;
 		text-align: center;
 		margin-top: 4px;
 	}
 
 	/* Emphasis */
 	.prose :global(strong) {
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-weight: 600;
 	}
 	.prose :global(em) {
@@ -235,7 +235,7 @@
 
 	/* Abbreviations */
 	.prose :global(abbr) {
-		border-bottom: 1px dotted #62666d;
+		border-bottom: 1px dotted #94a3b8;
 		cursor: help;
 	}
 

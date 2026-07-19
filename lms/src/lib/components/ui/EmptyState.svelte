@@ -61,7 +61,7 @@
 
   .empty-state-icon {
     margin-bottom: 16px;
-    color: #62666d;
+    color: #94a3b8;
   }
 
   .emoji-icon {
@@ -72,13 +72,13 @@
   .empty-state-title {
     font-size: 16px;
     font-weight: 510;
-    color: #f7f8f8;
+    color: #1a1a2e;
     margin: 0 0 8px;
   }
 
   .empty-state-description {
     font-size: 14px;
-    color: #8a8f98;
+    color: #64748b;
     margin: 0;
     max-width: 400px;
     line-height: 1.5;

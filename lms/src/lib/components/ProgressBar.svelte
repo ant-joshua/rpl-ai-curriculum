@@ -23,7 +23,7 @@
 	.progress-bar {
 		flex: 1;
 		height: 8px;
-		background: var(--bg-secondary, rgba(255,255,255,0.02));
+		background: var(--bg-secondary, rgba(0,0,0,0.02));
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -31,7 +31,7 @@
 	.progress-fill {
 		height: 100%;
 		border-radius: 4px;
-		background: linear-gradient(90deg, var(--accent, #5e6ad2), var(--accent-secondary, #a78bfa));
+		background: linear-gradient(90deg, var(--accent, #4F46E5), var(--accent-secondary, #a78bfa));
 		transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 

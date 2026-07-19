@@ -41,7 +41,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     padding-bottom: 16px;
     gap: 16px;
     font-family: var(--font-sans);
@@ -58,14 +58,14 @@
     font-size: 24px;
     font-weight: 590;
     letter-spacing: -0.288px;
-    color: #f7f8f8;
+    color: #1a1a2e;
     margin: 0;
     line-height: 1.2;
   }
 
   .page-header-subtitle {
     font-size: 14px;
-    color: #8a8f98;
+    color: #64748b;
     margin: 4px 0 0;
     line-height: 1.4;
   }

@@ -290,7 +290,10 @@
 					</div>
 					<div class="xp-row">
 						<span class="xp-level-badge">Lv.{lvl.level}</span>
-						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext} XP</span>
+						{#if gamification.computeStats().streak > 0}
+							<span class="xp-streak">🔥 {gamification.computeStats().streak}</span>
+						{/if}
+						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext}</span>
 					</div>
 				</div>
 			{/if}
@@ -776,7 +779,7 @@
 
 	.xp-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #5e6ad2);
+		background: linear-gradient(90deg, #22C55E, #16A34A);
 		border-radius: 2px;
 		transition: width 0.3s ease;
 	}
@@ -787,10 +790,24 @@
 		align-items: center;
 	}
 
+	.xp-streak {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		font-size: 10px;
+		font-weight: 600;
+		color: #F59E0B;
+		animation: pulse-fire 1.5s ease-in-out infinite;
+	}
+	@keyframes pulse-fire {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.1); }
+	}
+
 	.xp-level-badge {
 		font-size: 11px;
 		font-weight: 590;
-		color: #5e6ad2;
+		color: #22C55E;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 

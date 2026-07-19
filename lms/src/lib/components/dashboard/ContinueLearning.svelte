@@ -95,8 +95,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		padding: 16px;
 		text-decoration: none;
@@ -135,7 +135,7 @@
 	.course-last {
 		font-size: 12px;
 		font-weight: 400;
-		color: #8a8f98;
+		color: #64748b;
 		margin: 0;
 		white-space: nowrap;
 		overflow: hidden;
@@ -157,13 +157,13 @@
 	.course-pct {
 		font-size: 13px;
 		font-weight: 590;
-		color: #7170ff;
+		color: #4F46E5;
 	}
 
 	.course-count {
 		font-size: 11px;
 		font-weight: 400;
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.course-resume {
@@ -172,7 +172,7 @@
 		gap: 4px;
 		font-size: 12px;
 		font-weight: 510;
-		color: #5e6ad2;
+		color: #4F46E5;
 	}
 
 	@media (max-width: 768px) {

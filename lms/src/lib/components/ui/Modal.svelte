@@ -68,8 +68,8 @@
 		animation: fadeIn 0.15s ease;
 	}
 	.ui-modal {
-		background: #191a1b;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: #F1F5F9;
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 12px;
 		width: 100%;
 		max-width: 480px;
@@ -89,28 +89,28 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 16px 20px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 		flex-shrink: 0;
 	}
 	.ui-modal-title {
 		font-size: 17px;
 		font-weight: 590;
 		margin: 0;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 	.ui-modal-close {
 		background: none;
 		border: none;
 		font-size: 24px;
-		color: #8a8f98;
+		color: #64748b;
 		cursor: pointer;
 		padding: 0;
 		line-height: 1;
 		transition: color 0.15s;
 	}
 	.ui-modal-close:hover {
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 	.ui-modal-body {
 		padding: 20px;
@@ -125,7 +125,7 @@
 		justify-content: flex-end;
 		gap: 8px;
 		padding: 16px 20px;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
 		flex-shrink: 0;
 	}
 

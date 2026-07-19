@@ -72,7 +72,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 6px 12px;
-		background: rgba(255,255,255,0.03);
+		background: rgba(0,0,0,0.03);
 		border-bottom: 1px solid var(--border);
 	}
 	.code-label {

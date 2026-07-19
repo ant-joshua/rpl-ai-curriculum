@@ -19,7 +19,7 @@
 <style>
 	.card-description {
 		font-size: 0.875rem;
-		color: #8a8f98;
+		color: #64748b;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 </style>

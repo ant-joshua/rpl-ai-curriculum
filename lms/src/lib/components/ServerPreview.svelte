@@ -387,7 +387,7 @@
 	}
 
 	.endpoint-detail {
-		background: #191a1b;
+		background: #F1F5F9;
 		border-radius: 8px;
 		overflow: hidden;
 	}
@@ -483,7 +483,7 @@
 	}
 
 	.command-block {
-		background: #191a1b;
+		background: #F1F5F9;
 		border: 1px solid #2d3154;
 		border-radius: 8px;
 		padding: 1rem;
@@ -533,7 +533,7 @@
 	}
 
 	.instruction-section code {
-		background: #191a1b;
+		background: #F1F5F9;
 		padding: 0.1rem 0.3rem;
 		border-radius: 3px;
 		font-family: 'Fira Code', monospace;
@@ -551,7 +551,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 2rem;
-		background: #191a1b;
+		background: #F1F5F9;
 		border: 2px dashed #2d3154;
 		border-radius: 8px;
 		gap: 0.75rem;
