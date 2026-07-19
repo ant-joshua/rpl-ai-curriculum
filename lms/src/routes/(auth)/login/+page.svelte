@@ -141,7 +141,7 @@
 			</form>
 		{:else}
 			<!-- Normal Login -->
-			<p class="login-desc">Masukkan nama kamu untuk mulai belajar</p>
+			<p class="login-desc">Masukkan email atau username kamu untuk mulai belajar</p>
 			<form onsubmit={handleLogin}>
 				<input
 					type="text"
@@ -184,6 +184,10 @@
 
 			<p class="reset-link">
 				<a href="/reset-password">Lupa Password?</a>
+			</p>
+
+			<p class="register-link">
+				Belum punya akun? <a href="/register">Daftar di sini</a>
 			</p>
 
 			<p class="oauth-note">
@@ -360,6 +364,20 @@
 
 	.oauth-icon {
 		font-size: 16px;
+	}
+
+	.register-link {
+		margin-top: 16px;
+		font-size: 13px;
+		color: #64748b;
+	}
+	.register-link a {
+		color: #4F46E5;
+		text-decoration: none;
+		font-weight: 510;
+	}
+	.register-link a:hover {
+		text-decoration: underline;
 	}
 
 	.oauth-note {

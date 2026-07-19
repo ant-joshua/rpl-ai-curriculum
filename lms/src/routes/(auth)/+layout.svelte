@@ -15,6 +15,14 @@
 	<div class="auth-blob blob-2"></div>
 	<div class="auth-blob blob-3"></div>
 
+	<a href="/" class="back-home" aria-label="Kembali ke beranda">
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+			<polyline points="9 22 9 12 15 12 15 22"/>
+		</svg>
+		<span>Beranda</span>
+	</a>
+
 	<div class="auth-container">
 		{@render children()}
 	</div>
@@ -122,5 +130,34 @@
 		0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
 		33% { transform: translate(-50px, 40px) rotate(90deg) scale(1.05); }
 		66% { transform: translate(30px, -50px) rotate(180deg) scale(0.95); }
+	}
+
+	.back-home {
+		position: fixed;
+		top: 20px;
+		left: 20px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 14px;
+		border-radius: 8px;
+		background: rgba(255,255,255,0.9);
+		backdrop-filter: blur(8px);
+		border: 1px solid #E2E8F0;
+		color: #64748b;
+		font-size: 13px;
+		font-weight: 500;
+		text-decoration: none !important;
+		z-index: 10;
+		transition: all 0.15s;
+	}
+	.back-home:hover {
+		background: #FFFFFF;
+		border-color: #4F46E5;
+		color: #4F46E5;
+		box-shadow: 0 2px 8px rgba(79,70,229,0.12);
+	}
+	.back-home svg {
+		flex-shrink: 0;
 	}
 </style>
