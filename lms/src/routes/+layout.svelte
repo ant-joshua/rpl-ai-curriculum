@@ -71,6 +71,10 @@
 		sidebarOpen = false;
 	}
 
+	function openSidebar() {
+		sidebarOpen = true;
+	}
+
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
 	}
@@ -159,6 +163,20 @@
 		};
 	});
 
+	// Auto-open sidebar on resize to desktop breakpoint
+	$effect(() => {
+		if (!browser) return;
+
+		function onResize() {
+			if (window.innerWidth > 768) {
+				openSidebar();
+			}
+		}
+
+		window.addEventListener('resize', onResize);
+		return () => window.removeEventListener('resize', onResize);
+	});
+
 	// Keyboard shortcuts
 	$effect(() => {
 		if (!browser) return;
@@ -214,7 +232,7 @@
 <!-- Mobile hamburger -->
 {#if !isMinimalRoute}
 <button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigation">
-	<Icon name="menu" size={20} />
+	<Icon name={sidebarOpen ? "x" : "menu"} size={20} />
 </button>
 
 <!-- Sidebar overlay (mobile) -->

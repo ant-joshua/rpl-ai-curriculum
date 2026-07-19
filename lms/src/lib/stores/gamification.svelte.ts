@@ -16,8 +16,10 @@ export interface Badge {
 	name: string;
 	description: string;
 	icon: string;
+	category: 'learning' | 'streak' | 'quiz';
 	unlockedAt?: string;
 	condition: (stats: UserStats) => boolean;
+	getProgress?: (stats: UserStats) => { current: number; max: number };
 }
 
 export interface UserStats {
@@ -59,55 +61,70 @@ export const predefinedBadges: Badge[] = [
 		name: 'First Steps',
 		description: 'Complete your first session',
 		icon: '🚀',
+		category: 'learning',
 		condition: (s) => s.completedSessions >= 1,
+		getProgress: (s) => ({ current: Math.min(s.completedSessions, 1), max: 1 }),
 	},
 	{
 		id: 'streak-3',
 		name: 'Streak 3',
 		description: '3-day study streak',
 		icon: '🔥',
+		category: 'streak',
 		condition: (s) => s.streak >= 3,
+		getProgress: (s) => ({ current: Math.min(s.streak, 3), max: 3 }),
 	},
 	{
 		id: 'streak-7',
 		name: 'Streak 7',
 		description: '7-day study streak',
 		icon: '🔥',
+		category: 'streak',
 		condition: (s) => s.streak >= 7,
+		getProgress: (s) => ({ current: Math.min(s.streak, 7), max: 7 }),
 	},
 	{
 		id: 'streak-30',
 		name: 'Streak 30',
 		description: '30-day study streak',
 		icon: '🔥',
+		category: 'streak',
 		condition: (s) => s.streak >= 30,
+		getProgress: (s) => ({ current: Math.min(s.streak, 30), max: 30 }),
 	},
 	{
 		id: 'bookworm',
 		name: 'Bookworm',
 		description: 'Complete 10 sessions',
 		icon: '📚',
+		category: 'learning',
 		condition: (s) => s.completedSessions >= 10,
+		getProgress: (s) => ({ current: Math.min(s.completedSessions, 10), max: 10 }),
 	},
 	{
 		id: 'scholar',
 		name: 'Scholar',
 		description: 'Complete 50 sessions',
 		icon: '🧠',
+		category: 'learning',
 		condition: (s) => s.completedSessions >= 50,
+		getProgress: (s) => ({ current: Math.min(s.completedSessions, 50), max: 50 }),
 	},
 	{
 		id: 'champion',
 		name: 'Champion',
 		description: 'Complete 100 sessions',
 		icon: '🏆',
+		category: 'learning',
 		condition: (s) => s.completedSessions >= 100,
+		getProgress: (s) => ({ current: Math.min(s.completedSessions, 100), max: 100 }),
 	},
 	{
 		id: 'module-master',
 		name: 'Module Master',
 		description: 'Complete all sessions in any module',
 		icon: '🎯',
+		category: 'learning',
 		condition: () => {
 			// Dynamic check: any module at 100%
 			for (const mod of modules) {
@@ -119,12 +136,24 @@ export const predefinedBadges: Badge[] = [
 			}
 			return false;
 		},
+		getProgress: () => {
+			const completedCheck = getCompletedCheckFn();
+			if (!completedCheck) return { current: 0, max: 1 };
+			let best = 0;
+			for (const mod of modules) {
+				if (mod.sessions.length === 0) continue;
+				const done = mod.sessions.filter(s => completedCheck(mod.slug, s.id)).length;
+				best = Math.max(best, done / mod.sessions.length);
+			}
+			return { current: Math.round(best * 100), max: 100 };
+		},
 	},
 	{
 		id: 'speed-learner',
 		name: 'Speed Learner',
 		description: 'Complete 5 sessions in one day',
 		icon: '⚡',
+		category: 'learning',
 		condition: () => {
 			if (!browser) return false;
 			const raw = localStorage.getItem('lms-completion-dates');
@@ -134,27 +163,42 @@ export const predefinedBadges: Badge[] = [
 			const todayCount = dates.filter(d => d === today).length;
 			return todayCount >= 5;
 		},
+		getProgress: () => {
+			if (!browser) return { current: 0, max: 5 };
+			const raw = localStorage.getItem('lms-completion-dates');
+			if (!raw) return { current: 0, max: 5 };
+			const dates: string[] = JSON.parse(raw);
+			const today = new Date().toISOString().split('T')[0];
+			const todayCount = dates.filter(d => d === today).length;
+			return { current: Math.min(todayCount, 5), max: 5 };
+		},
 	},
 	{
 		id: 'persistence',
 		name: 'Persistence',
 		description: 'Study 7 days in a row',
 		icon: '💪',
+		category: 'streak',
 		condition: (s) => s.daysActive >= 7,
+		getProgress: (s) => ({ current: Math.min(s.daysActive, 7), max: 7 }),
 	},
 	{
 		id: 'quizzer',
 		name: 'Quizzer',
 		description: 'Pass 10 quizzes',
 		icon: '🃏',
+		category: 'quiz',
 		condition: (s) => s.quizzesPassed >= 10,
+		getProgress: (s) => ({ current: Math.min(s.quizzesPassed, 10), max: 10 }),
 	},
 	{
 		id: 'curriculum-complete',
 		name: 'Curriculum Complete',
 		description: 'Finish all 57 modules',
 		icon: '🎓',
+		category: 'learning',
 		condition: (s) => s.modulesCompleted >= 57,
+		getProgress: (s) => ({ current: Math.min(s.modulesCompleted, 57), max: 57 }),
 	},
 ];
 

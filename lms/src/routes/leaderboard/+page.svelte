@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n.svelte';
-	import { browser } from '$app/environment';
 	import { user } from '$lib/stores/user.svelte';
-	import { fade } from 'svelte/transition';
 	import { getDeviceId } from '$lib/utils/api';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
@@ -13,6 +11,10 @@
 	let pathSlug = $state('');
 
 	let paths = $state<Array<{ slug: string; title: string }>>([]);
+
+	let podiumEntries = $derived(entries.slice(0, 3));
+	let listEntries = $derived(entries.slice(3));
+	let maxXp = $derived(entries[0]?.xp || 1);
 
 	$effect(() => {
 		async function load() {
@@ -38,23 +40,22 @@
 		load();
 	});
 
-	function rankClass(rank: number): string {
-		if (rank === 1) return 'rank-gold';
-		if (rank === 2) return 'rank-silver';
-		if (rank === 3) return 'rank-bronze';
-		return '';
-	}
-
-	function rankIcon(rank: number): string {
-		if (rank === 1) return '🥇';
-		if (rank === 2) return '🥈';
-		if (rank === 3) return '🥉';
-		return `#${rank}`;
-	}
+	const PODIUM_MEDALS = ['🥇', '🥈', '🥉'];
+	const PODIUM_CLASSES = ['gold', 'silver', 'bronze'];
+	const PODIUM_HEIGHTS = [180, 140, 120];
 
 	function formatUserId(id: string): string {
 		if (id === currentUserId) return t('leaderboard.you');
 		return id.slice(0, 12) + '...';
+	}
+
+	function xpPercent(xp: number): number {
+		return Math.round((xp / maxXp) * 100);
+	}
+
+	function rankIcon(rank: number): string {
+		if (rank <= 3) return PODIUM_MEDALS[rank - 1];
+		return `#${rank}`;
 	}
 </script>
 
@@ -100,7 +101,7 @@
 
 	<div class="leaderboard-content">
 		{#if loading}
-			<div class="loading-state" in:fade={{ duration: 150 }}>
+			<div class="loading-state">
 				<div class="skeleton-list">
 					{#each [1, 2, 3, 4, 5] as _}
 						<div class="skeleton-row">
@@ -120,43 +121,72 @@
 				<p class="empty-hint">{t('leaderboard.empty_hint')}</p>
 			</div>
 		{:else}
-			<div class="leaderboard-list">
-				{#each entries as entry, i}
-					<div
-						class="leaderboard-row"
-						class:is-current={entry.user_id === currentUserId}
-						in:fade={{ duration: 200, delay: i * 30 }}
-					>
-						<div class="rank-cell {rankClass(i + 1)}">
-							<span class="rank-number">{rankIcon(i + 1)}</span>
-						</div>
-						<div class="user-cell">
-							<div class="user-avatar">
+			{#if entries.length >= 1}
+				<div class="podium">
+					{#each podiumEntries as entry, i (entry.user_id)}
+						{@const pc = PODIUM_CLASSES[i]}
+						{@const medal = PODIUM_MEDALS[i]}
+						<div
+							class="podium-card {pc}"
+							style="--p-delay: {i * 0.12}s; --p-height: {PODIUM_HEIGHTS[i]}px"
+							class:is-current={entry.user_id === currentUserId}
+						>
+							<div class="podium-medal">{medal}</div>
+							<div class="podium-avatar">
 								{formatUserId(entry.user_id).charAt(0).toUpperCase()}
 							</div>
-							<div class="user-info">
-								<span class="user-name">
-									{formatUserId(entry.user_id)}
-									{#if entry.user_id === currentUserId}
-										<span class="you-badge">{t('leaderboard.you_badge')}</span>
-									{/if}
+							<div class="podium-name">{formatUserId(entry.user_id)}</div>
+							<div class="podium-xp">{entry.xp.toLocaleString()} XP</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			{#if listEntries.length > 0}
+				<div class="leaderboard-list">
+					{#each listEntries as entry, i}
+						{@const rank = i + 4}
+						{@const pct = xpPercent(entry.xp)}
+						<div
+							class="leaderboard-row"
+							class:is-current={entry.user_id === currentUserId}
+						>
+							<div class="rank-cell">
+								<span class="rank-number">{#if rank <= 3}{PODIUM_MEDALS[rank - 1]}{:else}#{rank}{/if}</span>
+							</div>
+							<div class="user-cell">
+								<div class="user-avatar">
+									{formatUserId(entry.user_id).charAt(0).toUpperCase()}
+								</div>
+								<div class="user-info">
+									<span class="user-name">
+										{formatUserId(entry.user_id)}
+										{#if entry.user_id === currentUserId}
+											<span class="you-badge">{t('leaderboard.you_badge')}</span>
+										{/if}
+									</span>
+									<div class="xp-bar-row">
+										<div class="xp-bar">
+											<div class="xp-bar-fill" style="width: {pct}%"></div>
+										</div>
+										<span class="xp-bar-label">{entry.xp.toLocaleString()} XP</span>
+									</div>
+								</div>
+							</div>
+							<div class="stats-cell">
+								<span class="stat-level">
+									<span class="stat-value">{entry.level}</span>
+									<span class="stat-label">{t('leaderboard.stat_level') || 'Lvl'}</span>
 								</span>
-								<span class="user-level">{t('leaderboard.level', { level: entry.level })}</span>
+								<span class="stat-badges">
+									<span class="stat-value">{entry.badge_count}</span>
+									<span class="stat-label">{t('leaderboard.stat_badges')}</span>
+								</span>
 							</div>
 						</div>
-						<div class="stats-cell">
-							<span class="stat-xp">
-								<span class="stat-value">{entry.xp.toLocaleString()}</span>
-								<span class="stat-label">{t('leaderboard.stat_xp')}</span>
-							</span>
-							<span class="stat-badges">
-								<span class="stat-value">{entry.badge_count}</span>
-								<span class="stat-label">{t('leaderboard.stat_badges')}</span>
-							</span>
-						</div>
-					</div>
-				{/each}
-			</div>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -227,6 +257,8 @@
 		font-family: inherit;
 		cursor: pointer;
 	}
+
+	/* ===== LOADING / EMPTY ===== */
 
 	.loading-state {
 		padding: 20px 0;
@@ -309,17 +341,140 @@
 		justify-content: flex-end;
 	}
 
+	/* ===== PODIUM ===== */
+
+	.podium {
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		gap: 16px;
+		margin-bottom: 32px;
+		padding: 24px 0 0;
+	}
+
+	.podium-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		padding: 20px 20px 16px;
+		border-radius: 16px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		width: 150px;
+		min-height: var(--p-height);
+		opacity: 0;
+		transform: translateY(30px);
+		animation: podiumIn 0.5s ease-out forwards;
+		animation-delay: var(--p-delay);
+	}
+
+	/* Gold — center, tallest */
+	.podium-card.gold {
+		border-color: #f59e0b;
+		box-shadow: 0 0 24px rgba(245, 158, 11, 0.18);
+		background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--surface) 100%);
+	}
+	.podium-card.gold .podium-avatar {
+		background: linear-gradient(135deg, #f59e0b, #fbbf24);
+		box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
+		width: 56px;
+		height: 56px;
+		font-size: 22px;
+	}
+	.podium-card.gold .podium-xp {
+		color: #f59e0b;
+		text-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+		font-weight: 800;
+	}
+
+	/* Silver — left, medium */
+	.podium-card.silver {
+		border-color: #94a3b8;
+		box-shadow: 0 0 18px rgba(148, 163, 184, 0.13);
+		background: linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--surface) 100%);
+	}
+	.podium-card.silver .podium-avatar {
+		background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+		box-shadow: 0 0 14px rgba(148, 163, 184, 0.35);
+	}
+	.podium-card.silver .podium-xp {
+		color: #94a3b8;
+		text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
+	}
+
+	/* Bronze — right, shortest */
+	.podium-card.bronze {
+		border-color: #cd7f32;
+		box-shadow: 0 0 16px rgba(205, 127, 50, 0.13);
+		background: linear-gradient(180deg, rgba(205, 127, 50, 0.06) 0%, var(--surface) 100%);
+	}
+	.podium-card.bronze .podium-avatar {
+		background: linear-gradient(135deg, #cd7f32, #d99f5b);
+		box-shadow: 0 0 12px rgba(205, 127, 50, 0.3);
+	}
+	.podium-card.bronze .podium-xp {
+		color: #cd7f32;
+		text-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+	}
+
+	.podium-card.is-current {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+	}
+
+	.podium-medal {
+		font-size: 28px;
+		line-height: 1;
+	}
+
+	.podium-avatar {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 20px;
+		font-weight: 700;
+		flex-shrink: 0;
+	}
+
+	.podium-name {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--text);
+		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 130px;
+	}
+
+	.podium-xp {
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	@keyframes podiumIn {
+		from { opacity: 0; transform: translateY(30px); }
+		to   { opacity: 1; transform: translateY(0); }
+	}
+
+	/* ===== LEADERBOARD LIST (4+) ===== */
+
 	.leaderboard-list {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
+		gap: 6px;
 	}
 
 	.leaderboard-row {
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		padding: 14px 16px;
+		padding: 12px 16px;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 12px;
@@ -328,6 +483,7 @@
 
 	.leaderboard-row:hover {
 		border-color: var(--accent-dim);
+		background: color-mix(in srgb, var(--surface) 98%, var(--accent));
 	}
 
 	.leaderboard-row.is-current {
@@ -336,19 +492,15 @@
 	}
 
 	.rank-cell {
-		min-width: 48px;
+		min-width: 40px;
 		text-align: center;
 	}
 
 	.rank-number {
-		font-size: 16px;
-		font-weight: 700;
+		font-size: 14px;
+		font-weight: 600;
 		color: var(--text-secondary);
 	}
-
-	.rank-gold .rank-number { color: #f59e0b; font-size: 20px; }
-	.rank-silver .rank-number { color: #94a3b8; font-size: 18px; }
-	.rank-bronze .rank-number { color: #d97706; font-size: 18px; }
 
 	.user-cell {
 		flex: 1;
@@ -359,23 +511,25 @@
 	}
 
 	.user-avatar {
-		width: 40px;
-		height: 40px;
-		min-width: 40px;
+		width: 36px;
+		height: 36px;
+		min-width: 36px;
 		border-radius: 50%;
 		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
 		color: #fff;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 700;
+		flex-shrink: 0;
 	}
 
 	.user-info {
+		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 6px;
 		min-width: 0;
 	}
 
@@ -400,18 +554,45 @@
 		vertical-align: middle;
 	}
 
-	.user-level {
-		font-size: 12px;
+	/* XP Bar */
+	.xp-bar-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.xp-bar {
+		flex: 1;
+		max-width: 140px;
+		height: 5px;
+		border-radius: 3px;
+		background: rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+	}
+
+	.xp-bar-fill {
+		height: 100%;
+		border-radius: 3px;
+		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		transition: width 0.6s ease;
+	}
+
+	.xp-bar-label {
+		font-size: 11px;
+		font-weight: 600;
 		color: var(--text-secondary);
+		white-space: nowrap;
 	}
 
 	.stats-cell {
 		display: flex;
-		gap: 16px;
+		gap: 14px;
 		align-items: center;
+		flex-shrink: 0;
 	}
 
-	.stat-xp, .stat-badges {
+	.stat-level,
+	.stat-badges {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -419,7 +600,7 @@
 	}
 
 	.stat-value {
-		font-size: 15px;
+		font-size: 14px;
 		font-weight: 700;
 		color: var(--text);
 	}
@@ -432,48 +613,59 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
+		0%   { background-position: 200% 0; }
 		100% { background-position: -200% 0; }
 	}
+
+	/* ===== RESPONSIVE ===== */
 
 	@media (max-width: 768px) {
 		.leaderboard-page {
 			padding: 16px 0;
 		}
-		.page-title {
-			font-size: 22px;
+		.page-title { font-size: 22px; }
+
+		.tabs { gap: 6px; }
+		.tab { padding: 6px 14px; font-size: 13px; }
+
+		.podium {
+			gap: 10px;
+			margin-bottom: 24px;
 		}
-		.tabs {
-			gap: 6px;
+		.podium-card {
+			width: 110px;
+			padding: 16px 12px 12px;
+			min-height: calc(var(--p-height) * 0.85);
 		}
-		.tab {
-			padding: 6px 14px;
-			font-size: 13px;
+		.podium-medal { font-size: 22px; }
+		.podium-avatar {
+			width: 42px;
+			height: 42px;
+			font-size: 16px;
 		}
+		.podium-card.gold .podium-avatar {
+			width: 48px;
+			height: 48px;
+			font-size: 18px;
+		}
+		.podium-name { font-size: 11px; max-width: 90px; }
+		.podium-xp { font-size: 11px; }
+
 		.leaderboard-row {
 			padding: 10px 12px;
 			gap: 8px;
 		}
-		.rank-cell {
-			min-width: 36px;
-		}
-		.rank-number {
-			font-size: 14px;
-		}
+		.rank-cell { min-width: 32px; }
+		.rank-number { font-size: 13px; }
 		.user-avatar {
-			width: 32px;
-			height: 32px;
-			min-width: 32px;
-			font-size: 14px;
+			width: 30px;
+			height: 30px;
+			min-width: 30px;
+			font-size: 12px;
 		}
-		.user-name {
-			font-size: 13px;
-		}
-		.stats-cell {
-			gap: 10px;
-		}
-		.stat-value {
-			font-size: 13px;
-		}
+		.user-name { font-size: 13px; }
+		.xp-bar { max-width: 100px; }
+		.stats-cell { gap: 10px; }
+		.stat-value { font-size: 13px; }
 	}
 </style>
