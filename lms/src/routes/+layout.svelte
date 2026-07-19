@@ -9,6 +9,7 @@
 	import { browser } from '$app/environment';
 	import 'katex/dist/katex.min.css';
 	import { t, toggleLang, getLang } from '$lib/stores/i18n.svelte';
+	import { progress } from '$lib/stores/progress.svelte';
 	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
 	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
@@ -196,6 +197,8 @@
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 
+	const overallPct = $derived(browser ? progress.getOverallProgress() : 0);
+
 	// Scroll to top on route change
 	$effect(() => {
 		if (!browser) return;
@@ -308,11 +311,31 @@
 						<div class="xp-bar-fill" style="width: {(lvl.level > 1 ? (lvl.currentXp / (lvl.currentXp + lvl.xpToNext)) : (lvl.currentXp / 100)) * 100}%"></div>
 					</div>
 					<div class="xp-row">
-						<span class="xp-level-badge">Lv.{lvl.level}</span>
-						{#if gamification.computeStats().streak > 0}
-							<span class="xp-streak">🔥 {gamification.computeStats().streak}</span>
-						{/if}
-						<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext}</span>
+						<div class="xp-row-left">
+							<span class="xp-level-badge">Lv.{lvl.level}</span>
+							{#if gamification.computeStats().streak > 0}
+								<span class="xp-streak">🔥 {gamification.computeStats().streak}</span>
+							{/if}
+							<span class="xp-amount">{lvl.currentXp}/{lvl.currentXp + lvl.xpToNext}</span>
+						</div>
+						<div class="xp-progress-ring-wrap">
+							<svg class="xp-progress-ring" viewBox="0 0 36 36" width="36" height="36">
+								<circle class="ring-bg" cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3" />
+								<circle class="ring-fg" cx="18" cy="18" r="15.5" fill="none" stroke="url(#progressGrad)" stroke-width="3"
+									stroke-linecap="round"
+									stroke-dasharray="97.39"
+									stroke-dashoffset={97.39 - (97.39 * overallPct) / 100}
+									transform="rotate(-90 18 18)"
+								/>
+								<defs>
+									<linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+										<stop offset="0%" stop-color="#4F46E5" />
+										<stop offset="100%" stop-color="#818CF8" />
+									</linearGradient>
+								</defs>
+							</svg>
+							<span class="xp-progress-ring-label">{overallPct}%</span>
+						</div>
 					</div>
 				</div>
 			{/if}
@@ -390,11 +413,24 @@
 	</div>
 {/if}
 
-{#if showBackToTop}
-	<button class="back-to-top" onclick={scrollToTop} aria-label="Back to top">
-		<Icon name="chevron-left" size={18} style="transform: rotate(90deg);" />
-	</button>
-{/if}
+<div class="quick-actions" aria-label="Quick actions">
+	{#if showBackToTop}
+	<div class="floating-actions-group">
+		<a href="/study" class="floating-action-btn" aria-label="Pomodoro timer" title="Pomodoro timer">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="10"/>
+				<polyline points="12 6 12 12 16 14"/>
+			</svg>
+		</a>
+		<button class="floating-action-btn" onclick={scrollToTop} aria-label="Back to top" title="Back to top">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="12" y1="19" x2="12" y2="5"/>
+				<polyline points="5 12 12 5 19 12"/>
+			</svg>
+		</button>
+	</div>
+	{/if}
+</div>
 
 <PWAInstallPrompt />
 
@@ -1023,29 +1059,81 @@
 		color: var(--text);
 	}
 
-	/* ===== Back to Top ===== */
-	.back-to-top {
+	/* ===== Floating Action Buttons (back-to-top + pomodoro) ===== */
+	.quick-actions {
 		position: fixed;
-		bottom: 16px;
-		right: 16px;
-		z-index: 9999;
-		width: 36px;
-		height: 36px;
-		border-radius: var(--radius-sm);
-		background: var(--surface);
-		color: var(--text-secondary);
-		border: 1px solid var(--border);
+		bottom: 20px;
+		right: 20px;
+		z-index: 999;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-end;
+	}
+
+	.floating-actions-group {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.floating-action-btn {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: var(--accent);
+		color: #fff;
+		border: none;
 		cursor: pointer;
-		transition: all 0.15s ease;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: var(--shadow-lg);
+		box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+		transition: all 0.2s ease;
+		text-decoration: none;
+		font-size: 18px;
 	}
-	.back-to-top:hover {
-		background: var(--surface-alt);
-		color: var(--text);
-		transform: translateY(-2px);
+
+	.floating-action-btn:hover {
+		transform: scale(1.1);
+		box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+		background: var(--accent-hover);
+		color: #fff;
+		text-decoration: none;
+	}
+
+	.floating-action-btn:active {
+		transform: scale(0.95);
+	}
+
+	/* ===== Sidebar progress ring ===== */
+	.xp-progress-ring-wrap {
+		position: relative;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.xp-progress-ring-label {
+		position: absolute;
+		font-size: 9px;
+		font-weight: 700;
+		color: var(--text-secondary);
+		line-height: 1;
+		pointer-events: none;
+	}
+
+	.xp-progress-ring {
+		display: block;
+	}
+
+	.xp-row-left {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
 	}
 
 	/* ===== Toast Container ===== */
