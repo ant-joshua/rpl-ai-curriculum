@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<meta name="theme-color" content="#0a0b0c" />
+	<meta name="theme-color" content="#F4F7FA" />
 </svelte:head>
 
 <div class="auth-layout">
@@ -21,10 +21,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--bg, #0a0b0c);
+		background: var(--bg, #F4F7FA);
 		background-image:
-			radial-gradient(ellipse at 50% 0%, rgba(94, 106, 210, 0.08) 0%, transparent 60%),
-			radial-gradient(ellipse at 80% 80%, rgba(94, 106, 210, 0.04) 0%, transparent 50%);
+			radial-gradient(ellipse at 50% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+			radial-gradient(ellipse at 80% 80%, rgba(79, 70, 229, 0.04) 0%, transparent 50%);
 		padding: 1rem;
 	}
 

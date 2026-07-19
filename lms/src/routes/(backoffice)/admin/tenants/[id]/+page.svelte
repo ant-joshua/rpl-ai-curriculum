@@ -132,7 +132,7 @@
 	.meta { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); }
 	code { background: var(--bg-code); padding: 0.2rem 0.5rem; border-radius: 4px; }
 	.badge { padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-	.badge-lms { background: #5e6ad2; color: #fff; }
+	.badge-lms { background: #4F46E5; color: #fff; }
 	.badge-academic_k13 { background: #10b981; color: #fff; }
 	.status { display: inline-flex; align-items: center; gap: 0.35rem; }
 	.status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }

@@ -553,7 +553,7 @@
 	.field { display: flex; flex-direction: column; gap: 4px; }
 	.field-label {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;
@@ -613,9 +613,9 @@
 	}
 	.preview-option:hover {
 		border-color: var(--accent-dim);
-		background: rgba(94, 106, 210, 0.04);
+		background: rgba(79, 70, 229, 0.04);
 	}
-	.preview-option input { accent-color: #7170ff; }
+	.preview-option input { accent-color: #4F46E5; }
 
 	.preview-feedback {
 		padding: 16px;

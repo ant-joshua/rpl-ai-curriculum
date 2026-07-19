@@ -32,7 +32,7 @@
 			cell: ({ getValue }) => {
 				const type = getValue() as string;
 				const colors: Record<string, string> = {
-					lms: 'background:#5e6ad2;color:#fff',
+					lms: 'background:#4F46E5;color:#fff',
 					academic_k13: 'background:#10b981;color:#fff',
 					university: 'background:#f59e0b;color:#fff',
 					bimbel: 'background:#8b5cf6;color:#fff',

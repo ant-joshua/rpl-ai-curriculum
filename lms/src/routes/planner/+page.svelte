@@ -156,7 +156,7 @@
 				th { background: #f5f5f5; }
 				.done { color: #22c55e; }
 				.todo { color: #eab308; }
-				.footer { margin-top: 32px; font-size: 12px; color: #8a8f98; }
+				.footer { margin-top: 32px; font-size: 12px; color: #64748b; }
 				@media print { body { padding: 20px; } }
 			</style>
 			</head>

@@ -231,40 +231,40 @@ const linkColumns: ColumnDef<any, any>[] = [
 
 <style>
 	.pp-page { display: flex; flex-direction: column; gap: 20px; }
-	.pp-back { display: inline-block; font-size: 13px; color: var(--accent, #7170ff); text-decoration: none; margin-bottom: 8px; }
+	.pp-back { display: inline-block; font-size: 13px; color: var(--accent, #4F46E5); text-decoration: none; margin-bottom: 8px; }
 	.pp-back:hover { text-decoration: underline; }
 	.pp-header { margin-bottom: 4px; }
-	.pp-title { font-size: 24px; font-weight: 600; color: var(--text-primary, #f7f8f8); margin: 0; letter-spacing: -0.3px; }
-	.pp-subtitle { font-size: 13px; color: var(--text-secondary, #8a8f98); margin: 4px 0 0; }
+	.pp-title { font-size: 24px; font-weight: 600; color: var(--text-primary, #1a1a2e); margin: 0; letter-spacing: -0.3px; }
+	.pp-subtitle { font-size: 13px; color: var(--text-secondary, #64748b); margin: 4px 0 0; }
 
-	.pp-loading { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 60px 20px; color: var(--text-secondary, #8a8f98); }
-	.pp-spinner { width: 32px; height: 32px; border: 3px solid var(--border-color, rgba(255,255,255,0.08)); border-top-color: var(--accent, #7170ff); border-radius: 50%; animation: pp-spin 0.7s linear infinite; }
+	.pp-loading { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 60px 20px; color: var(--text-secondary, #64748b); }
+	.pp-spinner { width: 32px; height: 32px; border: 3px solid var(--border-color, rgba(0,0,0,0.06)); border-top-color: var(--accent, #4F46E5); border-radius: 50%; animation: pp-spin 0.7s linear infinite; }
 	@keyframes pp-spin { to { transform: rotate(360deg); } }
 	.pp-error { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; color: #ef4444; text-align: center; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; }
 
 	.pp-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-	.pp-info-card { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(255,255,255,0.08)); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-	.pp-card-title { font-size: 14px; font-weight: 600; color: var(--text-primary, #f7f8f8); margin: 0; }
+	.pp-info-card { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+	.pp-card-title { font-size: 14px; font-weight: 600; color: var(--text-primary, #1a1a2e); margin: 0; }
 	.pp-info-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-	.pp-info-label { color: var(--text-secondary, #8a8f98); }
+	.pp-info-label { color: var(--text-secondary, #64748b); }
 	.pp-info-value { color: var(--text-primary, #d0d6e0); font-weight: 500; }
 
-	.pp-section { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(255,255,255,0.08)); border-radius: 10px; overflow: hidden; }
-	.pp-section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08)); }
-	.pp-section-title { font-size: 15px; font-weight: 600; color: var(--text-primary, #f7f8f8); margin: 0; }
+	.pp-section { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; overflow: hidden; }
+	.pp-section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); }
+	.pp-section-title { font-size: 15px; font-weight: 600; color: var(--text-primary, #1a1a2e); margin: 0; }
 
 	.pp-table-wrap { overflow-x: auto; }
 	.pp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	.pp-table th { text-align: left; padding: 10px 20px; font-size: 11px; font-weight: 600; color: var(--text-secondary, #8a8f98); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08)); white-space: nowrap; }
-	.pp-table td { padding: 12px 20px; color: var(--text-primary, #d0d6e0); border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.04)); }
-	.pp-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+	.pp-table th { text-align: left; padding: 10px 20px; font-size: 11px; font-weight: 600; color: var(--text-secondary, #64748b); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); white-space: nowrap; }
+	.pp-table td { padding: 12px 20px; color: var(--text-primary, #d0d6e0); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04)); }
+	.pp-table tbody tr:hover { background: rgba(0,0,0,0.02); }
 	.pp-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
 
-	.pp-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 20px; color: var(--text-secondary, #8a8f98); }
+	.pp-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 20px; color: var(--text-secondary, #64748b); }
 
 	.pp-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; text-decoration: none; }
-	.pp-btn-ghost { background: transparent; color: var(--accent, #7170ff); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); }
-	.pp-btn-ghost:hover { background: rgba(255,255,255,0.04); }
+	.pp-btn-ghost { background: transparent; color: var(--accent, #4F46E5); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); }
+	.pp-btn-ghost:hover { background: rgba(0,0,0,0.04); }
 	.pp-btn-sm { padding: 5px 12px; font-size: 12px; }
 	.pp-btn-danger { color: #ef4444; border-color: rgba(239,68,68,0.2); }
 	.pp-btn-danger:hover { background: rgba(239,68,68,0.08); }

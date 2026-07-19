@@ -341,13 +341,13 @@
 	.progress-bg {
 		flex: 1;
 		height: 8px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 		border-radius: 4px;
 		overflow: hidden;
 	}
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #7170ff);
+		background: linear-gradient(90deg, #4F46E5, #4F46E5);
 		border-radius: 4px;
 		transition: width 0.3s ease;
 	}
@@ -356,7 +356,7 @@
 	.field-group { display: flex; flex-direction: column; gap: 6px; }
 	.field-label {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;
@@ -369,7 +369,7 @@
 		gap: 4px;
 		padding: 8px;
 		background: rgba(0,0,0,0.15);
-		border: 1px solid rgba(255,255,255,0.05);
+		border: 1px solid rgba(0,0,0,0.05);
 		border-radius: 6px;
 	}
 	.class-checkbox {
@@ -380,6 +380,6 @@
 		padding: 4px 0;
 		cursor: pointer;
 	}
-	.class-checkbox input { accent-color: #5e6ad2; }
-	.no-classes { font-size: 13px; color: #62666d; text-align: center; padding: 16px; }
+	.class-checkbox input { accent-color: #4F46E5; }
+	.no-classes { font-size: 13px; color: #94a3b8; text-align: center; padding: 16px; }
 </style>

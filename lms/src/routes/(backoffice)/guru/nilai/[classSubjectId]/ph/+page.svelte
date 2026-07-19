@@ -405,7 +405,7 @@
 	}
 	.score-input:hover { border-color: var(--border); background: var(--bg-secondary); }
 	.score-input:focus { border-color: var(--accent); background: var(--bg-secondary); }
-	.score-input--filled { border-color: rgba(255,255,255,0.06); }
+	.score-input--filled { border-color: rgba(0,0,0,0.08); }
 
 	.cell--empty { opacity: 0.5; }
 
@@ -413,7 +413,7 @@
 	.avg-value { color: var(--accent); }
 	.avg-na { color: var(--text-quaternary); }
 
-	tfoot td { border-top: 2px solid var(--border); background: rgba(94, 106, 210, 0.04); font-weight: 500; color: var(--text-secondary); }
+	tfoot td { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
 
 	.table-footer { display: flex; justify-content: flex-end; padding: 8px 12px; font-size: 11px; color: var(--text-quaternary); }
 

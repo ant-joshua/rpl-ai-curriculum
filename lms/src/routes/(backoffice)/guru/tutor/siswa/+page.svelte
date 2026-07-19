@@ -49,7 +49,7 @@ import { t } from '$lib/stores/i18n.svelte';
 			header: 'Status', accessorKey: 'status',
 			cell: ({ getValue }) => {
 				const s = getValue() as string;
-				const colors: Record<string, string> = { active: '#10b981', paused: '#f59e0b', completed: '#5e6ad2' };
+				const colors: Record<string, string> = { active: '#10b981', paused: '#f59e0b', completed: '#4F46E5' };
 				const labels: Record<string, string> = { active: 'Aktif', paused: 'Jeda', completed: 'Selesai' };
 				const c = colors[s] || '#888';
 				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;background:${c}20;color:${c}">${labels[s] || s}</span>`;

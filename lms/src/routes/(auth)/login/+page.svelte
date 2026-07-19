@@ -203,8 +203,8 @@
 	}
 
 	.login-card {
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.08);
+		background: var(--surface, #FFFFFF);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 12px;
 		padding: 40px 36px;
 		text-align: center;
@@ -222,13 +222,13 @@
 		font-size: 24px;
 		font-weight: 590;
 		margin-bottom: 8px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.288px;
 	}
 
 	.login-desc {
-		color: #8a8f98;
+		color: #64748b;
 		font-size: 14px;
 		margin-bottom: 28px;
 		font-feature-settings: 'cv01', 'ss03';
@@ -243,10 +243,10 @@
 	.login-input {
 		width: 100%;
 		padding: 10px 14px;
-		border: 1px solid rgba(255,255,255,0.08);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 6px;
 		background: transparent;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-size: 14px;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
@@ -256,12 +256,12 @@
 	}
 
 	.login-input:focus {
-		border-color: #5e6ad2;
-		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+		border-color: #4F46E5;
+		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
 	}
 
 	.login-input::placeholder {
-		color: #62666d;
+		color: #94a3b8;
 	}
 
 	.login-code-input {
@@ -280,7 +280,7 @@
 	.login-submit {
 		width: 100%;
 		padding: 10px;
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		color: #fff;
 		border: none;
 		border-radius: 6px;
@@ -293,8 +293,8 @@
 	}
 
 	.login-submit:hover {
-		background: linear-gradient(135deg, #7170ff, #828fff);
-		box-shadow: 0 2px 12px rgba(94,106,210,0.3);
+		background: linear-gradient(135deg, #4F46E5, #828fff);
+		box-shadow: 0 2px 12px rgba(79,70,229,0.3);
 	}
 
 	.login-submit:active {
@@ -316,12 +316,12 @@
 	.divider-line {
 		flex: 1;
 		height: 1px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 	}
 
 	.divider-text {
 		font-size: 12px;
-		color: #62666d;
+		color: #94a3b8;
 		white-space: nowrap;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -339,7 +339,7 @@
 		gap: 8px;
 		width: 100%;
 		padding: 10px;
-		border: 1px solid rgba(255,255,255,0.08);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 6px;
 		background: transparent;
 		color: #d0d6e0;
@@ -353,9 +353,9 @@
 	}
 
 	.oauth-btn:hover {
-		background: rgba(255,255,255,0.04);
+		background: rgba(0,0,0,0.04);
 		border-color: rgba(255,255,255,0.15);
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	.oauth-icon {
@@ -365,7 +365,7 @@
 	.oauth-note {
 		margin-top: 16px;
 		font-size: 12px;
-		color: #62666d;
+		color: #94a3b8;
 		line-height: 1.4;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -376,7 +376,7 @@
 	}
 
 	.reset-link a {
-		color: #7170ff;
+		color: #4F46E5;
 		text-decoration: none;
 		font-weight: 510;
 		font-feature-settings: 'cv01', 'ss03';

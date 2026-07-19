@@ -89,7 +89,7 @@
 	}
 	.nav-card:hover {
 		border-color: var(--accent);
-		background: rgba(94, 106, 210, 0.06);
+		background: rgba(79, 70, 229, 0.06);
 		transform: translateY(-2px);
 	}
 	.card-icon { font-size: 32px; flex-shrink: 0; }

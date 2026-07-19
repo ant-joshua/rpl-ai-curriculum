@@ -163,7 +163,7 @@
 		border-radius: 12px; text-decoration: none; color: var(--text);
 		transition: all 0.15s ease;
 	}
-	.tryout-card:hover { border-color: var(--accent); background: rgba(94, 106, 210, 0.06); transform: translateX(4px); }
+	.tryout-card:hover { border-color: var(--accent); background: rgba(79, 70, 229, 0.06); transform: translateX(4px); }
 
 	.tryout-top { display: flex; justify-content: space-between; align-items: center; }
 	.tryout-title { font-size: 16px; font-weight: 600; }
@@ -187,7 +187,7 @@
 
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-ghost { background: transparent; color: var(--text-secondary); }
-	.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+	.btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text); }
 	.btn-secondary { background: var(--accent); color: #fff; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }

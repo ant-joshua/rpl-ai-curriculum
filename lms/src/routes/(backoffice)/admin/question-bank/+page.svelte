@@ -661,7 +661,7 @@
 		vertical-align: middle;
 	}
 	.data-table tr:last-child td { border-bottom: none; }
-	.data-table tr:hover { background: rgba(255,255,255,0.02); }
+	.data-table tr:hover { background: rgba(0,0,0,0.02); }
 
 	.cell-question { min-width: 250px; max-width: 350px; }
 	.question-link {
@@ -676,8 +676,8 @@
 	.tags { display: flex; gap: 4px; flex-wrap: wrap; }
 	.tag {
 		font-size: 11px;
-		background: rgba(94, 106, 210, 0.12);
-		color: #7170ff;
+		background: rgba(79, 70, 229, 0.12);
+		color: #4F46E5;
 		padding: 2px 8px;
 		border-radius: 10px;
 	}
@@ -697,7 +697,7 @@
 
 	.form-label {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;
@@ -722,7 +722,7 @@
 		overflow-y: auto;
 	}
 	.gen-result-item {
-		background: rgba(255,255,255,0.02);
+		background: rgba(0,0,0,0.02);
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 10px 12px;

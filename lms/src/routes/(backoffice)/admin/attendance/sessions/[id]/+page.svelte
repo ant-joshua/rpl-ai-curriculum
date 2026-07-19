@@ -403,7 +403,7 @@
 	.qr-card {
 		background: var(--surface); border: 2px dashed var(--accent);
 		border-radius: 16px; padding: 32px; text-align: center;
-		box-shadow: 0 0 40px rgba(94,106,210,0.1);
+		box-shadow: 0 0 40px rgba(79,70,229,0.1);
 	}
 	.qr-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
 	.qr-display {

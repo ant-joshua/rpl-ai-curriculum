@@ -123,7 +123,7 @@
 	}
 	.class-card:hover {
 		border-color: var(--accent);
-		background: rgba(94, 106, 210, 0.06);
+		background: rgba(79, 70, 229, 0.06);
 		transform: translateX(4px);
 	}
 

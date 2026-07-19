@@ -356,7 +356,7 @@
 	}
 	.status-active { background: rgba(16,185,129,0.1); color: #10b981; }
 	.status-closed { background: rgba(245,158,11,0.1); color: #f59e0b; }
-	.status-draft { background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.status-draft { background: rgba(98,102,109,0.15); color: #64748b; }
 	.status-archived { background: rgba(239,68,68,0.1); color: #ef4444; }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }

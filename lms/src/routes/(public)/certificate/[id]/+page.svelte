@@ -290,7 +290,7 @@
 	}
 
 	.cert-border-inner {
-		background: linear-gradient(160deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+		background: linear-gradient(160deg, rgba(0,0,0,0.02), rgba(0,0,0,0.04), rgba(0,0,0,0.02));
 		border-radius: 17px;
 		padding: 48px 40px 40px;
 		position: relative;

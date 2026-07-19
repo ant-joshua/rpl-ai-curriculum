@@ -348,7 +348,7 @@
 		font-weight: 600;
 		text-transform: capitalize;
 	}
-	.status-draft { background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.status-draft { background: rgba(98,102,109,0.15); color: #64748b; }
 	.status-published { background: rgba(16,185,129,0.1); color: #10b981; }
 	.status-ongoing { background: rgba(59,130,246,0.1); color: #3b82f6; }
 	.status-completed { background: rgba(139,92,246,0.1); color: #8b5cf6; }

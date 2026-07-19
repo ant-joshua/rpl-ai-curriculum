@@ -288,7 +288,7 @@ const recapColumns: ColumnDef<any, any>[] = [
 	}
 	td { padding: 10px 12px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); }
 	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
+	tr:hover { background: rgba(0,0,0,0.02); }
 
 	.col-num { text-align: center; }
 	.cell-name { font-weight: 500; min-width: 160px; }

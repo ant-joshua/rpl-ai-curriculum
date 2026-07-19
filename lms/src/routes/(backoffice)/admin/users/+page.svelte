@@ -21,10 +21,10 @@
 
 	const roleColors: Record<string, string> = {
 		superadmin: 'var(--color-red, #ef4444)',
-		admin: 'var(--color-purple, #5e6ad2)',
+		admin: 'var(--color-purple, #4F46E5)',
 		instructor: 'var(--color-blue, #3b82f6)',
 		ta: 'var(--color-green, #22c55e)',
-		student: 'var(--color-gray, #8a8f98)',
+		student: 'var(--color-gray, #64748b)',
 	};
 
 	onMount(() => {
@@ -312,7 +312,7 @@
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
-		background: var(--color-gray, #8a8f98);
+		background: var(--color-gray, #64748b);
 	}
 	.status-dot.active {
 		background: var(--color-green, #22c55e);

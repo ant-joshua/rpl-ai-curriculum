@@ -254,7 +254,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	.status-red { background: rgba(239,68,68,0.1); color: #ef4444; }
 	.status-yellow { background: rgba(245,158,11,0.1); color: #f59e0b; }
 
-	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(98,102,109,0.15); color: #64748b; }
 
 	/* Quick Links */
 	.quick-links { padding: 8px; display: flex; flex-direction: column; gap: 4px; }

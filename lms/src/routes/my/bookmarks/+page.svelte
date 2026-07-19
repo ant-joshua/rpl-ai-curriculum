@@ -100,16 +100,16 @@
 		align-items: center;
 		gap: 14px;
 		padding: 16px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.08);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.15s ease;
 	}
 
 	.bookmark-card:hover {
-		border-color: rgba(94,106,210,0.25);
-		background: rgba(255,255,255,0.04);
+		border-color: rgba(79,70,229,0.25);
+		background: rgba(0,0,0,0.04);
 	}
 
 	.bookmark-card:hover .card-arrow {

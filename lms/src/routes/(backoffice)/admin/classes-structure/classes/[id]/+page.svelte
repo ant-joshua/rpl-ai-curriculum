@@ -40,7 +40,7 @@
 				const styles: Record<string, string> = {
 					active: 'background:rgba(16,185,129,0.1);color:#10b981',
 					inactive: 'background:rgba(239,68,68,0.1);color:#ef4444',
-					alumni: 'background:rgba(94,106,210,0.1);color:#5e6ad2',
+					alumni: 'background:rgba(79,70,229,0.1);color:#4F46E5',
 					mutasi: 'background:rgba(245,158,11,0.1);color:#f59e0b',
 				};
 				const label = s === 'active' ? 'Aktif' : s;

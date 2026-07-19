@@ -673,7 +673,7 @@
     margin-bottom: 2px;
     font-feature-settings: 'cv01', 'ss03';
     letter-spacing: -0.288px;
-    color: #f7f8f8;
+    color: #1a1a2e;
   }
 
   .subtitle {
@@ -837,7 +837,7 @@
   }
   .time-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #7170ff);
+    background: linear-gradient(90deg, var(--accent), #4F46E5);
     border-radius: 7px;
     transition: width 0.3s ease;
   }

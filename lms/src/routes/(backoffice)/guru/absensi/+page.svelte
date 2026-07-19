@@ -339,7 +339,7 @@
 	}
 	td { padding: 8px 10px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
 	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
+	tr:hover { background: rgba(0,0,0,0.02); }
 	.col-no { width: 40px; text-align: center; }
 	.col-name { min-width: 160px; font-weight: 500; }
 	.col-nis { width: 100px; color: var(--text-tertiary); font-size: 12px; }
@@ -379,7 +379,7 @@
 	.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-secondary:hover:not(:disabled) { background: var(--accent-hover); }
 	.btn-ghost { padding: 8px 16px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-ghost:hover { background: rgba(255,255,255,0.04); }
+	.btn-ghost:hover { background: rgba(0,0,0,0.04); }
 	.btn-outline { padding: 8px 14px; background: transparent; color: var(--accent); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
 	.btn-outline:hover { border-color: var(--accent); background: var(--accent-dim); }
 </style>

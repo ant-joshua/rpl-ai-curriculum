@@ -183,8 +183,8 @@
 		top: 12px;
 		left: 12px;
 		z-index: 100;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
 		padding: 10px;
 		cursor: pointer;
@@ -192,8 +192,8 @@
 		transition: all 0.15s ease;
 	}
 	.sidebar-toggle:hover {
-		background: rgba(255, 255, 255, 0.06);
-		color: #f7f8f8;
+		background: rgba(0, 0, 0, 0.08);
+		color: #1a1a2e;
 	}
 	.overlay { display: none; }
 
@@ -204,7 +204,7 @@
 		position: sticky;
 		top: 0;
 		background: #0f1011;
-		border-right: 1px solid rgba(255, 255, 255, 0.05);
+		border-right: 1px solid rgba(0, 0, 0, 0.05);
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
@@ -212,7 +212,7 @@
 
 	.sidebar-header {
 		padding: 20px 16px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	}
 	.logo {
 		display: flex;
@@ -220,14 +220,14 @@
 		gap: 8px;
 		font-size: 16px;
 		font-weight: 590;
-		color: #f7f8f8 !important;
+		color: #1a1a2e !important;
 		text-decoration: none !important;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.24px;
 	}
-	.logo-svg { color: #7170ff; flex-shrink: 0; }
+	.logo-svg { color: #4F46E5; flex-shrink: 0; }
 	.logo-text {
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -244,7 +244,7 @@
 	.nav-section-label {
 		font-size: 10px;
 		font-weight: 510;
-		color: #62666d;
+		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		padding: 8px 12px 4px;
@@ -257,7 +257,7 @@
 		gap: 10px;
 		padding: 10px 12px;
 		border-radius: 6px;
-		color: #8a8f98;
+		color: #64748b;
 		font-size: 13.5px;
 		font-weight: 510;
 		transition: all 0.15s ease;
@@ -266,19 +266,19 @@
 		position: relative;
 	}
 	.nav-item:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
+		background: rgba(0, 0, 0, 0.04);
+		color: #1a1a2e;
 	}
 	.nav-item.active {
-		background: rgba(94, 106, 210, 0.12);
-		color: #7170ff;
+		background: rgba(79, 70, 229, 0.12);
+		color: #4F46E5;
 	}
 	.nav-item-label { flex: 1; }
 
 	.nav-active-indicator {
 		width: 3px;
 		height: 16px;
-		background: #7170ff;
+		background: #4F46E5;
 		border-radius: 2px;
 		box-shadow: 0 0 8px rgba(113, 112, 255, 0.4);
 		position: absolute;
@@ -289,17 +289,17 @@
 
 		.sidebar-footer {
 			padding: 12px 8px;
-			border-top: 1px solid rgba(255, 255, 255, 0.05);
+			border-top: 1px solid rgba(0, 0, 0, 0.05);
 		}
 		.tenant-switcher {
 			padding: 8px 12px 4px;
-			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 			margin-bottom: 4px;
 		}
 		.tenant-label {
 			font-size: 10px;
 			font-weight: 510;
-			color: #62666d;
+			color: #94a3b8;
 			text-transform: uppercase;
 			letter-spacing: 0.05em;
 			padding: 4px 0 6px;
@@ -312,8 +312,8 @@
 			width: 100%;
 			padding: 6px 28px 6px 10px;
 			font-size: 12.5px;
-			background: rgba(255, 255, 255, 0.04);
-			border: 1px solid rgba(255, 255, 255, 0.08);
+			background: rgba(0, 0, 0, 0.04);
+			border: 1px solid rgba(0, 0, 0, 0.06);
 			border-radius: 6px;
 			color: #d0d6e0;
 			cursor: pointer;
@@ -322,7 +322,7 @@
 			outline: none;
 		}
 		.tenant-select:focus {
-			border-color: #5e6ad2;
+			border-color: #4F46E5;
 		}
 		.tenant-select-chevron {
 			position: absolute;
@@ -330,14 +330,14 @@
 			top: 50%;
 			transform: translateY(-50%);
 			pointer-events: none;
-			color: #8a8f98;
+			color: #64748b;
 		}
 		.back-link {
 		display: flex;
 		align-items: center;
 		gap: 6px;
 		padding: 8px 12px;
-		color: #8a8f98;
+		color: #64748b;
 		font-size: 13px;
 		text-decoration: none !important;
 		border-radius: 6px;
@@ -345,8 +345,8 @@
 		transition: all 0.15s ease;
 	}
 	.back-link:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #f7f8f8;
+		background: rgba(0, 0, 0, 0.04);
+		color: #1a1a2e;
 	}
 
 	.admin-topbar {

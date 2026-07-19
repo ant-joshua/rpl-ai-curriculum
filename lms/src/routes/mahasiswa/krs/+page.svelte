@@ -281,7 +281,7 @@
 	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
 	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
 	tr:last-child td { border-bottom: none; }
-	tr.row-selected { background: rgba(94,106,210,0.04); }
+	tr.row-selected { background: rgba(79,70,229,0.04); }
 	tr.row-disabled { opacity: 0.6; }
 	.cell-name { font-weight: 500; }
 	.cell-num { text-align: center; font-weight: 600; }

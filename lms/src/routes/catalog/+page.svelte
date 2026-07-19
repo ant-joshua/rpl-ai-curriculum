@@ -172,7 +172,7 @@
   .catalog-header h1 {
     font-size: 28px;
     font-weight: 590;
-    color: #f7f8f8;
+    color: #1a1a2e;
     margin: 0 0 4px;
     font-feature-settings: 'cv01', 'ss03';
     letter-spacing: -0.288px;
@@ -180,7 +180,7 @@
 
   .catalog-subtitle {
     font-size: 14px;
-    color: #8a8f98;
+    color: #64748b;
     margin: 0;
     font-feature-settings: 'cv01', 'ss03';
   }
@@ -206,7 +206,7 @@
     font-feature-settings: 'cv01', 'ss03';
     font-weight: 510;
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: 6px;
     color: #d0d6e0;
     outline: none;
@@ -216,21 +216,21 @@
   }
 
   .filter-select:hover {
-    background: rgba(255,255,255,0.04);
+    background: rgba(0,0,0,0.04);
     border-color: rgba(255,255,255,0.12);
-    color: #f7f8f8;
+    color: #1a1a2e;
   }
 
   .filter-select:focus {
-    border-color: #5e6ad2;
-    box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
-    color: #f7f8f8;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+    color: #1a1a2e;
   }
 
   .result-count {
     margin-left: auto;
     font-size: 13px;
-    color: #62666d;
+    color: #94a3b8;
     font-weight: 510;
     font-feature-settings: 'cv01', 'ss03';
   }
@@ -245,8 +245,8 @@
   /* Clear button */
   .clear-btn {
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.08);
-    color: #8a8f98;
+    border: 1px solid rgba(0,0,0,0.06);
+    color: #64748b;
     font-family: inherit;
     font-size: 13px;
     font-weight: 510;
@@ -258,9 +258,9 @@
   }
 
   .clear-btn:hover {
-    background: rgba(255,255,255,0.04);
+    background: rgba(0,0,0,0.04);
     border-color: rgba(255,255,255,0.15);
-    color: #f7f8f8;
+    color: #1a1a2e;
   }
 
   /* Responsive */

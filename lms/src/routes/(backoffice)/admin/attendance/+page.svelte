@@ -185,7 +185,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-grid">
-			<StatCard icon="📅" value={stats?.total_sessions ?? 0} label="Total Sesi" color="#7170ff" />
+			<StatCard icon="📅" value={stats?.total_sessions ?? 0} label="Total Sesi" color="#4F46E5" />
 			<StatCard icon="✅" value={stats?.active_sessions ?? 0} label="Sesi Aktif" color="#22c55e" />
 			<StatCard icon="👥" value={stats?.total_records ?? 0} label="Total Presensi" color="#f59e0b" />
 			<StatCard icon="📈" value={(stats?.average_rate ?? 0) + '%'} label="Rata-rata Kehadiran" color="#8b5cf6" />
@@ -296,7 +296,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		width: 44px; height: 44px; border-radius: 10px;
 		display: flex; align-items: center; justify-content: center;
 	}
-	.stat-card--primary .stat-icon { background: rgba(94,106,210,0.12); color: var(--accent); }
+	.stat-card--primary .stat-icon { background: rgba(79,70,229,0.12); color: var(--accent); }
 	.stat-card--success .stat-icon { background: rgba(34,197,94,0.12); color: #22c55e; }
 	.stat-card--warning .stat-icon { background: rgba(245,158,11,0.12); color: #f59e0b; }
 	.stat-card--accent .stat-icon { background: rgba(139,92,246,0.12); color: #8b5cf6; }
@@ -347,7 +347,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	}
 	td { padding: 10px 12px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); }
 	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
+	tr:hover { background: rgba(0,0,0,0.02); }
 
 	.badge {
 		display: inline-block; padding: 2px 8px; border-radius: 6px;

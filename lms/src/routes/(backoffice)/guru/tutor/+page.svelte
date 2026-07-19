@@ -97,7 +97,7 @@
 		border-radius: 12px; text-decoration: none; color: var(--text);
 		transition: all 0.15s ease;
 	}
-	.nav-card:hover { border-color: var(--accent); background: rgba(94, 106, 210, 0.06); transform: translateY(-2px); }
+	.nav-card:hover { border-color: var(--accent); background: rgba(79, 70, 229, 0.06); transform: translateY(-2px); }
 	.card-icon { font-size: 32px; flex-shrink: 0; }
 	.card-body { flex: 1; }
 	.card-body h3 { margin: 0 0 4px; font-size: 16px; }

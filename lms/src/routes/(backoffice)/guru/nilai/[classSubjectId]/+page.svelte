@@ -133,7 +133,7 @@
 		transition: all 0.1s;
 	}
 	.sem-btn:last-child { border-right: none; }
-	.sem-btn:hover { background: rgba(255,255,255,0.04); }
+	.sem-btn:hover { background: rgba(0,0,0,0.04); }
 	.sem-btn--active { background: var(--accent); color: white; }
 	.sem-btn--active:hover { background: var(--accent-hover); }
 
@@ -159,7 +159,7 @@
 	}
 	.subpage-card:hover {
 		border-color: var(--accent);
-		background: rgba(94, 106, 210, 0.06);
+		background: rgba(79, 70, 229, 0.06);
 		transform: translateY(-2px);
 	}
 	.sp-icon { font-size: 28px; flex-shrink: 0; }

@@ -301,7 +301,7 @@
 	}
 
 	.nav-badge {
-		background: var(--accent, #5e6ad2);
+		background: var(--accent, #4F46E5);
 		color: #fff;
 		font-size: 10px;
 		font-weight: 700;
@@ -355,8 +355,8 @@
 	}
 
 	.search-toggle-btn {
-		background: rgba(255,255,255,0.04);
-		border: 1px solid rgba(255,255,255,0.08);
+		background: rgba(0,0,0,0.04);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 8px;
 		padding: 6px 10px;
 		font-size: 16px;
@@ -365,7 +365,7 @@
 		line-height: 1;
 	}
 	.search-toggle-btn:hover {
-		background: rgba(255,255,255,0.08);
+		background: rgba(0,0,0,0.06);
 		border-color: rgba(255,255,255,0.15);
 	}
 

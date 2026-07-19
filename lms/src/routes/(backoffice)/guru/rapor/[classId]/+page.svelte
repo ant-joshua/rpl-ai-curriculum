@@ -119,8 +119,8 @@ import { t } from '$lib/stores/i18n.svelte';
 				const status = (getValue() as string) || 'draft';
 				const isFinalized = status === 'finalized';
 				const isPrinted = status === 'printed';
-				const bg = isFinalized ? 'rgba(16,185,129,0.1)' : isPrinted ? 'rgba(94,106,210,0.1)' : 'rgba(98,102,109,0.1)';
-				const color = isFinalized ? '#10b981' : isPrinted ? '#5e6ad2' : 'var(--text-quaternary)';
+				const bg = isFinalized ? 'rgba(16,185,129,0.1)' : isPrinted ? 'rgba(79,70,229,0.1)' : 'rgba(98,102,109,0.1)';
+				const color = isFinalized ? '#10b981' : isPrinted ? '#4F46E5' : 'var(--text-quaternary)';
 				const label = isFinalized ? 'Finalized' : isPrinted ? 'Printed' : 'Draft';
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
@@ -132,12 +132,12 @@ import { t } from '$lib/stores/i18n.svelte';
 				const studentId = getValue() || row.original.user_id;
 				const isDraft = !row.original.rapor_status || row.original.rapor_status === 'draft';
 				const genBtn = isDraft
-					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;background:rgba(255,255,255,0.04);color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
+					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;background:rgba(0,0,0,0.04);color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
 					: '';
 				const prevHref = `/guru/rapor/${classId}/${studentId}?semester=${selectedSemester}`;
 				const prevStyle = isDraft
-					? 'padding:4px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;background:transparent;color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
-					: 'padding:4px 12px;border:1px solid rgba(94,106,210,0.3);border-radius:6px;background:rgba(94,106,210,0.1);color:#5e6ad2;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
+					? 'padding:4px 12px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;background:transparent;color:#d0d6e0;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
+					: 'padding:4px 12px;border:1px solid rgba(79,70,229,0.3);border-radius:6px;background:rgba(79,70,229,0.1);color:#4F46E5;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
 				return `<div style="display:flex;gap:6px;justify-content:flex-end">${genBtn}<a href="${prevHref}" style="${prevStyle}">Preview</a></div>`;
 			}
 		}

@@ -97,7 +97,7 @@ import { t } from '$lib/stores/i18n.svelte';
 			accessorKey: 'predikat_pengetahuan',
 			cell: ({ getValue }) => {
 				const v = getValue() as string;
-				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(94,106,210,0.1);color:#5e6ad2">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:#4F46E5">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
 			}
 		},
 		{
@@ -110,7 +110,7 @@ import { t } from '$lib/stores/i18n.svelte';
 			accessorKey: 'predikat_keterampilan',
 			cell: ({ getValue }) => {
 				const v = getValue() as string;
-				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(94,106,210,0.1);color:#5e6ad2">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:#4F46E5">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
 			}
 		},
 	];

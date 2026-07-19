@@ -105,14 +105,14 @@
 		font-size: 24px;
 		font-weight: 590;
 		letter-spacing: -0.288px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		margin-bottom: 6px;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.subtitle {
 		font-size: 14px;
-		color: #8a8f98;
+		color: #64748b;
 		margin-bottom: 24px;
 	}
 
@@ -133,10 +133,10 @@
 	.search-bar input {
 		width: 100%;
 		padding: 8px 12px 8px 34px;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-size: 13px;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
@@ -145,24 +145,24 @@
 	}
 
 	.search-bar input:focus {
-		border-color: #5e6ad2;
-		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
+		border-color: #4F46E5;
+		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 	}
 
 	.search-bar input::placeholder {
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.loading {
 		text-align: center;
 		padding: 60px 20px;
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.empty {
 		text-align: center;
 		padding: 60px 20px;
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.pdf-list {
@@ -176,15 +176,15 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 14px 16px;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 8px;
 		transition: all 0.15s;
 	}
 
 	.pdf-item:hover {
-		background: rgba(255, 255, 255, 0.04);
-		border-color: rgba(94, 106, 210, 0.3);
+		background: rgba(0, 0, 0, 0.04);
+		border-color: rgba(79, 70, 229, 0.3);
 	}
 
 	.pdf-info {
@@ -209,7 +209,7 @@
 	.pdf-title {
 		font-size: 14px;
 		font-weight: 510;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -218,7 +218,7 @@
 
 	.pdf-subtitle {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -251,10 +251,10 @@
 	.pdf-dl-btn {
 		flex-shrink: 0;
 		padding: 6px 14px;
-		border: 1px solid rgba(94, 106, 210, 0.3);
+		border: 1px solid rgba(79, 70, 229, 0.3);
 		border-radius: 6px;
-		background: rgba(94, 106, 210, 0.08);
-		color: #7170ff;
+		background: rgba(79, 70, 229, 0.08);
+		color: #4F46E5;
 		font-size: 13px;
 		font-weight: 510;
 		text-decoration: none !important;
@@ -263,8 +263,8 @@
 	}
 
 	.pdf-dl-btn:hover {
-		background: #5e6ad2;
-		border-color: #5e6ad2;
-		color: #f7f8f8;
+		background: #4F46E5;
+		border-color: #4F46E5;
+		color: #1a1a2e;
 	}
 </style>

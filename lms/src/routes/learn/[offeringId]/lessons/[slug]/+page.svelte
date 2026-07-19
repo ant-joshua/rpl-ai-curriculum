@@ -646,7 +646,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 0 0 16px;
-		border-bottom: 1px solid rgba(255,255,255,0.06);
+		border-bottom: 1px solid rgba(0,0,0,0.08);
 		margin-bottom: 20px;
 	}
 
@@ -657,22 +657,22 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 8px;
-		border: 1px solid rgba(255,255,255,0.08);
+		border: 1px solid rgba(0,0,0,0.06);
 		background: transparent;
-		color: #8a8f98;
+		color: #64748b;
 		cursor: pointer;
 		transition: all 0.15s;
 		flex-shrink: 0;
 	}
 	.mobile-menu-btn:hover {
-		background: rgba(255,255,255,0.04);
-		color: #f7f8f8;
+		background: rgba(0,0,0,0.04);
+		color: #1a1a2e;
 	}
 
 	.mobile-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -691,21 +691,21 @@
 	}
 
 	.bc-link {
-		color: #62666d;
+		color: #94a3b8;
 		text-decoration: none;
 		transition: color 0.15s;
 	}
 	.bc-link:hover {
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	.bc-sep {
-		color: #62666d;
+		color: #94a3b8;
 		opacity: 0.5;
 	}
 
 	.bc-current {
-		color: #8a8f98;
+		color: #64748b;
 	}
 
 	/* Progress section */
@@ -719,7 +719,7 @@
 	.progress-label {
 		font-size: 12px;
 		font-weight: 510;
-		color: #8a8f98;
+		color: #64748b;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
@@ -729,13 +729,13 @@
 	}
 
 	.progress-section :global(.ui-progress-track) {
-		background: rgba(255, 255, 255, 0.06);
+		background: rgba(0, 0, 0, 0.08);
 		height: 4px !important;
 		border-radius: 2px;
 	}
 
 	.progress-section :global(.ui-progress-fill) {
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		border-radius: 2px;
 		transition: width 0.5s ease;
 	}
@@ -870,10 +870,10 @@
 		align-items: center;
 		gap: 10px;
 		padding: 10px 16px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(0, 0, 0, 0.08);
 		border-radius: 6px;
 		text-decoration: none;
-		color: #8a8f98;
+		color: #64748b;
 		transition: all 0.15s ease;
 		font-size: 13px;
 		font-weight: 500;
@@ -882,14 +882,14 @@
 	}
 
 	.nav-btn:hover {
-		background: rgba(255, 255, 255, 0.04);
+		background: rgba(0, 0, 0, 0.04);
 		border-color: rgba(255, 255, 255, 0.12);
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	.nav-btn svg {
 		flex-shrink: 0;
-		color: #7170ff;
+		color: #4F46E5;
 	}
 
 	.nav-btn.nav-next {
@@ -907,7 +907,7 @@
 	.nav-dir {
 		font-size: 11px;
 		font-weight: 600;
-		color: #62666d;
+		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 	}

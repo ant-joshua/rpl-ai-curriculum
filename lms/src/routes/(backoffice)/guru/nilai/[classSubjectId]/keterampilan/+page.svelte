@@ -304,8 +304,8 @@
 	.score-input { width: 56px; padding: 6px 4px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--text); font-size: 13px; font-weight: 500; text-align: center; font-family: inherit; outline: none; transition: all 0.1s; }
 	.score-input:hover { border-color: var(--border); background: var(--bg-secondary); }
 	.score-input:focus { border-color: var(--accent); background: var(--bg-secondary); }
-	.score-input--filled { border-color: rgba(255,255,255,0.06); }
+	.score-input--filled { border-color: rgba(0,0,0,0.08); }
 	.avg-cell { text-align: center; font-weight: 600; font-size: 13px; }
 	.avg-na { color: var(--text-quaternary); }
-	tfoot td { border-top: 2px solid var(--border); background: rgba(94, 106, 210, 0.04); font-weight: 500; color: var(--text-secondary); }
+	tfoot td { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
 </style>

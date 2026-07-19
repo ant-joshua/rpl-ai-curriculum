@@ -76,7 +76,7 @@
     <StatCard icon="✅" value={counts.known} label="{t('flashcards.known')}" color="#22c55e" />
     <StatCard icon="📖" value={counts.learning} label="{t('flashcards.learning')}" color="#f59e0b" />
     <StatCard icon="🆕" value={counts.newCards} label="{t('flashcards.new_cards')}" color="#3b82f6" />
-    <StatCard icon="📂" value={counts.decks} label="Deck" color="#8a8f98" />
+    <StatCard icon="📂" value={counts.decks} label="Deck" color="#64748b" />
   </div>
 
   <!-- Review Stats -->

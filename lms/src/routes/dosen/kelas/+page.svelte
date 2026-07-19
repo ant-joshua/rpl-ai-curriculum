@@ -106,7 +106,7 @@
 	.class-card:hover { border-color: rgba(255,255,255,0.12); }
 	.card-top { display: flex; justify-content: space-between; align-items: center; }
 	.card-kode code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 11px; }
-	.card-semester-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: rgba(94,106,210,0.1); color: #5e6ad2; }
+	.card-semester-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: rgba(79,70,229,0.1); color: #4F46E5; }
 	.card-name { font-size: 15px; font-weight: 600; color: var(--text); }
 	.card-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
 	.card-schedule { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }

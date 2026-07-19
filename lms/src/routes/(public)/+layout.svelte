@@ -3,13 +3,13 @@
 </script>
 
 <svelte:head>
-	<meta name="theme-color" content="#0a0b0c" />
+	<meta name="theme-color" content="#F4F7FA" />
 </svelte:head>
 
 <div class="layout">
 	<nav class="topbar">
 		<a href="/" class="logo">
-			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #5e6ad2; flex-shrink: 0;">
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4F46E5; flex-shrink: 0;">
 				<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
 				<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
 			</svg>
@@ -30,8 +30,8 @@
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
-		background: var(--bg, #0a0b0c);
-		color: var(--text, #f7f8f8);
+		background: var(--bg, #F4F7FA);
+		color: var(--text, #1a1a2e);
 	}
 
 	.topbar {
@@ -43,10 +43,10 @@
 		justify-content: space-between;
 		padding: 0 24px;
 		height: 56px;
-		background: rgba(10, 11, 12, 0.8);
+		background: rgba(255, 255, 255, 0.85);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		border-bottom: 1px solid var(--border, #E2E8F0);
 	}
 
 	.logo {
@@ -55,7 +55,7 @@
 		gap: 8px;
 		font-size: 16px;
 		font-weight: 600;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		text-decoration: none;
 		letter-spacing: -0.24px;
 	}
@@ -63,7 +63,7 @@
 	.logo-icon { font-size: 20px; }
 
 	.logo-text {
-		background: linear-gradient(135deg, #5e6ad2, #5e6ad2);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -78,7 +78,7 @@
 	.login-btn {
 		padding: 8px 20px;
 		border-radius: 8px;
-		background: linear-gradient(135deg, #5e6ad2, #5e6ad2);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		color: #fff;
 		font-size: 14px;
 		font-weight: 590;

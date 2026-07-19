@@ -224,7 +224,7 @@
 	}
 	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
 	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
+	tr:hover { background: rgba(0,0,0,0.02); }
 
 	.col-num { width: 40px; color: var(--text-tertiary); }
 	.col-name { font-weight: 500; }
@@ -240,7 +240,7 @@
 
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-ghost { background: transparent; color: var(--text-secondary); }
-	.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+	.btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text); }
 	.btn-secondary { background: var(--accent); color: #fff; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }

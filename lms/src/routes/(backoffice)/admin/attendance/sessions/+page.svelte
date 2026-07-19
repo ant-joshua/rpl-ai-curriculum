@@ -485,7 +485,7 @@
 		background: none; border: none; color: var(--text-secondary); cursor: pointer;
 		padding: 4px; border-radius: 4px;
 	}
-	.modal-close:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+	.modal-close:hover { color: var(--text); background: rgba(0,0,0,0.05); }
 
 	.modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 	.form-group { display: flex; flex-direction: column; gap: 4px; }

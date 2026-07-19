@@ -337,7 +337,7 @@
 	}
 	.notif-item:hover { background: var(--hover); }
 	.notif-item.unread { background: var(--accent-dim); }
-	.notif-item.selected { background: rgba(94,106,210,0.08); }
+	.notif-item.selected { background: rgba(79,70,229,0.08); }
 	.notif-checkbox { margin-top: 4px; accent-color: var(--accent); }
 	.notif-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; margin-top: 2px; }
 	.notif-content { flex: 1; min-width: 0; cursor: pointer; }
@@ -345,7 +345,7 @@
 	.notif-title { font-size: 14px; font-weight: 600; color: var(--text); }
 	.notif-type-label {
 		font-size: 10px; padding: 2px 6px; border-radius: 4px;
-		background: rgba(98,102,109,0.15); color: #8a8f98;
+		background: rgba(98,102,109,0.15); color: #64748b;
 		font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
 	}
 	.notif-body { margin: 4px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.4; }

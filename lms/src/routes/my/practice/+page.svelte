@@ -289,9 +289,9 @@
 	.search-input {
 		padding: 0.5rem 0.75rem;
 		font-size: 0.875rem;
-		color: #f7f8f8;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: #1a1a2e;
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
 		border-radius: 6px;
 		font-family: inherit;
 		min-width: 200px;
@@ -299,8 +299,8 @@
 	}
 	.search-input:focus {
 		outline: none;
-		border-color: #5e6ad2;
-		box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.15);
+		border-color: #4F46E5;
+		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 	}
 	.filter-count {
 		font-size: 13px;
@@ -322,7 +322,7 @@
 		transition: border-color 0.15s;
 	}
 	.question-card.answered {
-		border-color: rgba(94,106,210,0.3);
+		border-color: rgba(79,70,229,0.3);
 	}
 
 	.q-header {
@@ -339,8 +339,8 @@
 	}
 	.tag {
 		font-size: 11px;
-		background: rgba(94, 106, 210, 0.12);
-		color: #5e6ad2;
+		background: rgba(79, 70, 229, 0.12);
+		color: #4F46E5;
 		padding: 2px 8px;
 		border-radius: 10px;
 	}
@@ -371,9 +371,9 @@
 		font-size: 14px;
 		transition: all 0.15s;
 	}
-	.mc-option:hover { border-color: var(--accent-dim); background: rgba(94,106,210,0.08); }
-	.mc-option.selected { border-color: #5e6ad2; background: rgba(94,106,210,0.08); }
-	.mc-option input { accent-color: #5e6ad2; }
+	.mc-option:hover { border-color: var(--accent-dim); background: rgba(79,70,229,0.08); }
+	.mc-option.selected { border-color: #4F46E5; background: rgba(79,70,229,0.08); }
+	.mc-option input { accent-color: #4F46E5; }
 
 	.code-block {
 		background: rgba(0,0,0,0.3);

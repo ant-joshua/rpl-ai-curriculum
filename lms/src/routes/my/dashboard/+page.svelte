@@ -347,7 +347,7 @@
 					<div class="activity-list">
 						{#each recentAnnouncements as ann}
 							<div class="activity-item">
-								<span class="activity-dot" style="background: #7170ff"></span>
+								<span class="activity-dot" style="background: #4F46E5"></span>
 								<div class="activity-body">
 									<span class="activity-action">{ann.title}</span>
 									{#if ann.body}
@@ -425,12 +425,12 @@
 		margin: 0 0 2px;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.288px;
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	.subtitle {
 		font-size: 14px;
-		color: #8a8f98;
+		color: #64748b;
 		margin: 0;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -487,14 +487,14 @@
 	.overview-value {
 		font-size: 20px;
 		font-weight: 590;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-feature-settings: 'cv01', 'ss03';
 		line-height: 1.2;
 	}
 
 	.overview-label {
 		font-size: 11px;
-		color: #8a8f98;
+		color: #64748b;
 		font-weight: 510;
 		font-feature-settings: 'cv01', 'ss03';
 	}
@@ -526,7 +526,7 @@
 		font-weight: 590;
 		margin: 0;
 		font-feature-settings: 'cv01', 'ss03';
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	/* Course grid */
@@ -540,8 +540,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.08);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 8px;
 		padding: 18px;
 		text-decoration: none !important;
@@ -551,8 +551,8 @@
 	}
 
 	.course-card:hover {
-		border-color: rgba(94,106,210,0.25);
-		background: rgba(255,255,255,0.04);
+		border-color: rgba(79,70,229,0.25);
+		background: rgba(0,0,0,0.04);
 	}
 
 	.course-card-header {
@@ -566,7 +566,7 @@
 	.course-title {
 		font-size: 15px;
 		font-weight: 590;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		margin: 0;
 		line-height: 1.3;
 		font-feature-settings: 'cv01', 'ss03';
@@ -582,7 +582,7 @@
 	.course-progress-bar {
 		flex: 1;
 		height: 4px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 		border-radius: 2px;
 		overflow: hidden;
 	}
@@ -603,13 +603,13 @@
 
 	.course-stats {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	.course-last-lesson {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		display: flex;
 		gap: 4px;
 		align-items: center;
@@ -621,27 +621,27 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		font-weight: 510;
 	}
 
 	.course-action {
 		margin-top: auto;
 		padding-top: 8px;
-		border-top: 1px solid rgba(255,255,255,0.06);
+		border-top: 1px solid rgba(0,0,0,0.08);
 	}
 
 	.lanjut-belajar {
 		font-size: 13px;
 		font-weight: 510;
-		color: #7170ff;
+		color: #4F46E5;
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
 	/* Empty states */
 	.empty-state { text-align: center; padding: 20px; }
-	.empty-state h3 { margin: 8px 0 4px; font-size: 16px; font-weight: 590; color: #f7f8f8; font-feature-settings: 'cv01', 'ss03'; }
-	.empty-state p { color: #8a8f98; font-size: 13px; margin: 0 0 16px; }
+	.empty-state h3 { margin: 8px 0 4px; font-size: 16px; font-weight: 590; color: #1a1a2e; font-feature-settings: 'cv01', 'ss03'; }
+	.empty-state p { color: #64748b; font-size: 13px; margin: 0 0 16px; }
 
 	/* Side panel */
 	.side-panel {
@@ -662,26 +662,26 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 12px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.15s ease;
 	}
 
 	.task-item:hover {
-		border-color: rgba(94,106,210,0.2);
-		background: rgba(255,255,255,0.04);
+		border-color: rgba(79,70,229,0.2);
+		background: rgba(0,0,0,0.04);
 	}
 
 	.task-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
 	.task-body { flex: 1; min-width: 0; }
-	.task-title { font-size: 13px; font-weight: 510; color: #f7f8f8; display: block; font-feature-settings: 'cv01', 'ss03'; }
-	.task-meta { font-size: 11px; color: #8a8f98; display: block; margin-top: 1px; font-feature-settings: 'cv01', 'ss03'; }
+	.task-title { font-size: 13px; font-weight: 510; color: #1a1a2e; display: block; font-feature-settings: 'cv01', 'ss03'; }
+	.task-meta { font-size: 11px; color: #64748b; display: block; margin-top: 1px; font-feature-settings: 'cv01', 'ss03'; }
 	.task-date { text-align: right; flex-shrink: 0; }
-	.date-label { font-size: 12px; font-weight: 510; color: #f7f8f8; display: block; font-feature-settings: 'cv01', 'ss03'; }
+	.date-label { font-size: 12px; font-weight: 510; color: #1a1a2e; display: block; font-feature-settings: 'cv01', 'ss03'; }
 	.task-date.urgent .date-label { color: #ef4444; }
-	.date-full { font-size: 11px; color: #8a8f98; }
+	.date-full { font-size: 11px; color: #64748b; }
 
 	/* Activity */
 	.activity-list {
@@ -695,7 +695,7 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 8px 0;
-		border-bottom: 1px solid rgba(255,255,255,0.04);
+		border-bottom: 1px solid rgba(0,0,0,0.04);
 	}
 
 	.activity-item:last-child { border-bottom: none; }
@@ -704,20 +704,20 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: #5e6ad2;
+		background: #4F46E5;
 		flex-shrink: 0;
 		margin-top: 6px;
 	}
 
 	.activity-body { flex: 1; min-width: 0; }
-	.activity-action { font-size: 13px; font-weight: 510; color: #f7f8f8; display: block; font-feature-settings: 'cv01', 'ss03'; }
-	.activity-detail { font-size: 12px; color: #8a8f98; display: block; margin-top: 1px; }
-	.activity-meta { font-size: 11px; color: #8a8f98; display: block; margin-top: 2px; }
-	.activity-time { font-size: 11px; color: #8a8f98; flex-shrink: 0; font-feature-settings: 'cv01', 'ss03'; }
+	.activity-action { font-size: 13px; font-weight: 510; color: #1a1a2e; display: block; font-feature-settings: 'cv01', 'ss03'; }
+	.activity-detail { font-size: 12px; color: #64748b; display: block; margin-top: 1px; }
+	.activity-meta { font-size: 11px; color: #64748b; display: block; margin-top: 2px; }
+	.activity-time { font-size: 11px; color: #64748b; flex-shrink: 0; font-feature-settings: 'cv01', 'ss03'; }
 
 	/* Empty mini */
 	.empty-mini { text-align: center; padding: 20px; }
-	.empty-text { color: #8a8f98; font-size: 13px; margin: 0; }
+	.empty-text { color: #64748b; font-size: 13px; margin: 0; }
 
 	@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 	@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

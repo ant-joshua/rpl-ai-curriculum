@@ -223,8 +223,8 @@
 	.backup-list { display: flex; flex-direction: column; gap: 8px; }
 	.backup-item {
 		display: flex; justify-content: space-between; align-items: center;
-		padding: 10px 12px; background: rgba(255,255,255,0.02); border-radius: 6px;
-		border: 1px solid rgba(255,255,255,0.06);
+		padding: 10px 12px; background: rgba(0,0,0,0.02); border-radius: 6px;
+		border: 1px solid rgba(0,0,0,0.08);
 	}
 	.backup-info { display: flex; flex-direction: column; gap: 2px; }
 	.backup-name { font-size: 13px; font-weight: 500; color: var(--text); }
@@ -235,7 +235,7 @@
 
 	.restore-result { margin-top: 8px; }
 	.result-text { font-size: 13px; margin: 2px 0; }
-	.table-detail { font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+	.table-detail { font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
 	.error-detail { color: #f87171; font-size: 11px; }
 
 	@media (max-width: 768px) {

@@ -241,7 +241,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			accessorKey: 'action_type',
 			cell: ({ getValue }) => {
 				const t = getValue() as string;
-				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:rgba(113,112,255,0.12);color:#7170ff">${XP_TYPE_LABELS[t] || t}</span>`;
+				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:rgba(113,112,255,0.12);color:#4F46E5">${XP_TYPE_LABELS[t] || t}</span>`;
 			}
 		},
 		{
@@ -302,7 +302,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				}
 				html += `<span style="font-weight:600;color:var(--text)">${e.displayName || e.userId?.slice(0, 12)}</span>`;
 				if (e.isCurrentUser) {
-					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">Anda</span>`;
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">Anda</span>`;
 				}
 				html += '</div>';
 				return html;

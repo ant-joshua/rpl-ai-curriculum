@@ -59,7 +59,7 @@
 	function nilaiWarna(huruf: string): string {
 		switch (huruf) {
 			case 'A': case 'A-': return 'background:rgba(16,185,129,0.1);color:#10b981';
-			case 'B+': case 'B': case 'B-': return 'background:rgba(94,106,210,0.1);color:#5e6ad2';
+			case 'B+': case 'B': case 'B-': return 'background:rgba(79,70,229,0.1);color:#4F46E5';
 			case 'C+': case 'C': return 'background:rgba(245,158,11,0.1);color:#f59e0b';
 			case 'D': return 'background:rgba(239,68,68,0.1);color:#ef4444';
 			case 'E': return 'background:rgba(239,68,68,0.2);color:#dc2626';

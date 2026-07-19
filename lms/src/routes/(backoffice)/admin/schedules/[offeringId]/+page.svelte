@@ -255,8 +255,8 @@
 
 <style>
   .schedules-page { max-width: 900px; }
-  .breadcrumb { font-size: 13px; color: #8a8f98; margin-bottom: 16px; }
-  .breadcrumb a { color: #7170ff; text-decoration: none; }
+  .breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+  .breadcrumb a { color: #4F46E5; text-decoration: none; }
   .breadcrumb a:hover { text-decoration: underline; }
   .page-header {
     display: flex;
@@ -270,8 +270,8 @@
     display: flex;
     gap: 16px;
     padding: 16px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.08);
     border-radius: 10px;
     transition: border-color 0.15s;
   }
@@ -280,7 +280,7 @@
     min-width: 140px;
     text-align: center;
     padding: 8px;
-    background: rgba(94,106,210,0.08);
+    background: rgba(79,70,229,0.08);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -288,14 +288,14 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  .schedule-date { font-size: 12px; color: #8a8f98; font-weight: 500; }
-  .schedule-clock { font-size: 13px; color: #f7f8f8; font-weight: 600; margin-top: 2px; }
+  .schedule-date { font-size: 12px; color: #64748b; font-weight: 500; }
+  .schedule-clock { font-size: 13px; color: #1a1a2e; font-weight: 600; margin-top: 2px; }
   .schedule-body { flex: 1; min-width: 0; }
-  .schedule-title { font-size: 15px; font-weight: 600; color: #f7f8f8; margin: 0 0 4px; }
-  .schedule-desc { font-size: 13px; color: #8a8f98; margin: 0 0 8px; }
+  .schedule-title { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 0 0 4px; }
+  .schedule-desc { font-size: 13px; color: #64748b; margin: 0 0 8px; }
   .schedule-meta { display: flex; gap: 10px; flex-wrap: wrap; }
-  .meta-item { font-size: 12px; color: #62666d; }
-  .meta-link { color: #7170ff; text-decoration: none; }
+  .meta-item { font-size: 12px; color: #94a3b8; }
+  .meta-link { color: #4F46E5; text-decoration: none; }
   .meta-link:hover { text-decoration: underline; }
   .schedule-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: flex-start; }
 </style>

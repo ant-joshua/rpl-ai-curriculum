@@ -323,7 +323,7 @@
 		flex-wrap: wrap;
 	}
 	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-	.page-desc { color: #8a8f98; font-size: 14px; margin: 0; }
+	.page-desc { color: #64748b; font-size: 14px; margin: 0; }
 	.header-actions { display: flex; gap: 8px; }
 	.hidden-input { display: none; }
 	.filter-bar {
@@ -341,8 +341,8 @@
 		gap: 16px;
 	}
 	.media-card {
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 10px;
 		overflow: hidden;
 		cursor: pointer;
@@ -351,8 +351,8 @@
 		flex-direction: column;
 	}
 	.media-card:hover {
-		border-color: rgba(94,106,210,0.3);
-		background: rgba(255,255,255,0.04);
+		border-color: rgba(79,70,229,0.3);
+		background: rgba(0,0,0,0.04);
 	}
 	.media-thumb {
 		height: 140px;
@@ -372,20 +372,20 @@
 	.media-name {
 		font-size: 13px;
 		font-weight: 500;
-		color: #f7f8f8;
+		color: #1a1a2e;
 		margin: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 	.media-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-	.media-size { color: #8a8f98; }
-	.media-date { font-size: 11px; color: #62666d; margin: 0; }
+	.media-size { color: #64748b; }
+	.media-date { font-size: 11px; color: #94a3b8; margin: 0; }
 	.media-actions {
 		display: flex;
 		gap: 4px;
 		padding: 6px 12px;
-		border-top: 1px solid rgba(255,255,255,0.04);
+		border-top: 1px solid rgba(0,0,0,0.04);
 		justify-content: flex-end;
 	}
 
@@ -396,7 +396,7 @@
 		gap: 16px;
 		margin-top: 24px;
 	}
-	.page-info { font-size: 13px; color: #8a8f98; }
+	.page-info { font-size: 13px; color: #64748b; }
 
 	.preview-content { display: flex; flex-direction: column; gap: 16px; }
 	.preview-img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 6px; }
@@ -417,7 +417,7 @@
 		justify-content: space-between;
 		font-size: 13px;
 	}
-	.detail-row span:first-child { color: #8a8f98; }
+	.detail-row span:first-child { color: #64748b; }
 	.detail-code {
 		font-family: monospace;
 		font-size: 12px;

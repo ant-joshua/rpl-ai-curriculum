@@ -214,7 +214,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		{
 			header: 'Tipe',
 			accessorKey: 'submission_type',
-			cell: ({ getValue }) => `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">${typeLabel[getValue() as string] || getValue()}</span>`
+			cell: ({ getValue }) => `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">${typeLabel[getValue() as string] || getValue()}</span>`
 		},
 		{
 			header: 'Nilai Maks',
@@ -495,7 +495,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.assign-table th { padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface); border-bottom: 1px solid var(--border); }
 	.assign-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
 	.assign-table tr:last-child td { border-bottom: none; }
-	.assign-table tr:hover { background: rgba(255,255,255,0.02); }
+	.assign-table tr:hover { background: rgba(0,0,0,0.02); }
 	.title-cell { font-weight: 500; }
 	.offering-cell { color: var(--text-secondary); font-size: 13px; }
 	.date-cell { color: var(--text-secondary); font-size: 13px; }
@@ -503,7 +503,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.actions-cell { white-space: nowrap; display: flex; gap: 4px; align-items: center; }
 	.confirm-group { display: flex; gap: 4px; align-items: center; }
 
-	.submissions-row td { background: rgba(255,255,255,0.02); padding: 12px 16px; }
+	.submissions-row td { background: rgba(0,0,0,0.02); padding: 12px 16px; }
 	.submissions-panel h4 { margin: 0 0 8px; font-size: 14px; }
 	.sub-table { width: 100%; font-size: 13px; border-collapse: collapse; }
 	.sub-table th { padding: 6px 10px; text-align: left; font-size: 11px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }

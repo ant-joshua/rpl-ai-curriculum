@@ -54,7 +54,7 @@
 		ctx.clearRect(0, 0, w, h);
 
 		// Grid lines
-		ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+		ctx.strokeStyle = 'rgba(0,0,0,0.08)';
 		ctx.lineWidth = 1;
 		for (let i = 0; i <= 4; i++) {
 			const y = pad.top + (chartH / 4) * i;
@@ -74,7 +74,7 @@
 			// Single point - draw a dot
 			const x = pad.left + chartW / 2;
 			const y = pad.top + chartH - ((values[0] - minVal) / range) * chartH;
-			ctx.fillStyle = '#7170ff';
+			ctx.fillStyle = '#4F46E5';
 			ctx.beginPath();
 			ctx.arc(x, y, 4, 0, Math.PI * 2);
 			ctx.fill();
@@ -105,7 +105,7 @@
 		ctx.fill();
 
 		// Line stroke
-		ctx.strokeStyle = '#7170ff';
+		ctx.strokeStyle = '#4F46E5';
 		ctx.lineWidth = 2;
 		ctx.beginPath();
 		ctx.moveTo(points[0].x, points[0].y);
@@ -114,7 +114,7 @@
 
 		// Dots
 		for (const p of points) {
-			ctx.fillStyle = '#7170ff';
+			ctx.fillStyle = '#4F46E5';
 			ctx.beginPath();
 			ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
 			ctx.fill();
@@ -360,7 +360,7 @@
 		gap: 10px;
 	}
 	.xp-level-badge {
-		background: linear-gradient(135deg, #5e6ad2, #7170ff);
+		background: linear-gradient(135deg, #4F46E5, #4F46E5);
 		color: #fff;
 		font-size: 12px;
 		font-weight: 590;
@@ -388,13 +388,13 @@
 	.xp-bar {
 		flex: 1;
 		height: 4px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 		border-radius: 2px;
 		overflow: hidden;
 	}
 	.xp-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #7170ff);
+		background: linear-gradient(90deg, #4F46E5, #4F46E5);
 		border-radius: 2px;
 		transition: width 0.5s ease;
 	}
@@ -442,15 +442,15 @@
 		align-items: center;
 		gap: 14px;
 		padding: 14px 16px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.08);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.06);
 		border-radius: 8px;
 		text-decoration: none !important;
 		transition: all 0.15s ease;
 	}
 	.course-row:hover {
-		border-color: rgba(94,106,210,0.25);
-		background: rgba(255,255,255,0.04);
+		border-color: rgba(79,70,229,0.25);
+		background: rgba(0,0,0,0.04);
 	}
 	.course-row-header {
 		display: flex;
@@ -492,7 +492,7 @@
 	}
 
 	.cert-link {
-		color: #7170ff;
+		color: #4F46E5;
 		text-decoration: none;
 		font-weight: 510;
 	}
@@ -524,7 +524,7 @@
 		align-items: center;
 		gap: 10px;
 		padding: 8px 0;
-		border-bottom: 1px solid rgba(255,255,255,0.04);
+		border-bottom: 1px solid rgba(0,0,0,0.04);
 		font-size: 13px;
 	}
 	.activity-item:last-child { border-bottom: none; }
@@ -532,7 +532,7 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: #5e6ad2;
+		background: #4F46E5;
 		flex-shrink: 0;
 	}
 	.activity-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }

@@ -134,7 +134,7 @@
 		switch (status) {
 			case 'hadir': return 'rgba(16,185,129,0.06)';
 			case 'sakit': return 'rgba(245,158,11,0.06)';
-			case 'izin': return 'rgba(94,106,210,0.06)';
+			case 'izin': return 'rgba(79,70,229,0.06)';
 			case 'alpha': return 'rgba(239,68,68,0.06)';
 			case 'dispensasi': return 'rgba(139,92,246,0.06)';
 			case 'terlambat': return 'rgba(249,115,22,0.06)';

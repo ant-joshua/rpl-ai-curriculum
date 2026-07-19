@@ -153,7 +153,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				}
 				html += `<span style="font-weight:600">${e.displayName || e.userId?.slice(0, 8)}</span>`;
 				if (e.isCurrentUser) {
-					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#7170ff">Anda</span>`;
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">Anda</span>`;
 				}
 				html += '</div>';
 				return html;
@@ -353,8 +353,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		align-items: center;
 		gap: 14px;
 		padding: 14px 18px;
-		background: linear-gradient(135deg, rgba(94,106,210,0.15), rgba(113,112,255,0.1));
-		border: 1px solid rgba(94,106,210,0.3);
+		background: linear-gradient(135deg, rgba(79,70,229,0.15), rgba(113,112,255,0.1));
+		border: 1px solid rgba(79,70,229,0.3);
 		border-radius: 12px;
 		margin-bottom: 16px;
 		animation: slideDown 0.4s ease both;
@@ -455,7 +455,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	}
 	.badge-card.earned {
 		border-color: var(--accent);
-		background: rgba(94,106,210,0.06);
+		background: rgba(79,70,229,0.06);
 	}
 	.badge-card.locked {
 		opacity: 0.6;

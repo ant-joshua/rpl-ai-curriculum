@@ -116,7 +116,7 @@
 			<StatCard icon="💰" value={formatCurrency(stats.totalRevenue)} label="Total Pendapatan" color="#10b981" />
 			<StatCard icon="⏳" value={formatCurrency(stats.totalPending)} label="Menunggu Verifikasi" color="#f59e0b" />
 			<StatCard icon="⚠️" value={formatCurrency(stats.totalOverdue)} label="Total Jatuh Tempo" color="#ef4444" />
-			<StatCard icon="📄" value={stats.invoiceCount} label="Total Invoice" color="#7170ff" />
+			<StatCard icon="📄" value={stats.invoiceCount} label="Total Invoice" color="#4F46E5" />
 			<StatCard icon="✅" value={stats.paidCount} label="Invoice Lunas" color="#3b82f6" />
 		</div>
 
@@ -154,14 +154,14 @@
 		align-items: center;
 		gap: 12px;
 		padding: 60px 20px;
-		color: var(--text-secondary, #8a8f98);
+		color: var(--text-secondary, #64748b);
 	}
 
 	.pg-spinner {
 		width: 32px;
 		height: 32px;
-		border: 3px solid var(--border-color, rgba(255,255,255,0.08));
-		border-top-color: var(--accent, #7170ff);
+		border: 3px solid var(--border-color, rgba(0,0,0,0.06));
+		border-top-color: var(--accent, #4F46E5);
 		border-radius: 50%;
 		animation: pg-spin 0.7s linear infinite;
 	}
@@ -194,7 +194,7 @@
 	/* Section */
 	.pg-section {
 		background: var(--bg-secondary, #1a1b1e);
-		border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+		border: 1px solid var(--border-color, rgba(0,0,0,0.06));
 		border-radius: 10px;
 		overflow: hidden;
 	}
@@ -204,13 +204,13 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 20px;
-		border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08));
+		border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06));
 	}
 
 	.pg-section-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: var(--text-primary, #f7f8f8);
+		color: var(--text-primary, #1a1a2e);
 		margin: 0;
 	}
 
@@ -230,23 +230,23 @@
 		padding: 10px 20px;
 		font-size: 11px;
 		font-weight: 600;
-		color: var(--text-secondary, #8a8f98);
+		color: var(--text-secondary, #64748b);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		background: rgba(255,255,255,0.02);
-		border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08));
+		background: rgba(0,0,0,0.02);
+		border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06));
 		white-space: nowrap;
 	}
 
 	.pg-table td {
 		padding: 12px 20px;
 		color: var(--text-primary, #d0d6e0);
-		border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.04));
+		border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04));
 		white-space: nowrap;
 	}
 
 	.pg-table tbody tr:hover {
-		background: rgba(255,255,255,0.02);
+		background: rgba(0,0,0,0.02);
 	}
 
 	.pg-mono {
@@ -256,7 +256,7 @@
 
 	.pg-amount {
 		font-weight: 600;
-		color: var(--text-primary, #f7f8f8);
+		color: var(--text-primary, #1a1a2e);
 	}
 
 	/* Badge */
@@ -282,7 +282,7 @@
 		align-items: center;
 		gap: 10px;
 		padding: 40px 20px;
-		color: var(--text-secondary, #8a8f98);
+		color: var(--text-secondary, #64748b);
 	}
 
 	/* Buttons */
@@ -302,12 +302,12 @@
 
 	.pg-btn-ghost {
 		background: transparent;
-		color: var(--accent, #7170ff);
+		color: var(--accent, #4F46E5);
 		border: 1px solid var(--border-color, rgba(255,255,255,0.1));
 	}
 
 	.pg-btn-ghost:hover {
-		background: rgba(255,255,255,0.04);
+		background: rgba(0,0,0,0.04);
 	}
 
 	.pg-btn-sm {

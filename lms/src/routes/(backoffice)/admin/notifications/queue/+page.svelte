@@ -86,7 +86,7 @@
 			accessorKey: 'channel',
 			cell: ({ getValue }) => {
 				const ch = getValue() as string;
-				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;background:rgba(98,102,109,0.15);color:#8a8f98">${ch}</span>`;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;background:rgba(98,102,109,0.15);color:#64748b">${ch}</span>`;
 			}
 		},
 		{

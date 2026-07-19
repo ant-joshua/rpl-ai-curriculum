@@ -88,7 +88,7 @@ import { t } from '$lib/stores/i18n.svelte';
 		switch (status) {
 			case 'done': return '#10b981';
 			case 'cancelled': return '#ef4444';
-			case 'in_progress': return '#5e6ad2';
+			case 'in_progress': return '#4F46E5';
 			default: return '#888';
 		}
 	}

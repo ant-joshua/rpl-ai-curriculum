@@ -340,8 +340,8 @@
 
 <style>
 	.course-detail-page { max-width: 1100px; }
-	.breadcrumb { font-size: 13px; color: #8a8f98; margin-bottom: 16px; }
-	.breadcrumb a { color: #7170ff; text-decoration: none; }
+	.breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+	.breadcrumb a { color: #4F46E5; text-decoration: none; }
 	.breadcrumb a:hover { text-decoration: underline; }
 	.error-state { text-align: center; padding: 40px; }
 	.error-state p { color: #ef4444; margin-bottom: 12px; }
@@ -354,8 +354,8 @@
 	}
 	.detail-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 8px; }
 	.detail-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-	.detail-meta code { font-size: 12px; color: #62666d; }
-	.detail-desc { color: #8a8f98; font-size: 14px; margin: 8px 0 0; }
+	.detail-meta code { font-size: 12px; color: #94a3b8; }
+	.detail-desc { color: #64748b; font-size: 14px; margin: 8px 0 0; }
 	.detail-actions { flex-shrink: 0; }
 	.section { margin-top: 24px; }
 	.section-header {
@@ -371,16 +371,16 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 14px 16px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 10px;
 		gap: 12px;
 	}
 	.offering-info { min-width: 0; }
-	.offering-name { font-size: 15px; font-weight: 600; margin: 0 0 4px; color: #f7f8f8; }
+	.offering-name { font-size: 15px; font-weight: 600; margin: 0 0 4px; color: #1a1a2e; }
 	.offering-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-	.offering-meta code { font-size: 12px; color: #62666d; }
-	.offering-cap { font-size: 12px; color: #8a8f98; }
+	.offering-meta code { font-size: 12px; color: #94a3b8; }
+	.offering-cap { font-size: 12px; color: #64748b; }
 	.offering-actions { display: flex; gap: 4px; flex-shrink: 0; }
 	.prereq-list { display: flex; flex-direction: column; gap: 6px; }
 	.prereq-row {
@@ -388,13 +388,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 10px 14px;
-		background: rgba(255,255,255,0.02);
-		border: 1px solid rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.02);
+		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 8px;
 		gap: 12px;
 	}
 	.prereq-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
 	.prereq-icon { font-size: 20px; }
-	.prereq-title { font-size: 14px; font-weight: 600; color: #f7f8f8; display: block; }
-	.prereq-slug { font-size: 12px; color: #62666d; }
+	.prereq-title { font-size: 14px; font-weight: 600; color: #1a1a2e; display: block; }
+	.prereq-slug { font-size: 12px; color: #94a3b8; }
 </style>

@@ -447,7 +447,7 @@
 	}
 	.status--active { background: #22c55e33; color: #22c55e; }
 	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #8a8f9833; color: #8a8f98; }
+	.status--archived { background: #64748b33; color: #64748b; }
 	.status--completed { background: #3b82f633; color: #3b82f6; }
 
 	.header-actions { flex-shrink: 0; }

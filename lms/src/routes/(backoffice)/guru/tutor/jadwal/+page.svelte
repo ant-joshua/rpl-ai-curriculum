@@ -77,8 +77,8 @@
 		switch (s.status) {
 			case 'done': return 'background: rgba(16,185,129,0.15); border-left: 3px solid var(--success);';
 			case 'cancelled': return 'background: rgba(239,68,68,0.1); border-left: 3px solid var(--danger); opacity: 0.6;';
-			case 'in_progress': return 'background: rgba(94,106,210,0.15); border-left: 3px solid var(--accent);';
-			default: return 'background: rgba(255,255,255,0.03); border-left: 3px solid var(--text-tertiary);';
+			case 'in_progress': return 'background: rgba(79,70,229,0.15); border-left: 3px solid var(--accent);';
+			default: return 'background: rgba(0,0,0,0.03); border-left: 3px solid var(--text-tertiary);';
 		}
 	}
 

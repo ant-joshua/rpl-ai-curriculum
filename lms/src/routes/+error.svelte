@@ -64,7 +64,7 @@
 		font-weight: 590;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
-		color: #f7f8f8;
+		color: #1a1a2e;
 		line-height: 1;
 		letter-spacing: -0.5px;
 		margin-bottom: 8px;
@@ -75,7 +75,7 @@
 		font-weight: 590;
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
-		color: #f7f8f8;
+		color: #1a1a2e;
 		margin: 0 0 8px;
 		letter-spacing: -0.24px;
 	}
@@ -84,7 +84,7 @@
 		font-size: 14px;
 		font-weight: 400;
 		font-family: inherit;
-		color: #8a8f98;
+		color: #64748b;
 		line-height: 1.6;
 		margin: 0 0 32px;
 		max-width: 360px;
@@ -97,7 +97,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 16px;
-		background: #5e6ad2;
+		background: #4F46E5;
 		color: #fff;
 		border: none;
 		border-radius: 6px;
@@ -121,14 +121,14 @@
 
 	.error-details summary {
 		font-size: 12px;
-		color: #8a8f98;
+		color: #64748b;
 		cursor: pointer;
 		user-select: none;
 		transition: color 0.15s ease;
 	}
 
 	.error-details summary:hover {
-		color: #f7f8f8;
+		color: #1a1a2e;
 	}
 
 	.error-stack {
@@ -136,9 +136,9 @@
 		padding: 12px;
 		font-size: 11px;
 		font-family: 'SF Mono', SFMono-Regular, ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
-		color: #8a8f98;
-		background: rgba(255, 255, 255, 0.02);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		color: #64748b;
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.08);
 		border-radius: 8px;
 		white-space: pre-wrap;
 		word-break: break-all;

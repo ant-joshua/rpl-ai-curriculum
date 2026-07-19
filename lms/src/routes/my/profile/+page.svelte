@@ -897,7 +897,7 @@
 
 	.fa-code-input:focus {
 		border-color: var(--accent);
-		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
 	}
 
 	.fa-error {
@@ -964,7 +964,7 @@
 
 	.fa-password-input:focus {
 		border-color: var(--accent);
-		box-shadow: 0 0 0 2px rgba(94,106,210,0.15);
+		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
 	}
 
 	/* Recovery Codes */

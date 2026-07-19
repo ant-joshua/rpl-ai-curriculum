@@ -266,13 +266,13 @@
 	.template-actions { display: flex; justify-content: flex-end; gap: 12px; }
 
 	.type-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
-	.cat-general { background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.cat-general { background: rgba(98,102,109,0.15); color: #64748b; }
 	.cat-academic { background: rgba(59,130,246,0.1); color: #3b82f6; }
 	.cat-attendance { background: rgba(139,92,246,0.1); color: #8b5cf6; }
 	.cat-payment { background: rgba(16,185,129,0.1); color: #10b981; }
 	.cat-grade { background: rgba(245,158,11,0.1); color: #f59e0b; }
 	.cat-announcement { background: rgba(239,68,68,0.1); color: #ef4444; }
-	.cat-system { background: rgba(98,102,109,0.15); color: #8a8f98; }
+	.cat-system { background: rgba(98,102,109,0.15); color: #64748b; }
 
 	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(59,130,246,0.1); color: #3b82f6; }
 

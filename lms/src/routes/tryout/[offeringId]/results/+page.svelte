@@ -168,7 +168,7 @@
 		display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
 		width: 140px; height: 140px; border-radius: 50%;
 		border: 4px solid var(--score-clr, var(--accent));
-		background: rgba(255,255,255,0.02);
+		background: rgba(0,0,0,0.02);
 	}
 	.score-value { font-size: 40px; font-weight: 800; color: var(--score-clr, var(--accent)); }
 	.score-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }

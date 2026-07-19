@@ -216,13 +216,13 @@
 	.progress-bar-bg {
 		flex: 1;
 		height: 6px;
-		background: rgba(255,255,255,0.06);
+		background: rgba(0,0,0,0.08);
 		border-radius: 3px;
 		overflow: hidden;
 	}
 	.progress-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #5e6ad2, #7170ff);
+		background: linear-gradient(90deg, #4F46E5, #4F46E5);
 		border-radius: 3px;
 		transition: width 0.3s ease;
 	}

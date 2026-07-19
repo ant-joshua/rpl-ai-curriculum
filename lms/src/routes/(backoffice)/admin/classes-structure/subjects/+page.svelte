@@ -96,7 +96,7 @@
 		wajib: 'Wajib', peminatan: 'Peminatan', muatan_lokal: 'Muatan Lokal', pilihan: 'Pilihan',
 	};
 	const typeColors: Record<string, string> = {
-		wajib: 'background: rgba(94,106,210,0.1); color: #5e6ad2',
+		wajib: 'background: rgba(79,70,229,0.1); color: #4F46E5',
 		peminatan: 'background: rgba(16,185,129,0.1); color: #10b981',
 		muatan_lokal: 'background: rgba(245,158,11,0.1); color: #f59e0b',
 		pilihan: 'background: rgba(236,72,153,0.1); color: #ec4899',

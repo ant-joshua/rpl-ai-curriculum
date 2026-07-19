@@ -193,7 +193,7 @@
 	}
 	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
 	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(255,255,255,0.02); }
+	tr:hover { background: rgba(0,0,0,0.02); }
 
 	.col-invoice { font-family: var(--font-mono); font-size: 12px; min-width: 120px; }
 	.col-name { font-weight: 500; }

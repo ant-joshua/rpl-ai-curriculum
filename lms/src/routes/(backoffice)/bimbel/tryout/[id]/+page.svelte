@@ -72,7 +72,7 @@
 
 	function barHtml(pct: number): string {
 		const cls = pct < 40 ? 'background:var(--danger)' : pct < 70 ? 'background:var(--warning)' : 'background:var(--success)';
-		return `<div style="width:120px;height:20px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;min-width:2px;width:${pct}%;${cls}"></div></div>`;
+		return `<div style="width:120px;height:20px;background:rgba(0,0,0,0.05);border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;min-width:2px;width:${pct}%;${cls}"></div></div>`;
 	}
 
 	const rankingColumns = $derived<ColumnDef<any, any>[]>([

@@ -586,7 +586,7 @@
 	.q-text { font-size: 13px; font-weight: 500; }
 	.q-type-badge {
 		padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;
-		background: rgba(98,102,109,0.15); color: #8a8f98; text-transform: uppercase;
+		background: rgba(98,102,109,0.15); color: #64748b; text-transform: uppercase;
 	}
 	.q-required { color: #ef4444; font-weight: 700; }
 	.q-actions { display: flex; gap: 4px; }
