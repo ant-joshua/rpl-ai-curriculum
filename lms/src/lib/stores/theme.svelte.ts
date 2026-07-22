@@ -3,14 +3,14 @@ import { browser } from '$app/environment';
 type Theme = 'dark' | 'light';
 
 function createThemeStore() {
-	let theme = $state<Theme>('dark');
+	let theme = $state<Theme>('light');
 
 	if (browser) {
 		const stored = localStorage.getItem('lms-theme') as Theme | null;
 		if (stored === 'light' || stored === 'dark') {
 			theme = stored;
 		} else {
-			theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+			theme = 'light';
 		}
 		applyTheme(theme);
 	}
