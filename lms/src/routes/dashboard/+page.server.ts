@@ -2,8 +2,8 @@ import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
 import { cachedDbQuery, cachedDbFirst } from '$lib/server/cache';
 
-export async function load({ request, platform }) {
-	const token = getBearerToken(request);
+export async function load({ request, platform, url }) {
+	const token = getBearerToken(request) || url.searchParams.get('token');
 	if (!token || !platform) {
 		return {
 			enrollments: [],
