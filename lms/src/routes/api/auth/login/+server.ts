@@ -14,10 +14,10 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'Username required' }, 400);
 		}
 
-		// Find user by username
+		// Find user by username or email
 		const user = await db
-			.prepare('SELECT * FROM users WHERE username = ? AND is_active = 1')
-			.bind(username.trim())
+			.prepare('SELECT * FROM users WHERE (username = ? OR email = ?) AND is_active = 1')
+			.bind(username.trim(), username.trim())
 			.first<any>();
 
 		if (!user) {
