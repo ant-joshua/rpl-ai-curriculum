@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 
 export async function load({ params, request, platform, url }: {
 	params: Record<string, string>;
@@ -13,7 +13,7 @@ export async function load({ params, request, platform, url }: {
 	}
 
 	// Auth check
-	const token = getBearerToken(request) || url.searchParams.get('token');
+	const token = getTokenFromRequest(request);
 	if (!token) {
 		throw redirect(302, `/login?redirect=/learn/${params.offeringId}`);
 	}

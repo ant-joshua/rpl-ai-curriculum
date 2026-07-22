@@ -55,13 +55,9 @@
 
     enrollingId = offeringId;
     try {
-      const token = localStorage.getItem('lms-auth-token');
       const res = await fetch('/api/my/enroll', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ offeringId }),
       });
       const body = await res.json();

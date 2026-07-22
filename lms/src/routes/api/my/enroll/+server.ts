@@ -1,12 +1,12 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { invalidateCache } from '$lib/server/cache';
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
+		const token = getTokenFromRequest(request);
 		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
+			return jsonResponse({ success: false, error: 'Unauthorized — login required' }, 401);
 		}
 
 		const session = await getSession(platform, token);
