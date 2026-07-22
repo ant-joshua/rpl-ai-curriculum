@@ -132,22 +132,20 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
+    background: #F0F4F8;
+    border: 1px solid #CFD8E3;
+    border-radius: 10px;
     padding: 20px;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
-    animation: fadeSlideIn 0.35s ease both;
-    opacity: 0;
   }
 
   .course-card:hover {
     background: #FAFBFC;
     border-color: #C8CCD0;
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(79,70,229,0.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(79,70,229,0.12);
   }
 
   .course-card.enrolled {
