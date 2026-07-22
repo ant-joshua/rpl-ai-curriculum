@@ -1,4 +1,4 @@
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getBearerToken, getTokenFromRequest } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { logActivity } from '$lib/server/analytics';
 import { rateLimit } from '$lib/server/rate-limit';

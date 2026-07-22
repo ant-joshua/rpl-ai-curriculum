@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getBearerToken, getSession, getTokenFromRequest } from '$lib/server/auth';
 
 const PUBLIC_PATHS = new Set(['/', '/feed', '/feed.json', '/feed.xml', '/certificate', '/sitemap.xml', '/robots.txt', '/login', '/register', '/register/instructor', '/reset-password']);
 const PUBLIC_PREFIXES = ['/certificate/', '/announcements'];
@@ -18,7 +18,7 @@ export async function load({ request, platform, url }: {
 		return {};
 	}
 
-	const token = getBearerToken(request);
+	const token = getTokenFromRequest(request);
 	if (!token) {
 		throw redirect(302, '/login');
 	}

@@ -2,7 +2,7 @@ import { getDB, jsonResponse } from '$lib/server/d1';
 import { createSession } from '$lib/server/auth';
 import bcrypt from 'bcryptjs';
 
-const TEMP_SESSION_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -51,7 +51,8 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		// Create session token
 		const token = await createSession(platform, user.id, 'password');
 
-		return jsonResponse({
+		// Set cookie + JSON response
+		const json = JSON.stringify({
 			success: true,
 			token,
 			user: {
@@ -60,6 +61,14 @@ export async function POST({ request, platform }: { request: Request; platform: 
 				display_name: user.display_name,
 				email: user.email,
 				role: user.role,
+			},
+		});
+
+		return new Response(json, {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				'Set-Cookie': `lms_token=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${COOKIE_MAX_AGE}`,
 			},
 		});
 	} catch (e: unknown) {

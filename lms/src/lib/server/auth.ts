@@ -106,6 +106,25 @@ export function getBearerToken(request: Request): string | null {
 	return auth.slice(7).trim() || null;
 }
 
+/**
+ * Read token from cookie or Authorization header.
+ * Cookie takes precedence.
+ */
+export function getTokenFromRequest(request: Request): string | null {
+	// Try cookie first
+	const cookieHeader = request.headers.get('Cookie');
+	if (cookieHeader) {
+		const cookies = cookieHeader.split(';').map(c => c.trim());
+		for (const c of cookies) {
+			if (c.startsWith('lms_token=')) {
+				return decodeURIComponent(c.slice('lms_token='.length)) || null;
+			}
+		}
+	}
+	// Fall back to Bearer header
+	return getBearerToken(request);
+}
+
 export async function getOrCreateUsersRow(
 	platform: App.Platform,
 	oauthUserId: string,

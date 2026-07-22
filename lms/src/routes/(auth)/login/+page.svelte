@@ -60,7 +60,7 @@
 				progress.updateStreak();
 				addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
 				setTimeout(() => {
-					window.location.href = '/dashboard?token=' + encodeURIComponent(data.token);
+					window.location.href = '/dashboard';
 				}, 50);
 			}
 		} catch {
