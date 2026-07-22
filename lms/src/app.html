@@ -24,6 +24,12 @@
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 		<script>
+			// Force light theme — reset stale localStorage from old dark default
+			try {
+				const saved = localStorage.getItem('lms-theme');
+				if (saved === 'dark') localStorage.removeItem('lms-theme');
+			} catch (e) { /* noop */ }
+
 			// Enhance code blocks globally: wrapper, top bar (lang badge + copy btn with checkmark), line numbers gutter
 			function enhanceCodeBlocks() {
 				document.querySelectorAll('.markdown-content pre, .text-content.prose pre').forEach(pre => {
