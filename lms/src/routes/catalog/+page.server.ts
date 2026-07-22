@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { cachedDbQuery } from '$lib/server/cache';
 import type { PageServerLoad } from './$types';
 
@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		throw redirect(302, '/?error=no-platform');
 	}
 
-	const token = getBearerToken(request) || url.searchParams.get('token');
+	const token = getTokenFromRequest(request);
 
 	let userId: string | null = null;
 	if (token) {

@@ -1,10 +1,10 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 
 /** GET /api/gamification/my-stats — user level, XP, badges, streak, recent activity */
 export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
+		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
