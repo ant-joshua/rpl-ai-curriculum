@@ -132,8 +132,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: rgba(0,0,0,0.02);
-    border: 1px solid rgba(0,0,0,0.06);
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     border-radius: 8px;
     padding: 20px;
     transition: all 0.2s ease;
@@ -144,8 +144,8 @@
   }
 
   .course-card:hover {
-    background: rgba(0,0,0,0.04);
-    border-color: rgba(79,70,229,0.25);
+    background: #FAFBFC;
+    border-color: #C8CCD0;
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(79,70,229,0.1);
   }
@@ -263,8 +263,8 @@
   .meta-level {
     font-size: 11px;
     font-weight: 500;
-    color: #64748b;
-    background: rgba(0,0,0,0.04);
+    color: #475569;
+    background: #F1F5F9;
     padding: 2px 8px;
     border-radius: 4px;
   }
