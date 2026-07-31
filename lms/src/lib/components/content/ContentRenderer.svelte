@@ -4,10 +4,13 @@
 	import CodeContent from './CodeContent.svelte';
 	import EmbedContent from './EmbedContent.svelte';
 	import QuizContent from './QuizContent.svelte';
+	import MatchingContent from './MatchingContent.svelte';
+	import TrueFalseContent from './TrueFalseContent.svelte';
+	import FillBlankContent from './FillBlankContent.svelte';
 	import PlaygroundContent from './PlaygroundContent.svelte';
 	import MathContent from './MathContent.svelte';
 
-	let { block }: { block: any } = $props();
+	let { block, onComplete }: { block: any; onComplete?: (score: number, total: number, xp: number) => void } = $props();
 
 	let meta: Record<string, any> = $derived(
 		typeof block.meta === 'string'
@@ -37,7 +40,19 @@
 	</div>
 {:else if blockType === 'quiz'}
 	<div class="content-block content-block-quiz">
-		<QuizContent contentBlock={block} />
+		<QuizContent contentBlock={block} {onComplete} />
+	</div>
+{:else if blockType === 'fillblank'}
+	<div class="content-block content-block-quiz">
+		<FillBlankContent {block} {onComplete} />
+	</div>
+{:else if blockType === 'truefalse'}
+	<div class="content-block content-block-quiz">
+		<TrueFalseContent {block} {onComplete} />
+	</div>
+{:else if blockType === 'matching'}
+	<div class="content-block content-block-quiz">
+		<MatchingContent {block} {onComplete} />
 	</div>
 {:else if blockType === 'playground'}
 	<div class="content-block">

@@ -4,6 +4,7 @@
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
 	import LessonDiscussions from '$lib/components/LessonDiscussions.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
+	import LessonCompleteScreen from '$lib/components/content/LessonCompleteScreen.svelte';
 	import LessonSidebar from '$lib/components/lesson/LessonSidebar.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
@@ -68,6 +69,12 @@
 	let sidebarMobileOpen = $state(false);
 	let contentAreaEl = $state<HTMLDivElement | null>(null);
 	let hasReached80Pct = $state(false);
+	
+	// New state for Duolingo complete screen
+	let lessonFinished = $state(false);
+	let finishedScore = $state(0);
+	let finishedTotal = $state(0);
+	let finishedXp = $state(0);
 
 	$effect(() => {
 		if (!lesson) return;
@@ -167,6 +174,14 @@
 		} finally {
 			accessCheck.loading = false;
 		}
+	}
+
+	function handleInteractiveComplete(score: number, total: number, xp: number) {
+		finishedScore = score;
+		finishedTotal = total;
+		finishedXp = xp;
+		lessonFinished = true;
+		addToast('Pelajaran selesai! ✨', 'success');
 	}
 
 	async function markComplete() {
@@ -335,7 +350,6 @@
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
-
 <svelte:head>
 	<title>{lesson?.title ?? 'Lesson'} — {course?.title ?? 'RPL AI Curriculum'}</title>
 </svelte:head>
@@ -412,10 +426,23 @@
 					</div>
 				{:else if !accessCheck.accessible}
 					<LockedLesson prerequisites={accessCheck.prerequisites} />
+				{:else if lessonFinished}
+					<LessonCompleteScreen
+						score={finishedScore}
+						total={finishedTotal}
+						xpEarned={finishedXp}
+						onContinue={() => {
+							if (nextLesson) {
+								navigateTo(nextLesson.slug);
+							} else {
+								window.location.href = `/learn/${params.offeringId}`;
+							}
+						}}
+					/>
 				{:else if contentBlocks.length > 0}
 					{#each contentBlocks as block, i}
 						<div class="content-block">
-							<ContentRenderer block={block} />
+							<ContentRenderer {block} onComplete={(s, t, x) => handleInteractiveComplete(s, t, x)} />
 						</div>
 					{/each}
 				{:else}
@@ -425,28 +452,30 @@
 				{/if}
 			</div>
 
-			<div class="complete-section">
-				{#if isCompleted}
-					<Button
-						onclick={() => undoComplete()}
-						disabled={isCompleting}
-						variant="secondary"
-					>
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="15 9 9 15"/><polyline points="9 9 15 15"/></svg>
-						Batalkan Selesai
-					</Button>
-				{:else}
-					<Button
-						onclick={() => markComplete()}
-						disabled={isCompleting}
-						loading={isCompleting}
-						variant="primary"
-					>
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-						Tandai Selesai
-					</Button>
-				{/if}
-			</div>
+			{#if !lessonFinished}
+				<div class="complete-section">
+					{#if isCompleted}
+						<Button
+							onclick={() => undoComplete()}
+							disabled={isCompleting}
+							variant="secondary"
+						>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="15 9 9 15"/><polyline points="9 9 15 15"/></svg>
+							Batalkan Selesai
+						</Button>
+					{:else}
+						<Button
+							onclick={() => markComplete()}
+							disabled={isCompleting}
+							loading={isCompleting}
+							variant="primary"
+						>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+							Tandai Selesai
+						</Button>
+					{/if}
+				</div>
+			{/if}
 
 			<nav class="lesson-nav">
 				<div class="nav-item">
@@ -499,148 +528,119 @@
 								Saved
 							{:else if !isSavingNote}
 								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-								Save Notes
+								Save Note
+							{:else}
+								<span class="spinner"></span> Saving...
 							{/if}
 						</Button>
 					</div>
 				{/if}
 			</div>
 
-			<LessonDiscussions lessonId={lesson.id} offeringId={params.offeringId as string} />
+			<div class="discussions-section">
+				<LessonDiscussions lessonId={lesson.id} offeringId={params.offeringId ?? ''} />
+			</div>
 		</div>
 	</div>
 {/if}
 
 <style>
-	.error-state {
-		text-align: center;
-		padding: 60px 20px;
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	.error-state h2 {
-		font-size: 24px;
-		margin: 0 0 8px;
-		color: var(--text);
-	}
-
-	.text-secondary {
-		color: var(--text-secondary);
-		font-size: 14px;
-		margin: 0 0 20px;
-	}
-
-	.back-link {
-		display: inline-block;
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-secondary);
-		margin-bottom: 20px;
-		text-decoration: none;
-		transition: color 0.15s;
-	}
-
-	.back-link:hover {
-		color: var(--accent);
-	}
-
+	/* Existing styles ... */
 	.lesson-layout {
 		display: flex;
-		min-height: calc(100vh - 60px);
-		animation: fadeIn 0.3s ease both;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 24px;
+		gap: 32px;
 	}
 
 	.lesson-content {
 		flex: 1;
+		min-width: 0;
 		max-width: 800px;
-		padding: 32px 48px 64px;
 		margin: 0 auto;
-		overflow-y: auto;
 	}
 
-	.mobile-topbar {
-		display: none;
-		align-items: center;
-		gap: 12px;
-		padding: 0 0 16px;
-		border-bottom: 1px solid rgba(0,0,0,0.08);
-		margin-bottom: 20px;
+	.mobile-topbar { display: none; }
+	.lesson-breadcrumb { font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
+	.bc-link { color: #94a3b8; text-decoration: none; }
+	.bc-link:hover { color: var(--accent); }
+	.bc-sep { margin: 0 8px; }
+
+	.progress-section { margin-bottom: 32px; }
+	.progress-label { font-size: 13px; color: #64748b; margin-bottom: 8px; display: block; }
+
+	.lesson-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 32px;
+		gap: 16px;
 	}
 
-	.mobile-menu-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
+	.header-content { flex: 1; }
+	.lesson-title { font-size: 28px; font-weight: 700; color: #0f172a; margin: 0 0 4px; }
+	.offering-name { font-size: 14px; color: #64748b; margin: 0; }
+	.header-actions { display: flex; gap: 8px; align-items: center; }
+
+	.bookmark-btn {
+		background: var(--surface, #F8FAFC);
+		border: 1px solid var(--border, #E2E8F0);
 		border-radius: 8px;
-		border: 1px solid rgba(0,0,0,0.06);
-		background: transparent;
-		color: #64748b;
+		padding: 8px;
 		cursor: pointer;
-		transition: all 0.15s;
-		flex-shrink: 0;
-	}
-	.mobile-menu-btn:hover {
-		background: rgba(0,0,0,0.04);
-		color: #1a1a2e;
-	}
-
-	.mobile-title {
-		font-size: 15px;
-		font-weight: 600;
-		color: #1a1a2e;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.lesson-breadcrumb {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-bottom: 12px;
-		font-size: 12px;
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-	}
-
-	.bc-link {
 		color: #94a3b8;
-		text-decoration: none;
-		transition: color 0.15s;
+		transition: all 0.2s;
 	}
-	.bc-link:hover {
-		color: #64748b;
-	}
+	.bookmark-btn.bookmarked { color: var(--accent, #4F46E5); background: rgba(79, 70, 229, 0.05); border-color: rgba(79, 70, 229, 0.2); }
+	.badge-group { display: flex; gap: 8px; }
 
-	.bc-sep {
-		color: #94a3b8;
-		opacity: 0.5;
-	}
+	.lesson-body { margin-bottom: 32px; min-height: 200px; }
+	.empty-content { padding: 48px 0; text-align: center; }
 
-	.bc-current {
-		color: #64748b;
-	}
-
-	.progress-section {
+	.complete-section { text-align: center; padding: 24px 0; margin-bottom: 32px; border-top: 1px solid rgba(0,0,0,0.06); }
+	
+	.lesson-nav { display: flex; justify-content: space-between; margin-bottom: 48px; gap: 16px; }
+	.nav-item { flex: 1; }
+	.nav-right { display: flex; justify-content: flex-end; }
+	.nav-btn {
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		margin-bottom: 24px;
+		padding: 16px;
+		background: var(--surface, #F8FAFC);
+		border: 1px solid var(--border, #E2E8F0);
+		border-radius: 12px;
+		text-decoration: none;
+		transition: all 0.2s;
+		width: 100%;
 	}
+	.nav-btn:hover { border-color: var(--accent, #4F46E5); background: rgba(79, 70, 229, 0.03); }
+	.nav-label { display: flex; flex-direction: column; gap: 2px; }
+	.nav-dir { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+	.nav-title { font-size: 14px; color: #334155; font-weight: 500; }
 
-	.progress-label {
-		font-size: 12px;
-		font-weight: 510;
-		color: #64748b;
-		white-space: nowrap;
-		flex-shrink: 0;
+	.notes-section {
+		margin-top: 32px;
+		padding: 24px;
+		background: var(--surface, #F8FAFC);
+		border: 1px solid var(--border, #E2E8F0);
+		border-radius: 12px;
 	}
+	.notes-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 16px; }
+	.notes-loading { padding: 20px; text-align: center; color: #94a3b8; }
+	.notes-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
+	.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(79,70,229,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+	@keyframes spin { to { transform: rotate(360deg); } }
+	.discussions-section { margin-top: 32px; }
 
-	.progress-section :global(.ui-progress) {
-		flex: 1;
+	@media (max-width: 768px) {
+		.lesson-layout { padding: 16px; }
+		.mobile-topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; position: sticky; top: 0; background: var(--bg); padding: 8px 0; z-index: 10; }
+		.mobile-menu-btn { background: none; border: none; padding: 4px; color: #334155; cursor: pointer; }
+		.mobile-title { font-size: 16px; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		.lesson-header { flex-direction: column; }
+		.lesson-title { font-size: 24px; }
+		.lesson-nav { flex-direction: column; }
 	}
 </style>
