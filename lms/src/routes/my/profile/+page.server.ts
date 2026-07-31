@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	// Fetch full profile
 	const profile = await db.prepare(
 		`SELECT u.id, u.display_name, u.avatar_url, u.role, u.is_active, u.created_at,
-		        u.totp_verified, u.password_hash,
+		        u.totp_verified, u.password_hash, u.email_verified,
 		        ou.email, ou.name AS oauth_name
 		 FROM users u
 		 LEFT JOIN oauth_users ou ON ou.id = u.id
@@ -38,6 +38,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	const createdAt = profile?.created_at || '';
 	const totpVerified = profile?.totp_verified === 1;
 	const hasPassword = !!profile?.password_hash;
+	const emailVerified = profile?.email_verified === 1;
 
 	// Count enrolled courses
 	const enrollmentCount = await db.prepare(
@@ -63,6 +64,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		lastLogin,
 		totpVerified,
 		hasPassword,
+		emailVerified,
 		token,
 	};
 };

@@ -96,6 +96,12 @@
 </svelte:head>
 
 <div class="dashboard-page">
+	<nav class="breadcrumb">
+		<a href="/" class="bc-link">Beranda</a>
+		<span class="bc-sep">/</span>
+		<span class="bc-current">Dashboard</span>
+	</nav>
+
 	<!-- Header with avatar -->
 	<header class="dashboard-header">
 		<div class="header-left">
@@ -439,6 +445,36 @@
 		margin: 0 auto;
 		padding: 24px 20px;
 		animation: fadeIn 0.4s ease both;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 16px;
+		font-size: 12px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		color: var(--text-muted);
+	}
+
+	.bc-link {
+		color: var(--text-muted);
+		text-decoration: none;
+		transition: color 0.15s;
+	}
+	.bc-link:hover {
+		color: var(--text-secondary);
+	}
+
+	.bc-sep {
+		color: var(--text-muted);
+		opacity: 0.5;
+	}
+
+	.bc-current {
+		color: var(--text-secondary);
 	}
 
 	/* Header */

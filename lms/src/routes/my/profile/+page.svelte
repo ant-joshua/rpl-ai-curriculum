@@ -27,6 +27,8 @@
 	// 2FA state
 	let totpVerified = $state((data as any).totpVerified || false);
 	let hasPassword = $state((data as any).hasPassword || false);
+	let emailVerified = $state((data as any).emailVerified || false);
+	let resendingVerify = $state(false);
 	let settingUp2FA = $state(false);
 	let totpSecret = $state('');
 	let totpAuthUrl = $state('');
@@ -40,6 +42,25 @@
 	let recoveryCodes = $state<string[]>([]);
 	let showingRecoveryCodes = $state(false);
 	let regeneratingCodes = $state(false);
+
+	async function resendVerification() {
+		resendingVerify = true;
+		try {
+			const res = await api('/api/auth/resend-verification', {
+				method: 'POST',
+				body: JSON.stringify({ email }),
+			});
+			if (res.success) {
+				addToast('Email verifikasi terkirim! Cek inbox kamu.', 'success');
+			} else {
+				addToast(res.error || 'Gagal mengirim email verifikasi', 'error');
+			}
+		} catch {
+			addToast('Gagal mengirim email verifikasi', 'error');
+		} finally {
+			resendingVerify = false;
+		}
+	}
 
 	$effect(() => {
 		if (qrCanvas && totpAuthUrl && setupStep === 'show_qr') {
@@ -388,6 +409,25 @@
  		<StatCard icon="📅" value={createdAt ? formatDate(createdAt) : '—'} label="Bergabung" />
  		<StatCard icon="🔑" value={lastLogin ? timeAgo(lastLogin) : '—'} label="Terakhir Login" />
  		<StatCard icon="📚" value="{enrolledCoursesCount} course" label="Course Aktif" />
+	</div>
+
+	<!-- Email Verification Section -->
+	<div class="fa-section">
+		<Card padding="lg">
+			<h2 class="fa-section-title">📧 Verifikasi Email</h2>
+			{#if emailVerified}
+				<div class="email-verify-ok">
+					<span>✅ Email kamu sudah terverifikasi.</span>
+				</div>
+			{:else}
+				<p class="fa-section-desc">
+					Email kamu belum diverifikasi. Cek inbox {email} untuk link verifikasi, atau kirim ulang.
+				</p>
+				<Button onclick={resendVerification} disabled={resendingVerify}>
+					{resendingVerify ? 'Mengirim...' : 'Kirim Ulang Email Verifikasi'}
+				</Button>
+			{/if}
+		</Card>
 	</div>
 
 	<!-- 2FA Section -->
@@ -796,6 +836,19 @@
 	/* 2FA Section */
 	.fa-section {
 		margin-top: 24px;
+	}
+
+	.email-verify-ok {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 16px;
+		background: rgba(34, 197, 94, 0.08);
+		border: 1px solid rgba(34, 197, 94, 0.2);
+		border-radius: 10px;
+		font-size: 14px;
+		color: #16a34a;
+		font-weight: 500;
 	}
 
 	.fa-section-title {

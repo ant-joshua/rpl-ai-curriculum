@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
 	import { page } from '$app/stores';
 	import { getContext } from 'svelte';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
@@ -23,7 +22,6 @@
 	let allLessons = $derived<any[]>(data.allLessons ?? []);
 	let params = $derived($page.params);
 
-	// Push breadcrumb tail via layout context
 	let setBreadcrumbTail = getContext<(items: { label: string; href?: string }[]) => void>('breadcrumb-tail');
 	$effect(() => {
 		if (lesson) {
@@ -33,7 +31,6 @@
 		}
 	});
 
-	// Navigation
 	let prevLesson = $derived.by(() => {
 		if (!lesson || !allLessons.length) return null;
 		const idx = allLessons.findIndex((l: any) => l.id === lesson.id);
@@ -48,38 +45,27 @@
 		return null;
 	});
 
-	// Lesson position
 	let lessonIndex = $derived(
 		lesson ? allLessons.findIndex((l: any) => l.id === lesson.id) + 1 : 0
 	);
 	let totalLessons = $derived(allLessons.length);
 
-	// Prerequisite access check
 	let accessCheck = $state<{ loading: boolean; accessible: boolean; prerequisites: any[] }>({
 		loading: true,
 		accessible: false,
 		prerequisites: []
 	});
 
-	// Progress state
 	let isCompleted = $state(false);
 	let isCompleting = $state(false);
-
-	// Bookmark state
 	let isBookmarked = $state(false);
 	let isBookmarking = $state(false);
-
-	// Notes state
 	let noteContent = $state('');
 	let isSavingNote = $state(false);
 	let isLoadingNote = $state(false);
 	let noteId = $state<string | null>(null);
 	let noteSaved = $state(false);
-
-	// Sidebar mobile state
 	let sidebarMobileOpen = $state(false);
-
-	// Scroll tracking for auto-progress
 	let contentAreaEl = $state<HTMLDivElement | null>(null);
 	let hasReached80Pct = $state(false);
 
@@ -91,7 +77,6 @@
 		loadNote();
 	});
 
-	// Keyboard navigation
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 		if (e.key === 'ArrowLeft' && prevLesson) {
@@ -110,7 +95,6 @@
 		window.location.href = `/learn/${params.offeringId}/lessons/${slug}`;
 	}
 
-	// Scroll tracking
 	function handleScroll() {
 		if (!contentAreaEl || isCompleted || hasReached80Pct) return;
 		const { scrollTop, scrollHeight, clientHeight } = contentAreaEl;
@@ -126,10 +110,7 @@
 		try {
 			await fetch('/api/my/progress', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					lessonSlug: lesson.slug,
 					courseOfferingId: params.offeringId,
@@ -144,12 +125,7 @@
 	async function loadProgress() {
 		if (!lesson || !params?.offeringId) return;
 		try {
-			// Try new lesson_completions API first
-			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
-			});
+			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`);
 			if (res.ok) {
 				const json = await res.json();
 				if (json.success) {
@@ -159,13 +135,8 @@
 			}
 		} catch { /* fallback */ }
 
-		// Fallback to progress table
 		try {
-			const res = await fetch(`/api/my/progress?offeringId=${params.offeringId}`, {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
-			});
+			const res = await fetch(`/api/my/progress?offeringId=${params.offeringId}`);
 			if (res.ok) {
 				const json = await res.json();
 				if (json.success && json.data) {
@@ -181,11 +152,7 @@
 		if (!lesson) return;
 		accessCheck.loading = true;
 		try {
-			const res = await fetch(`/api/lessons/${lesson.id}/access`, {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
-			});
+			const res = await fetch(`/api/lessons/${lesson.id}/access`);
 			if (res.ok) {
 				const json = await res.json();
 				accessCheck.accessible = json.accessible !== false;
@@ -206,26 +173,18 @@
 		if (!lesson || isCompleting) return;
 		isCompleting = true;
 		try {
-			// New lesson_completions API
 			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ time_spent_seconds: 0 })
 			});
 			if (res.ok) {
 				isCompleted = true;
 				addToast('Pelajaran ditandai selesai! ✓', 'success');
 
-				// Award XP for lesson completion
 				fetch('/api/gamification/award', {
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-					},
+					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						reason: 'lesson_complete',
 						reference_type: 'lesson',
@@ -241,21 +200,13 @@
 					}
 				}).catch(() => {});
 
-				// Check if all lessons done → auto-issue certificate
-				const summaryRes = await fetch(`/api/my/progress-summary?offeringId=${params.offeringId}`, {
-					headers: {
-						'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-					}
-				});
+				const summaryRes = await fetch(`/api/my/progress-summary?offeringId=${params.offeringId}`);
 				if (summaryRes.ok) {
 					const summary = await summaryRes.json();
 					if (summary.success && summary.data.isComplete) {
 						const certRes = await fetch('/api/certificates/auto-issue', {
 							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-								'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-							},
+							headers: { 'Content-Type': 'application/json' },
 							body: JSON.stringify({ offeringId: params.offeringId })
 						});
 						if (certRes.ok) {
@@ -281,10 +232,7 @@
 		isCompleting = true;
 		try {
 			const res = await fetch(`/api/my/lessons/${lesson.id}/complete`, {
-				method: 'DELETE',
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
+				method: 'DELETE'
 			});
 			if (res.ok) {
 				isCompleted = false;
@@ -300,15 +248,10 @@
 		}
 	}
 
-	// ---- Bookmarks ----
 	async function loadBookmark() {
 		if (!lesson) return;
 		try {
-			const res = await fetch(`/api/my/bookmarks?offeringId=${params.offeringId}`, {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
-			});
+			const res = await fetch(`/api/my/bookmarks?offeringId=${params.offeringId}`);
 			if (res.ok) {
 				const json = await res.json();
 				if (json.success && json.data) {
@@ -324,10 +267,7 @@
 		try {
 			const res = await fetch('/api/my/bookmarks', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					lessonId: lesson.id,
 					moduleSlug: params.offeringId,
@@ -346,16 +286,11 @@
 		}
 	}
 
-	// ---- Notes ----
 	async function loadNote() {
 		if (!lesson) return;
 		isLoadingNote = true;
 		try {
-			const res = await fetch(`/api/my/notes?lessonId=${lesson.id}`, {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				}
-			});
+			const res = await fetch(`/api/my/notes?lessonId=${lesson.id}`);
 			if (res.ok) {
 				const json = await res.json();
 				if (json.success && json.data) {
@@ -374,10 +309,7 @@
 		try {
 			const res = await fetch('/api/my/notes', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					lessonId: lesson.id,
 					content: noteContent,
@@ -416,7 +348,6 @@
 	</div>
 {:else}
 	<div class="lesson-layout">
-		<!-- Sidebar -->
 		<LessonSidebar
 			lessons={allLessons}
 			currentLessonId={lesson.id}
@@ -425,9 +356,7 @@
 			bind:mobileOpen={sidebarMobileOpen}
 		/>
 
-		<!-- Main content area -->
 		<div class="lesson-content" bind:this={contentAreaEl} onscroll={handleScroll}>
-			<!-- Mobile sidebar toggle -->
 			<div class="mobile-topbar">
 				<button class="mobile-menu-btn" onclick={() => (sidebarMobileOpen = !sidebarMobileOpen)} aria-label="Toggle sidebar">
 					<Icon name="menu" size={20} />
@@ -435,20 +364,17 @@
 				<span class="mobile-title">{lesson.title}</span>
 			</div>
 
-			<!-- Breadcrumb -->
 			<nav class="lesson-breadcrumb">
 				<a href="/learn/{params.offeringId}" class="bc-link">{offering?.name || course?.title}</a>
 				<span class="bc-sep">/</span>
 				<span class="bc-current">{lesson.title}</span>
 			</nav>
 
-			<!-- Progress bar -->
 			<div class="progress-section">
 				<span class="progress-label">Lesson {lessonIndex} of {totalLessons}</span>
 				<ProgressBar value={lessonIndex} max={totalLessons} height={4} />
 			</div>
 
-			<!-- Header -->
 			<header class="lesson-header">
 				<div class="header-content">
 					<h1 class="lesson-title">{lesson.title}</h1>
@@ -479,7 +405,6 @@
 				</div>
 			</header>
 
-			<!-- Content area -->
 			<div class="lesson-body">
 				{#if accessCheck.loading}
 					<div class="loading-state">
@@ -500,7 +425,6 @@
 				{/if}
 			</div>
 
-			<!-- Mark complete / Undo section -->
 			<div class="complete-section">
 				{#if isCompleted}
 					<Button
@@ -524,7 +448,6 @@
 				{/if}
 			</div>
 
-			<!-- Navigation footer -->
 			<nav class="lesson-nav">
 				<div class="nav-item">
 					{#if prevLesson}
@@ -554,7 +477,6 @@
 				</div>
 			</nav>
 
-			<!-- Notes section -->
 			<div class="notes-section">
 				<h3 class="notes-title">
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -569,7 +491,6 @@
 						bind:value={noteContent}
 						placeholder="Write your personal notes for this lesson..."
 						rows={5}
-						class={noteSaved ? 'saved' : ''}
 					/>
 					<div class="notes-actions">
 						<Button onclick={() => saveNote()} disabled={isSavingNote} loading={isSavingNote} variant="ghost">
@@ -585,7 +506,6 @@
 				{/if}
 			</div>
 
-			<!-- Discussion panel -->
 			<LessonDiscussions lessonId={lesson.id} offeringId={params.offeringId as string} />
 		</div>
 	</div>
@@ -625,7 +545,6 @@
 		color: var(--accent);
 	}
 
-	/* === Two-column layout === */
 	.lesson-layout {
 		display: flex;
 		min-height: calc(100vh - 60px);
@@ -640,7 +559,6 @@
 		overflow-y: auto;
 	}
 
-	/* Mobile top bar */
 	.mobile-topbar {
 		display: none;
 		align-items: center;
@@ -678,7 +596,6 @@
 		white-space: nowrap;
 	}
 
-	/* Breadcrumb */
 	.lesson-breadcrumb {
 		display: flex;
 		align-items: center;
@@ -708,7 +625,6 @@
 		color: #64748b;
 	}
 
-	/* Progress section */
 	.progress-section {
 		display: flex;
 		align-items: center;
@@ -726,290 +642,5 @@
 
 	.progress-section :global(.ui-progress) {
 		flex: 1;
-	}
-
-	.progress-section :global(.ui-progress-track) {
-		background: rgba(0, 0, 0, 0.08);
-		height: 4px !important;
-		border-radius: 2px;
-	}
-
-	.progress-section :global(.ui-progress-fill) {
-		background: linear-gradient(135deg, #4F46E5, #4F46E5);
-		border-radius: 2px;
-		transition: width 0.5s ease;
-	}
-
-	/* Header */
-	.lesson-header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 16px;
-		margin-bottom: 28px;
-	}
-
-	.header-content {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.lesson-title {
-		font-size: 26px;
-		font-weight: 700;
-		color: var(--text);
-		margin: 0;
-		line-height: 1.3;
-	}
-
-	.offering-name {
-		font-size: 14px;
-		color: var(--text-secondary);
-		margin: 6px 0 0;
-	}
-
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		flex-shrink: 0;
-	}
-
-	.badge-group {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		flex-shrink: 0;
-	}
-
-	/* Bookmark button */
-	.bookmark-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 38px;
-		height: 38px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		background: var(--surface);
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.15s ease;
-		padding: 0;
-	}
-
-	.bookmark-btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-		background: var(--accent-dim);
-	}
-
-	.bookmark-btn:disabled {
-		opacity: 0.5;
-		cursor: default;
-	}
-
-	/* Loading */
-	.loading-state {
-		padding: 20px 0;
-	}
-
-	.lesson-body {
-		margin-bottom: 32px;
-	}
-
-	.content-block {
-		margin-bottom: 24px;
-	}
-	.content-block:last-child {
-		margin-bottom: 0;
-	}
-
-	/* Empty */
-	.empty-content {
-		text-align: center;
-		padding: 40px 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-	}
-
-	/* Complete section */
-	.complete-section {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 28px;
-	}
-
-	.complete-section :global(.btn) {
-		gap: 8px;
-		padding: 10px 24px;
-		font-weight: 600;
-	}
-
-	/* Navigation */
-	.lesson-nav {
-		display: flex;
-		justify-content: space-between;
-		gap: 16px;
-		margin-bottom: 32px;
-	}
-
-	.nav-item {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.nav-right {
-		display: flex;
-		justify-content: flex-end;
-	}
-
-	.nav-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px 16px;
-		border: 1px solid rgba(0, 0, 0, 0.08);
-		border-radius: 6px;
-		text-decoration: none;
-		color: #64748b;
-		transition: all 0.15s ease;
-		font-size: 13px;
-		font-weight: 500;
-		max-width: 320px;
-		background: transparent;
-	}
-
-	.nav-btn:hover {
-		background: rgba(0, 0, 0, 0.04);
-		border-color: rgba(255, 255, 255, 0.12);
-		color: #1a1a2e;
-	}
-
-	.nav-btn svg {
-		flex-shrink: 0;
-		color: #4F46E5;
-	}
-
-	.nav-btn.nav-next {
-		text-align: right;
-	}
-
-	.nav-label {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		min-width: 0;
-		overflow: hidden;
-	}
-
-	.nav-dir {
-		font-size: 11px;
-		font-weight: 600;
-		color: #94a3b8;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
-	.nav-title {
-		font-size: 14px;
-		font-weight: 510;
-		color: var(--text);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	/* Notes section */
-	.notes-section {
-		margin: 32px 0;
-		padding: 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-	}
-
-	.notes-title {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 16px;
-		font-weight: 600;
-		color: var(--text);
-		margin: 0 0 12px;
-	}
-
-	.notes-loading {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 13px;
-		color: var(--text-secondary);
-		padding: 8px 0;
-	}
-
-	.notes-actions {
-		display: flex;
-		justify-content: flex-end;
-		margin-top: 10px;
-	}
-
-	/* Spinner */
-	.spinner {
-		display: inline-block;
-		width: 16px;
-		height: 16px;
-		border: 2px solid var(--accent);
-		border-top-color: transparent;
-		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
-
-	/* Mobile */
-	@media (max-width: 768px) {
-		.lesson-content {
-			padding: 16px 16px 48px;
-		}
-
-		.mobile-topbar {
-			display: flex;
-		}
-
-		.lesson-breadcrumb {
-			display: none;
-		}
-
-		.lesson-header {
-			flex-direction: column;
-			gap: 10px;
-		}
-
-		.lesson-title {
-			font-size: 22px;
-		}
-
-		.lesson-nav {
-			flex-direction: column;
-		}
-
-		.nav-btn {
-			max-width: 100%;
-			width: 100%;
-		}
-
-		.complete-section :global(.btn) {
-			width: 100%;
-			justify-content: center;
-		}
 	}
 </style>

@@ -1,9 +1,22 @@
 import bcrypt from 'bcryptjs';
 import { jsonResponse, getDB } from '$lib/server/d1';
 import { createSession } from '$lib/server/auth';
+import { sendEmail } from '$lib/server/email';
+import { authRateLimit, getClientIp } from '$lib/server/auth-rate-limit';
+
+const VERIFY_URL = 'https://syllabus.ant-joshua.my.id/verify-email';
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }) {
 	try {
+		// Rate limit: 10 requests/min per IP
+		const rl = authRateLimit(getClientIp(request));
+		if (!rl.allowed) {
+			return jsonResponse({
+				success: false,
+				error: `Terlalu banyak permintaan. Coba lagi dalam ${rl.retryAfter} detik.`,
+			}, 429);
+		}
+
 		if (!platform) {
 			return jsonResponse({ success: false, error: 'Platform not available' }, 500);
 		}
@@ -59,6 +72,20 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		// Create session so student is logged in immediately
 		const token = await createSession(platform, userId, 'password');
+
+		// Send verification email (email_verified defaults to 0)
+		const vToken = crypto.randomUUID();
+		const vExpires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+		await db.prepare(
+			'INSERT INTO email_verification_tokens (id, user_id, token, expires_at, used, created_at) VALUES (?, ?, ?, ?, 0, ?)'
+		).bind(crypto.randomUUID(), userId, vToken, vExpires, now).run();
+
+		const verifyLink = `${VERIFY_URL}?token=${vToken}`;
+		await sendEmail(
+			email.trim().toLowerCase(),
+			'Verify your email — RPL AI Curriculum',
+			`Hi ${name.trim()}!\n\nWelcome to RPL AI Curriculum! Please verify your email address:\n\n${verifyLink}\n\nThis link expires in 24 hours.\n\nRPL AI Curriculum`
+		);
 
 		// Fetch created user for response
 		const user = await db.prepare(

@@ -16,11 +16,8 @@
 	<div class="auth-blob blob-3"></div>
 
 	<a href="/" class="back-home" aria-label="Kembali ke beranda">
-		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-			<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-			<polyline points="9 22 9 12 15 12 15 22"/>
-		</svg>
-		<span>Beranda</span>
+		<span class="back-arrow">←</span>
+		<span>Kembali ke Beranda</span>
 	</a>
 
 	<div class="auth-container">

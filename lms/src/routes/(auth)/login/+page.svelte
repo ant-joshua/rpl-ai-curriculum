@@ -187,7 +187,7 @@
 			</p>
 
 			<p class="register-link">
-				Belum punya akun? <a href="/register">Daftar di sini</a>
+				Belum punya akun? <a href="/register">Daftar</a>
 			</p>
 
 			<p class="oauth-note">

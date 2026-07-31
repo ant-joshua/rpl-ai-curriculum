@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { modules, type Module } from './modules';
 import { api } from '$lib/utils/api';
+import { pushXpGain, pushLevelUp } from '$lib/stores/xp-toast.svelte';
 
 const XP_KEY = 'lms-xp';
 const BADGES_KEY = 'lms-badges';
@@ -267,9 +268,16 @@ function createGamificationStore() {
 	}
 
 	async function addXp(amount: number): Promise<void> {
-		xp += amount;
 		const oldLevel = level;
+		xp += amount;
 		recalcLevel();
+
+		pushXpGain(amount);
+
+		if (level > oldLevel) {
+			pushLevelUp(level);
+		}
+
 		saveToStorage();
 
 		// Sync to D1
@@ -437,6 +445,8 @@ export function afterSessionComplete(moduleSlug: string, sessionId: string): voi
 	const rawXp = localStorage.getItem(XP_KEY);
 	let currentXp = rawXp ? parseInt(rawXp, 10) || 0 : 0;
 
+	let totalGained = XP_PER_SESSION;
+
 	// Add XP for session
 	currentXp += XP_PER_SESSION;
 	localStorage.setItem(XP_KEY, String(currentXp));
@@ -452,6 +462,7 @@ export function afterSessionComplete(moduleSlug: string, sessionId: string): voi
 				const allDone = mod.sessions.every((s) => completedIds.includes(s.id));
 				if (allDone) {
 					currentXp += XP_PER_MODULE;
+					totalGained += XP_PER_MODULE;
 					localStorage.setItem(XP_KEY, String(currentXp));
 				}
 			}
@@ -461,8 +472,15 @@ export function afterSessionComplete(moduleSlug: string, sessionId: string): voi
 	}
 
 	// Recalc level
+	const oldLevel = Math.max(1, Math.floor((currentXp - totalGained) / XP_PER_LEVEL) + 1);
 	const newLevel = Math.max(1, Math.floor(currentXp / XP_PER_LEVEL) + 1);
 	localStorage.setItem(XP_KEY, String(currentXp));
+
+	// Fire toast
+	pushXpGain(totalGained);
+	if (newLevel > oldLevel) {
+		pushLevelUp(newLevel);
+	}
 
 	// Reload store state
 	gamification.loadFromStorage();

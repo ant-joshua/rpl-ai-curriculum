@@ -23,13 +23,14 @@
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
 	import AchievementToast from '$lib/components/toast/AchievementToast.svelte';
+	import GamificationToast from '$lib/components/toast/GamificationToast.svelte';
 
 	const navSections = $derived.by(() => [
 		{
 			name: 'Main Nav',
 			links: [
 				{ href: '/', icon: 'home', label: t('nav.dashboard') },
-				{ href: '/catalog', icon: 'book', label: t('nav.courses') },
+				{ href: '/my/courses', icon: 'book', label: t('nav.courses') },
 				{ href: '/planner', icon: 'calendar', label: t('nav.calendar') },
 				{ href: '/announcements', icon: 'message-square', label: t('nav.messages') },
 			]
@@ -84,7 +85,8 @@
 	}
 
 	function isActive(path: string) {
-		return $page.url.pathname === path;
+		if (path === '/') return $page.url.pathname === '/';
+		return $page.url.pathname.startsWith(path);
 	}
 
 	if (browser) {
@@ -243,6 +245,9 @@
 	const isMinimalRoute = $derived(
 		$page.route.id?.startsWith('/(auth)') ||
 		$page.route.id?.startsWith('/(public)') ||
+		$page.route.id?.startsWith('/(backoffice)') ||
+		$page.route.id?.startsWith('/my/') ||
+		$page.route.id === '/my' ||
 		false
 	);
 </script>
@@ -498,6 +503,8 @@
 
 <AchievementToast />
 
+<GamificationToast />
+
 <ConfirmDialog />
 
 <style>
@@ -711,6 +718,7 @@
 	.layout-body {
 		display: flex;
 		min-height: 100vh;
+		overflow-x: hidden;
 	}
 
 	/* ===== Sidebar ===== */
@@ -1063,8 +1071,8 @@
 	.main-content {
 		flex: 1;
 		min-width: 0;
-		padding: 24px 32px 40px;
-		max-width: 100%;
+		overflow: hidden;
+		padding: 24px 24px 40px;
 		background: var(--bg);
 		color: var(--text);
 	}

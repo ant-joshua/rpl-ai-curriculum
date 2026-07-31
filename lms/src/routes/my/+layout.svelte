@@ -176,7 +176,7 @@
 <style>
 	.my-layout {
 		display: flex;
-		min-height: calc(100vh - 64px);
+		min-height: 100vh;
 		position: relative;
 	}
 
@@ -184,7 +184,7 @@
 	.hamburger {
 		display: none;
 		position: fixed;
-		top: 74px;
+		top: 12px;
 		left: 12px;
 		z-index: 100;
 		flex-direction: column;
@@ -216,8 +216,8 @@
 		display: flex;
 		flex-direction: column;
 		position: sticky;
-		top: 64px;
-		height: calc(100vh - 64px);
+		top: 0;
+		height: 100vh;
 		overflow-y: auto;
 		z-index: 50;
 		transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);

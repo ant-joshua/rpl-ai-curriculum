@@ -64,11 +64,8 @@
 
       if (body.success) {
         addToast('Successfully enrolled! 🎉', 'success');
-        offerings = offerings.map(o =>
-          o.id === offeringId
-            ? { ...o, isEnrolled: true, enrolledCount: o.enrolledCount + 1 }
-            : o
-        );
+        const { goto } = await import('$app/navigation');
+        goto('/my/courses');
       } else {
         addToast(body.error || 'Enrollment failed', 'error');
       }
@@ -91,6 +88,12 @@
 </svelte:head>
 
 <div class="catalog-page">
+  <nav class="breadcrumb">
+    <a href="/" class="bc-link">Beranda</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Katalog Kursus</span>
+  </nav>
+
   <header class="catalog-header">
     <h1>Course Catalog</h1>
     <p class="catalog-subtitle">Browse and enroll in available courses</p>
@@ -159,6 +162,36 @@
     max-width: 960px;
     margin: 0 auto;
     padding: 24px 16px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+  }
+
+  .bc-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .bc-link:hover {
+    color: var(--text-secondary);
+  }
+
+  .bc-sep {
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .bc-current {
+    color: var(--text-secondary);
   }
 
   .catalog-header {

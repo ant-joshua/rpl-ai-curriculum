@@ -4,6 +4,7 @@
 
 	$effect(() => {
 		if (typeof window !== 'undefined') {
+			if (localStorage.getItem('pwa_dismissed')) return;
 			window.addEventListener('beforeinstallprompt', (e) => {
 				e.preventDefault();
 				deferredPrompt = e;
@@ -24,7 +25,10 @@
 		deferredPrompt = null;
 	}
 
-	function dismiss() { showBanner = false; }
+	function dismiss() {
+		localStorage.setItem('pwa_dismissed', '1');
+		showBanner = false;
+	}
 </script>
 
 {#if showBanner}

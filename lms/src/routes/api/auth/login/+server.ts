@@ -1,11 +1,21 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { createSession } from '$lib/server/auth';
+import { authRateLimit, getClientIp } from '$lib/server/auth-rate-limit';
 import bcrypt from 'bcryptjs';
 
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
+		// Rate limit: 10 attempts/min per IP
+		const rl = authRateLimit(getClientIp(request));
+		if (!rl.allowed) {
+			return jsonResponse({
+				success: false,
+				error: `Terlalu banyak percobaan login. Coba lagi dalam ${rl.retryAfter} detik.`,
+			}, 429);
+		}
+
 		const db = getDB(platform);
 		const body = await request.json();
 		const { username, password } = body;

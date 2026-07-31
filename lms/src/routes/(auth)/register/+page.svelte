@@ -7,8 +7,9 @@
 	let email = $state('');
 	let password = $state('');
 	let confirmPassword = $state('');
-	let loading = $state(false);
-	let error = $state('');
+		let loading = $state(false);
+		let error = $state('');
+		let showVerifyNotice = $state(false);
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -37,7 +38,8 @@
 				if (browser) {
 					localStorage.setItem('token', json.token);
 				}
-				goto('/dashboard');
+				showVerifyNotice = true;
+				setTimeout(() => goto('/dashboard'), 2500);
 			} else {
 				error = json.error || 'Pendaftaran gagal';
 			}
@@ -62,6 +64,11 @@
 		<form onsubmit={handleSubmit}>
 			{#if error}
 				<div class="form-error">{error}</div>
+			{/if}
+			{#if showVerifyNotice}
+				<div class="form-success">
+					✅ Pendaftaran berhasil! Cek email kamu untuk verifikasi. Mengalihkan...
+				</div>
 			{/if}
 
 			<div class="form-group">
@@ -117,7 +124,7 @@
 			</button>
 
 			<p class="login-link">
-				{t('register.have_account')} <a href="/login">{t('register.login_btn')}</a>
+				Sudah punya akun? <a href="/login">Masuk</a>
 			</p>
 		</form>
 	</div>
@@ -158,6 +165,16 @@
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.2);
 		color: #ef4444;
+		padding: 10px 14px;
+		border-radius: 8px;
+		font-size: 13px;
+		margin-bottom: 16px;
+	}
+
+	.form-success {
+		background: rgba(34, 197, 94, 0.1);
+		border: 1px solid rgba(34, 197, 94, 0.25);
+		color: #16a34a;
 		padding: 10px 14px;
 		border-radius: 8px;
 		font-size: 13px;
