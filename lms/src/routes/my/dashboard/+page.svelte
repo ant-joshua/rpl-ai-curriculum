@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n.svelte';
 	import { Avatar, Card, CardContent, Alert, Button } from '$lib/components/ui';
+	import DailyQuests from '$lib/components/DailyQuests.svelte';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -286,6 +287,9 @@
 
 		<!-- Side panel -->
 		<div class="side-panel">
+			<!-- Daily Quests -->
+			<DailyQuests />
+
 			<!-- Upcoming Schedule Events -->
 			<section class="upcoming-section">
 				<div class="section-header">

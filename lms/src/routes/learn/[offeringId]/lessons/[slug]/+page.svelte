@@ -197,6 +197,13 @@
 				isCompleted = true;
 				addToast('Pelajaran ditandai selesai! ✓', 'success');
 
+				// Quest progress: complete_lessons
+				fetch('/api/gamification/quests/progress', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ questKey: 'complete_lessons', amount: 1 })
+				}).catch(() => {});
+
 				fetch('/api/gamification/award', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

@@ -55,6 +55,16 @@
 		selectedLeftId = id;
 	}
 
+	async function queueWrong(prompt: string, answer: string) {
+		try {
+			await fetch('/api/practice/queue', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ blockId: block.id, questionRef: `match-${prompt}`, prompt, correctAnswer: answer })
+			});
+		} catch { /* offline */ }
+	}
+
 	function selectRight(id: string) {
 		if (!selectedLeftId) return;
 		const right = rightItems.find((i) => i.id === id);
@@ -82,6 +92,7 @@
 				}, 800);
 			}
 		} else {
+			queueWrong(left.content, originalRight.right);
 			leftItems = leftItems.map((i) => i.id === left.id ? { ...i, correct: false } : i);
 			rightItems = rightItems.map((i) => i.id === right.id ? { ...i, correct: false } : i);
 			setTimeout(() => {
@@ -188,9 +199,9 @@
 	.left { background: rgba(79,70,229,0.03); }
 	.item-card:hover:not(:disabled) { border-color: #cbd5e1; transform: translateY(-1px); }
 	.item-card:active:not(:disabled) { transform: translateY(1px); }
-	
+
 	.selected { border-color: var(--accent); background: rgba(79,70,229,0.08); box-shadow: 0 0 0 2px rgba(79,70,229,0.2); }
-	
+
 	.matched {
 		opacity: 0.6;
 		border-color: var(--success);
@@ -198,7 +209,7 @@
 		cursor: default;
 		transform: scale(0.98);
 	}
-	
+
 	.incorrect-flash {
 		border-color: var(--error, #EF4444) !important;
 		background: rgba(239,68,68,0.05) !important;

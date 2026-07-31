@@ -261,6 +261,15 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		const result = await awardXp(db, userId, baseAmount, body.reason, body.reference_type, body.reference_id);
 
+		// Quest progress: earn_xp (track total XP earned today)
+		try {
+			const today = new Date().toISOString().slice(0, 10);
+			await db.prepare(
+				`UPDATE daily_quests SET progress = MIN(progress + ?, target)
+				 WHERE user_id = ? AND quest_date = ? AND quest_key = 'earn_xp'`
+			).bind(baseAmount, userId, today).run();
+		} catch { /* quest table may not exist yet */ }
+
 		return jsonResponse({
 			success: true,
 			data: {

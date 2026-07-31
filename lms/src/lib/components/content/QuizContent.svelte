@@ -44,11 +44,44 @@
 
 		if (isCorrect) {
 			correctCount++;
+			// Mark mastered if in practice queue
+			queueMaster(contentBlock.id, currentIndex, currentQuestion.question || currentQuestion.text, correctIdx);
 			// Auto advance after 1.2s for correct
 			autoAdvanceTimer = setTimeout(() => {
 				goNext();
 			}, 1200);
+		} else {
+			// Queue wrong answer for practice
+			queueWrong(contentBlock.id, currentIndex, currentQuestion.question || currentQuestion.text, correctIdx);
 		}
+	}
+
+	async function queueWrong(blockId: string, questionRef: number, prompt: string, answer: string | number) {
+		try {
+			await fetch('/api/practice/queue', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ blockId, questionRef: String(questionRef), prompt, correctAnswer: String(answer) })
+			});
+		} catch { /* offline */ }
+	}
+
+	async function queueMaster(blockId: string, questionRef: number, prompt: string, answer: string | number) {
+		try {
+			// First try to find matching queue item
+			const res = await fetch(`/api/practice/queue`);
+			if (res.ok) {
+				const json = await res.json();
+				const item = (json.data || []).find((i: any) => i.block_id === blockId && i.question_ref === String(questionRef));
+				if (item) {
+					await fetch('/api/practice/queue', {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ id: item.id })
+					});
+				}
+			}
+		} catch { /* offline */ }
 	}
 
 	function goNext() {

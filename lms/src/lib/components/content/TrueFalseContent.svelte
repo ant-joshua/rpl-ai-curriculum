@@ -29,10 +29,40 @@
 		if (isCorrect) correctCount++;
 
 		if (isCorrect) {
+			queueMaster(current?.text || '', current?.answer === true ? 'Benar' : 'Salah');
 			autoAdvanceTimer = setTimeout(() => {
 				goNext();
 			}, 1200);
+		} else {
+			queueWrong(current?.text || '', current?.answer === true ? 'Benar' : 'Salah');
 		}
+	}
+
+	async function queueWrong(prompt: string, answer: string) {
+		try {
+			await fetch('/api/practice/queue', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ blockId: block.id, questionRef: `tf-${currentIndex}`, prompt, correctAnswer: answer })
+			});
+		} catch { /* offline */ }
+	}
+
+	async function queueMaster(prompt: string, answer: string) {
+		try {
+			const res = await fetch(`/api/practice/queue`);
+			if (res.ok) {
+				const json = await res.json();
+				const item = (json.data || []).find((i: any) => i.block_id === block.id && i.question_ref === `tf-${currentIndex}`);
+				if (item) {
+					await fetch('/api/practice/queue', {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ id: item.id })
+					});
+				}
+			}
+		} catch { /* offline */ }
 	}
 
 	function goNext() {
