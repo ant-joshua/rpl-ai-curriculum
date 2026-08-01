@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { hasFeature } from '$lib/server/tenant-features';
 
 const STREAK_MILESTONES: { days: number; xp: number }[] = [
 	{ days: 3, xp: 20 },
@@ -167,8 +168,9 @@ async function awardXp(
 		).bind(crypto.randomUUID(), userId, totalXp, level).run();
 	}
 
-	// 3. Update streak
+	// 3. Update streak (with freeze protection)
 	let streakBonus = 0;
+	let freezeUsed = false;
 	const today = new Date().toISOString().split('T')[0];
 	const existingStreak = await db.prepare('SELECT * FROM user_streaks WHERE user_id = ?').bind(userId).first<any>();
 
@@ -183,8 +185,35 @@ async function awardXp(
 			// Already logged today
 		} else if (lastDate === yesterdayStr) {
 			newStreak += 1;
+		} else if (lastDate) {
+			// Gap > 1 day — try to use a streak freeze
+			const freezeRow = await db.prepare(
+				'SELECT quantity FROM user_streak_freezes WHERE user_id = ?'
+			).bind(userId).first<{ quantity: number }>();
+			const freezeQty = freezeRow?.quantity ?? 0;
+			if (freezeQty > 0) {
+				await db.prepare(
+					`UPDATE user_streak_freezes SET quantity = quantity - 1, used_at = datetime('now'), updated_at = datetime('now') WHERE user_id = ?`
+				).bind(userId).run();
+				freezeUsed = true;
+				// Streak preserved (no increment for skipped day)
+				// last_activity_date stays — streak continues
+			} else {
+				newStreak = 1;
+			}
 		} else {
 			newStreak = 1;
+		}
+
+		// Earn freeze at streak milestones: 7, 14, 30, 60 days
+		for (const ms of [7, 14, 30, 60]) {
+			if (newStreak === ms) {
+				await db.prepare(
+					`INSERT INTO user_streak_freezes (id, user_id, quantity)
+					 VALUES (?, ?, 1)
+					 ON CONFLICT (user_id) DO UPDATE SET quantity = MIN(quantity + 1, 3), updated_at = datetime('now')`
+				).bind(crypto.randomUUID(), userId).run();
+			}
 		}
 
 		for (const ms of STREAK_MILESTONES) {
@@ -237,16 +266,21 @@ async function awardXp(
 		}
 	}
 
-	return { totalXp, level, newLevel, bonus, streakBonus, newBadges };
+	return { totalXp, level, newLevel, bonus, streakBonus, freezeUsed, newBadges };
 }
 
 /** POST /api/gamification/award */
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getBearerToken(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		// Tenant feature gate — no gamification XP for tenants that opted out
+		if (!hasFeature(locals?.tenant, 'gamification')) {
+			return jsonResponse({ success: false, error: 'Fitur gamification tidak aktif', disabled: true }, 403);
+		}
 
 		const db = getDB(platform);
 		const userId = session.user.id;
@@ -288,6 +322,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 				level: result.level,
 				bonus: result.bonus,
 				streakBonus: result.streakBonus,
+				freezeUsed: result.freezeUsed,
 				newLevel: result.newLevel,
 				newBadges: result.newBadges,
 			}

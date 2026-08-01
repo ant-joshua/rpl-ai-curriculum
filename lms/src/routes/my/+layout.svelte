@@ -45,6 +45,17 @@
 		{ href: '/my/profile', icon: '👤', label: 'Profil' },
 	];
 
+	// Feature-gated nav items (hide for tenants that disabled them)
+	let features = $derived(data.features || {});
+	const filteredNavItems = $derived(
+		navItems.filter((item) => {
+			if (item.href === '/my/practice' && !features.practice_mode) return false;
+			if (item.href === '/my/gamification' && !features.gamification) return false;
+			if (item.href === '/my/certificates' && !features.certificates) return false;
+			return true;
+		})
+	);
+
 	let currentPath = $derived(String($page.url.pathname));
 
 	let sidebarOpen = $state(false);
@@ -125,7 +136,7 @@
 		</div>
 
 		<nav class="sidebar-nav">
-			{#each navItems as item}
+			{#each filteredNavItems as item}
 				<a
 					href={item.href}
 					class="nav-item"

@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { hasFeature } from '$lib/server/tenant-features';
 
 function todayStr(): string {
 	return new Date().toISOString().slice(0, 10);
@@ -47,12 +48,16 @@ function questDefs(): QuestDef[] {
 }
 
 /** GET /api/gamification/quests — today's quests with progress */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		if (!hasFeature(locals?.tenant, 'daily_quests')) {
+			return jsonResponse({ success: false, error: 'Fitur quest tidak aktif', disabled: true }, 403);
+		}
 
 		const db = getDB(platform);
 		const userId = session.user.id;

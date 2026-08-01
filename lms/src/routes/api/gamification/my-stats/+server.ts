@@ -1,19 +1,26 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { hasFeature } from '$lib/server/tenant-features';
 
 /** GET /api/gamification/my-stats — user level, XP, badges, streak, recent activity */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 
+		// Tenant feature gate
+		if (!hasFeature(locals?.tenant, 'gamification')) {
+			return jsonResponse({ success: false, error: 'Fitur gamification tidak aktif', disabled: true }, 403);
+		}
+
 		const db = getDB(platform);
 		const userId = session.user.id;
 
 		const xpRow = await db.prepare('SELECT * FROM user_xp WHERE user_id = ?').bind(userId).first<any>();
 		const streakRow = await db.prepare('SELECT * FROM user_streaks WHERE user_id = ?').bind(userId).first<any>();
+		const freezeRow = await db.prepare('SELECT quantity FROM user_streak_freezes WHERE user_id = ?').bind(userId).first<any>();
 
 		const totalXp = xpRow?.total_xp ?? 0;
 		const level = xpRow?.level ?? 1;
@@ -69,6 +76,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
 					current: streakRow?.current_streak ?? 0,
 					longest: streakRow?.longest_streak ?? 0,
 					lastActivityDate: streakRow?.last_activity_date ?? null,
+					freezes: freezeRow?.quantity ?? 0,
 				},
 				badges: {
 					earned: earnedBadges || [],

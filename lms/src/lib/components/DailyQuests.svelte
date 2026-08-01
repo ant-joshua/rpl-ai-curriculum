@@ -18,6 +18,7 @@
 	let quests = $state<Quest[]>([]);
 	let loading = $state(true);
 	let claimingKey = $state<string | null>(null);
+	let hidden = $state(false);
 
 	const QUEST_ICONS: Record<string, string> = {
 		complete_lessons: '🎯',
@@ -44,6 +45,12 @@
 				headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
 			});
 			if (!res.ok) {
+				const json = await res.json().catch(() => null);
+				if (json?.disabled) {
+					// Feature off for this tenant — hide panel
+					hidden = true;
+					return;
+				}
 				addToast('Gagal memuat quest harian', 'error');
 				return;
 			}
@@ -100,6 +107,7 @@
 	}
 </script>
 
+{#if !hidden}
 <div class="daily-quests" class:compact>
 	<header class="quests-header">
 		<h2 class="quests-title">🎯 Quest Harian</h2>
@@ -169,6 +177,7 @@
 		</ul>
 	{/if}
 </div>
+{/if}
 
 <style>
 	.daily-quests {

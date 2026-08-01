@@ -111,15 +111,24 @@
 			</div>
 		</div>
 
-		<!-- Progress bar -->
+		<!-- Progress bar + ring -->
 		<Card class="progress-card">
 			<CardContent>
-				<div class="progress-header">
-					<span class="progress-label">Progres Belajar</span>
-					<span class="progress-pct">{progress.percentage}%</span>
+				<div class="progress-ring-row">
+					<div class="progress-ring" style="--ring-pct: {progress.percentage};">
+						<div class="progress-ring-inner">
+							<span class="progress-ring-value">{progress.percentage}%</span>
+							<span class="progress-ring-label">selesai</span>
+						</div>
+					</div>
+					<div class="progress-ring-info">
+						<div class="progress-header">
+							<span class="progress-label">Progres Belajar</span>
+						</div>
+						<Progress value={progress.completed} max={progress.total} variant="default" size="md" showLabel={false} />
+						<p class="progress-sub">{progress.completed} dari {progress.total} pelajaran selesai</p>
+					</div>
 				</div>
-				<Progress value={progress.completed} max={progress.total} variant="default" size="md" showLabel={false} />
-				<p class="progress-sub">{progress.completed} dari {progress.total} pelajaran selesai</p>
 
 				<div class="continue-row">
 					{#if nextLessonSlug}
@@ -430,8 +439,25 @@
 
 	/* Progress card */
 	.progress-card {
-		margin-top: 16px;
+		margin-bottom: 20px;
 	}
+	.progress-ring-row { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
+	.progress-ring-info { flex: 1; }
+	.progress-ring {
+		width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0;
+		background: conic-gradient(var(--accent) calc(var(--ring-pct) * 1%), rgba(0,0,0,0.06) 0);
+		display: flex; align-items: center; justify-content: center;
+		position: relative;
+		transition: background 0.6s ease;
+	}
+	.progress-ring::before {
+		content: ''; position: absolute; inset: 10px;
+		background: var(--surface); border-radius: 50%;
+	}
+	.progress-ring-inner { position: relative; text-align: center; }
+	.progress-ring-value { font-size: 20px; font-weight: 700; color: var(--text); display: block; }
+	.progress-ring-label { font-size: 11px; color: var(--text-secondary); }
+	.progress-ring-row .progress-header { margin-bottom: 8px; }
 
 	.progress-header {
 		display: flex;

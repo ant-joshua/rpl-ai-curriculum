@@ -2,12 +2,23 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { Button, Textarea } from '$lib/components/ui';
 
 	let tenant: any = null;
 	let loading = true;
 	let error = '';
 	let config = '';
 	let saved = false;
+	let features = $state<Record<string, boolean>>({});
+
+	const FEATURE_META: { key: string; label: string; icon: string; desc: string }[] = [
+		{ key: 'gamification', label: 'Gamification', icon: '🎮', desc: 'XP, level, badge, streak (master switch)' },
+		{ key: 'daily_quests', label: 'Quest Harian', icon: '📜', desc: 'Panel quest harian + claim XP' },
+		{ key: 'leaderboard', label: 'Leaderboard', icon: '🏆', desc: 'Papan skor global + per-path' },
+		{ key: 'practice_mode', label: 'Practice Mode', icon: '📝', desc: 'Latihan ulang soal salah' },
+		{ key: 'certificates', label: 'Sertifikat', icon: '📜', desc: 'Generate sertifikat kelulusan' },
+		{ key: 'discussions', label: 'Diskusi', icon: '💬', desc: 'Thread diskusi per pelajaran' },
+	];
 
 	let tenantId = $derived($page.params.id);
 
@@ -24,10 +35,29 @@
 			}
 			tenant = await res.json();
 			config = JSON.stringify(JSON.parse(tenant.config || '{}'), null, 2);
+			const parsedFeatures = JSON.parse(tenant.features || '{}');
+			features = { gamification: true, daily_quests: true, leaderboard: true, practice_mode: true, certificates: true, discussions: true, ...parsedFeatures };
 			loading = false;
 		} catch {
 			error = 'Gagal memuat data';
 			loading = false;
+		}
+	}
+
+	async function saveFeatures() {
+		saved = false;
+		const res = await fetch(`/api/admin/tenants/${tenantId}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ features: JSON.stringify(features) }),
+		});
+		if (res.ok) {
+			saved = true;
+			error = '';
+			setTimeout(() => saved = false, 3000);
+		} else {
+			const data = await res.json();
+			error = data.error || 'Gagal menyimpan';
 		}
 	}
 
@@ -106,8 +136,31 @@
 		</div>
 
 		<div class="card">
+			<h2>Fitur Tenant</h2>
+			<p class="feature-hint">Aktifkan/nonaktifkan modul untuk tenant ini. Sekolah yang gak mau gamification bisa matiin di sini.</p>
+			<div class="feature-grid">
+				{#each FEATURE_META as f (f.key)}
+					<label class="feature-toggle">
+						<input type="checkbox" bind:checked={features[f.key]} />
+						<div class="feature-info">
+							<span class="feature-icon">{f.icon}</span>
+							<div>
+								<div class="feature-label">{f.label}</div>
+								<div class="feature-desc">{f.desc}</div>
+							</div>
+						</div>
+					</label>
+				{/each}
+			</div>
+			<div class="actions">
+				<Button variant="primary" onclick={saveFeatures}>Simpan Fitur</Button>
+				{#if saved}<span class="saved">✓ Tersimpan</span>{/if}
+			</div>
+		</div>
+
+		<div class="card">
 			<h2>Raw Config (JSON)</h2>
-<Textarea bind:value={config} rows=12 class="config-json" />
+<Textarea bind:value={config} rows={12} class="config-json" />
 			<div class="actions">
 				<Button variant="primary" onclick={saveConfig}>Simpan Config</Button>
 				{#if saved}<span class="saved">✓ Tersimpan</span>{/if}
@@ -147,4 +200,18 @@
 	.saved { color: #10b981; font-size: 0.85rem; }
 	.error { color: #ef4444; }
 	.header-actions { display: flex; gap: 0.5rem; }
+	.feature-hint { font-size: 0.85rem; color: var(--text-secondary); margin: -0.5rem 0 1rem; }
+	.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
+	.feature-toggle {
+		display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem;
+		border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+		background: var(--bg-card);
+		transition: border-color 0.2s, background 0.2s;
+	}
+	.feature-toggle:hover { border-color: var(--accent); }
+	.feature-toggle input[type="checkbox"] { margin-top: 4px; accent-color: var(--accent); width: 18px; height: 18px; }
+	.feature-info { display: flex; gap: 0.5rem; }
+	.feature-icon { font-size: 1.2rem; }
+	.feature-label { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+	.feature-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
 </style>

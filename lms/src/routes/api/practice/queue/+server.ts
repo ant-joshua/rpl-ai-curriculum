@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { hasFeature } from '$lib/server/tenant-features';
 
 /**
  * Practice queue — questions answered wrong are stored here
@@ -7,12 +8,16 @@ import { getSession, getTokenFromRequest } from '$lib/server/auth';
  */
 
 /** GET /api/practice/queue — pending items for the user */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		if (!hasFeature(locals?.tenant, 'practice_mode')) {
+			return jsonResponse({ success: false, error: 'Fitur practice tidak aktif', disabled: true }, 403);
+		}
 
 		const db = getDB(platform);
 		const userId = session.user.id;
@@ -33,12 +38,16 @@ export async function GET({ request, platform }: { request: Request; platform: A
 }
 
 /** POST /api/practice/queue — add a wrong answer to the queue */
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		if (!hasFeature(locals?.tenant, 'practice_mode')) {
+			return jsonResponse({ success: false, error: 'Fitur practice tidak aktif', disabled: true }, 403);
+		}
 
 		const db = getDB(platform);
 		const userId = session.user.id;
@@ -67,12 +76,16 @@ export async function POST({ request, platform }: { request: Request; platform: 
 }
 
 /** PUT /api/practice/queue — mark a question as mastered (answered correctly) */
-export async function PUT({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function PUT({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
 		const token = getTokenFromRequest(request);
 		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
 		const session = await getSession(platform, token);
 		if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		if (!hasFeature(locals?.tenant, 'practice_mode')) {
+			return jsonResponse({ success: false, error: 'Fitur practice tidak aktif', disabled: true }, 403);
+		}
 
 		const db = getDB(platform);
 		const userId = session.user.id;

@@ -1,5 +1,6 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import { getDB, getDeviceId } from '$lib/server/d1';
+import { hasFeature } from '$lib/server/tenant-features';
 
 function corsHeaders() {
 	return {
@@ -28,8 +29,13 @@ interface Row {
 	badge_count: number;
 }
 
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
+		// Tenant feature gate — leaderboard off for tenants without gamification
+		if (!hasFeature(locals?.tenant, 'leaderboard')) {
+			return json({ success: false, error: 'Fitur leaderboard tidak aktif', disabled: true }, 403);
+		}
+
 		const db = getDB(platform);
 		const url = new URL(request.url);
 		const pathSlug = url.searchParams.get('path_slug');

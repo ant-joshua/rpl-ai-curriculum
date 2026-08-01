@@ -1,10 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
 import { getSession, getTokenFromRequest } from '$lib/server/auth';
-export async function load({ request, platform, url }: {
+import { getFeatures } from '$lib/server/tenant-features';
+export async function load({ request, platform, url, locals }: {
 	request: Request;
 	platform: App.Platform;
 	url: URL;
+	locals: any;
 }) {
 	if (!platform) throw redirect(302, '/?error=no-platform');
 
@@ -29,6 +31,7 @@ export async function load({ request, platform, url }: {
 			avatar_url: user?.avatar_url || '',
 			role: user?.role || 'student',
 		},
+		features: getFeatures(locals?.tenant),
 		token,
 	};
 }

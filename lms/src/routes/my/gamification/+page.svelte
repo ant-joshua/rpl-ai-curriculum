@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
+	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader, Button } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -77,6 +77,14 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	const earnedBadges = $derived(userStats?.badges?.earned || []);
 	const availableBadges = $derived(userStats?.badges?.available || []);
 	const recentActivity = $derived(userStats?.recentActivity || []);
+	let reasonFilter = $state('all');
+	const filteredActivity = $derived(
+		reasonFilter === 'all' ? recentActivity : recentActivity.filter((a: any) => a.reason === reasonFilter)
+	);
+
+	function exportCsv() {
+		window.open('/api/gamification/export', '_blank');
+	}
 
 	const filteredAvailable = $derived(
 		badgeSearch ? availableBadges.filter((b: any) =>
@@ -304,14 +312,25 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		{:else if tab === 'activity'}
 			<!-- Tab: Recent Activity -->
 			<div class="activity-section">
-				<h2>📊 Aktivitas XP Terbaru</h2>
-				{#if recentActivity.length === 0}
+				<div class="activity-header">
+					<h2>📊 Aktivitas XP Terbaru</h2>
+					<div class="activity-tools">
+						<select bind:value={reasonFilter} class="reason-filter">
+							<option value="all">Semua Alasan</option>
+							{#each Object.entries(REASON_LABELS) as [key, label]}
+								<option value={key}>{label}</option>
+							{/each}
+						</select>
+						<Button variant="secondary" size="sm" onclick={exportCsv}>⬇️ Export CSV</Button>
+					</div>
+				</div>
+				{#if filteredActivity.length === 0}
 					<EmptyState title="Belum ada aktivitas" description="Mulai belajar untuk mendapatkan XP!" />
 				{:else}
 					<Card>
 						<CardContent>
 							<div class="activity-list">
-								{#each recentActivity as act}
+								{#each filteredActivity as act}
 									<div class="activity-item">
 										<div class="activity-icon">
 											{#if act.reason === 'lesson_complete'}📖
@@ -341,6 +360,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 <style>
 	.gamification-page { max-width: 800px; margin: 0 auto; padding: 0 0 40px; }
+	.activity-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+	.activity-header h2 { margin: 0; }
+	.activity-tools { display: flex; align-items: center; gap: 8px; }
+	.reason-filter {
+		padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+		background: var(--surface); font-size: 13px; color: var(--text);
+	}
 	h2 { font-size: 16px; font-weight: 600; margin: 20px 0 12px; }
 
 	.loading { text-align: center; padding: 80px 20px; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; gap: 8px; }
