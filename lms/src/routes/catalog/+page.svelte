@@ -76,6 +76,26 @@
     }
   }
 
+  async function handleWishlist(offeringId: string) {
+    if (!isAuthenticated) {
+      addToast('Please login first to save courses', 'warning');
+      return;
+    }
+    try {
+      const res = await fetch(`/api/wishlist/${offeringId}/toggle`, { method: 'POST' });
+      const body = await res.json();
+      if (body.success) {
+        const idx = offerings.findIndex((o: any) => o.id === offeringId);
+        if (idx >= 0) {
+          offerings[idx] = { ...offerings[idx], isWishlisted: body.data.wishlisted };
+        }
+        addToast(body.data.wishlisted ? 'Saved to wishlist ❤️' : 'Removed from wishlist', body.data.wishlisted ? 'success' : 'info');
+      }
+    } catch {
+      addToast('Failed to update wishlist', 'error');
+    }
+  }
+
   function clearFilters() {
     searchQuery = '';
     levelFilter = 'all';
@@ -150,6 +170,7 @@
             {isAuthenticated}
             {enrollingId}
             onenroll={handleEnroll}
+            onwishlist={handleWishlist}
           />
         </div>
       {/each}

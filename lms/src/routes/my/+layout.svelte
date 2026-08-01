@@ -29,7 +29,9 @@
 	const navItems: NavItem[] = [
 		{ href: '/my/dashboard', icon: '📊', label: 'Dashboard' },
 		{ href: '/my/courses', icon: '📚', label: 'Kursus' },
+		{ href: '/wishlist', icon: '❤️', label: 'Wishlist' },
 		{ href: '/my/schedule', icon: '📅', label: 'Jadwal' },
+		{ href: '/my/live', icon: '📺', label: 'Kelas Live' },
 		{ href: '/my/grades', icon: '📝', label: 'Nilai' },
 		{ href: '/my/assessments', icon: '📋', label: 'Penilaian' },
 		{ href: '/my/assignments', icon: '📂', label: 'Tugas' },

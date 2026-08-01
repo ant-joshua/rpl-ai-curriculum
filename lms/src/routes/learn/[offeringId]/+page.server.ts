@@ -164,6 +164,28 @@ export async function load({ params, request, platform, url }: {
 		[userId, offeringId]
 	);
 
+	// Rating aggregate
+	const ratingRow = await cachedDbFirst<any>(
+		db,
+		`SELECT AVG(rating) AS avg_rating, COUNT(*) AS cnt
+		 FROM course_reviews WHERE course_offering_id = ?`,
+		[offeringId]
+	);
+	const myReview = await db.prepare(
+		`SELECT id, rating, comment FROM course_reviews
+		 WHERE course_offering_id = ? AND user_id = ?`
+	).bind(offeringId, userId).first<any>();
+
+	// Live classes
+	const { results: liveClasses } = await cachedDbQuery<any>(
+		db,
+		`SELECT id, title, description, start_at, duration_minutes, join_url, recording_url, status
+		 FROM live_classes
+		 WHERE course_offering_id = ? AND status IN ('scheduled','live')
+		 ORDER BY start_at ASC LIMIT 5`,
+		[offeringId]
+	);
+
 	// Find next uncompleted lesson
 	let nextLessonSlug: string | null = null;
 	for (const lesson of lessons) {
@@ -204,6 +226,10 @@ export async function load({ params, request, platform, url }: {
 		assignments: assignments || [],
 		nextLessonSlug,
 		lastCompletedTitle: (lastCompleted && lastCompleted.length > 0) ? lastCompleted[0].title : null,
+		rating: ratingRow?.avg_rating ? Number(ratingRow.avg_rating).toFixed(1) : null,
+		ratingCount: ratingRow?.cnt ?? 0,
+		myReview: myReview ?? null,
+		liveClasses: liveClasses || [],
 		userName: session.user.name || session.user.email?.split('@')[0] || 'Student',
 		token,
 	};

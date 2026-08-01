@@ -9,6 +9,7 @@
     isAuthenticated = false,
     enrollingId = null,
     onenroll,
+    onwishlist,
   }: {
     offering: {
       id: string;
@@ -22,6 +23,9 @@
       enrolledCount: number;
       maxStudents: number | null;
       spotsAvailable: boolean;
+      isWishlisted?: boolean;
+      rating?: number | null;
+      ratingCount?: number;
       progress?: number;
       xp?: number;
       prerequisites?: { course_id: string; title: string; slug: string; icon: string }[];
@@ -30,6 +34,7 @@
     isAuthenticated?: boolean;
     enrollingId?: string | null;
     onenroll?: (id: string) => void;
+    onwishlist?: (id: string) => void;
   } = $props();
 
   let prereqs = $derived(offering.prerequisites || []);
@@ -43,6 +48,12 @@
     };
     return labels[level] || level;
   }
+
+  function stars(rating: number | null): string {
+    if (!rating) return '☆☆☆☆☆';
+    const full = Math.round(rating);
+    return '★'.repeat(full) + '☆'.repeat(5 - full);
+  }
 </script>
 
 <article class="course-card" class:enrolled={offering.isEnrolled} class:locked={hasUnmetPrereqs} style="animation-delay: 0s">
@@ -51,8 +62,26 @@
     {#if offering.category}
       <Badge variant="accent" size="sm">{offering.category}</Badge>
     {/if}
+    {#if offering.rating}
+      <span class="meta-rating" title="{offering.rating} / 5 ({offering.ratingCount} review)">
+        <span class="rating-stars">{stars(offering.rating)}</span>
+        <span class="rating-value">{offering.rating}</span>
+        <span class="rating-count">({offering.ratingCount})</span>
+      </span>
+    {/if}
     {#if prereqs.length > 0 && !offering.isEnrolled}
       <Badge variant={offering.prerequisitesMet ? 'success' : 'warning'} size="sm">🔗 Prasyarat</Badge>
+    {/if}
+    {#if isAuthenticated && !offering.isEnrolled}
+      <button
+        class="wishlist-btn"
+        class:wishlisted={offering.isWishlisted}
+        title={offering.isWishlisted ? 'Hapus dari wishlist' : 'Simpan ke wishlist'}
+        onclick={() => onwishlist?.(offering.id)}
+        aria-label="toggle wishlist"
+      >
+        {offering.isWishlisted ? '❤️' : '🤍'}
+      </button>
     {/if}
   </div>
 
@@ -170,6 +199,51 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .meta-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #b45309;
+  }
+
+  .rating-stars {
+    color: #f59e0b;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .rating-value {
+    font-weight: 700;
+    color: #b45309;
+  }
+
+  .rating-count {
+    color: #94a3b8;
+    font-size: 11px;
+  }
+
+  .wishlist-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 1;
+    transition: transform 0.15s;
+    filter: grayscale(0.4);
+  }
+
+  .wishlist-btn:hover {
+    transform: scale(1.2);
+    filter: grayscale(0);
+  }
+
+  .wishlist-btn.wishlisted {
+    filter: none;
   }
 
   .card-middle {

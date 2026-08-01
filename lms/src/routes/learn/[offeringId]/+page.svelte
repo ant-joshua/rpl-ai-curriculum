@@ -15,6 +15,55 @@
 	let nextLessonSlug = $derived(data.nextLessonSlug);
 	let lastCompletedTitle = $derived(data.lastCompletedTitle);
 
+	// Review state
+	let reviewRating = $state(0);
+	let reviewComment = $state('');
+	let reviewSubmitting = $state(false);
+	let reviews = $state<any[]>([]);
+	let myReview = $derived(data.myReview);
+
+	$effect(() => {
+		if (data.myReview) {
+			reviewRating = data.myReview.rating;
+			reviewComment = data.myReview.comment || '';
+		}
+		// Load existing reviews
+		if (data.offering?.id) {
+			fetch(`/api/courses/${data.offering.id}/reviews`)
+				.then(r => r.json())
+				.then(j => { if (j.success) reviews = j.data || []; })
+				.catch(() => {});
+		}
+	});
+
+	async function submitReview() {
+		if (!reviewRating) return;
+		reviewSubmitting = true;
+		try {
+			const res = await fetch(`/api/courses/${data.offering.id}/reviews`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ rating: reviewRating, comment: reviewComment }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				const { addToast } = await import('$lib/stores/toast.svelte');
+				addToast('Review tersimpan! ⭐', 'success');
+				// Reload reviews
+				const r2 = await fetch(`/api/courses/${data.offering.id}/reviews`).then(r => r.json());
+				if (r2.success) reviews = r2.data || [];
+			} else {
+				const { addToast } = await import('$lib/stores/toast.svelte');
+				addToast(json.error || 'Gagal simpan review', 'error');
+			}
+		} catch {
+			const { addToast } = await import('$lib/stores/toast.svelte');
+			addToast('Gagal simpan review', 'error');
+		} finally {
+			reviewSubmitting = false;
+		}
+	}
+
 	// Expand/collapse state for module sections
 	let expandedSections = $state<Set<string>>(new Set());
 
@@ -176,6 +225,85 @@
 			</Card>
 		</section>
 	{/if}
+
+	<!-- Live classes -->
+	{#if data.liveClasses?.length > 0}
+		<section class="live-section">
+			<h2>📺 Kelas Live</h2>
+			<div class="live-list">
+				{#each data.liveClasses as lc}
+					<div class="live-card">
+						<div class="live-card-info">
+							<strong>{lc.title}</strong>
+							<span class="live-card-meta">📅 {lc.start_at?.replace('T', ' ').slice(0, 16)} · ⏱️ {lc.duration_minutes}m</span>
+							{#if lc.description}<span class="live-card-desc">{lc.description}</span>{/if}
+						</div>
+						{#if lc.status === 'live' && lc.join_url}
+							<a class="live-join-btn" href={lc.join_url} target="_blank" rel="noopener">▶ Gabung</a>
+						{:else}
+							<span class="live-status">Terjadwal</span>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
+	<!-- Rating & Review -->
+	<section class="review-section">
+		<h2>⭐ Rating & Review</h2>
+		<Card>
+			<CardContent>
+				{#if data.rating}
+					<div class="rating-summary">
+						<span class="rating-big">★ {data.rating}</span>
+						<span class="rating-sub">dari {data.ratingCount} review</span>
+					</div>
+				{:else}
+					<p class="no-rating">Belum ada review untuk kursus ini.</p>
+				{/if}
+
+				<div class="review-form">
+					<h3>{data.myReview ? 'Ubah Review Kamu' : 'Kasih Rating'}</h3>
+					<div class="star-input">
+						{#each [1, 2, 3, 4, 5] as n}
+							<button
+								type="button"
+								class="star-btn"
+								class:selected={n <= (reviewRating || (data.myReview?.rating ?? 0))}
+								onclick={() => reviewRating = n}
+							>★</button>
+						{/each}
+						<span class="star-hint">{reviewRating || data.myReview?.rating || 0}/5</span>
+					</div>
+					<textarea
+						class="review-comment"
+						placeholder="Ceritakan pengalaman belajarmu di kursus ini..."
+						bind:value={reviewComment}
+						rows={3}
+					></textarea>
+					<button class="review-submit" onclick={submitReview} disabled={reviewSubmitting}>
+						{reviewSubmitting ? 'Menyimpan...' : data.myReview ? 'Update Review' : 'Kirim Review'}
+					</button>
+				</div>
+
+				{#if reviews.length > 0}
+					<div class="reviews-list">
+						{#each reviews as r}
+							<div class="review-item">
+								<div class="review-head">
+									<strong>{r.display_name || 'Student'}</strong>
+									<span class="review-stars">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+								</div>
+								{#if r.comment}<p class="review-comment-text">{r.comment}</p>{/if}
+								<span class="review-date">{r.created_at?.slice(0, 10)}</span>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</CardContent>
+		</Card>
+	</section>
 
 	<!-- Module/Lesson Tree -->
 	<section class="modules-section">
@@ -503,6 +631,60 @@
 	.instructor-section {
 		margin-bottom: 28px;
 	}
+
+	/* Live classes */
+	.live-section { margin-bottom: 28px; }
+	.live-section h2 { font-size: 18px; margin-bottom: 12px; }
+	.live-list { display: flex; flex-direction: column; gap: 8px; }
+	.live-card {
+		display: flex; align-items: center; justify-content: space-between;
+		gap: 12px; padding: 12px 16px;
+		background: var(--surface); border: 1px solid var(--border);
+		border-radius: 10px;
+	}
+	.live-card-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+	.live-card-meta { font-size: 12px; color: var(--text-muted); }
+	.live-card-desc { font-size: 13px; color: var(--text-secondary); }
+	.live-join-btn {
+		padding: 6px 14px; background: #2563eb; color: white;
+		border-radius: 8px; font-size: 13px; font-weight: 600;
+		text-decoration: none; white-space: nowrap;
+	}
+	.live-status { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+	/* Reviews */
+	.review-section { margin-bottom: 28px; }
+	.review-section h2 { font-size: 18px; margin-bottom: 12px; }
+	.rating-summary { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+	.rating-big { font-size: 28px; font-weight: 800; color: #f59e0b; }
+	.rating-sub { font-size: 13px; color: var(--text-muted); }
+	.no-rating { color: var(--text-muted); font-size: 14px; }
+	.review-form { margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 10px; }
+	.review-form h3 { font-size: 14px; margin: 0 0 8px; }
+	.star-input { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+	.star-btn {
+		background: none; border: none; font-size: 26px; cursor: pointer;
+		color: #d1d5db; padding: 0; line-height: 1; transition: color 0.15s;
+	}
+	.star-btn.selected { color: #f59e0b; }
+	.star-hint { font-size: 13px; color: var(--text-muted); margin-left: 8px; }
+	.review-comment {
+		width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+		border-radius: 8px; font-size: 14px; font-family: inherit;
+		background: white; resize: vertical; box-sizing: border-box;
+	}
+	.review-submit {
+		margin-top: 10px; padding: 8px 20px; background: #f59e0b; color: white;
+		border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+	}
+	.review-submit:hover { background: #d97706; }
+	.reviews-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+	.review-item { padding: 10px 0; border-top: 1px solid var(--border); }
+	.review-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+	.review-head strong { font-size: 13px; }
+	.review-stars { color: #f59e0b; font-size: 13px; }
+	.review-comment-text { font-size: 13px; color: var(--text-secondary); margin: 0 0 4px; }
+	.review-date { font-size: 11px; color: var(--text-muted); }
 
 	.instructor-section h2 {
 		font-size: 17px;

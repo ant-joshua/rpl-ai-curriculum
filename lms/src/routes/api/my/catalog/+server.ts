@@ -50,6 +50,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
 
 		// If user is logged in, check which offerings they're already enrolled in
 		let enrolledSet = new Set<string>();
+		let wishlistSet = new Set<string>();
 		if (userId && offeringIds.length > 0) {
 			const placeholders = offeringIds.map(() => '?').join(',');
 			const { results: enrolled } = await db
@@ -62,6 +63,35 @@ export async function GET({ request, platform }: { request: Request; platform: A
 				.all<{ course_offering_id: string }>();
 			for (const row of enrolled || []) {
 				enrolledSet.add(row.course_offering_id);
+			}
+			const { results: wished } = await db
+				.prepare(
+					`SELECT course_offering_id
+					 FROM wishlist
+					 WHERE user_id = ? AND course_offering_id IN (${placeholders})`
+				)
+				.bind(userId, ...offeringIds)
+				.all<{ course_offering_id: string }>();
+			for (const row of wished || []) {
+				wishlistSet.add(row.course_offering_id);
+			}
+		}
+
+		// Aggregate ratings per offering
+		let ratingAgg = new Map<string, { avg: number; count: number }>();
+		if (offeringIds.length > 0) {
+			const placeholders = offeringIds.map(() => '?').join(',');
+			const { results: ratings } = await db
+				.prepare(
+					`SELECT course_offering_id, AVG(rating) AS avg_rating, COUNT(*) AS cnt
+					 FROM course_reviews
+					 WHERE course_offering_id IN (${placeholders})
+					 GROUP BY course_offering_id`
+				)
+				.bind(...offeringIds)
+				.all<{ course_offering_id: string; avg_rating: number; cnt: number }>();
+			for (const row of ratings || []) {
+				ratingAgg.set(row.course_offering_id, { avg: Number(row.avg_rating).toFixed(1) as unknown as number, count: row.cnt });
 			}
 		}
 
@@ -81,6 +111,9 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			enrolledCount: enrollmentCounts.get(o.id) || 0,
 			maxStudents: o.max_students,
 			isEnrolled: enrolledSet.has(o.id),
+			isWishlisted: wishlistSet.has(o.id),
+			rating: ratingAgg.get(o.id)?.avg ?? null,
+			ratingCount: ratingAgg.get(o.id)?.count ?? 0,
 			spotsAvailable: o.max_students ? (o.max_students - (enrollmentCounts.get(o.id) || 0)) > 0 : true,
 		}));
 
