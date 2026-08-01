@@ -170,7 +170,10 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'Unknown quest' }, 400);
 		}
 
-		return jsonResponse({ success: true, data: result });
+		// Detect just-completed (progress hit target for the first time)
+		const justCompleted = result.progress >= result.target && !result.claimed;
+
+		return jsonResponse({ success: true, data: { ...result, justCompleted } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);

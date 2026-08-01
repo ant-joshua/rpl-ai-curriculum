@@ -24,6 +24,7 @@
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
 	import AchievementToast from '$lib/components/toast/AchievementToast.svelte';
 	import GamificationToast from '$lib/components/toast/GamificationToast.svelte';
+	import QuestCompletePopup from '$lib/components/QuestCompletePopup.svelte';
 
 	const navSections = $derived.by(() => [
 		{
@@ -504,6 +505,7 @@
 <AchievementToast />
 
 <GamificationToast />
+<QuestCompletePopup />
 
 <ConfirmDialog />
 

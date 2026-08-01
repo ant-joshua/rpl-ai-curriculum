@@ -28,6 +28,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		if (!browser) return;
 		loadStats();
 		loadLeaderboard();
+		loadActiveBoosts();
 	});
 
 	async function loadStats() {
@@ -55,10 +56,20 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		}
 	}
 
+	let lbPeriod = $state('all');
+	// Active boost banner
+	let activeBoosts = $state<any[]>([]);
+	async function loadActiveBoosts() {
+		try {
+			const res = await authFetch('/api/gamification/boost/active');
+			const json = await res.json();
+			if (json.success && Array.isArray(json.data)) activeBoosts = json.data;
+		} catch { /* ignore */ }
+	}
 	async function loadLeaderboard() {
 		leaderboardLoading = true;
 		try {
-			const res = await authFetch('/api/gamification/leaderboard/global');
+			const res = await authFetch(`/api/gamification/leaderboard/global?period=${lbPeriod}`);
 			const json = await res.json();
 			if (json.success) leaderboard = json.data.leaderboard || [];
 		} catch {} finally {
@@ -198,6 +209,17 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 <div class="gamification-page">
 	<PageHeader title="Gamification" subtitle="Pantau level, badge, dan pencapaian belajar kamu" />
+	{#if activeBoosts.length > 0}
+		{#each activeBoosts as b}
+			<div class="boost-banner">
+				<span class="boost-banner-icon">🚀</span>
+				<div class="boost-banner-text">
+					<strong>{b.title}</strong>
+					<span>XP {b.multiplier}× {b.reasonFilter !== 'all' ? `untuk ${b.reasonFilter.replace('_', ' ')}` : 'untuk semua aktivitas'} — sampai {b.endAt}</span>
+				</div>
+			</div>
+		{/each}
+	{/if}
 	{#if loading}
 		<div class="loading"><Spinner /> Memuat data gamification...</div>
 	{:else if error}
@@ -296,7 +318,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		{:else if tab === 'leaderboard'}
 			<!-- Tab: Leaderboard -->
 			<div class="leaderboard-section">
-				<h2>🏆 Papan Skor Global — Top 20</h2>
+				<div class="lb-header">
+					<h2>🏆 Papan Skor Global — Top 20</h2>
+					<select bind:value={lbPeriod} onchange={() => loadLeaderboard()} class="lb-period">
+						<option value="all">Semua Waktu</option>
+						<option value="daily">Hari Ini</option>
+						<option value="weekly">7 Hari</option>
+						<option value="monthly">30 Hari</option>
+					</select>
+				</div>
 				{#if leaderboardLoading}
 					<div class="loading"><Spinner /> Memuat papan skor...</div>
 				{:else if leaderboard.length === 0}
@@ -361,7 +391,23 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 <style>
 	.gamification-page { max-width: 800px; margin: 0 auto; padding: 0 0 40px; }
+	.boost-banner {
+		display: flex; align-items: center; gap: 12px;
+		margin-bottom: 14px; padding: 12px 16px;
+		background: linear-gradient(135deg, #fef3c7, #fde68a);
+		border: 1px solid #fcd34d; border-radius: 12px;
+	}
+	.boost-banner-icon { font-size: 22px; }
+	.boost-banner-text { display: flex; flex-direction: column; gap: 2px; }
+	.boost-banner-text strong { font-size: 14px; color: #92400e; }
+	.boost-banner-text span { font-size: 12px; color: #b45309; }
 	.activity-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+	.lb-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+	.lb-header h2 { margin: 0; }
+	.lb-period {
+		padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+		background: var(--surface); font-size: 13px; color: var(--text);
+	}
 	.activity-header h2 { margin: 0; }
 	.activity-tools { display: flex; align-items: center; gap: 8px; }
 	.reason-filter {

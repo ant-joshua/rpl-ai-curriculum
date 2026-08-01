@@ -40,10 +40,45 @@ export async function GET({ request, platform, locals }: { request: Request; pla
 		const url = new URL(request.url);
 		const pathSlug = url.searchParams.get('path_slug');
 		const currentDevice = url.searchParams.get('current_device') || '';
+		const period = url.searchParams.get('period') || 'all'; // all | daily | weekly | monthly
+
+		// Period filter: restrict XP earned to a window
+		let periodStart = '';
+		if (period === 'daily') {
+			periodStart = new Date().toISOString().slice(0, 10);
+		} else if (period === 'weekly') {
+			const d = new Date();
+			d.setDate(d.getDate() - 7);
+			periodStart = d.toISOString().slice(0, 10);
+		} else if (period === 'monthly') {
+			const d = new Date();
+			d.setDate(d.getDate() - 30);
+			periodStart = d.toISOString().slice(0, 10);
+		}
 
 		let result;
 
-		if (pathSlug) {
+		if (periodStart) {
+			// Period-based: XP earned in window, per user
+			result = await db
+				.prepare(`
+					SELECT t.user_id, SUM(t.amount) AS xp, COALESCE(u.level, 1) AS level,
+						COALESCE(b.badge_count, 0) AS badge_count
+					FROM xp_transactions t
+					LEFT JOIN user_xp u ON u.user_id = t.user_id
+					LEFT JOIN (
+						SELECT user_id, COUNT(*) AS badge_count
+						FROM badges
+						GROUP BY user_id
+					) b ON t.user_id = b.user_id
+					WHERE t.amount > 0 AND date(t.created_at) >= ?
+					GROUP BY t.user_id
+					ORDER BY xp DESC
+					LIMIT 50
+				`)
+				.bind(periodStart)
+				.all<Row>();
+		} else if (pathSlug) {
 			// Filter by users who completed sessions in a specific path
 			result = await db
 				.prepare(`

@@ -7,6 +7,7 @@
 	import LessonCompleteScreen from '$lib/components/content/LessonCompleteScreen.svelte';
 	import LessonSidebar from '$lib/components/lesson/LessonSidebar.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { triggerQuestComplete } from '$lib/stores/quest-complete.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ProgressBar from '$lib/components/ui/ProgressBar.svelte';
@@ -202,6 +203,15 @@
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ questKey: 'complete_lessons', amount: 1 })
+				}).then(r => r.json().catch(() => null)).then(j => {
+					if (j?.success && j.data?.justCompleted) {
+						triggerQuestComplete({
+							title: j.data.title || 'Quest selesai!',
+							description: j.data.description || '',
+							xpReward: j.data.xp_reward || 0,
+							questKey: 'complete_lessons',
+						});
+					}
 				}).catch(() => {});
 
 				fetch('/api/gamification/award', {

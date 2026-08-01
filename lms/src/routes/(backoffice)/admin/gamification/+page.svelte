@@ -16,7 +16,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	let error = $state('');
 
 	// Tab
-	type AdminTab = 'leaderboard' | 'badges' | 'xp-rules' | 'levels' | 'settings' | 'quests';
+	type AdminTab = 'leaderboard' | 'badges' | 'xp-rules' | 'levels' | 'settings' | 'quests' | 'boosts';
 	let activeTab = $state<AdminTab>('badges');
 
 	// Badges
@@ -41,7 +41,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	let questDetail = $state<any[]>([]);
 	let questDate = $state(new Date().toISOString().slice(0, 10));
 	let questConfigs = $state<any[]>([]);
-	let savingQuestKey = $state<string | null>(null);
+	let savingQuestKey = $state('');
+
+	// Boost events
+	let boosts = $state<any[]>([]);
+	let boostsLoading = $state(true);
+	let boostModal = $state<any>(null);
+	let savingBoost = $state(false);
 	let questSaved = $state('');
 
 	const QUEST_META: Record<string, { label: string; icon: string }> = {
@@ -84,6 +90,69 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		}
 	}
 
+	// ============= BOOST EVENTS =============
+	async function loadBoosts() {
+		boostsLoading = true;
+		try {
+			const res = await fetch('/api/admin/gamification/boosts', { headers: authHeaders() });
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && Array.isArray(json.data)) boosts = json.data;
+			}
+		} catch { /* ignore */ } finally {
+			boostsLoading = false;
+		}
+	}
+
+	async function saveBoost() {
+		if (!boostModal?.title || !boostModal?.multiplier || !boostModal?.start_at || !boostModal?.end_at) return;
+		savingBoost = true;
+		try {
+			const payload = {
+				title: boostModal.title,
+				multiplier: Number(boostModal.multiplier),
+				reason_filter: boostModal.reason_filter || 'all',
+				tenant_id: boostModal.tenant_id || null,
+				start_at: boostModal.start_at,
+				end_at: boostModal.end_at,
+				enabled: 1,
+			};
+			const res = await fetch('/api/admin/gamification/boosts', {
+				method: 'POST',
+				headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+			if (res.ok) {
+				boostModal = null;
+				loadBoosts();
+			} else {
+				const j = await res.json().catch(() => null);
+				alert(j?.error || 'Gagal simpan event');
+			}
+		} catch { /* ignore */ } finally {
+			savingBoost = false;
+		}
+	}
+
+	async function toggleBoost(b: any) {
+		try {
+			await fetch(`/api/admin/gamification/boosts/${b.id}`, {
+				method: 'PATCH',
+				headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+				body: JSON.stringify({ enabled: b.enabled == 1 ? 0 : 1 }),
+			});
+			loadBoosts();
+		} catch { /* ignore */ }
+	}
+
+	async function deleteBoost(b: any) {
+		if (!confirm(`Hapus event "${b.title}"?`)) return;
+		try {
+			await fetch(`/api/admin/gamification/boosts/${b.id}`, { method: 'DELETE', headers: authHeaders() });
+			loadBoosts();
+		} catch { /* ignore */ }
+	}
+
 	onMount(() => {
 		if (!browser) return;
 		loadBadges();
@@ -92,6 +161,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		loadGlobalLeaderboard();
 		loadQuestStats();
 		loadQuestConfigs();
+		loadBoosts();
 	});
 
 	// ============= BADGES =============
@@ -440,6 +510,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			</button>
 			<button class="tab" class:tab--active={activeTab === 'quests'} onclick={() => activeTab = 'quests'}>
 				📜 Quest Harian
+			</button>
+			<button class="tab" class:tab--active={activeTab === 'boosts'} onclick={() => activeTab = 'boosts'}>
+				🚀 XP Boost
 			</button>
 		</div>
 	</div>
@@ -805,18 +878,98 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 											</Button>
 										</td>
 									</tr>
+									{/each}
+									</tbody>
+									</table>
+									</div>
+									{/if}
+									</CardContent>
+									</Card>
+
+									{:else if activeTab === 'boosts'}
+									<!-- Tab: XP Boost Events -->
+									<div class="boosts-section">
+									<div class="boost-header">
+				<h2>🚀 XP Boost</h2>
+				<Button size="sm" onclick={() => boostModal = {}}>+ Buat Event</Button>
+			</div>
+			<p class="boost-hint">Multiplier XP selama periode tertentu — misal 2x weekend. Berlaku untuk semua tenant kecuali di-set spesifik.</p>
+
+			{#if boostModal}
+				<Modal onclose={() => boostModal = null}>
+					<div class="boost-form">
+						<h3>{boostModal?.id ? 'Edit Event' : 'Buat Event Baru'}</h3>
+						<label>Judul</label>
+						<Input bind:value={boostModal.title} placeholder="2x XP Weekend" />
+						<label>Multiplier</label>
+						<Input type="number" step="0.5" min="1.5" bind:value={boostModal.multiplier} placeholder="2" />
+						<label>Filter Reason (all = semua)</label>
+						<Select bind:value={boostModal.reason_filter}>
+							<option value="all">Semua aktivitas</option>
+							<option value="lesson_complete">Lesson selesai</option>
+							<option value="assignment_graded">Tugas dinilai</option>
+							<option value="assessment_completed">Assessment</option>
+							<option value="discussion_post">Diskusi</option>
+						</Select>
+						<label>Mulai (YYYY-MM-DD HH:MM)</label>
+						<Input bind:value={boostModal.start_at} placeholder="2026-08-02 00:00" />
+						<label>Selesai (YYYY-MM-DD HH:MM)</label>
+						<Input bind:value={boostModal.end_at} placeholder="2026-08-03 23:59" />
+						<label>Tenant (kosong = semua)</label>
+						<Input bind:value={boostModal.tenant_id} placeholder="tenant id atau kosongkan" />
+						<div class="boost-actions">
+							<Button onclick={saveBoost} disabled={savingBoost}>Simpan</Button>
+							<Button variant="ghost" onclick={() => boostModal = null}>Batal</Button>
+						</div>
+					</div>
+				</Modal>
+			{/if}
+
+			{#if boostsLoading}
+				<div class="loading"><Spinner /> Memuat...</div>
+			{:else if boosts.length === 0}
+				<EmptyState title="Belum ada event" description="Buat XP boost event pertama" />
+			{:else}
+				<Card>
+					<CardContent>
+						<table class="boost-table">
+							<thead>
+								<tr>
+									<th>Judul</th>
+									<th>Multiplier</th>
+									<th>Periode</th>
+									<th>Status</th>
+									<th>Aksi</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each boosts as b}
+									<tr>
+										<td><strong>{b.title}</strong></td>
+										<td><span class="boost-mult">{b.multiplier}×</span></td>
+										<td class="boost-period">{b.start_at} → {b.end_at}</td>
+										<td>
+											<span class:boost-active={b.enabled == 1} class:boost-inactive={b.enabled == 0}>
+												{b.enabled == 1 ? 'Aktif' : 'Nonaktif'}
+											</span>
+										</td>
+										<td>
+											<Button variant="secondary" size="sm" onclick={() => toggleBoost(b)}>{b.enabled == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
+											<Button variant="danger" size="sm" onclick={() => deleteBoost(b)}>Hapus</Button>
+										</td>
+									</tr>
 								{/each}
 							</tbody>
 						</table>
-					</div>
-				{/if}
-			</CardContent>
-		</Card>
-		{/if}
+					</CardContent>
+				</Card>
+			{/if}
+			</div>
+			{/if}
 		</div>
 
 <style>
-	/* Quests admin */
+			/* Quests admin */
 	.quest-date-picker { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
 	.quest-config-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
 	.quest-saved { color: #10b981; font-size: 13px; font-weight: 600; }
@@ -825,6 +978,20 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		border-radius: 8px; background: var(--surface); font-size: 14px;
 	}
 	.quest-config-check { width: 18px; height: 18px; accent-color: var(--accent); }
+	/* Boost events */
+	.boosts-section { margin-top: 20px; }
+	.boost-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+	.boost-header h2 { margin: 0; }
+	.boost-hint { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px; }
+	.boost-table { width: 100%; border-collapse: collapse; }
+	.boost-table th, .boost-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+	.boost-mult { font-weight: 700; color: #d97706; }
+	.boost-period { font-size: 12px; color: var(--text-secondary); }
+	.boost-active { color: #16a34a; font-weight: 600; }
+	.boost-inactive { color: #dc2626; font-weight: 600; }
+	.boost-form { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; }
+	.boost-form label { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 6px; }
+	.boost-actions { display: flex; gap: 8px; margin-top: 16px; }
 	.quest-date-picker input[type="date"] {
 		padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
 		background: var(--surface); font-size: 14px;

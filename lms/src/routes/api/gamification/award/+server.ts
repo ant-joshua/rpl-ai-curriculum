@@ -1,6 +1,7 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
 import { hasFeature } from '$lib/server/tenant-features';
+import { getActiveBoost, applyBoost } from '$lib/server/xp-boost';
 
 const STREAK_MILESTONES: { days: number; xp: number }[] = [
 	{ days: 3, xp: 20 },
@@ -293,7 +294,11 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		const fallbackAmount = DEFAULT_XP_REASONS[body.reason] || body.amount || 10;
 		const baseAmount = await getXpAmount(db, body.reason, fallbackAmount);
 
-		const result = await awardXp(db, userId, baseAmount, body.reason, body.reference_type, body.reference_id);
+		// XP boost events (2x weekend etc.)
+		const boost = await getActiveBoost(db, locals?.tenant?.id, body.reason);
+		const xpAwarded = applyBoost(baseAmount, boost);
+
+		const result = await awardXp(db, userId, xpAwarded, body.reason, body.reference_type, body.reference_id);
 
 		// Quest progress: earn_xp (track total XP earned today) + streak (daily activity)
 		try {
@@ -301,7 +306,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 			await db.prepare(
 				`UPDATE daily_quests SET progress = MIN(progress + ?, target)
 				 WHERE user_id = ? AND quest_date = ? AND quest_key = 'earn_xp'`
-			).bind(baseAmount, userId, today).run();
+			).bind(xpAwarded, userId, today).run();
 			// Streak quest: progress = current streak value (target 3 = 3-day streak)
 			const streakRow = await db.prepare(
 				`SELECT current_streak FROM user_streaks WHERE user_id = ?`
@@ -317,7 +322,10 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		return jsonResponse({
 			success: true,
 			data: {
-				xpAwarded: baseAmount,
+				xpAwarded,
+				baseXp: baseAmount,
+				boostMultiplier: boost?.multiplier ?? 1,
+				boostTitle: boost?.title ?? null,
 				totalXp: result.totalXp,
 				level: result.level,
 				bonus: result.bonus,
