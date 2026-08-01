@@ -16,7 +16,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	let error = $state('');
 
 	// Tab
-	type AdminTab = 'leaderboard' | 'badges' | 'xp-rules' | 'levels' | 'settings';
+	type AdminTab = 'leaderboard' | 'badges' | 'xp-rules' | 'levels' | 'settings' | 'quests';
 	let activeTab = $state<AdminTab>('badges');
 
 	// Badges
@@ -36,12 +36,18 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	// Global leaderboard (existing)
 	let globalLeaderboard: any[] = $state([]);
 
+	// Quests admin
+	let questStats = $state<any>(null);
+	let questDetail = $state<any[]>([]);
+	let questDate = $state(new Date().toISOString().slice(0, 10));
+
 	onMount(() => {
 		if (!browser) return;
 		loadBadges();
 		loadXpRules();
 		loadSettings();
 		loadGlobalLeaderboard();
+		loadQuestStats();
 	});
 
 	// ============= BADGES =============
@@ -174,6 +180,33 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				body: JSON.stringify({ value: lbSettings }),
 			});
 		} catch { error = 'Gagal menyimpan pengaturan leaderboard'; }
+	}
+
+	// ============= QUESTS ADMIN =============
+	async function loadQuestStats() {
+		try {
+			const res = await fetch(`/api/admin/quests/stats?date=${questDate}`, { headers: authHeaders() });
+			const json = await res.json();
+			if (json.success) {
+				questStats = json.data;
+				if (questStats?.detail?.length > 0) questDetail = questStats.detail;
+			}
+		} catch { error = 'Gagal memuat statistik quest'; }
+	}
+
+	function questIcon(key: string) {
+		const icons: Record<string, string> = {
+			complete_lessons: '🎯',
+			earn_xp: '⚡',
+			practice: '📝',
+			streak: '🔥',
+		};
+		return icons[key] || '❓';
+	}
+
+	function onQuestDateChange(e: Event) {
+		questDate = (e.target as HTMLInputElement).value;
+		loadQuestStats();
 	}
 
 	// ============= LEADERBOARD =============
@@ -359,6 +392,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			</button>
 			<button class="tab" class:tab--active={activeTab === 'settings'} onclick={() => activeTab = 'settings'}>
 				⚙️ Pengaturan
+			</button>
+			<button class="tab" class:tab--active={activeTab === 'quests'} onclick={() => activeTab = 'quests'}>
+				📜 Quest Harian
 			</button>
 		</div>
 	</div>
@@ -575,10 +611,144 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				</div>
 			</CardContent>
 		</Card>
+
+	{:else if activeTab === 'quests'}
+		<!-- ========== QUESTS TAB ========== -->
+		<div class="section-header">
+			<h2>📜 Statistik Quest Harian</h2>
+			<div class="quest-date-picker">
+				<label for="quest-date">Tanggal:</label>
+				<input type="date" id="quest-date" value={questDate} onchange={onQuestDateChange} />
+			</div>
+		</div>
+
+		{#if questStats?.totals}
+			<div class="quest-totals">
+				<div class="quest-stat-card">
+					<div class="quest-stat-value">{questStats.totals.active_users ?? 0}</div>
+					<div class="quest-stat-label">Siswa Aktif</div>
+				</div>
+				<div class="quest-stat-card">
+					<div class="quest-stat-value">{questStats.totals.xp_awarded_today ?? 0}</div>
+					<div class="quest-stat-label">XP Diklaim</div>
+				</div>
+				<div class="quest-stat-card">
+					<div class="quest-stat-value">{questStats.totals.unclaimed_completed ?? 0}</div>
+					<div class="quest-stat-label">Quest Selesai Belum Diklaim</div>
+				</div>
+			</div>
+		{/if}
+
+		{#if questStats?.summary?.length > 0}
+			<Card>
+				<CardContent>
+					<div class="quest-summary-grid">
+						{#each questStats.summary as q (q.quest_key)}
+							<div class="quest-summary-card">
+								<div class="quest-summary-icon">{questIcon(q.quest_key)}</div>
+								<div class="quest-summary-name">{q.quest_key}</div>
+								<div class="quest-summary-bar">
+									<div class="quest-summary-fill" style="width: {(q.completed / Math.max(q.total_users, 1)) * 100}%"></div>
+								</div>
+								<div class="quest-summary-meta">
+									<span>{q.completed}/{q.total_users} selesai</span>
+									<span>{q.claimed} diklaim</span>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</CardContent>
+			</Card>
+
+			<div class="section-header" style="margin-top: 24px;">
+				<h3>Detail Per User</h3>
+			</div>
+			<Card>
+				<CardContent>
+					{#if questDetail.length > 0}
+						<div class="quest-table-wrap">
+							<table class="quest-table">
+								<thead>
+									<tr>
+										<th>User</th>
+										<th>Quest</th>
+										<th>Progress</th>
+										<th>XP</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each questDetail as row (row.user_id + row.quest_key)}
+										<tr>
+											<td>
+												<div class="quest-user">{row.display_name || '—'}</div>
+												<div class="quest-user-email">{row.email || ''}</div>
+											</td>
+											<td>{questIcon(row.quest_key)} {row.title}</td>
+											<td>{row.progress}/{row.target}</td>
+											<td>+{row.xp_reward}</td>
+											<td>
+												{#if row.claimed}
+													<span class="quest-status claimed">✓ Diklaim</span>
+												{:else if row.progress >= row.target}
+													<span class="quest-status ready">Siap Diklaim</span>
+												{:else}
+													<span class="quest-status pending">Dalam Proses</span>
+												{/if}
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{:else}
+						<p class="quest-empty">Belum ada data quest untuk tanggal ini.</p>
+					{/if}
+				</CardContent>
+			</Card>
+		{:else}
+			<Card>
+				<CardContent>
+					<p class="quest-empty">Belum ada data quest untuk tanggal ini.</p>
+				</CardContent>
+			</Card>
+		{/if}
 	{/if}
 </div>
 
 <style>
+	/* Quests admin */
+	.quest-date-picker { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
+	.quest-date-picker input[type="date"] {
+		padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+		background: var(--surface); font-size: 14px;
+	}
+	.quest-totals { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+	.quest-stat-card {
+		flex: 1; min-width: 160px; padding: 20px; background: var(--surface);
+		border: 1px solid var(--border); border-radius: 12px; text-align: center;
+	}
+	.quest-stat-value { font-size: 28px; font-weight: 700; color: var(--accent); }
+	.quest-stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+	.quest-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+	.quest-summary-card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+	.quest-summary-icon { font-size: 24px; }
+	.quest-summary-name { font-size: 14px; font-weight: 600; color: var(--text); margin: 6px 0 10px; text-transform: capitalize; }
+	.quest-summary-bar { height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden; }
+	.quest-summary-fill { height: 100%; background: var(--success); border-radius: 4px; transition: width 0.4s; }
+	.quest-summary-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+	.quest-table-wrap { overflow-x: auto; }
+	.quest-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+	.quest-table th { text-align: left; padding: 10px 12px; color: var(--text-secondary); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+	.quest-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+	.quest-user { font-weight: 600; color: var(--text); }
+	.quest-user-email { font-size: 12px; color: var(--text-secondary); }
+	.quest-status { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+	.quest-status.claimed { background: rgba(34,197,94,0.12); color: #16a34a; }
+	.quest-status.ready { background: rgba(79,70,229,0.12); color: var(--accent); }
+	.quest-status.pending { background: rgba(100,116,139,0.12); color: #64748b; }
+	.quest-empty { text-align: center; color: var(--text-secondary); padding: 32px; }
+
 	.gamification-page { max-width: 1100px; }
 	h1 { font-size: 26px; font-weight: 700; margin-bottom: 0; }
 	.header-row { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }

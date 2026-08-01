@@ -10,12 +10,17 @@ const routes = JSON.parse(readFileSync(routesPath, 'utf-8'));
 // Replace per-file excludes with glob patterns (stays under 100 limit)
 routes.exclude = [
 	'/_app/*',
+	'/assets/*',
 	'/build/*',
 	'/content/*',
+	'/icons/*',
 	'/pdfs/*',
+	'/api/openapi.json',
 	'/favicon.png',
 	'/favicon.svg',
-	'/manifest.json'
+	'/manifest.json',
+	'/robots.txt',
+	'/sw.js'
 ];
 
 // Ensure include has /* so all routes go through function
