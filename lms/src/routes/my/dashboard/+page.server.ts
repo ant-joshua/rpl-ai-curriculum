@@ -231,10 +231,19 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		[userId]
 	);
 
+	// --- Streak freezes ---
+	const freezeRows = await cachedDbFirst<any>(
+		db,
+		`SELECT quantity FROM user_streak_freezes WHERE user_id = ?`,
+		[userId]
+	);
+	const streakFreezes = freezeRows?.quantity || 0;
+
 	return {
 		displayName,
 		avatarUrl,
 		currentStreak,
+		streakFreezes,
 		averageProgress,
 		activeCourses,
 		upcomingDeadlines: upcomingDeadlines || [],

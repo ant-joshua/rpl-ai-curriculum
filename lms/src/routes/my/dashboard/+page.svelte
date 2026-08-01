@@ -2,6 +2,8 @@
 	import { t } from '$lib/stores/i18n.svelte';
 	import { Avatar, Card, CardContent, Alert, Button } from '$lib/components/ui';
 	import DailyQuests from '$lib/components/DailyQuests.svelte';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -25,6 +27,32 @@
 	let totalLessonsDone = $derived(data.totalLessonsDone || 0);
 	let totalXp = $derived(data.totalXp || 0);
 	let recentActivity = $derived(data.recentActivity || []);
+	let streakFreezes = $derived(data.streakFreezes || 0);
+
+	// Daily login reward — claim once per session
+	let loginReward = $state<{ claimed: boolean; xp: number } | null>(null);
+
+	onMount(() => {
+		if (!browser) return;
+		claimDailyLogin();
+	});
+
+	async function claimDailyLogin() {
+		try {
+			const res = await fetch('/api/gamification/daily-login', {
+				headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+			});
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && json.data?.claimed) {
+					loginReward = { claimed: true, xp: json.data.xp };
+					setTimeout(() => (loginReward = null), 5000);
+				}
+			}
+		} catch {
+			// non-critical
+		}
+	}
 
 	let showAllCourses = $state(false);
 	let visibleCourses = $derived(showAllCourses ? activeCourses : activeCourses.slice(0, 4));
@@ -115,8 +143,17 @@
 		<div class="streak-badge">
 			<span class="streak-fire">🔥</span>
 			<span>{currentStreak} hari berturut-turut</span>
+			{#if streakFreezes > 0}
+				<span class="freeze-chip" title="Streak Freeze — lindungi streak dari skip 1 hari">🧊 {streakFreezes}</span>
+			{/if}
 		</div>
 	</header>
+
+	{#if loginReward}
+		<div class="login-reward-toast">
+			🌅 Login harian! +{loginReward.xp} XP 🎉
+		</div>
+	{/if}
 
 	<!-- Overview cards -->
 	<section class="overview-cards">
@@ -528,6 +565,27 @@
 		font-feature-settings: 'cv01', 'ss03';
 	}
 	.streak-fire { font-size: 14px; }
+	.freeze-chip {
+		background: #e0f2fe; color: #0284c7;
+		border-radius: 6px; padding: 1px 7px;
+		font-size: 12px; font-weight: 700;
+	}
+	.login-reward-toast {
+		margin-bottom: 14px;
+		padding: 10px 16px;
+		background: linear-gradient(135deg, #f59e0b, #f97316);
+		color: white;
+		border-radius: 10px;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+		box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+		animation: toast-in 0.4s ease;
+	}
+	@keyframes toast-in {
+		from { opacity: 0; transform: translateY(-8px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
 
 	/* Overview */
 	.overview-cards {
