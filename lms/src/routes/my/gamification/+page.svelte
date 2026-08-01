@@ -114,6 +114,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		assessment_completed: 'Assessment',
 		discussion_post: 'Diskusi',
 		streak_milestone: 'Bonus Streak',
+		freeze_purchase: 'Beli Streak Freeze',
 		custom: 'Aktivitas',
 	};
 

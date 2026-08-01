@@ -47,6 +47,42 @@ function questDefs(): QuestDef[] {
 	];
 }
 
+/** Load quest config from DB (admin overrides), fallback to defaults */
+async function loadQuestConfigs(db: any): Promise<Map<string, { target: number; xpReward: number; enabled: boolean }>> {
+	const cfg = new Map<string, { target: number; xpReward: number; enabled: boolean }>();
+	try {
+		const { results: rows } = await db.prepare(
+			`SELECT quest_key, target, xp_reward, enabled FROM quest_config`
+		).all<any>();
+		for (const r of rows || []) {
+			cfg.set(r.quest_key, {
+				target: r.target,
+				xpReward: r.xp_reward,
+				enabled: r.enabled === 1,
+			});
+		}
+	} catch {
+		// table may not exist yet — use defaults
+	}
+	return cfg;
+}
+
+/** Merge defaults with DB config */
+async function resolveQuestDefs(db: any): Promise<QuestDef[]> {
+	const cfg = await loadQuestConfigs(db);
+	const base = questDefs();
+	return base
+		.map((d) => {
+			const c = cfg.get(d.key);
+			if (!c) return d;
+			return { ...d, target: c.target, xpReward: c.xpReward };
+		})
+		.filter((d) => {
+			const c = cfg.get(d.key);
+			return c ? c.enabled : true;
+		});
+}
+
 /** GET /api/gamification/quests — today's quests with progress */
 export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: any }): Promise<Response> {
 	try {
@@ -63,8 +99,8 @@ export async function GET({ request, platform, locals }: { request: Request; pla
 		const userId = session.user.id;
 		const today = todayStr();
 
-		// Ensure today's quests exist
-		const defs = questDefs();
+		// Ensure today's quests exist (respect admin config)
+		const defs = await resolveQuestDefs(db);
 		for (const d of defs) {
 			await db.prepare(
 				`INSERT OR IGNORE INTO daily_quests (id, user_id, quest_date, quest_key, title, description, target, xp_reward)
@@ -117,7 +153,8 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		if (!result) {
 			// Quest row missing — try creating + updating
-			const def = questDefs().find(d => d.key === questKey);
+			const defs = await resolveQuestDefs(db);
+			const def = defs.find(d => d.key === questKey);
 			if (def) {
 				await db.prepare(
 					`INSERT OR IGNORE INTO daily_quests (id, user_id, quest_date, quest_key, title, description, target, xp_reward)

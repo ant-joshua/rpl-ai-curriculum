@@ -77,6 +77,15 @@ export async function GET({ request, platform, locals }: { request: Request; pla
 					longest: streakRow?.longest_streak ?? 0,
 					lastActivityDate: streakRow?.last_activity_date ?? null,
 					freezes: freezeRow?.quantity ?? 0,
+					atRisk: (() => {
+						const last = streakRow?.last_activity_date;
+						if (!last) return false;
+						const today = new Date().toISOString().slice(0, 10);
+						if (last === today) return false;
+						const yesterday = new Date();
+						yesterday.setDate(yesterday.getDate() - 1);
+						return last === yesterday.toISOString().slice(0, 10);
+					})(),
 				},
 				badges: {
 					earned: earnedBadges || [],

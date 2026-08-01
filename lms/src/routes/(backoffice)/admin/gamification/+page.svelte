@@ -40,6 +40,49 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	let questStats = $state<any>(null);
 	let questDetail = $state<any[]>([]);
 	let questDate = $state(new Date().toISOString().slice(0, 10));
+	let questConfigs = $state<any[]>([]);
+	let savingQuestKey = $state<string | null>(null);
+	let questSaved = $state('');
+
+	const QUEST_META: Record<string, { label: string; icon: string }> = {
+		complete_lessons: { label: 'Selesaikan Pelajaran', icon: '🎯' },
+		earn_xp: { label: 'Kumpulkan XP', icon: '⚡' },
+		practice: { label: 'Latihan Soal', icon: '📝' },
+		streak: { label: 'Pertahankan Streak', icon: '🔥' },
+	};
+
+	async function loadQuestConfigs() {
+		try {
+			const res = await fetch('/api/admin/gamification/quest-config', { headers: authHeaders() });
+			if (res.ok) {
+				const json = await res.json();
+				if (json.success && Array.isArray(json.data)) questConfigs = json.data;
+			}
+		} catch { /* ignore */ }
+	}
+
+	async function saveQuestConfig(q: any) {
+		savingQuestKey = q.quest_key;
+		questSaved = '';
+		try {
+			const res = await fetch('/api/admin/gamification/quest-config', {
+				method: 'PUT',
+				headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					questKey: q.quest_key,
+					target: Number(q.target),
+					xpReward: Number(q.xp_reward),
+					enabled: !!q.enabled,
+				}),
+			});
+			if (res.ok) {
+				questSaved = `${q.quest_key} tersimpan ✓`;
+				setTimeout(() => (questSaved = ''), 3000);
+			}
+		} catch { /* ignore */ } finally {
+			savingQuestKey = null;
+		}
+	}
 
 	onMount(() => {
 		if (!browser) return;
@@ -48,6 +91,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		loadSettings();
 		loadGlobalLeaderboard();
 		loadQuestStats();
+		loadQuestConfigs();
 	});
 
 	// ============= BADGES =============
@@ -243,6 +287,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		assessment_completed: 'Assessment',
 		discussion_post: 'Posting Diskusi',
 		streak_milestone: 'Bonus Streak',
+		freeze_purchase: 'Beli Streak Freeze',
 		custom: 'Kustom',
 	};
 
@@ -713,12 +758,73 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				</CardContent>
 			</Card>
 		{/if}
-	{/if}
-</div>
+
+		<!-- ===== QUEST CONFIG ===== -->
+		<div class="section-header" style="margin-top: 24px;">
+			<h2>⚙️ Konfigurasi Quest</h2>
+			{#if questSaved}<span class="quest-saved">{questSaved}</span>{/if}
+		</div>
+		<Card>
+			<CardContent>
+				<p class="quest-config-hint">Atur target & XP reward tiap quest. Perubahan berlaku mulai hari ini (quest yang belum dibuat). Quest yang di-disable gak muncul untuk user.</p>
+				{#if questConfigs.length === 0}
+					<p class="quest-empty">Memuat konfigurasi...</p>
+				{:else}
+					<div class="quest-table-wrap">
+						<table class="quest-table">
+							<thead>
+								<tr>
+									<th>Quest</th>
+									<th>Target</th>
+									<th>XP Reward</th>
+									<th>Aktif</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each questConfigs as q (q.quest_key)}
+									<tr>
+										<td>
+											<div class="quest-user">
+												{QUEST_META[q.quest_key]?.icon ?? '⭐'} {QUEST_META[q.quest_key]?.label ?? q.quest_key}
+											</div>
+											<div class="quest-user-email">{q.quest_key}</div>
+										</td>
+										<td>
+											<input type="number" min="1" max="100" class="quest-config-input" bind:value={q.target} />
+										</td>
+										<td>
+											<input type="number" min="0" max="500" class="quest-config-input" bind:value={q.xp_reward} />
+										</td>
+										<td>
+											<input type="checkbox" bind:checked={q.enabled} class="quest-config-check" />
+										</td>
+										<td>
+											<Button variant="secondary" size="sm" onclick={() => saveQuestConfig(q)} disabled={savingQuestKey === q.quest_key}>
+												{savingQuestKey === q.quest_key ? 'Menyimpan...' : 'Simpan'}
+											</Button>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{/if}
+			</CardContent>
+		</Card>
+		{/if}
+		</div>
 
 <style>
 	/* Quests admin */
 	.quest-date-picker { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
+	.quest-config-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+	.quest-saved { color: #10b981; font-size: 13px; font-weight: 600; }
+	.quest-config-input {
+		width: 80px; padding: 6px 8px; border: 1px solid var(--border);
+		border-radius: 8px; background: var(--surface); font-size: 14px;
+	}
+	.quest-config-check { width: 18px; height: 18px; accent-color: var(--accent); }
 	.quest-date-picker input[type="date"] {
 		padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
 		background: var(--surface); font-size: 14px;

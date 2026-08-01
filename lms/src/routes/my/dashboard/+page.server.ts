@@ -239,11 +239,21 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	);
 	const streakFreezes = freezeRows?.quantity || 0;
 
+	// Streak at-risk: user was active yesterday but not today
+	const activityToday = activityDays?.[0]?.day === today;
+	const activityYesterday = activityDays?.some((d: any) => {
+		const y = new Date();
+		y.setDate(y.getDate() - 1);
+		return d.day === y.toISOString().slice(0, 10);
+	});
+	const streakAtRisk = currentStreak > 0 && !activityToday && activityYesterday;
+
 	return {
 		displayName,
 		avatarUrl,
 		currentStreak,
 		streakFreezes,
+		streakAtRisk,
 		averageProgress,
 		activeCourses,
 		upcomingDeadlines: upcomingDeadlines || [],

@@ -28,9 +28,40 @@
 	let totalXp = $derived(data.totalXp || 0);
 	let recentActivity = $derived(data.recentActivity || []);
 	let streakFreezes = $derived(data.streakFreezes || 0);
+	let streakAtRisk = $derived(data.streakAtRisk || false);
 
 	// Daily login reward — claim once per session
 	let loginReward = $state<{ claimed: boolean; xp: number } | null>(null);
+	// Freeze shop
+	let buyingFreeze = $state(false);
+	let freezeBuyError = $state('');
+	let freezeBuySuccess = $state(false);
+
+	async function buyFreeze() {
+		if (buyingFreeze) return;
+		buyingFreeze = true;
+		freezeBuyError = '';
+		freezeBuySuccess = false;
+		try {
+			const res = await fetch('/api/gamification/freeze/buy', {
+				method: 'POST',
+				headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+			});
+			const json = await res.json().catch(() => null);
+			if (res.ok && json?.success) {
+				freezeBuySuccess = true;
+				setTimeout(() => (freezeBuySuccess = false), 4000);
+			} else {
+				freezeBuyError = json?.error || 'Gagal beli streak freeze';
+				setTimeout(() => (freezeBuyError = ''), 5000);
+			}
+		} catch {
+			freezeBuyError = 'Gagal beli streak freeze';
+			setTimeout(() => (freezeBuyError = ''), 5000);
+		} finally {
+			buyingFreeze = false;
+		}
+	}
 
 	onMount(() => {
 		if (!browser) return;
@@ -146,8 +177,31 @@
 			{#if streakFreezes > 0}
 				<span class="freeze-chip" title="Streak Freeze — lindungi streak dari skip 1 hari">🧊 {streakFreezes}</span>
 			{/if}
+			{#if streakFreezes < 3}
+				<button class="freeze-buy" onclick={buyFreeze} disabled={buyingFreeze} title="Beli streak freeze (50 XP)">
+					🧊 +1
+				</button>
+			{/if}
 		</div>
 	</header>
+
+	{#if freezeBuyError}
+		<div class="freeze-buy-error">{freezeBuyError}</div>
+	{/if}
+	{#if freezeBuySuccess}
+		<div class="freeze-buy-success">🧊 Streak freeze dibeli! -50 XP</div>
+	{/if}
+
+	{#if streakAtRisk && currentStreak > 0}
+		<div class="streak-risk-banner">
+			<span class="risk-icon">🔥</span>
+			<div class="risk-text">
+				<strong>Streak {currentStreak} hari bakal putus!</strong>
+				<span>Belajar hari ini buat pertahankan streak-mu.</span>
+			</div>
+			<a href="/learn" class="risk-cta">Lanjut Belajar →</a>
+		</div>
+	{/if}
 
 	{#if loginReward}
 		<div class="login-reward-toast">
@@ -565,10 +619,46 @@
 		font-feature-settings: 'cv01', 'ss03';
 	}
 	.streak-fire { font-size: 14px; }
+	.streak-risk-banner {
+		display: flex; align-items: center; gap: 12px;
+		margin-bottom: 14px; padding: 12px 16px;
+		background: linear-gradient(135deg, #fff7ed, #ffedd5);
+		border: 1px solid #fdba74; border-radius: 12px;
+	}
+	.risk-icon { font-size: 24px; }
+	.risk-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+	.risk-text strong { font-size: 14px; color: #9a3412; }
+	.risk-text span { font-size: 13px; color: #c2410c; }
+	.risk-cta {
+		padding: 8px 14px; background: #ea580c; color: white;
+		border-radius: 8px; font-size: 13px; font-weight: 600;
+		text-decoration: none; white-space: nowrap;
+	}
+	.risk-cta:hover { background: #c2410c; }
 	.freeze-chip {
 		background: #e0f2fe; color: #0284c7;
 		border-radius: 6px; padding: 1px 7px;
 		font-size: 12px; font-weight: 700;
+	}
+	.freeze-buy {
+		background: #e0f2fe; color: #0284c7;
+		border: 1px solid #bae6fd; border-radius: 6px;
+		padding: 2px 8px; font-size: 12px; font-weight: 700;
+		cursor: pointer; transition: background 0.2s;
+	}
+	.freeze-buy:hover:not(:disabled) { background: #bae6fd; }
+	.freeze-buy:disabled { opacity: 0.5; cursor: default; }
+	.freeze-buy-error {
+		margin-bottom: 12px; padding: 8px 14px;
+		background: #fef2f2; color: #dc2626;
+		border: 1px solid #fecaca; border-radius: 8px;
+		font-size: 13px;
+	}
+	.freeze-buy-success {
+		margin-bottom: 12px; padding: 8px 14px;
+		background: #f0fdf4; color: #16a34a;
+		border: 1px solid #bbf7d0; border-radius: 8px;
+		font-size: 13px;
 	}
 	.login-reward-toast {
 		margin-bottom: 14px;
