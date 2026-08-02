@@ -1,406 +1,91 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
-	import { Button, Card, EmptyState, ProgressBar, PageHeader } from '$lib/components/ui';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { EmptyState, Spinner, Card, CardContent } from '$lib/components/ui';
 
-	let { data }: { data: import('./$types').PageData } = $props();
+	let certificates = $state<any[]>([]);
+	let loading = $state(true);
 
-	let certificates = $state(data.certificates || []);
-	let progressItems = $state(data.progressItems || []);
-	let error = $state(data.error || null);
-	let loading = $state(!data.certificates && !data.error);
-
-	$effect(() => {
-		if (!data.certificates && !data.error && !loading) {
-			loadCerts();
+	onMount(async () => {
+		if (!browser) return;
+		try {
+			const res = await fetch('/api/my/certificates');
+			const json = await res.json();
+			if (json.success) certificates = json.data || [];
+		} catch { /* ignore */ } finally {
+			loading = false;
 		}
 	});
 
-	async function loadCerts() {
-		loading = true;
-		try {
-			const res = await fetch('/api/my/certificates', {
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('lms-auth-token') || ''}`
-				}
-			});
-			const json = await res.json();
-			if (json.success) {
-				certificates = json.data || [];
-			} else {
-				error = json.error || 'Failed to load certificates';
-			}
-		} catch {
-			error = 'Failed to load certificates';
-		} finally {
-			loading = false;
-		}
-	}
-
-	function formatDate(iso: string): string {
-		if (!iso) return '';
-		try {
-			return new Date(iso + 'T00:00:00Z').toLocaleDateString('id-ID', {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric',
-			});
-		} catch {
-			return iso;
-		}
+	function formatDate(d: string): string {
+		if (!d) return '';
+		return d.replace('T', ' ').slice(0, 10);
 	}
 </script>
 
 <svelte:head>
-	<title>My Certificates — RPL AI Curriculum</title>
+	<title>Sertifikat Saya — RPL AI Curriculum</title>
 </svelte:head>
 
 <div class="certs-page">
-	<PageHeader title="Sertifikat Saya" subtitle="Sertifikat kelulusan yang telah Anda terima" />
+	<header class="page-header">
+		<h1>🏆 Sertifikat Saya</h1>
+		<p class="page-subtitle">Sertifikat kelulusan kursus yang sudah kamu selesaikan</p>
+	</header>
 
 	{#if loading}
-		<div class="loading">
-			<div class="spinner"></div>
-			<p>Memuat sertifikat...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p class="error-text">{error}</p>
-			<Button onclick={loadCerts}>Coba Lagi</Button>
-		</div>
+		<div class="loading"><Spinner /> Memuat...</div>
+	{:else if certificates.length === 0}
+		<EmptyState icon="award" title="Belum ada sertifikat" description="Selesaikan kursus untuk mendapatkan sertifikat." />
 	{:else}
-		<!-- In-progress offerings -->
-		{#if progressItems.length > 0}
-			<section class="in-progress-section">
-				<h2 class="section-title">📊 Dalam Progres</h2>
-				<div class="progress-list">
-					{#each progressItems as item (item.offeringId)}
-						<a href="/learn/{item.offeringId}" class="progress-card">
-							<div class="progress-card-icon">{item.courseIcon}</div>
-							<div class="progress-card-info">
-								<h3 class="progress-card-title">{item.courseTitle}</h3>
-								<p class="progress-card-offering">{item.offeringName}</p>
-								<div class="progress-bar-wrapper">
-									<ProgressBar value={item.percentage} showLabel={false} />
-								</div>
-								<p class="progress-hint">
-									{item.completedLessons} dari {item.totalLessons} pelajaran selesai
-									— selesaikan semua untuk mendapatkan sertifikat
-								</p>
-							</div>
-							<div class="progress-card-arrow">&rarr;</div>
-						</a>
-					{/each}
-				</div>
-			</section>
-		{/if}
-
-		<!-- Earned certificates -->
-		<section class="certs-section">
-			<h2 class="section-title">🏆 Sertifikat Diperoleh</h2>
-			{#if certificates.length === 0}
-				<EmptyState
-					icon="📜"
-					title="Belum Ada Sertifikat"
-					description="Selesaikan semua pelajaran dalam suatu kursus untuk mendapatkan sertifikat kelulusan."
-				>
-					<a href="/learn" class="browse-link">Jelajahi Kursus</a>
-				</EmptyState>
-			{:else}
-				<div class="cert-list">
-					{#each certificates as cert (cert.id)}
-						<a href="/certificate/{cert.id}" class="cert-card">
-							<div class="cert-card-icon">{cert.course_icon || '📜'}</div>
-							<div class="cert-card-info">
-								<h3 class="cert-card-title">{cert.course_title}</h3>
-								<p class="cert-card-offering">{cert.offering_name}</p>
-								<div class="cert-card-meta">
-									<span class="status-badge issued">✅ Diterbitkan</span>
-									<span class="cert-card-number">{cert.certificate_number}</span>
-									<span class="cert-card-date">{formatDate(cert.issued_at)}</span>
-								</div>
-							</div>
-							<div class="cert-card-actions">
-								<button class="download-btn" onclick={(e) => { e.stopPropagation(); window.open('/certificate/' + cert.id); }}>
-									⬇️
-								</button>
-							</div>
-							<div class="cert-card-arrow">&rarr;</div>
-						</a>
-					{/each}
-				</div>
-			{/if}
-		</section>
+		<div class="cert-grid">
+			{#each certificates as cert}
+				<Card class="cert-card">
+					<CardContent>
+						<div class="cert-head">
+							<span class="cert-icon">{cert.courseIcon}</span>
+							<span class="cert-valid">✓ Valid</span>
+						</div>
+						<h2 class="cert-title">{cert.courseTitle}</h2>
+						<p class="cert-name">diberikan kepada<br /><strong>{cert.userName}</strong></p>
+						{#if cert.instructorName}
+							<p class="cert-instructor">Pengajar: {cert.instructorName}</p>
+						{/if}
+						<p class="cert-date">📅 {formatDate(cert.issuedAt)}</p>
+						<p class="cert-number">No. {cert.certNumber}</p>
+						<div class="cert-actions">
+							<a class="cert-verify-link" href="/certificates/verify?code={cert.certNumber}" target="_blank">🔍 Verifikasi Publik</a>
+						</div>
+					</CardContent>
+				</Card>
+			{/each}
+		</div>
 	{/if}
 </div>
 
 <style>
-	.certs-page {
-		max-width: 720px;
-		margin: 0 auto;
-		padding: 24px 16px 48px;
+	.certs-page { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+	.page-header { margin-bottom: 24px; }
+	.page-header h1 { margin: 0 0 4px; font-size: 24px; }
+	.page-subtitle { margin: 0; color: var(--text-muted); font-size: 14px; }
+	.loading { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+	.cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+	.cert-card { position: relative; overflow: hidden; }
+	.cert-card::before {
+		content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+		background: linear-gradient(90deg, #f59e0b, #2563eb, #16a34a);
 	}
-
-	.page-header {
-		margin-bottom: 28px;
+	.cert-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+	.cert-icon { font-size: 34px; }
+	.cert-valid { font-size: 11px; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 3px 8px; border-radius: 999px; }
+	.cert-title { font-size: 17px; margin: 0 0 10px; line-height: 1.3; }
+	.cert-name { font-size: 13px; color: var(--text-muted); margin: 0 0 8px; line-height: 1.5; }
+	.cert-name strong { color: var(--text); }
+	.cert-instructor, .cert-date { font-size: 12px; color: var(--text-muted); margin: 0 0 4px; }
+	.cert-number { font-size: 11px; color: #94a3b8; margin: 10px 0 0; font-family: monospace; }
+	.cert-actions { margin-top: 12px; }
+	.cert-verify-link {
+		font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;
 	}
-
-	.page-header h1 {
-		font-size: 28px;
-		font-weight: 590;
-		margin: 0 0 6px;
-	}
-
-	.subtitle {
-		color: var(--text-secondary);
-		font-size: 14px;
-		margin: 0;
-	}
-
-	.loading {
-		text-align: center;
-		padding: 40px 20px;
-		color: var(--text-secondary);
-	}
-
-	.spinner {
-		width: 32px;
-		height: 32px;
-		border: 3px solid var(--border);
-		border-top-color: var(--accent);
-		border-radius: 50%;
-		animation: spin 0.7s linear infinite;
-		margin: 0 auto 12px;
-	}
-
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
-
-	.error-state {
-		text-align: center;
-		padding: 40px 20px;
-	}
-
-	.error-text {
-		color: var(--danger);
-		margin-bottom: 16px;
-	}
-
-	.section-title { font-feature-settings: 'cv01', 'ss03';
-		font-size: 18px;
-		font-weight: 510;
-		margin: 0 0 12px;
-	}
-
-	/* In-progress section */
-	.in-progress-section {
-		margin-bottom: 36px;
-	}
-
-	.progress-list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.progress-card {
-		display: flex;
-		align-items: flex-start;
-		gap: 16px;
-		padding: 16px 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.15s ease;
-	}
-
-	.progress-card:hover {
-		border-color: var(--accent);
-		background: var(--surface-hover);
-		transform: translateX(4px);
-	}
-
-	.progress-card-icon {
-		font-size: 40px;
-		flex-shrink: 0;
-		margin-top: 2px;
-	}
-
-	.progress-card-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.progress-card-title {
-		font-size: 16px;
-		font-weight: 510;
-		color: var(--text);
-		margin: 0 0 2px;
-	}
-
-	.progress-card-offering {
-		font-size: 13px;
-		color: var(--text-secondary);
-		margin: 0 0 10px;
-	}
-
-	.progress-bar-wrapper {
-		margin-bottom: 6px;
-	}
-
-	.progress-hint {
-		font-size: 12px;
-		color: var(--text-secondary);
-		margin: 0;
-		line-height: 1.4;
-	}
-
-	.progress-card-arrow {
-		font-size: 20px;
-		color: var(--text-secondary);
-		flex-shrink: 0;
-		margin-top: 2px;
-	}
-
-	.progress-card:hover .progress-card-arrow {
-		color: var(--accent);
-	}
-
-	/* Certificates section */
-	.certs-section {
-		margin-bottom: 36px;
-	}
-
-	.browse-link {
-		display: inline-block;
-		padding: 12px 28px;
-		border-radius: 10px;
-		background: var(--accent);
-		color: #fff;
-		font-size: 15px;
-		font-weight: 510;
-		text-decoration: none;
-	}
-
-	.browse-link:hover {
-		opacity: 0.9;
-	}
-
-	/* Certificate list */
-	.cert-list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.cert-card {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		padding: 16px 20px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		text-decoration: none;
-		transition: all 0.15s ease;
-	}
-
-	.cert-card:hover {
-		border-color: #f59e0b;
-		background: var(--surface-hover);
-		transform: translateX(4px);
-	}
-
-	.cert-card-icon {
-		font-size: 40px;
-		flex-shrink: 0;
-	}
-
-	.cert-card-info {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.cert-card-title {
-		font-size: 16px;
-		font-weight: 510;
-		color: var(--text);
-		margin: 0 0 2px;
-	}
-
-	.cert-card-offering {
-		font-size: 13px;
-		color: var(--text-secondary);
-		margin: 0 0 6px;
-	}
-
-	.cert-card-meta {
-		display: flex;
-		gap: 12px;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.cert-card-number {
-		font-size: 11px;
-		font-family: inherit;
-		color: #f59e0b;
-		background: rgba(245,158,11,0.08);
-		padding: 2px 8px;
-		border-radius: 4px;
-		font-weight: 510;
-	}
-
-	.status-badge {
-		font-size: 11px;
-		font-weight: 510;
-		padding: 2px 10px;
-		border-radius: 4px;
-		background: rgba(34,197,94,0.08);
-		color: #22c55e;
-		border: 1px solid rgba(34,197,94,0.3);
-	}
-
-	.status-badge.issued { background: rgba(34,197,94,0.08); color: #22c55e; border-color: rgba(34,197,94,0.3); }
-
-	.download-btn {
-		width: 36px;
-		height: 36px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: var(--surface);
-		color: var(--text);
-		font-size: 16px;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.15s;
-	}
-	.download-btn:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-
-	.cert-card-actions {
-		display: flex;
-		gap: 6px;
-		flex-shrink: 0;
-	}
-
-	.cert-card-date {
-		font-size: 12px;
-		color: var(--text-secondary);
-	}
-
-	.cert-card-arrow {
-		font-size: 20px;
-		color: var(--text-secondary);
-		flex-shrink: 0;
-	}
-
-	.cert-card:hover .cert-card-arrow {
-		color: #f59e0b;
-	}
+	.cert-verify-link:hover { text-decoration: underline; }
 </style>

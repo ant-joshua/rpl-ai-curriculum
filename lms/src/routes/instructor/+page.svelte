@@ -10,6 +10,7 @@
 	let pendingAssignments = $derived(data.pendingAssignments ?? []);
 	let pendingCount = $derived(data.pendingCount ?? 0);
 	let upcomingDeadlines = $derived(data.upcomingDeadlines ?? []);
+	let recentReviews = $derived(data.recentReviews ?? []);
 
 	let courseCount = $derived(courses.length);
 	let totalStudents = $derived(courses.reduce((sum: number, c: any) => sum + (c.activeEnrollments || 0), 0));
@@ -104,6 +105,10 @@
 										<span class="stat-chip">👥 {course.activeEnrollments} siswa</span>
 										<span class="stat-chip">🎯 {courseStats[course.id]?.completionRate ?? 0}%</span>
 										<span class="stat-chip">📊 {courseStats[course.id]?.avgGrade ?? 0}</span>
+										<span class="stat-chip">⭐ {courseStats[course.id]?.avgRating ?? 0} ({courseStats[course.id]?.ratingCount ?? 0})</span>
+										{#if (courseStats[course.id]?.openQuestions ?? 0) > 0}
+											<span class="stat-chip warn">💬 {courseStats[course.id].openQuestions} belum dijawab</span>
+										{/if}
 									</div>
 								</div>
 							</a>
@@ -182,6 +187,35 @@
 											: `${daysUntil(dd.dueDate)} hari`}
 									<span class="date-full">{formatDate(dd.dueDate)}</span>
 								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</section>
+
+			<!-- Recent Reviews -->
+			<section class="panel-section">
+				<h2>⭐ Review Terbaru</h2>
+				{#if recentReviews.length === 0}
+					<Card>
+						<CardContent>
+							<p class="empty-text">Belum ada review 🎉</p>
+						</CardContent>
+					</Card>
+				{:else}
+					<div class="review-list">
+						{#each recentReviews as rv}
+							<div class="review-item">
+								<div class="review-head">
+									<span class="review-stars">{'★'.repeat(rv.rating)}{'☆'.repeat(5 - rv.rating)}</span>
+									<span class="review-date">{formatDate(rv.createdAt)}</span>
+								</div>
+								{#if rv.comment}
+									<p class="review-comment">{rv.comment}</p>
+								{:else}
+									<p class="review-comment muted">Tanpa komentar</p>
+								{/if}
+								<span class="review-meta">{rv.reviewerName} · {rv.offeringName}</span>
 							</div>
 						{/each}
 					</div>
@@ -337,6 +371,16 @@
 	}
 	.submission-item:hover { opacity: 0.8; }
 	.submission-item:last-child, .deadline-item:last-child { border-bottom: none; }
+	/* Reviews */
+	.review-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+	.review-item:last-child { border-bottom: none; }
+	.review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+	.review-stars { color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+	.review-date { font-size: 11px; color: var(--text-muted); }
+	.review-comment { font-size: 13px; color: var(--text-secondary); margin: 0 0 4px; line-height: 1.5; }
+	.review-comment.muted { color: #94a3b8; font-style: italic; }
+	.review-meta { font-size: 11px; color: var(--text-muted); }
+	.stat-chip.warn { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
 	.sub-avatar { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
 	.sub-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 	.sub-title { font-weight: 600; color: var(--text); }

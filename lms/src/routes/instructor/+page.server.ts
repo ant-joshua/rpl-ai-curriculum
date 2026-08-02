@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 	const offeringIds = courseList.map(c => c.id);
 
 	// --- Per-course stats ---
-	const courseStats = new Map<string, { avgGrade: number; completionRate: number; attendanceRate: number }>();
+	const courseStats = new Map<string, { avgGrade: number; completionRate: number; attendanceRate: number; avgRating: number; ratingCount: number; openQuestions: number }>();
 	if (offeringIds.length > 0) {
 		for (const oid of offeringIds) {
 			// Avg grade from gradebook
@@ -86,7 +86,26 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			const totalPrs = attPresent?.[0]?.total || 0;
 			const attendanceRate = totalAtt > 0 ? Math.round((totalPrs / totalAtt) * 100) : 0;
 
-			courseStats.set(oid, { avgGrade, completionRate, attendanceRate });
+			// Avg rating + count
+			const { results: ratingRows } = await cachedDbQuery<any>(
+				db,
+				`SELECT AVG(rating) AS avg_rating, COUNT(*) AS cnt
+				 FROM course_reviews WHERE course_offering_id = ?`,
+				[oid]
+			);
+			const avgRating = Math.round((ratingRows?.[0]?.avg_rating || 0) * 10) / 10;
+			const ratingCount = ratingRows?.[0]?.cnt || 0;
+
+			// Open questions count
+			const { results: openQRows } = await cachedDbQuery<any>(
+				db,
+				`SELECT COUNT(*) AS cnt FROM course_questions
+				 WHERE course_offering_id = ? AND is_resolved = 0`,
+				[oid]
+			);
+			const openQuestions = openQRows?.[0]?.cnt || 0;
+
+			courseStats.set(oid, { avgGrade, completionRate, attendanceRate, avgRating, ratingCount, openQuestions });
 		}
 	}
 
@@ -148,6 +167,20 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		[userId, userId]
 	);
 
+	// --- Recent reviews on instructor's courses ---
+	const { results: recentReviews } = await cachedDbQuery<any>(
+		db,
+		`SELECT cr.id, cr.rating, cr.comment, cr.created_at,
+		        u.display_name AS reviewer_name, u.avatar_url AS reviewer_avatar,
+		        co.name AS offering_name, co.id AS offering_id
+		 FROM course_reviews cr
+		 JOIN course_offerings co ON co.id = cr.course_offering_id
+		 JOIN users u ON u.id = cr.user_id
+		 WHERE co.instructor_id = ?
+		 ORDER BY cr.created_at DESC LIMIT 10`,
+		[userId]
+	);
+
 	return {
 		courses: courseList,
 		courseStats: Object.fromEntries(courseStats),
@@ -178,6 +211,16 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			kind: d.kind,
 			dueDate: d.due_date,
 			offeringName: d.offering_name,
+		})),
+		recentReviews: (recentReviews || []).map(r => ({
+			id: r.id,
+			rating: r.rating,
+			comment: r.comment || '',
+			createdAt: r.created_at,
+			reviewerName: r.reviewer_name || 'User',
+			reviewerAvatar: r.reviewer_avatar || '',
+			offeringName: r.offering_name,
+			offeringId: r.offering_id,
 		})),
 		token,
 	};

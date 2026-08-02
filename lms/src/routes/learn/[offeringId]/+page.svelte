@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Card, CardContent, Button, Alert, Avatar, Badge, Progress } from '$lib/components/ui';
 
 	let { data } = $props();
+
+	onMount(() => {
+		if (browser) loadQuestions();
+	});
 
 	let offering = $derived(data.offering);
 	let instructor = $derived(data.instructor);
@@ -14,6 +20,89 @@
 	let assignments = $derived(data.assignments || []);
 	let nextLessonSlug = $derived(data.nextLessonSlug);
 	let lastCompletedTitle = $derived(data.lastCompletedTitle);
+
+	// Q&A forum state
+	let questions = $state<any[]>([]);
+	let showAskForm = $state(false);
+	let askTitle = $state('');
+	let askBody = $state('');
+	let asking = $state(false);
+	let qaError = $state('');
+	let openQuestionId = $state<string | null>(null);
+	let answersMap = $state<Record<string, any[]>>({});
+	let answerText = $state('');
+	let answeringId = $state<string | null>(null);
+
+	async function loadQuestions() {
+		try {
+			const res = await fetch(`/api/courses/${data.offering.id}/questions`);
+			const json = await res.json();
+			if (json.success) questions = json.data || [];
+		} catch { /* ignore */ }
+	}
+
+	async function loadAnswers(qid: string) {
+		try {
+			const res = await fetch(`/api/courses/${data.offering.id}/questions/${qid}/answers`);
+			const json = await res.json();
+			if (json.success) answersMap[qid] = json.data || [];
+		} catch { /* ignore */ }
+	}
+
+	function toggleQuestion(qid: string) {
+		openQuestionId = openQuestionId === qid ? null : qid;
+		if (openQuestionId === qid && !answersMap[qid]) loadAnswers(qid);
+	}
+
+	async function submitQuestion() {
+		if (!askTitle.trim() || !askBody.trim()) { qaError = 'Judul dan isi wajib'; return; }
+		asking = true;
+		qaError = '';
+		try {
+			const res = await fetch(`/api/courses/${data.offering.id}/questions`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ title: askTitle, text: askBody }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				askTitle = '';
+				askBody = '';
+				showAskForm = false;
+				loadQuestions();
+			} else {
+				qaError = json.error || 'Gagal kirim';
+			}
+		} catch { qaError = 'Gagal kirim'; } finally {
+			asking = false;
+		}
+	}
+
+	async function submitAnswer(qid: string) {
+		if (!answerText.trim()) return;
+		answeringId = qid;
+		try {
+			const res = await fetch(`/api/courses/${data.offering.id}/questions/${qid}/answers`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ text: answerText }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				answerText = '';
+				loadAnswers(qid);
+			}
+		} catch { /* ignore */ } finally {
+			answeringId = null;
+		}
+	}
+
+	async function toggleResolved(qid: string) {
+		try {
+			await fetch(`/api/courses/${data.offering.id}/questions/${qid}/resolve`, { method: 'POST' });
+			loadQuestions();
+		} catch { /* ignore */ }
+	}
 
 	// Review state
 	let reviewRating = $state(0);
@@ -270,6 +359,85 @@
 			</div>
 		</section>
 	{/if}
+
+	<!-- Course Q&A Forum -->
+	<section class="qa-section">
+		<div class="qa-header">
+			<h2>💬 Tanya Jawab</h2>
+			{#if data.enrollment}
+				<Button size="sm" variant={showAskForm ? 'secondary' : 'primary'} onclick={() => showAskForm = !showAskForm}>
+					{showAskForm ? 'Batal' : '+ Tanya'}
+				</Button>
+			{/if}
+		</div>
+
+		{#if showAskForm}
+			<div class="qa-ask-form">
+				<input class="qa-input" placeholder="Judul pertanyaan" bind:value={askTitle} />
+				<textarea class="qa-textarea" placeholder="Detail pertanyaan..." rows={3} bind:value={askBody}></textarea>
+				{#if qaError}<p class="qa-error">{qaError}</p>{/if}
+				<div class="qa-form-actions">
+					<Button size="sm" onclick={submitQuestion} disabled={asking}>{asking ? 'Mengirim...' : 'Kirim Pertanyaan'}</Button>
+				</div>
+			</div>
+		{/if}
+
+		{#if questions.length === 0}
+			<p class="qa-empty">Belum ada pertanyaan. {data.enrollment ? 'Jadi yang pertama bertanya!' : 'Terdaftar untuk bertanya.'}</p>
+		{:else}
+			<div class="qa-list">
+				{#each questions as q}
+					<div class="qa-item" class:open={openQuestionId === q.id}>
+						<div class="qa-item-head" onclick={() => toggleQuestion(q.id)}>
+							<div class="qa-item-info">
+								<strong>{q.title}</strong>
+								<span class="qa-item-meta">👤 {q.asker_name || 'User'} · {q.created_at?.replace('T', ' ').slice(0, 16)} · 💬 {q.answer_count}</span>
+							</div>
+							<div class="qa-item-badges">
+								{#if q.is_resolved == 1}
+									<span class="qa-resolved">✓ Terjawab</span>
+								{/if}
+								<span class="qa-chevron">{openQuestionId === q.id ? '▾' : '▸'}</span>
+							</div>
+						</div>
+						{#if openQuestionId === q.id}
+							<div class="qa-item-body">
+								<p class="qa-question-text">{q.body}</p>
+								{#if data.enrollment}
+									<div class="qa-actions-row">
+										<Button size="sm" variant="ghost" onclick={() => toggleResolved(q.id)}>
+											{q.is_resolved == 1 ? '↺ Buka lagi' : '✓ Tandai Terjawab'}
+										</Button>
+									</div>
+								{/if}
+
+								<div class="qa-answers">
+									{#each answersMap[q.id] || [] as a}
+										<div class="qa-answer">
+											<div class="qa-answer-head">
+												<strong>{a.author_name || 'User'}</strong>
+												{#if a.role === 'instructor' || a.role === 'admin'}<span class="qa-instructor-tag">Pengajar</span>{/if}
+												<span class="qa-answer-date">{a.created_at?.replace('T', ' ').slice(0, 16)}</span>
+											</div>
+											<p class="qa-answer-text">{a.body}</p>
+										</div>
+									{/each}
+								</div>
+
+								{#if data.enrollment}
+									<div class="qa-answer-form">
+										<input class="qa-input" placeholder="Tulis jawaban..." bind:value={answerText}
+											onkeydown={(e) => e.key === 'Enter' && submitAnswer(q.id)} />
+										<Button size="sm" onclick={() => submitAnswer(q.id)} disabled={answeringId === q.id}>Kirim</Button>
+									</div>
+								{/if}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</section>
 
 	<!-- Rating & Review -->
 	<section class="review-section">
@@ -690,6 +858,42 @@
 	.related-info strong { font-size: 13px; line-height: 1.35; }
 	.related-meta { font-size: 12px; color: var(--text-muted); }
 	.related-instructor { font-size: 12px; color: var(--text-secondary); }
+
+	/* Q&A Forum */
+	.qa-section { margin-bottom: 28px; }
+	.qa-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+	.qa-header h2 { font-size: 18px; margin: 0; }
+	.qa-empty { color: var(--text-muted); font-size: 14px; }
+	.qa-list { display: flex; flex-direction: column; gap: 8px; }
+	.qa-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+	.qa-item.open { border-color: var(--accent); }
+	.qa-item-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; cursor: pointer; }
+	.qa-item-head:hover { background: var(--surface); }
+	.qa-item-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+	.qa-item-info strong { font-size: 14px; }
+	.qa-item-meta { font-size: 12px; color: var(--text-muted); }
+	.qa-item-badges { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+	.qa-resolved { font-size: 11px; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 999px; }
+	.qa-chevron { color: var(--text-muted); font-size: 12px; }
+	.qa-item-body { padding: 0 16px 16px; border-top: 1px solid var(--border); }
+	.qa-question-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 12px 0; }
+	.qa-actions-row { margin-bottom: 10px; }
+	.qa-answers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+	.qa-answer { padding: 10px 12px; background: var(--surface); border-radius: 8px; }
+	.qa-answer-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+	.qa-answer-head strong { font-size: 13px; }
+	.qa-instructor-tag { font-size: 10px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 1px 6px; border-radius: 999px; }
+	.qa-answer-date { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+	.qa-answer-text { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+	.qa-answer-form { display: flex; gap: 8px; align-items: center; }
+	.qa-ask-form { display: flex; flex-direction: column; gap: 8px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; }
+	.qa-input {
+		flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+		border-radius: 8px; font-size: 13px; background: white; color: var(--text);
+	}
+	.qa-textarea { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: white; color: var(--text); resize: vertical; font-family: inherit; }
+	.qa-error { font-size: 12px; color: #dc2626; margin: 0; }
+	.qa-form-actions { display: flex; justify-content: flex-end; }
 
 	/* Reviews */
 	.review-section { margin-bottom: 28px; }

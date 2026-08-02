@@ -28,6 +28,7 @@
 
 	const navItems: NavItem[] = [
 		{ href: '/my/dashboard', icon: '📊', label: 'Dashboard' },
+		{ href: '/my/certificates', icon: '🏆', label: 'Sertifikat' },
 		{ href: '/my/courses', icon: '📚', label: 'Kursus' },
 		{ href: '/wishlist', icon: '❤️', label: 'Wishlist' },
 		{ href: '/bundles', icon: '📦', label: 'Paket Kursus' },
