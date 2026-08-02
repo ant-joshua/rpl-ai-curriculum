@@ -215,7 +215,7 @@
 							size="lg"
 						/>
 						<div class="instructor-text">
-							<span class="instructor-name">{instructor.name}</span>
+							<a class="instructor-name" href="/instructor/{instructor.id}">{instructor.name}</a>
 							{#if instructor.email}
 								<span class="instructor-email">{instructor.email}</span>
 							{/if}
@@ -709,8 +709,10 @@
 		font-size: 15px;
 		font-weight: 510;
 		color: #64748b;
+		text-decoration: none;
 		font-feature-settings: 'cv01', 'ss03';
 	}
+	.instructor-name:hover { color: var(--accent); text-decoration: underline; }
 
 	.instructor-email {
 		font-size: 13px;

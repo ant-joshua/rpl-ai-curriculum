@@ -76,7 +76,7 @@ export async function PUT({ request, platform }: { request: Request; platform: A
 			return jsonResponse({ success: false, error: 'Invalid JSON body' }, 400);
 		}
 
-		const { displayName, avatarUrl } = body;
+		const { displayName, avatarUrl, bio, headline, website, socialLinks } = body;
 
 		// Build dynamic UPDATE — only set provided fields
 		const updates: string[] = [];
@@ -89,6 +89,22 @@ export async function PUT({ request, platform }: { request: Request; platform: A
 		if (avatarUrl !== undefined) {
 			updates.push('avatar_url = ?');
 			values.push(String(avatarUrl));
+		}
+		if (bio !== undefined) {
+			updates.push('bio = ?');
+			values.push(String(bio));
+		}
+		if (headline !== undefined) {
+			updates.push('headline = ?');
+			values.push(String(headline));
+		}
+		if (website !== undefined) {
+			updates.push('website = ?');
+			values.push(String(website));
+		}
+		if (socialLinks !== undefined) {
+			updates.push('social_links = ?');
+			values.push(typeof socialLinks === 'string' ? socialLinks : JSON.stringify(socialLinks));
 		}
 
 		if (updates.length === 0) {

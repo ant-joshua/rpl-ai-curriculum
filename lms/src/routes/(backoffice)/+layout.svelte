@@ -59,6 +59,7 @@
 		{ path: '/admin/question-bank', icon: 'help-circle', label: 'Bank Soal', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/announcements', icon: 'megaphone', label: 'Announcements', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/live-classes', icon: 'video', label: 'Kelas Live', roles: ['superadmin','admin','instructor'] },
+		{ path: '/admin/bundles', icon: 'package', label: 'Paket Kursus', roles: ['superadmin','admin'] },
 		{ path: '/admin/gamification', icon: 'award', label: 'Gamification', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/faculties', icon: 'building', label: 'Faculties', roles: ['superadmin','admin'] },
 		{ path: '/admin/classes-structure', icon: 'grid', label: 'K13 Structure', roles: ['superadmin','admin','instructor'] },

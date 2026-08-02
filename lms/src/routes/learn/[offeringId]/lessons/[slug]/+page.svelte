@@ -64,6 +64,17 @@
 	let isBookmarking = $state(false);
 	let noteContent = $state('');
 	let isSavingNote = $state(false);
+	let lessonResources = $state<any[]>([]);
+
+	// Load lesson resources (materi pendukung)
+	$effect(() => {
+		if (lesson?.id) {
+			fetch(`/api/lessons/${lesson.id}/resources`)
+				.then(r => r.json())
+				.then(j => { if (j.success) lessonResources = j.data || []; })
+				.catch(() => {});
+		}
+	});
 	let isLoadingNote = $state(false);
 	let noteId = $state<string | null>(null);
 	let noteSaved = $state(false);
@@ -467,6 +478,25 @@
 						<p class="text-secondary">No content available for this lesson.</p>
 					</div>
 				{/if}
+
+				<!-- Lesson resources -->
+				{#if lessonResources.length > 0}
+					<div class="resources-section">
+						<h3 class="resources-title">📎 Materi Pendukung</h3>
+						<div class="resources-list">
+							{#each lessonResources as r}
+								<a class="resource-item" href={r.file_url} target="_blank" rel="noopener">
+									<span class="resource-icon">{r.file_type === 'pdf' ? '📄' : r.file_type === 'zip' ? '🗜️' : r.file_type === 'code' ? '💻' : '🔗'}</span>
+									<span class="resource-info">
+										<strong>{r.title}</strong>
+										{#if r.file_size}<small>{Math.round(r.file_size / 1024)} KB</small>{/if}
+									</span>
+									<span class="resource-download">⬇</span>
+								</a>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			</div>
 
 			{#if !lessonFinished}
@@ -571,12 +601,26 @@
 		gap: 32px;
 	}
 
-	.lesson-content {
-		flex: 1;
+	.lesson-content {		flex: 1;
 		min-width: 0;
 		max-width: 800px;
 		margin: 0 auto;
 	}
+	/* Lesson resources */
+	.resources-section { margin-top: 24px; padding: 16px; background: var(--surface, #F8FAFC); border: 1px solid var(--border, #E2E8F0); border-radius: 12px; }
+	.resources-title { font-size: 14px; font-weight: 600; margin: 0 0 10px; color: var(--text, #0f172a); }
+	.resources-list { display: flex; flex-direction: column; gap: 6px; }
+	.resource-item {
+		display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+		background: white; border: 1px solid var(--border, #E2E8F0); border-radius: 8px;
+		text-decoration: none; color: inherit; transition: border-color 0.15s;
+	}
+	.resource-item:hover { border-color: var(--accent, #4F46E5); }
+	.resource-icon { font-size: 18px; flex-shrink: 0; }
+	.resource-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+	.resource-info strong { font-size: 13px; color: var(--text, #0f172a); }
+	.resource-info small { font-size: 11px; color: #94a3b8; }
+	.resource-download { color: var(--accent, #4F46E5); font-size: 14px; }
 
 	.mobile-topbar { display: none; }
 	.lesson-breadcrumb { font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
