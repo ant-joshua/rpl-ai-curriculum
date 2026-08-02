@@ -33,6 +33,25 @@
 				addToast(`Terdaftar di ${json.data.enrolledCount} kursus! 🎉`, 'success');
 				const { goto } = await import('$app/navigation');
 				goto('/my/courses');
+			} else if (json.needPayment) {
+				// Paid bundle — apply coupon first if entered, then enroll via redeem
+				if (appliedCoupon) {
+					const r2 = await fetch('/api/coupons/redeem', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ code: appliedCoupon, bundleId: id }),
+					});
+					const j2 = await r2.json();
+					if (j2.success) {
+						addToast(`Kupon ${appliedCoupon} berhasil dipakai! 🎉`, 'success');
+						const { goto } = await import('$app/navigation');
+						goto('/my/courses');
+					} else {
+						addToast(j2.error || 'Kupon gagal', 'error');
+					}
+				} else {
+					addToast('Bundle berbayar — butuh kupon atau pembayaran', 'info');
+				}
 			} else if (json.error) {
 				addToast(json.error, 'error');
 			}
@@ -41,6 +60,44 @@
 		} finally {
 			enrollingId = null;
 		}
+	}
+
+	// Coupon state
+	let couponCode = $state('');
+	let appliedCoupon = $state('');
+	let couponError = $state('');
+	let couponInfo = $state<any>(null);
+	let validatingCoupon = $state(false);
+
+	async function applyCoupon(b: any) {
+		if (!couponCode.trim()) return;
+		validatingCoupon = true;
+		couponError = '';
+		couponInfo = null;
+		try {
+			const res = await fetch('/api/coupons/validate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ code: couponCode.trim(), bundleId: b.id, price: b.price }),
+			});
+			const json = await res.json();
+			if (json.success) {
+				appliedCoupon = couponCode.trim().toUpperCase();
+				couponInfo = json.data;
+			} else {
+				couponError = json.error || 'Kupon tidak valid';
+			}
+		} catch {
+			couponError = 'Gagal validasi kupon';
+		} finally {
+			validatingCoupon = false;
+		}
+	}
+
+	function removeCoupon() {
+		appliedCoupon = '';
+		couponInfo = null;
+		couponCode = '';
 	}
 
 	function formatPrice(n: number): string {
@@ -92,8 +149,33 @@
 							{#if b.originalPrice && b.originalPrice > b.price}
 								<span class="price-original">{formatPrice(b.originalPrice)}</span>
 							{/if}
-							<span class="price-now">{formatPrice(b.price)}</span>
+							<span class="price-now">{formatPrice(couponInfo && appliedCoupon ? couponInfo.finalPrice : b.price)}</span>
+							{#if couponInfo && appliedCoupon}
+								<span class="coupon-applied">-{formatPrice(couponInfo.discount)}</span>
+							{/if}
 						</div>
+
+						{#if couponInfo && appliedCoupon}
+							<div class="coupon-badge">
+								<span>🎟️ {appliedCoupon} applied</span>
+								<button class="coupon-remove" onclick={removeCoupon}>✕</button>
+							</div>
+						{:else}
+							<div class="coupon-input-row">
+								<input
+									class="coupon-input"
+									placeholder="Punya kode promo?"
+									bind:value={couponCode}
+									onkeydown={(e) => e.key === 'Enter' && applyCoupon(b)}
+								/>
+								<Button variant="secondary" size="sm" onclick={() => applyCoupon(b)} disabled={validatingCoupon}>
+									{validatingCoupon ? '...' : 'Pakai'}
+								</Button>
+							</div>
+							{#if couponError}
+								<p class="coupon-error">{couponError}</p>
+							{/if}
+						{/if}
 
 						<Button
 							variant="primary"
@@ -137,4 +219,19 @@
 	.bundle-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
 	.price-original { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
 	.price-now { font-size: 22px; font-weight: 800; color: var(--text); }
+	.coupon-applied { font-size: 13px; color: #16a34a; font-weight: 700; }
+	.coupon-input-row { display: flex; gap: 6px; margin-bottom: 6px; }
+	.coupon-input {
+		flex: 1; padding: 8px 10px; border: 1px solid var(--border);
+		border-radius: 8px; font-size: 13px; background: white;
+		text-transform: uppercase;
+	}
+	.coupon-badge {
+		display: flex; align-items: center; justify-content: space-between;
+		padding: 6px 12px; margin-bottom: 10px; background: #f0fdf4;
+		border: 1px solid #bbf7d0; border-radius: 8px; font-size: 13px;
+		color: #16a34a; font-weight: 600;
+	}
+	.coupon-remove { background: none; border: none; cursor: pointer; color: #16a34a; font-size: 14px; }
+	.coupon-error { font-size: 12px; color: #dc2626; margin: 0 0 8px; }
 </style>

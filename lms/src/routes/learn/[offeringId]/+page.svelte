@@ -249,6 +249,28 @@
 		</section>
 	{/if}
 
+	<!-- Related courses -->
+	{#if data.relatedCourses?.length > 0}
+		<section class="related-section">
+			<h2>🔗 Kursus Serupa</h2>
+			<div class="related-grid">
+				{#each data.relatedCourses as rc}
+					<a class="related-card" href="/learn/{rc.id}">
+						<div class="related-icon">{rc.icon}</div>
+						<div class="related-info">
+							<strong>{rc.courseTitle}</strong>
+							<span class="related-meta">
+								{#if rc.rating}★ {rc.rating}{/if}
+								{#if rc.enrolledCount} · {rc.enrolledCount} siswa{/if}
+							</span>
+							{#if rc.instructorName}<span class="related-instructor">{rc.instructorName}</span>{/if}
+						</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
 	<!-- Rating & Review -->
 	<section class="review-section">
 		<h2>⭐ Rating & Review</h2>
@@ -651,6 +673,23 @@
 		text-decoration: none; white-space: nowrap;
 	}
 	.live-status { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+	/* Related courses */
+	.related-section { margin-bottom: 28px; }
+	.related-section h2 { font-size: 18px; margin-bottom: 12px; }
+	.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+	.related-card {
+		display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+		background: var(--surface); border: 1px solid var(--border);
+		border-radius: 10px; text-decoration: none; color: inherit;
+		transition: border-color 0.15s, transform 0.15s;
+	}
+	.related-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+	.related-icon { font-size: 28px; flex-shrink: 0; }
+	.related-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+	.related-info strong { font-size: 13px; line-height: 1.35; }
+	.related-meta { font-size: 12px; color: var(--text-muted); }
+	.related-instructor { font-size: 12px; color: var(--text-secondary); }
 
 	/* Reviews */
 	.review-section { margin-bottom: 28px; }

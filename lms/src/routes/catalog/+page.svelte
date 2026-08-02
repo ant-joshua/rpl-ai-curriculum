@@ -28,6 +28,7 @@
   let searchQuery = $state('');
   let levelFilter = $state<string>('all');
   let categoryFilter = $state<string>('all');
+  let sortBy = $state<string>('popular');
 
   let categories = $derived([...new Set(offerings.map(o => o.category).filter(Boolean))]);
 
@@ -44,6 +45,13 @@
         );
       }
       return true;
+    }).sort((a: any, b: any) => {
+      if (sortBy === 'popular') return (b.enrolledCount || 0) - (a.enrolledCount || 0);
+      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+      if (sortBy === 'reviewed') return (b.ratingCount || 0) - (a.ratingCount || 0);
+      if (sortBy === 'az') return a.courseTitle.localeCompare(b.courseTitle);
+      if (sortBy === 'newest') return (b.startDate || '').localeCompare(a.startDate || '');
+      return 0;
     })
   );
 
@@ -136,6 +144,14 @@
         {#each categories as cat}
           <option value={cat}>{cat}</option>
         {/each}
+      </select>
+
+      <select class="filter-select" bind:value={sortBy}>
+        <option value="popular">Most Popular</option>
+        <option value="rating">Highest Rated</option>
+        <option value="reviewed">Most Reviewed</option>
+        <option value="newest">Newest</option>
+        <option value="az">A–Z</option>
       </select>
 
       <span class="result-count">{filteredOfferings.length} course{filteredOfferings.length !== 1 ? 's' : ''}</span>

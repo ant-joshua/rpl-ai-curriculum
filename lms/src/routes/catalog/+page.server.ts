@@ -37,6 +37,26 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		 ORDER BY co.name ASC`
 	);
 
+	// Ratings summary per offering (avg + count)
+	let ratingCounts = new Map<string, { avg: number; count: number }>();
+	{
+		const ids = (offerings || []).map((o: any) => o.id);
+		if (ids.length > 0) {
+			const placeholders = ids.map(() => '?').join(',');
+			const { results: ratings } = await cachedDbQuery<any>(
+				db,
+				`SELECT course_offering_id, AVG(rating) AS avg_rating, COUNT(*) AS review_count
+				 FROM course_reviews
+				 WHERE course_offering_id IN (${placeholders})
+				 GROUP BY course_offering_id`,
+				ids
+			);
+			for (const r of ratings || []) {
+				ratingCounts.set(r.course_offering_id, { avg: Number(r.avg_rating), count: Number(r.review_count) });
+			}
+		}
+	}
+
 	// Count current enrollments per offering
 	const offeringIds = (offerings || []).map((o: any) => o.id);
 	let enrollmentCounts = new Map<string, number>();
@@ -125,6 +145,8 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			startDate: o.start_date,
 			endDate: o.end_date,
 			enrolledCount: enrollmentCounts.get(o.id) || 0,
+			rating: ratingCounts.get(o.id)?.avg || 0,
+			ratingCount: ratingCounts.get(o.id)?.count || 0,
 			maxStudents: o.max_students,
 			isEnrolled: enrolledSet.has(o.id),
 			spotsAvailable: o.max_students ? (o.max_students - (enrollmentCounts.get(o.id) || 0)) > 0 : true,

@@ -186,6 +186,21 @@ export async function load({ params, request, platform, url }: {
 		[offeringId]
 	);
 
+	// Related courses (same category, exclude self, top by enrollment)
+	const { results: relatedRows } = await cachedDbQuery<any>(
+		db,
+		`SELECT co.id, co.name, c.title AS course_title, c.slug AS course_slug, c.icon AS course_icon,
+		        c.level, u.display_name AS instructor_name,
+		        (SELECT COUNT(*) FROM enrollments e WHERE e.course_offering_id = co.id AND e.status = 'active') AS enrolled_count,
+		        (SELECT AVG(rating) FROM course_reviews cr WHERE cr.course_offering_id = co.id) AS avg_rating
+		 FROM course_offerings co
+		 JOIN courses c ON c.id = co.course_id
+		 LEFT JOIN users u ON u.id = co.instructor_id
+		 WHERE co.status = 'active' AND co.id != ? AND c.category = ?
+		 ORDER BY enrolled_count DESC LIMIT 4`,
+		[offeringId, offering.category]
+	);
+
 	// Find next uncompleted lesson
 	let nextLessonSlug: string | null = null;
 	for (const lesson of lessons) {
@@ -230,6 +245,17 @@ export async function load({ params, request, platform, url }: {
 		ratingCount: ratingRow?.cnt ?? 0,
 		myReview: myReview ?? null,
 		liveClasses: liveClasses || [],
+		relatedCourses: (relatedRows || []).map((r: any) => ({
+			id: r.id,
+			name: r.name,
+			courseTitle: r.course_title,
+			courseSlug: r.course_slug,
+			icon: r.course_icon || '📚',
+			level: r.level,
+			instructorName: r.instructor_name || null,
+			enrolledCount: Number(r.enrolled_count) || 0,
+			rating: r.avg_rating ? Number(r.avg_rating).toFixed(1) : null,
+		})),
 		userName: session.user.name || session.user.email?.split('@')[0] || 'Student',
 		token,
 	};
