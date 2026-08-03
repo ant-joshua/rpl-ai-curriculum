@@ -48,6 +48,7 @@
 			name: 'Tools',
 			links: [
 				{ href: '/tutor', icon: 'robot', label: t('nav.tutor') },
+				{ href: '/aiedu', icon: 'sparkles', label: 'AIEdu' },
 				{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
 				{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
 				{ href: '/projects', icon: 'rocket', label: t('nav.projects') },

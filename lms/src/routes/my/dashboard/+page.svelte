@@ -183,6 +183,10 @@
 				</button>
 			{/if}
 		</div>
+		<div class="header-actions">
+			<button class="export-btn" onclick={() => (location.href = '/api/my/progress/export?format=json')} title="Download progress JSON">📥 JSON</button>
+			<button class="export-btn" onclick={() => (location.href = '/api/my/progress/export?format=csv')} title="Download progress CSV">📊 CSV</button>
+		</div>
 	</header>
 
 	{#if freezeBuyError}
@@ -575,6 +579,19 @@
 	/* Header */
 	.dashboard-header {
 		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+	.header-actions { display: flex; gap: 8px; }
+	.export-btn {
+		padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+		background: white; font-size: 13px; font-weight: 600; cursor: pointer;
+		color: var(--text); transition: background 0.2s;
+	}
+	.export-btn:hover { background: var(--surface); }
+	.dashboard-header {
 		justify-content: space-between;
 		align-items: flex-start;
 		margin-bottom: 24px;

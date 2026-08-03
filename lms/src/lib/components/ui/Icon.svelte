@@ -37,6 +37,10 @@
     <circle cx="15" cy="10" r="1"/>
     <path d="M9 16h6"/>
     <circle cx="12" cy="4" r="2"/>
+  {:else if name === 'sparkles'}
+    <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>
+    <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/>
+    <path d="M5 16l.7 1.8L7.5 18.5l-1.8.7L5 21l-.7-1.8L2.5 18.5l1.8-.7z"/>
   {:else if name === 'layers'}
     <polyline points="12 2 22 8.5 12 15 2 8.5"/>
     <polyline points="2 15.5 12 22 22 15.5"/>

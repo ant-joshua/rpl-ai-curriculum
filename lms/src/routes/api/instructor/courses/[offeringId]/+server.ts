@@ -74,3 +74,35 @@ export async function GET({ params, platform, locals }: { params: { offeringId: 
 		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }
+
+// PATCH /api/instructor/courses/[offeringId] — update course (name, status, dates)
+// Body: { name?, status?, start_date?, end_date? }
+export async function PATCH({ request, params, platform, locals }: { request: Request; params: { offeringId: string }; platform: App.Platform; locals: Record<string, any> }): Promise<Response> {
+	try {
+		const db = getDB(platform);
+		const user = locals.user;
+		if (!user) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+
+		const offering = await cachedDbFirst<any>(db, 'SELECT * FROM course_offerings WHERE id = ?', [params.offeringId]);
+		if (!offering) return jsonResponse({ success: false, error: 'Course not found' }, 404);
+		if (user.role !== 'superadmin' && user.role !== 'admin' && offering.instructor_id !== user.id) {
+			return jsonResponse({ success: false, error: 'Forbidden' }, 403);
+		}
+
+		const body = await request.json();
+		const { name, status, start_date, end_date } = body;
+
+		await db.prepare(
+			'UPDATE course_offerings SET name = COALESCE(?, name), status = COALESCE(?, status), start_date = COALESCE(?, start_date), end_date = COALESCE(?, end_date), updated_at = datetime(\'now\') WHERE id = ?'
+		).bind(name || null, status || null, start_date ?? null, end_date ?? null, params.offeringId).run();
+
+		if (name) {
+			await db.prepare('UPDATE courses SET title = ? WHERE id = ?').bind(name, offering.course_id).run();
+		}
+
+		return jsonResponse({ success: true });
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}

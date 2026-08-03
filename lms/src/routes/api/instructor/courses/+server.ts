@@ -1,41 +1,70 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { cachedDbQuery } from '$lib/server/cache';
+import { jsonResponse, getDB } from '$lib/server/d1';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 
-/**
- * GET /api/instructor/courses
- * Returns course offerings where the authenticated user is the instructor.
- * Superadmins and admins see all offerings (full access).
- */
-export async function GET({ platform, locals }: { platform: App.Platform; locals: Record<string, any> }): Promise<Response> {
+// GET /api/instructor/courses — list own courses (instructor only)
+export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
-		const db = getDB(platform);
-		const user = locals.user;
-		let query: string;
-		let params: any[];
-
-		if (user.role === 'superadmin' || user.role === 'admin') {
-			query = `
-				SELECT co.*, c.title AS course_title, c.slug AS course_slug, c.icon AS course_icon,
-					(SELECT COUNT(*) FROM enrollments WHERE course_offering_id = co.id AND role = 'student' AND status = 'active') AS student_count
-				FROM course_offerings co
-				JOIN courses c ON c.id = co.course_id
-				ORDER BY co.name ASC
-			`;
-			params = [];
-		} else {
-			query = `
-				SELECT co.*, c.title AS course_title, c.slug AS course_slug, c.icon AS course_icon,
-					(SELECT COUNT(*) FROM enrollments WHERE course_offering_id = co.id AND role = 'student' AND status = 'active') AS student_count
-				FROM course_offerings co
-				JOIN courses c ON c.id = co.course_id
-				WHERE co.instructor_id = ?
-				ORDER BY co.name ASC
-			`;
-			params = [user.id];
+		const token = getTokenFromRequest(request);
+		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+		const session = await getSession(platform, token);
+		if (!session) return jsonResponse({ success: false, error: 'Session invalid' }, 401);
+		if (session.user.role !== 'instructor' && session.user.role !== 'admin' && session.user.role !== 'superadmin') {
+			return jsonResponse({ success: false, error: 'Instructor only' }, 403);
 		}
 
-		const { results } = await cachedDbQuery<any>(db, query, params);
+		const db = getDB(platform);
+		const { results } = await db.prepare(
+			`SELECT co.id, co.name, co.code, co.status, co.start_date, co.end_date,
+			        (SELECT COUNT(*) FROM enrollments e WHERE e.course_offering_id = co.id) AS enrolled_count,
+			        (SELECT COUNT(*) FROM lessons l WHERE l.course_offering_id = co.id) AS lesson_count
+			 FROM course_offerings co
+			 WHERE co.instructor_id = ?
+			 ORDER BY co.created_at DESC`
+		).bind(session.user.id).all<any>();
+
 		return jsonResponse({ success: true, data: results || [] });
+	} catch (e: unknown) {
+		const msg = e instanceof Error ? e.message : 'Unknown error';
+		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}
+
+// POST /api/instructor/courses — create new course offering
+// Body: { name, code?, start_date?, end_date? }
+export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+	try {
+		const token = getTokenFromRequest(request);
+		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+		const session = await getSession(platform, token);
+		if (!session) return jsonResponse({ success: false, error: 'Session invalid' }, 401);
+		if (session.user.role !== 'instructor' && session.user.role !== 'admin' && session.user.role !== 'superadmin') {
+			return jsonResponse({ success: false, error: 'Instructor only' }, 403);
+		}
+
+		const body = await request.json();
+		const { name, code, start_date, end_date } = body;
+		if (!name || !name.trim()) return jsonResponse({ success: false, error: 'Course name is required' }, 400);
+
+		const db = getDB(platform);
+		const id = crypto.randomUUID();
+
+		// Create base course entry
+		const courseId = crypto.randomUUID();
+		await db.prepare(
+			'INSERT INTO courses (id, title, description, icon, slug, is_active) VALUES (?, ?, ?, ?, ?, 1)'
+		).bind(courseId, name, '', '📚', `course-${id.slice(0, 8)}`).run();
+
+		await db.prepare(
+			`INSERT INTO course_offerings (id, course_id, name, code, instructor_id, start_date, end_date, status)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')`
+		).bind(
+			id, courseId, name,
+			code || `C-${id.slice(0, 6).toUpperCase()}`,
+			session.user.id,
+			start_date || null, end_date || null
+		).run();
+
+		return jsonResponse({ success: true, data: { id } }, 201);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);
