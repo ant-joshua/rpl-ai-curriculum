@@ -17,7 +17,20 @@
 	let courseStatus = $state('draft');
 	let courseStart = $state('');
 	let courseEnd = $state('');
+	let curriculumId = $state('');
+	let curricula = $state<any[]>([]);
 
+	onMount(() => {
+		if (browser) {
+			load();
+			fetch('/api/curricula')
+				.then((r) => r.json())
+				.then((j) => {
+					if (j.success) curricula = j.data || [];
+				})
+				.catch(() => {});
+		}
+	});
 	// Lesson form
 	let showLessonForm = $state(false);
 	let editingLesson = $state<any>(null);
@@ -42,6 +55,7 @@
 				courseStatus = course.status || 'draft';
 				courseStart = course.start_date || '';
 				courseEnd = course.end_date || '';
+				curriculumId = course.curriculum_id || '';
 				lessons = json.data.lessons || course.lessons || [];
 			}
 		} catch { /* ignore */ } finally {
@@ -60,6 +74,7 @@
 					status: courseStatus,
 					start_date: courseStart || null,
 					end_date: courseEnd || null,
+					curriculum_id: curriculumId || undefined,
 				}),
 			});
 			const json = await res.json();
@@ -164,6 +179,15 @@
 						</label>
 					</div>
 					<label class="field">
+						<span>Kurikulum</span>
+						<select bind:value={curriculumId}>
+							<option value="">Default (Kurikulum Merdeka)</option>
+							{#each curricula as c}
+								<option value={c.id}>{c.name}{c.is_default ? ' (default)' : ''}</option>
+							{/each}
+						</select>
+					</label>
+					<label class="field">
 						<span>Status</span>
 						<select bind:value={courseStatus}>
 							<option value="draft">Draft</option>
@@ -184,6 +208,7 @@
 				<CardContent>
 					<h3 class="section-title">Info</h3>
 					<p class="info-line">Kode: <strong>{course.code || '-'}</strong></p>
+					<p class="info-line">Kurikulum: <strong>{course.curriculum_name || 'Kurikulum Merdeka (default)'}</strong></p>
 					<p class="info-line">Siswa terdaftar: <strong>{course.enrolled_count ?? 0}</strong></p>
 					<p class="info-line">Status saat ini: <Badge variant="secondary" as any>{course.status}</Badge></p>
 				</CardContent>
@@ -194,7 +219,12 @@
 		<div class="editor-right">
 			<div class="lessons-header">
 				<h3 class="section-title">Materi ({lessons.length})</h3>
-				<Button size="sm" variant="primary" onclick={openNewLesson}>+ Lesson</Button>
+				<div class="header-actions">
+					<a href={`/api/instructor/courses/${courseId}/export`} download>
+						<Button size="sm" variant="secondary">📥 Export Markdown</Button>
+					</a>
+					<Button size="sm" variant="primary" onclick={openNewLesson}>+ Lesson</Button>
+				</div>
 			</div>
 
 			{#if showLessonForm}
@@ -279,7 +309,8 @@
 	.checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 12px; }
 	.info-line { font-size: 13px; color: var(--text-secondary); margin: 4px 0; }
 	.info-line strong { color: var(--text); }
-	.lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+	.lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px; }
+	.header-actions { display: flex; align-items: center; gap: 8px; }
 	.lesson-list { display: flex; flex-direction: column; gap: 8px; }
 	.lesson-row {
 		display: flex; align-items: center; gap: 12px;

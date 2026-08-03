@@ -13,7 +13,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		const db = getDB(platform);
 		const body = await request.json();
-		const { doc_type, subject, grade, topic, extra_context } = body;
+		const { doc_type, subject, grade, topic, extra_context, curriculum_id } = body;
 
 		if (!doc_type || !DOC_TYPE_META[doc_type as DocType]) {
 			return jsonResponse({ success: false, error: 'doc_type invalid' }, 400);
@@ -22,10 +22,19 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			return jsonResponse({ success: false, error: 'subject and grade required' }, 400);
 		}
 
+		// Curriculum context (if selected)
+		let curriculumContext = '';
+		if (curriculum_id) {
+			const cur = await db.prepare('SELECT name, type, description FROM curricula WHERE id = ? AND is_active = 1').bind(curriculum_id).first<any>();
+			if (cur) {
+				curriculumContext = `${cur.name} (${cur.type})${cur.description ? ` — ${cur.description}` : ''}`;
+			}
+		}
+
 		// Generate
 		let output = '';
 		try {
-			output = await generateDoc(platform, doc_type as DocType, subject.trim(), grade.trim(), topic?.trim() || '', extra_context);
+			output = await generateDoc(platform, doc_type as DocType, subject.trim(), grade.trim(), topic?.trim() || '', extra_context, curriculumContext);
 		} catch (aiErr) {
 			const msg = aiErr instanceof Error ? aiErr.message : 'AI generation failed';
 			return jsonResponse({ success: false, error: msg }, 502);
@@ -40,7 +49,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			 VALUES (?, ?, ?, ?, ?, ?, 'done', datetime('now'))`
 		).bind(
 			genId, session.user.id, doc_type, subject.trim(),
-			JSON.stringify({ grade, topic, extra_context }),
+			JSON.stringify({ grade, topic, extra_context, curriculum_id }),
 			output
 		).run();
 

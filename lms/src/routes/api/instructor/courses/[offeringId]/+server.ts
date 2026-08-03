@@ -13,7 +13,12 @@ export async function GET({ params, platform, locals }: { params: { offeringId: 
 
 		const offering = await cachedDbFirst<any>(
 			db,
-			'SELECT co.*, c.title AS course_title, c.slug AS course_slug FROM course_offerings co JOIN courses c ON c.id = co.course_id WHERE co.id = ?',
+			`SELECT co.*, c.title AS course_title, c.slug AS course_slug, c.curriculum_id,
+			        cur.name AS curriculum_name, cur.type AS curriculum_type
+			 FROM course_offerings co
+			 JOIN courses c ON c.id = co.course_id
+			 LEFT JOIN curricula cur ON cur.id = c.curriculum_id
+			 WHERE co.id = ?`,
 			[params.offeringId]
 		);
 
@@ -90,14 +95,17 @@ export async function PATCH({ request, params, platform, locals }: { request: Re
 		}
 
 		const body = await request.json();
-		const { name, status, start_date, end_date } = body;
+		const { name, status, start_date, end_date, curriculum_id } = body;
 
 		await db.prepare(
-			'UPDATE course_offerings SET name = COALESCE(?, name), status = COALESCE(?, status), start_date = COALESCE(?, start_date), end_date = COALESCE(?, end_date), updated_at = datetime(\'now\') WHERE id = ?'
-		).bind(name || null, status || null, start_date ?? null, end_date ?? null, params.offeringId).run();
+			'UPDATE course_offerings SET name = COALESCE(?, name), status = COALESCE(?, status), start_date = COALESCE(?, start_date), end_date = COALESCE(?, end_date), curriculum_id = COALESCE(?, curriculum_id), updated_at = datetime(\'now\') WHERE id = ?'
+		).bind(name || null, status || null, start_date ?? null, end_date ?? null, curriculum_id ?? null, params.offeringId).run();
 
 		if (name) {
 			await db.prepare('UPDATE courses SET title = ? WHERE id = ?').bind(name, offering.course_id).run();
+		}
+		if (curriculum_id) {
+			await db.prepare('UPDATE courses SET curriculum_id = ? WHERE id = ?').bind(curriculum_id, offering.course_id).run();
 		}
 
 		return jsonResponse({ success: true });

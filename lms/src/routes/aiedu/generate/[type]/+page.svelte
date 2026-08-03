@@ -16,6 +16,18 @@
 	let subject = $state('');
 	let grade = $state('X');
 	let topic = $state('');
+	let curriculumId = $state('');
+	let curricula = $state<any[]>([]);
+
+	onMount(() => {
+		if (!browser) return;
+		fetch('/api/curricula')
+			.then((r) => r.json())
+			.then((j) => {
+				if (j.success) curricula = j.data || [];
+			})
+			.catch(() => {});
+	});
 
 	const grades = ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6', 'Kelas 7', 'Kelas 8', 'Kelas 9', 'Kelas 10', 'Kelas 11', 'Kelas 12'];
 
@@ -40,7 +52,7 @@
 			const res = await fetch('/api/aiedu/generate', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ doc_type: docType, subject: subject.trim(), grade, topic: topic.trim() }),
+				body: JSON.stringify({ doc_type: docType, subject: subject.trim(), grade, topic: topic.trim(), curriculum_id: curriculumId || undefined }),
 			});
 			const json = await res.json();
 			if (json.success) {
@@ -82,6 +94,15 @@
 				<label class="field">
 					<span>Mata Pelajaran *</span>
 					<input type="text" bind:value={subject} placeholder="Contoh: Informatika, Matematika, IPA..." />
+				</label>
+				<label class="field">
+					<span>Kurikulum</span>
+					<select bind:value={curriculumId}>
+						<option value="">Default (Kurikulum Merdeka)</option>
+						{#each curricula as c}
+							<option value={c.id}>{c.name}{c.is_default ? ' (default)' : ''}</option>
+						{/each}
+					</select>
 				</label>
 				<label class="field">
 					<span>Kelas / Fase</span>

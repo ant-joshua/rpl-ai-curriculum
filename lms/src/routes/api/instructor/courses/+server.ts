@@ -50,18 +50,22 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		// Create base course entry
 		const courseId = crypto.randomUUID();
+		const defaultCur = await db.prepare(
+			"SELECT id FROM curricula WHERE is_default = 1 AND is_active = 1 LIMIT 1"
+		).first<any>();
 		await db.prepare(
-			'INSERT INTO courses (id, title, description, icon, slug, is_active) VALUES (?, ?, ?, ?, ?, 1)'
-		).bind(courseId, name, '', '📚', `course-${id.slice(0, 8)}`).run();
+			'INSERT INTO courses (id, title, description, icon, slug, featured, curriculum_id) VALUES (?, ?, ?, ?, ?, 1, ?)'
+		).bind(courseId, name, '', '📚', `course-${id.slice(0, 8)}`, defaultCur?.id || null).run();
 
 		await db.prepare(
-			`INSERT INTO course_offerings (id, course_id, name, code, instructor_id, start_date, end_date, status)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')`
+			`INSERT INTO course_offerings (id, course_id, name, code, instructor_id, start_date, end_date, status, curriculum_id)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?)`
 		).bind(
 			id, courseId, name,
 			code || `C-${id.slice(0, 6).toUpperCase()}`,
 			session.user.id,
-			start_date || null, end_date || null
+			start_date || null, end_date || null,
+			defaultCur?.id || null
 		).run();
 
 		return jsonResponse({ success: true, data: { id } }, 201);

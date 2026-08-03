@@ -92,7 +92,8 @@ export async function generateDoc(
 	subject: string,
 	grade: string,
 	topic: string,
-	extraContext?: string
+	extraContext?: string,
+	curriculumContext?: string
 ): Promise<string> {
 	const meta = DOC_TYPE_META[docType];
 	const apiKey = platform.env?.AI_API_KEY || '';
@@ -101,6 +102,7 @@ export async function generateDoc(
 	const userPrompt = `Mapel: ${subject}
 Kelas/Fase: ${grade}
 Materi/Topik: ${topic}
+${curriculumContext ? `Kurikulum: ${curriculumContext}` : 'Kurikulum: Kurikulum Merdeka'}
 ${extraContext ? `Konteks tambahan: ${extraContext}` : ''}`;
 
 	const payload = {
