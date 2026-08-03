@@ -132,3 +132,163 @@ ${extraContext ? `Konteks tambahan: ${extraContext}` : ''}`;
 	const data = await res.json();
 	return data?.choices?.[0]?.message?.content || '';
 }
+
+// Generic chat completion — used by AI Chat Guru
+export async function chatGuru(
+	platform: App.Platform,
+	history: { role: 'system' | 'user' | 'assistant'; content: string }[],
+	systemPrompt: string
+): Promise<string> {
+	const apiKey = platform.env?.AI_API_KEY || '';
+	const model = DEFAULT_MODEL;
+
+	const payload = {
+		model,
+		messages: [{ role: 'system', content: systemPrompt }, ...history],
+		temperature: 0.7,
+		max_tokens: 4096,
+	};
+
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+	const res = await fetch(NINE_ROUTER_URL, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(payload),
+	});
+
+	if (!res.ok) {
+		const errText = await res.text();
+		throw new Error(`AI API error ${res.status}: ${errText.slice(0, 300)}`);
+	}
+
+	const data = await res.json();
+	return data?.choices?.[0]?.message?.content || '';
+}
+
+// Grade analysis — used by Analisis Nilai
+export async function analyzeGrades(
+	platform: App.Platform,
+	subject: string,
+	grade: string,
+	curriculumContext: string,
+	gradeData: { students: string[]; scores: (number | null)[][] } // scores[assignmentIdx][studentIdx]
+): Promise<string> {
+	const apiKey = platform.env?.AI_API_KEY || '';
+	const model = DEFAULT_MODEL;
+
+	// Build compact table representation
+	const lines: string[] = [];
+	const n = gradeData.students.length;
+	for (let i = 0; i < n; i++) {
+		const vals = gradeData.scores.map((s) => (s[i] === null || s[i] === undefined ? '-' : String(s[i]))).join(', ');
+		lines.push(`${gradeData.students[i]}: ${vals}`);
+	}
+
+	const payload = {
+		model,
+		messages: [
+			{
+				role: 'system',
+				content: `Kamu adalah analis penilaian pendidikan (AIEdu). Selalu jawab dalam Bahasa Indonesia.
+Analisis data nilai siswa dan berikan:
+1. Ringkasan statistik: rata-rata per asesmen, nilai tertinggi, terendah, tren kelas
+2. Identifikasi siswa yang membutuhkan remedial (nilai di bawah KKM/KKTP, misal < 75)
+3. Analisis butir/asesmen: mana yang paling banyak siswa gagal → indikator materi sulit
+4. Rekomendasi intervensi pedagogis: strategi remedial, pengayaan, penyesuaian pembelajaran
+Format markdown dengan tabel. Profesional dan actionable untuk guru.`,
+			},
+			{
+				role: 'user',
+				content: `Kurikulum: ${curriculumContext}
+Mapel: ${subject} · Kelas: ${grade}
+Data nilai (tiap baris = siswa, tiap kolom = asesmen):
+${lines.join('\n')}
+
+KKM/KKTP default 75. Analisis.`,
+			},
+		],
+		temperature: 0.5,
+		max_tokens: 4096,
+	};
+
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+	const res = await fetch(NINE_ROUTER_URL, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(payload),
+	});
+
+	if (!res.ok) {
+		const errText = await res.text();
+		throw new Error(`AI API error ${res.status}: ${errText.slice(0, 300)}`);
+	}
+
+	const data = await res.json();
+	return data?.choices?.[0]?.message?.content || '';
+}
+
+// Report card generator — used by Rapor Generator
+export async function generateRapor(
+	platform: App.Platform,
+	studentName: string,
+	grade: string,
+	subject: string,
+	curriculumContext: string,
+	scores: { name: string; score: number }[],
+	attitude?: string
+): Promise<string> {
+	const apiKey = platform.env?.AI_API_KEY || '';
+	const model = DEFAULT_MODEL;
+
+	const scoreLines = scores.map((s) => `- ${s.name}: ${s.score}`).join('\n');
+
+	const payload = {
+		model,
+		messages: [
+			{
+				role: 'system',
+				content: `Kamu adalah generator rapor pendidikan (AIEdu). Selalu jawab dalam Bahasa Indonesia.
+Buatkan rapor siswa yang profesional:
+1. Identitas siswa: nama, kelas, mapel, kurikulum, semester
+2. Capaian kompetensi per aspek (pengetahuan, keterampilan, sikap) berdasarkan nilai
+3. Deskripsi kompetensi yang positif namun jujur (sesuai nilai riil, hindari deskripsi terlalu tinggi jika nilai rendah)
+4. Predikat (A/B/C/D) + deskripsi singkat
+5. Catatan guru: kekuatan, area pengembangan, rekomendasi
+Format markdown, rapi dan siap cetak.`,
+			},
+			{
+				role: 'user',
+				content: `Kurikulum: ${curriculumContext}
+Nama siswa: ${studentName} · Kelas: ${grade} · Mapel: ${subject}
+Nilai:
+${scoreLines}
+${attitude ? `Catatan sikap: ${attitude}` : ''}
+
+Generate rapor.`,
+			},
+		],
+		temperature: 0.6,
+		max_tokens: 4096,
+	};
+
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+	const res = await fetch(NINE_ROUTER_URL, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(payload),
+	});
+
+	if (!res.ok) {
+		const errText = await res.text();
+		throw new Error(`AI API error ${res.status}: ${errText.slice(0, 300)}`);
+	}
+
+	const data = await res.json();
+	return data?.choices?.[0]?.message?.content || '';
+}

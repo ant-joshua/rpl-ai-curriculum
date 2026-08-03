@@ -12,6 +12,12 @@
 		{ type: 'ppt', icon: '🖥️', title: 'Generate PPT', desc: 'Outline materi presentasi' },
 	];
 
+	const EXTRA_TOOLS = [
+		{ href: '/aiedu/chat', icon: '💬', title: 'AI Chat Guru', desc: 'Tanya apa saja tentang mengajar' },
+		{ href: '/aiedu/analisis', icon: '📈', title: 'Analisis Nilai', desc: 'AI analisis nilai + remedial' },
+		{ href: '/aiedu/rapor', icon: '📄', title: 'Rapor Generator', desc: 'Rapor otomatis siap cetak' },
+	];
+
 	const BANK_CATEGORIES = [
 		{ type: 'cp', icon: '🎯', title: 'Capaian Pembelajaran', desc: 'CP resmi semua fase' },
 		{ type: 'atp', icon: '🗺️', title: 'Contoh ATP', desc: 'Alur tujuan pembelajaran contoh' },
@@ -46,6 +52,19 @@
 	<div class="gen-grid">
 		{#each GEN_TOOLS as tool}
 			<a class="gen-card" href="/aiedu/generate/{tool.type}">
+				<span class="gen-icon">{tool.icon}</span>
+				<span class="gen-title">{tool.title}</span>
+				<span class="gen-desc">{tool.desc}</span>
+			</a>
+		{/each}
+	</div>
+</div>
+
+<div class="aiedu-section">
+	<h2 class="section-title">🤖 AI Tools Guru</h2>
+	<div class="gen-grid">
+		{#each EXTRA_TOOLS as tool}
+			<a class="gen-card" href={tool.href}>
 				<span class="gen-icon">{tool.icon}</span>
 				<span class="gen-title">{tool.title}</span>
 				<span class="gen-desc">{tool.desc}</span>
