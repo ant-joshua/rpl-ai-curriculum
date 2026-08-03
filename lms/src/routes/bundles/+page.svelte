@@ -34,24 +34,8 @@
 				const { goto } = await import('$app/navigation');
 				goto('/my/courses');
 			} else if (json.needPayment) {
-				// Paid bundle — apply coupon first if entered, then enroll via redeem
-				if (appliedCoupon) {
-					const r2 = await fetch('/api/coupons/redeem', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ code: appliedCoupon, bundleId: id }),
-					});
-					const j2 = await r2.json();
-					if (j2.success) {
-						addToast(`Kupon ${appliedCoupon} berhasil dipakai! 🎉`, 'success');
-						const { goto } = await import('$app/navigation');
-						goto('/my/courses');
-					} else {
-						addToast(j2.error || 'Kupon gagal', 'error');
-					}
-				} else {
-					addToast('Bundle berbayar — butuh kupon atau pembayaran', 'info');
-				}
+				// Paid bundle — checkout via Midtrans Snap
+				await checkoutBundle(id);
 			} else if (json.error) {
 				addToast(json.error, 'error');
 			}
@@ -68,6 +52,65 @@
 	let couponError = $state('');
 	let couponInfo = $state<any>(null);
 	let validatingCoupon = $state(false);
+
+	// Checkout state
+	let checkingOutId = $state<string | null>(null);
+
+	async function checkoutBundle(id: string) {
+		checkingOutId = id;
+		try {
+			const res = await fetch('/api/payment/bundle/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ bundle_id: id, coupon_code: appliedCoupon || undefined }),
+			});
+			const json = await res.json();
+			if (!json.success) {
+				addToast(json.error || 'Gagal mulai pembayaran', 'error');
+				return;
+			}
+			const { snap_token, client_key } = json.data;
+
+			// Load Snap script
+			const existing = document.getElementById('midtrans-snap-script');
+			if (!existing) {
+				await new Promise<void>((resolve) => {
+					const script = document.createElement('script');
+					script.id = 'midtrans-snap-script';
+					script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+					script.onload = () => resolve();
+					document.head.appendChild(script);
+				});
+			}
+
+			// Patch snap.js to accept client key
+			(window as any).snapUrl = `https://app.sandbox.midtrans.com/snap/snap.js`;
+			const snap = (window as any).snap;
+			snap.clientKey = client_key;
+			snap.baseUrl = 'https://app.sandbox.midtrans.com';
+
+			snap.pay(snap_token, {
+				onSuccess: () => {
+					addToast('Pembayaran berhasil! Kursus aktif 🎉', 'success');
+					const { goto } = window as any;
+					location.href = '/my/courses';
+				},
+				onPending: () => {
+					addToast('Pembayaran pending — selesaikan di Snap', 'info');
+				},
+				onError: () => {
+					addToast('Pembayaran gagal', 'error');
+				},
+				onClose: () => {
+					checkingOutId = null;
+				},
+			});
+		} catch {
+			addToast('Gagal mulai pembayaran', 'error');
+		} finally {
+			// keep checkingOutId until snap closes
+		}
+	}
 
 	async function applyCoupon(b: any) {
 		if (!couponCode.trim()) return;
@@ -181,8 +224,8 @@
 							variant="primary"
 							fullWidth
 							onclick={() => enrollBundle(b.id)}
-							loading={enrollingId === b.id}
-							disabled={enrollingId === b.id || b.items.every((i: any) => i.isEnrolled)}
+							loading={enrollingId === b.id || checkingOutId === b.id}
+							disabled={enrollingId === b.id || checkingOutId === b.id || b.items.every((i: any) => i.isEnrolled)}
 						>
 							{b.items.every((i: any) => i.isEnrolled) ? 'Sudah Terdaftar Semua' : b.price > 0 ? 'Beli Paket' : 'Daftar Gratis'}
 						</Button>

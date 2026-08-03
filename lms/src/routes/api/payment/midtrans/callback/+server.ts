@@ -58,6 +58,12 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			.run();
 
 		// Extract invoice number from order_id
+		// Order ID format: INV-{invoice_number}-{timestamp} OR BUNDLE-{timestamp}-{rand}
+		if (order_id.startsWith('BUNDLE-')) {
+			return await handleBundleCallback(db, body, callbackId, order_id);
+		}
+
+		// Extract invoice number from order_id
 		// Order ID format: INV-{invoice_number}-{timestamp}
 		const match = order_id.match(/^(INV-\d{8}-\d{6})/);
 		if (!match) {
@@ -186,4 +192,77 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);
 	}
+}
+
+/** Handle BUNDLE-* order callbacks: enroll user in all bundle courses when paid */
+async function handleBundleCallback(db: any, body: any, callbackId: string, orderId: string) {
+	const { transaction_status, fraud_status } = body;
+
+	let finalStatus = 'pending';
+	if (transaction_status === 'capture' || transaction_status === 'settlement') {
+		if (fraud_status === 'accept' || !fraud_status) finalStatus = 'paid';
+		else if (fraud_status === 'challenge') finalStatus = 'pending';
+		else finalStatus = 'cancelled';
+	} else if (transaction_status === 'deny' || transaction_status === 'cancel' || transaction_status === 'expire') {
+		finalStatus = 'cancelled';
+	} else {
+		finalStatus = 'pending';
+	}
+
+	// Find order
+	const order = await db.prepare(
+		'SELECT * FROM bundle_orders WHERE order_id = ?'
+	).bind(orderId).first<any>();
+	if (!order) {
+		await db.prepare('UPDATE payment_callbacks SET processed = 1, processed_at = datetime("now") WHERE id = ?').bind(callbackId).run();
+		return jsonResponse({ success: false, error: 'Order tidak ditemukan' }, 404);
+	}
+
+	// Update order status
+	await db.prepare(
+		`UPDATE bundle_orders SET status = ?, paid_at = CASE WHEN ? = 'paid' THEN datetime('now') ELSE paid_at END WHERE id = ?`
+	).bind(finalStatus, finalStatus, order.id).run();
+
+	if (finalStatus === 'paid') {
+		// Enroll in all bundle courses (skip already enrolled)
+		const { results: items } = await db.prepare(
+			'SELECT course_offering_id FROM bundle_items WHERE bundle_id = ?'
+		).bind(order.bundle_id).all<{ course_offering_id: string }>();
+
+		let enrolled = 0;
+		for (const it of items || []) {
+			const existing = await db.prepare(
+				'SELECT id FROM enrollments WHERE user_id = ? AND course_offering_id = ?'
+			).bind(order.user_id, it.course_offering_id).first<any>();
+			if (!existing) {
+				await db.prepare(
+					`INSERT INTO enrollments (id, user_id, course_offering_id, role, status, enrolled_at)
+					 VALUES (?, ?, ?, 'student', 'active', datetime('now'))`
+				).bind(crypto.randomUUID(), order.user_id, it.course_offering_id).run();
+				enrolled++;
+			}
+		}
+
+		// Mark coupon used
+		if (order.coupon_id) {
+			await db.prepare(
+				'INSERT INTO coupon_redemptions (id, coupon_id, user_id, created_at) VALUES (?, ?, ?, datetime(\'now\'))'
+			).bind(crypto.randomUUID(), order.coupon_id, order.user_id).run();
+			await db.prepare('UPDATE coupons SET used_count = used_count + 1 WHERE id = ?').bind(order.coupon_id).run();
+		}
+
+		// Notification
+		const bundle = await db.prepare('SELECT title FROM bundles WHERE id = ?').bind(order.bundle_id).first<any>();
+		await db.prepare(
+			`INSERT INTO notifications (id, tenant_id, user_id, type, title, body, reference_type, reference_id, is_read, channel, status, sent_at, created_at)
+			 VALUES (?, 'default', ?, 'payment', 'Pembayaran Paket Berhasil', ?, 'bundle', ?, 0, 'in_app', 'sent', datetime('now'), datetime('now'))`
+		).bind(
+			crypto.randomUUID(), order.user_id,
+			`Kamu terdaftar di ${enrolled} kursus dari paket "${bundle?.title || ''}". Selamat belajar! 🎉`,
+			order.bundle_id
+		).run();
+	}
+
+	await db.prepare('UPDATE payment_callbacks SET processed = 1, processed_at = datetime("now") WHERE id = ?').bind(callbackId).run();
+	return jsonResponse({ success: true });
 }

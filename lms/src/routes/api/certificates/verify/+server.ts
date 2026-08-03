@@ -28,6 +28,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
 		return jsonResponse({
 			success: true,
 			data: {
+				id: cert.id,
 				certNumber: cert.cert_number,
 				issuedAt: cert.issued_at,
 				completedAt: cert.completed_at,

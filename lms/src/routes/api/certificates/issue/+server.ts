@@ -53,6 +53,21 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			JSON.stringify({ courseTitle: course.title, courseIcon: course.icon || '📚', userName, instructorName: course.instructor_name || '' })
 		).run();
 
+		// Notify user about their new certificate
+		const { NotificationRepository } = await import('$lib/repositories/notification.repository');
+		const userTenant = await db.prepare('SELECT tenant_id FROM users WHERE id = ?').bind(userId).first<any>();
+		await NotificationRepository.createNotification(platform, {
+			tenant_id: userTenant?.tenant_id || 'default',
+			user_id: userId,
+			type: 'system',
+			title: 'Sertifikat terbit! 🏆',
+			body: `Selamat! Kamu menyelesaikan "${course.title}" dan mendapatkan sertifikat resmi.`,
+			reference_type: 'certificate',
+			reference_id: certId,
+			channel: 'in_app',
+			status: 'sent',
+		});
+
 		return jsonResponse({ success: true, data: { id: certId, certNumber } }, 201);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';

@@ -5,6 +5,7 @@
 	import { browser } from '$app/environment';
 	import { getSnapshot, subscribe, stopPolling, fetchUnreadCount } from '$lib/stores/notifications.svelte';
 	import ContentSearchPanel from '$lib/components/ContentSearchPanel.svelte';
+	import NotificationBell from '$lib/components/NotificationBell.svelte';
 
 	let { data, children } = $props();
 
@@ -137,6 +138,9 @@
 					<span class="user-role">Siswa</span>
 				</div>
 			</div>
+			<div class="sidebar-actions">
+				<NotificationBell />
+			</div>
 		</div>
 
 		<nav class="sidebar-nav">
@@ -241,7 +245,12 @@
 	.sidebar-header {
 		padding: 20px 16px 16px;
 		border-bottom: 1px solid var(--border);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
 	}
+	.sidebar-actions { display: flex; align-items: center; }
 
 	.user-info {
 		display: flex;

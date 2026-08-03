@@ -76,6 +76,7 @@
 						{#if cert.instructorName}<p>Pengajar: {cert.instructorName}</p>{/if}
 						<p class="detail-meta">📅 Diterbitkan {formatDate(cert.issuedAt)}</p>
 						<p class="detail-meta">No. <span class="mono">{cert.certNumber}</span></p>
+						<a class="cert-view-link" href="/certificates/{cert.id}" target="_blank">🏆 Lihat Sertifikat (Print/PDF)</a>
 					</div>
 				</div>
 			</CardContent>
@@ -119,4 +120,6 @@
 	.detail-info strong { color: var(--text); }
 	.detail-meta { font-size: 12px !important; }
 	.mono { font-family: monospace; font-size: 12px; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
+	.cert-view-link { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 600; color: #2563eb; text-decoration: none; }
+	.cert-view-link:hover { text-decoration: underline; }
 </style>
