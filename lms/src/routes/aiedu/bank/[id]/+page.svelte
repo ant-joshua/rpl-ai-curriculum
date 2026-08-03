@@ -34,6 +34,20 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
+
+	async function remove() {
+		if (!confirm('Hapus dokumen ini dari bank?')) return;
+		try {
+			const res = await fetch(`/api/aiedu/bank/${docId}`, { method: 'DELETE' });
+			const json = await res.json();
+			if (json.success) { alert('Dihapus ✅'); window.location.href = '/aiedu'; }
+			else alert(json.error || 'Gagal hapus');
+		} catch { alert('Gagal hapus'); }
+	}
+
+	const docTypeToGen: Record<string, string> = {
+		atp: 'atp', modul_ajar: 'modul_ajar', lkpd: 'lkpd', soal: 'soal', rubrik: 'rubrik', ppt: 'ppt',
+	};
 </script>
 
 <PageHeader title={doc?.title || 'Dokumen'} subtitle={doc ? `${doc.subject} · ${doc.doc_type.replace(/_/g, ' ')}` : 'Bank Materi'} />
@@ -45,6 +59,14 @@
 {:else}
 	<div class="doc-toolbar">
 		<Button size="sm" variant="primary" onclick={download}>⬇️ Download .md</Button>
+		{#if docTypeToGen[doc.doc_type]}
+			<a href={`/aiedu/generate/${docTypeToGen[doc.doc_type]}?subject=${encodeURIComponent(doc.subject || '')}`}>
+				<Button size="sm" variant="secondary">✨ Generate Ulang</Button>
+			</a>
+		{/if}
+		{#if doc.owner_id}
+			<Button size="sm" variant={'danger' as any} onclick={remove}>🗑 Hapus</Button>
+		{/if}
 		<a class="back-link" href="/aiedu">← Kembali ke Bank Materi</a>
 	</div>
 	<Card>

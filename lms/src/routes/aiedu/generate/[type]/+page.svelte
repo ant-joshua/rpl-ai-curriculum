@@ -27,6 +27,9 @@
 				if (j.success) curricula = j.data || [];
 			})
 			.catch(() => {});
+		// Prefill subject from ?subject= query (Generate Ulang from bank)
+		const qs = new URLSearchParams(window.location.search);
+		if (qs.get('subject')) subject = qs.get('subject') || '';
 	});
 
 	const grades = ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6', 'Kelas 7', 'Kelas 8', 'Kelas 9', 'Kelas 10', 'Kelas 11', 'Kelas 12'];
@@ -57,6 +60,7 @@
 			const json = await res.json();
 			if (json.success) {
 				output = json.data.output;
+				lastGenId = json.data.id || '';
 			} else {
 				error = json.error || 'Gagal generate';
 			}
@@ -82,6 +86,28 @@
 		if (!output) return;
 		navigator.clipboard.writeText(output);
 		alert('Tersalin ke clipboard ✅');
+	}
+
+	// Track last generation id for save-to-bank
+	let lastGenId = $state('');
+	let savingBank = $state(false);
+
+	async function saveToBank() {
+		if (!lastGenId) return;
+		savingBank = true;
+		try {
+			const res = await fetch(`/api/aiedu/generations/${lastGenId}/save-to-bank`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					subject: subject.trim(),
+					curriculum_id: curriculumId || undefined,
+				}),
+			});
+			const json = await res.json();
+			if (json.success) alert('Disimpan ke Bank Materi ✅');
+			else alert(json.error || 'Gagal simpan');
+		} catch { alert('Gagal simpan ke bank'); } finally { savingBank = false; }
 	}
 </script>
 
@@ -131,6 +157,7 @@
 			<div class="result-toolbar">
 				<Button size="sm" variant="primary" onclick={downloadMd}>⬇️ Download .md</Button>
 				<Button size="sm" variant="secondary" onclick={copyOutput}>📋 Salin</Button>
+				<Button size="sm" variant={'success' as any} onclick={saveToBank} loading={savingBank}>📚 Simpan ke Bank</Button>
 			</div>
 			<Card>
 				<CardContent>

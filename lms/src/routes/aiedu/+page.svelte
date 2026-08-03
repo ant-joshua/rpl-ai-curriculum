@@ -30,19 +30,20 @@
 
 	let bankDocs = $state<any[]>([]);
 	let bankFilter = $state('');
-
-	onMount(() => {
-		if (browser) loadBank();
-	});
+	let bankMine = $state(false);
 
 	async function loadBank() {
 		try {
-			const qs = bankFilter ? `?type=${bankFilter}` : '';
-			const res = await fetch(`/api/aiedu/bank${qs}`);
+			const qs = bankMine ? 'mine=1' : (bankFilter ? `?type=${bankFilter}` : '');
+			const res = await fetch(`/api/aiedu/bank${qs ? `?${qs}` : ''}`);
 			const json = await res.json();
 			if (json.success) bankDocs = json.data || [];
 		} catch { /* ignore */ }
 	}
+
+	onMount(() => {
+		if (browser) loadBank();
+	});
 </script>
 
 <PageHeader title="AIEdu" subtitle="Generator perangkat ajar + Bank Materi Kurikulum Merdeka" />
@@ -76,12 +77,14 @@
 <div class="aiedu-section">
 	<h2 class="section-title">📚 Bank Materi Kurikulum Merdeka</h2>
 	<div class="bank-filters">
-		<button class="bank-chip" class:active={!bankFilter} onclick={() => { bankFilter = ''; loadBank(); }}>Semua</button>
+		<button class="bank-chip" class:active={!bankMine && !bankFilter} onclick={() => { bankMine = false; bankFilter = ''; loadBank(); }}>Semua</button>
 		{#each BANK_CATEGORIES as cat}
-			<button class="bank-chip" class:active={bankFilter === cat.type} onclick={() => { bankFilter = cat.type; loadBank(); }}>
+			<button class="bank-chip" class:active={!bankMine && bankFilter === cat.type} onclick={() => { bankMine = false; bankFilter = cat.type; loadBank(); }}>
 				{cat.icon} {cat.title}
 			</button>
 		{/each}
+		<button class="bank-chip" class:active={bankMine} onclick={() => { bankMine = true; bankFilter = ''; loadBank(); }}>📁 Materiku</button>
+		<a class="bank-chip bank-chip-link" href="/aiedu/riwayat">🕘 Riwayat Generasi</a>
 	</div>
 
 	<div class="bank-grid">
@@ -120,6 +123,7 @@
 		background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text);
 	}
 	.bank-chip.active { background: #2563eb; color: white; border-color: #2563eb; }
+	.bank-chip-link { text-decoration: none; color: inherit; }
 	.bank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 	.bank-card {
 		background: white; border: 1px solid var(--border); border-radius: 12px;
