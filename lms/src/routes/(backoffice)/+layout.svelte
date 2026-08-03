@@ -54,6 +54,7 @@
 		{ path: '/admin/content', icon: 'book', label: 'Content', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/curricula', icon: 'layers', label: 'Kurikulum Mapel', roles: ['superadmin','admin'] },
+		{ path: '/admin/aiedu', icon: 'sparkles', label: 'AIEdu', roles: ['superadmin','admin'] },
 		{ path: '/admin/gradebook', icon: 'file-text', label: 'Gradebook', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/enrollments', icon: 'user-plus', label: 'Enrollments', roles: ['superadmin','admin'] },
 		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions', roles: ['superadmin','admin','instructor'] },

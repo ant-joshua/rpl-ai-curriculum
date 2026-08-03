@@ -31,11 +31,15 @@
 	let bankDocs = $state<any[]>([]);
 	let bankFilter = $state('');
 	let bankMine = $state(false);
+	let bankQuery = $state('');
 
 	async function loadBank() {
 		try {
-			const qs = bankMine ? 'mine=1' : (bankFilter ? `?type=${bankFilter}` : '');
-			const res = await fetch(`/api/aiedu/bank${qs ? `?${qs}` : ''}`);
+			const qs = new URLSearchParams();
+			if (bankMine) qs.set('mine', '1');
+			else if (bankFilter) qs.set('type', bankFilter);
+			if (bankQuery.trim()) qs.set('q', bankQuery.trim());
+			const res = await fetch(`/api/aiedu/bank?${qs}`);
 			const json = await res.json();
 			if (json.success) bankDocs = json.data || [];
 		} catch { /* ignore */ }
@@ -86,6 +90,15 @@
 		<button class="bank-chip" class:active={bankMine} onclick={() => { bankMine = true; bankFilter = ''; loadBank(); }}>📁 Materiku</button>
 		<a class="bank-chip bank-chip-link" href="/aiedu/riwayat">🕘 Riwayat Generasi</a>
 	</div>
+	<div class="bank-search">
+		<input
+			type="search"
+			placeholder="🔍 Cari judul / isi materi..."
+			bind:value={bankQuery}
+			oninput={() => loadBank()}
+			class="bank-search-input"
+		/>
+	</div>
 
 	<div class="bank-grid">
 		{#each bankDocs as doc}
@@ -117,7 +130,9 @@
 	.gen-icon { font-size: 26px; margin-bottom: 6px; }
 	.gen-title { font-size: 14px; font-weight: 700; }
 	.gen-desc { font-size: 12px; color: var(--text-muted); }
-	.bank-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+	.bank-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+	.bank-search { margin-bottom: 16px; }
+	.bank-search-input { width: 100%; max-width: 420px; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; }
 	.bank-chip {
 		padding: 7px 14px; border: 1px solid var(--border); border-radius: 999px;
 		background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text);

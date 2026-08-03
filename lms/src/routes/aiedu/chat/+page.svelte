@@ -103,6 +103,20 @@
 	}
 
 	$effect(() => { if (messages.length) scrollBottom(); });
+
+	async function saveMsgToBank(messageId: string) {
+		if (!activeThread?.id) return;
+		try {
+			const res = await fetch(`/api/aiedu/chat/${activeThread.id}/messages/${messageId}/save-to-bank`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({}),
+			});
+			const json = await res.json();
+			if (json.success) alert('Disimpan ke Bank Materi ✅');
+			else alert(json.error || 'Gagal simpan');
+		} catch { alert('Gagal simpan ke bank'); }
+	}
 </script>
 
 <PageHeader title="AI Chat Guru" subtitle="Asisten AI untuk guru — tanya strategi mengajar, perangkat ajar, penilaian" />
@@ -176,6 +190,9 @@
 								<p class="msg-text">{m.content}</p>
 							{:else}
 								<div class="md">{@html parseMarkdown(m.content)}</div>
+								<div class="msg-actions">
+									<button class="save-bank" onclick={() => saveMsgToBank(m.id)} title="Simpan ke Bank Materi">📚 Simpan ke Bank</button>
+								</div>
 							{/if}
 						</div>
 					</div>
@@ -216,6 +233,9 @@
 	.msg.user { align-self: flex-end; flex-direction: row-reverse; }
 	.msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2, #f0f2f5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
 	.msg-body { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.55; }
+	.msg-actions { margin-top: 6px; }
+	.save-bank { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-muted); padding: 0; }
+	.save-bank:hover { color: var(--primary); }
 	.msg.assistant .msg-body { background: white; border: 1px solid var(--border); border-top-left-radius: 4px; }
 	.msg.user .msg-body { background: var(--primary); color: white; border-top-right-radius: 4px; }
 	.msg.user .msg-text { margin: 0; white-space: pre-wrap; }
