@@ -88,6 +88,36 @@
 		alert('Tersalin ke clipboard ✅');
 	}
 
+	// Import generated soal to question bank
+	let importing = $state(false);
+
+	async function importToQBank() {
+		if (!lastGenId) { alert('Generate dulu'); return; }
+		// Ensure saved to bank first
+		if (!output) return;
+		importing = true;
+		try {
+			// 1. Save to bank to get document_id
+			const saveRes = await fetch(`/api/aiedu/generations/${lastGenId}/save-to-bank`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ subject: subject.trim(), curriculum_id: curriculumId || undefined }),
+			});
+			const saveJson = await saveRes.json();
+			if (!saveJson.success) { alert(saveJson.error || 'Gagal simpan ke bank'); return; }
+			const docId = saveJson.data.id;
+			// 2. Import into question bank
+			const res = await fetch('/api/aiedu/soal/import', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ document_id: docId }),
+			});
+			const json = await res.json();
+			if (json.success) alert(`${json.data.count} soal di-import ke Question Bank ✅`);
+			else alert(json.error || 'Gagal import');
+		} catch { alert('Gagal import'); } finally { importing = false; }
+	}
+
 	// Track last generation id for save-to-bank
 	let lastGenId = $state('');
 	let savingBank = $state(false);
@@ -157,7 +187,10 @@
 			<div class="result-toolbar">
 				<Button size="sm" variant="primary" onclick={downloadMd}>⬇️ Download .md</Button>
 				<Button size="sm" variant="secondary" onclick={copyOutput}>📋 Salin</Button>
-				<Button size="sm" variant={'success' as any} onclick={saveToBank} loading={savingBank}>📚 Simpan ke Bank</Button>
+				<Button size="sm" variant="secondary" onclick={saveToBank} loading={savingBank}>📚 Simpan ke Bank</Button>
+				{#if docType === 'soal'}
+					<Button size="sm" variant="outline" onclick={importToQBank} loading={importing}>🧩 Import ke QBank</Button>
+				{/if}
 			</div>
 			<Card>
 				<CardContent>

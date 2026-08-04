@@ -39,6 +39,13 @@
 	let lessonDuration = $state('30');
 	let lessonOptional = $state(false);
 	let lessonStatus = $state('draft');
+	let savingLesson = $state(false);
+
+	// AIEdu docs attached to current lesson
+	let aieduDocs = $state<any[]>([]);
+	let availableDocs = $state<any[]>([]);
+	let showAttachDoc = $state(false);
+	let attachingDoc = $state('');
 
 	onMount(() => {
 		if (browser) load();
@@ -93,6 +100,7 @@
 		editingLesson = null;
 		lessonTitle = ''; lessonContent = ''; lessonDuration = '30';
 		lessonOptional = false; lessonStatus = 'draft';
+		aieduDocs = [];
 		showLessonForm = true;
 	}
 
@@ -104,11 +112,64 @@
 		lessonOptional = l.is_optional == 1;
 		lessonStatus = l.status || 'draft';
 		showLessonForm = true;
+		loadLessonDocs();
 	}
+
+	
+
+	async function loadLessonDocs() {
+		if (!editingLesson?.id) return;
+		try {
+			const res = await fetch(`/api/instructor/courses/${courseId}/lessons/${editingLesson.id}/docs`);
+			const json = await res.json();
+			if (json.success) aieduDocs = json.data || [];
+		} catch { aieduDocs = []; }
+	}
+
+	async function loadAvailableDocs() {
+		try {
+			const res = await fetch('/api/aiedu/bank?mine=1');
+			const json = await res.json();
+			availableDocs = json.success ? (json.data || []) : [];
+		} catch { availableDocs = []; }
+	}
+
+	async function attachDoc(docId: string) {
+		if (!editingLesson?.id) return;
+		attachingDoc = docId;
+		try {
+			const res = await fetch(`/api/instructor/courses/${courseId}/lessons/${editingLesson.id}/docs`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ document_id: docId }),
+			});
+			const json = await res.json();
+			if (json.success) { loadLessonDocs(); showAttachDoc = false; }
+			else alert(json.error || 'Gagal attach');
+		} catch { alert('Gagal attach'); } finally { attachingDoc = ''; }
+	}
+
+	async function detachDoc(linkId: string) {
+		if (!editingLesson?.id) return;
+		try {
+			const res = await fetch(`/api/instructor/courses/${courseId}/lessons/${editingLesson.id}/docs/${linkId}`, {
+				method: 'DELETE',
+			});
+			const json = await res.json();
+			if (json.success) loadLessonDocs();
+			else alert(json.error || 'Gagal detach');
+		} catch { alert('Gagal detach'); }
+	}
+
+	const DOC_TYPE_LABELS: Record<string, string> = {
+		cp: 'CP', atp: 'ATP', modul_ajar: 'Modul Ajar', lkpd: 'LKPD', soal: 'Soal', rubrik: 'Rubrik',
+		ppt: 'PPT', buku_guru: 'Buku Guru', buku_siswa: 'Buku Siswa', panduan_asesmen: 'Panduan Asesmen',
+		panduan_projek: 'Panduan Projek',
+	};
 
 	async function saveLesson() {
 		if (!lessonTitle.trim()) return;
-		saving = true;
+		savingLesson = true;
 		try {
 			const url = editingLesson
 				? `/api/instructor/courses/${courseId}/lessons/${editingLesson.id}`
@@ -132,7 +193,7 @@
 				alert(json.error || 'Gagal menyimpan lesson');
 			}
 		} catch { alert('Gagal menyimpan lesson'); } finally {
-			saving = false;
+			savingLesson = false;
 		}
 	}
 
@@ -261,8 +322,39 @@
 						</label>
 						<div class="form-actions">
 							<Button variant="secondary" onclick={() => (showLessonForm = false)}>Batal</Button>
-							<Button variant="primary" onclick={saveLesson} loading={saving}>Simpan Lesson</Button>
+							<Button variant="primary" onclick={saveLesson} loading={savingLesson}>Simpan Lesson</Button>
 						</div>
+
+						{#if editingLesson}
+							<div class="aiedu-attach">
+								<h4 class="form-title">📚 Materi AIEdu Terkait</h4>
+								{#if aieduDocs.length === 0}
+									<p class="attach-empty">Belum ada materi ter-attach.</p>
+								{:else}
+									{#each aieduDocs as d (d.link_id)}
+										<div class="attach-row">
+											<span class="attach-type">{DOC_TYPE_LABELS[d.doc_type] || d.doc_type}</span>
+											<span class="attach-title">{d.title}</span>
+											<button class="attach-del" onclick={() => detachDoc(d.link_id)} title="Lepas">✕</button>
+										</div>
+									{/each}
+								{/if}
+								{#if showAttachDoc}
+									<button class="attach-toggle" onclick={loadAvailableDocs}>+ Pilih dari Materiku</button>
+									<div class="attach-pick">
+										{#each availableDocs as d (d.id)}
+											<button class="attach-option" onclick={() => attachDoc(d.id)} disabled={attachingDoc === d.id}>
+												{DOC_TYPE_LABELS[d.doc_type] || d.doc_type} — {d.title}
+											</button>
+										{:else}
+											<p class="attach-empty">Tidak ada materi di bank. Generate dulu di AIEdu.</p>
+										{/each}
+									</div>
+								{:else}
+									<button class="attach-toggle" onclick={() => { showAttachDoc = true; loadAvailableDocs(); }}>+ Attach Materi AIEdu</button>
+								{/if}
+							</div>
+						{/if}
 					</CardContent>
 				</Card>
 			{/if}
@@ -325,6 +417,18 @@
 	.lesson-title { font-size: 14px; font-weight: 600; }
 	.lesson-sub { font-size: 12px; color: var(--text-muted); }
 	.lesson-actions { display: flex; gap: 6px; flex-shrink: 0; }
+	.aiedu-attach { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+	.aiedu-attach .form-title { margin-bottom: 10px; }
+	.attach-empty { font-size: 12px; color: var(--text-muted); margin: 0 0 8px; }
+	.attach-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--surface); font-size: 12px; }
+	.attach-type { font-size: 10px; font-weight: 700; background: var(--surface); padding: 2px 7px; border-radius: 6px; color: var(--primary); flex-shrink: 0; }
+	.attach-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.attach-del { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-muted); }
+	.attach-del:hover { color: #ef4444; }
+	.attach-toggle { background: none; border: none; cursor: pointer; font-size: 12px; color: var(--primary); font-weight: 600; padding: 6px 0; }
+	.attach-pick { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+	.attach-option { text-align: left; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 12px; cursor: pointer; }
+	.attach-option:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, white); }
 
 	@media (max-width: 768px) {
 		.editor-layout { grid-template-columns: 1fr; }

@@ -66,17 +66,62 @@
 	function printMd() {
 		const win = window.open('', '_blank');
 		if (!win) return;
-		win.document.write(`<html><head><title>Rapor ${studentName}</title><style>
-			body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
-			table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-			th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; font-size: 14px; }
-			th { background: #f5f5f5; }
-			pre { background: #f5f5f5; padding: 10px; border-radius: 6px; white-space: pre-wrap; }
-			h1, h2, h3 { margin: 16px 0 8px; }
-			@media print { body { margin: 10mm; } }
-		</style></head><body>${markedHtml()}</body></html>`);
+		const html = markedHtml();
+		win.document.write(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Rapor ${studentName}</title><style>
+	@page { size: A4; margin: 20mm 15mm; }
+	@media print { body { margin: 0; } .no-print { display: none; } .page-break { page-break-after: always; } }
+	body {
+		font-family: 'Georgia', 'Times New Roman', serif; font-size: 12pt; line-height: 1.7;
+		color: #222; max-width: 210mm; margin: 0 auto; padding: 20mm 15mm;
+	}
+	h1 { font-size: 16pt; text-align: center; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px; }
+	h2 { font-size: 13pt; margin: 18px 0 8px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+	h3 { font-size: 12pt; margin: 14px 0 6px; }
+	p { margin: 0 0 8px; text-align: justify; }
+	table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 11pt; }
+	th, td { border: 1px solid #555; padding: 6px 10px; }
+	th { background: #e8e8e8; font-weight: bold; text-align: center; }
+	td { text-align: left; }
+	.kop {
+		text-align: center; border-bottom: 3px double #333; padding-bottom: 14px; margin-bottom: 20px;
+	}
+	.kop h1 { margin-bottom: 2px; }
+	.kop .sub { font-size: 10pt; color: #555; margin: 2px 0; }
+	.meta { display: flex; gap: 40px; margin: 10px 0 16px; font-size: 11pt; }
+	.meta dt { font-weight: bold; width: 100px; }
+	.meta dd { margin: 0; }
+	.ttd { display: flex; justify-content: flex-end; gap: 60px; margin-top: 30px; font-size: 11pt; }
+	.ttd-block { text-align: center; min-width: 160px; }
+	.ttd-block .line { border-top: 1px solid #333; width: 160px; margin: 60px auto 4px; }
+	pre { background: #f5f5f5; padding: 10px; border-radius: 4px; white-space: pre-wrap; font-size: 10pt; }
+	ul { margin: 4px 0 8px 20px; }
+	.page-break { page-break-after: always; }
+</style></head><body>
+<div class="kop">
+	<h1>${escapeHtml(subject || 'Rapor Siswa')}</h1>
+	<div class="sub">Laporan Hasil Belajar</div>
+</div>
+<div class="meta">
+	<dt>Nama</dt><dd>${escapeHtml(studentName || '-')}</dd>
+	<dt>Kelas</dt><dd>${escapeHtml(grade || '-')}</dd>
+	${subject ? `<dt>Mapel</dt><dd>${escapeHtml(subject)}</dd>` : ''}
+</div>
+<hr style="border:none;border-top:1px solid #ccc;margin:0 0 14px">
+${html}
+<div class="ttd">
+	<div class="ttd-block">
+		<div class="line"></div>
+		<strong>Orang Tua / Wali</strong>
+	</div>
+	<div class="ttd-block">
+		<div class="line"></div>
+		<strong>Guru Mapel</strong>
+	</div>
+</div>
+</body></html>`);
 		win.document.close();
-		win.print();
+		setTimeout(() => win.print(), 400);
 	}
 
 	function markedHtml(): string {
@@ -202,7 +247,7 @@
 					<h3 class="section-title">Hasil Rapor</h3>
 					{#if result}
 						<div class="result-actions">
-							<Button size="sm" variant="secondary" onclick={printMd}>🖨️ Print</Button>
+							<Button size="sm" variant="primary" onclick={printMd}>🖨️ Cetak / PDF</Button>
 							<Button size="sm" variant="secondary" onclick={downloadMd}>📥 .md</Button>
 						</div>
 					{/if}
