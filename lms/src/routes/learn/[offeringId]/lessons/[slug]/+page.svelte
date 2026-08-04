@@ -196,6 +196,32 @@
 		addToast('Pelajaran selesai! ✨', 'success');
 	}
 
+	// Tanya AI: open AIEdu chat with lesson-context thread
+	async function askLessonAI() {
+		try {
+			const subject = offering?.name || course?.title || lesson?.subject || '';
+			const grade = offering?.grade || '';
+			const res = await fetch('/api/aiedu/chat', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					title: `Tanya: ${lesson?.title || 'Materi'}`,
+					subject,
+					grade,
+					lesson_id: lesson?.id || null,
+				}),
+			});
+			const json = await res.json();
+			if (json.success && json.data?.id) {
+				window.location.href = `/aiedu/chat?thread=${json.data.id}`;
+			} else {
+				window.location.href = '/aiedu/chat';
+			}
+		} catch {
+			window.location.href = '/aiedu/chat';
+		}
+	}
+
 	async function markComplete() {
 		if (!lesson || isCompleting) return;
 		isCompleting = true;
@@ -426,6 +452,14 @@
 				</div>
 				<div class="header-actions">
 					<button
+						class="ask-ai-btn"
+						onclick={() => askLessonAI()}
+						title="Tanya AI tentang materi ini"
+					>
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+						<span>Tanya AI</span>
+					</button>
+					<button
 						class="bookmark-btn"
 						class:bookmarked={isBookmarked}
 						onclick={() => toggleBookmark()}
@@ -644,6 +678,8 @@
 	.offering-name { font-size: 14px; color: #64748b; margin: 0; }
 	.header-actions { display: flex; gap: 8px; align-items: center; }
 
+	.ask-ai-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9px; border: 1px solid #e0e7ff; background: #eef2ff; color: #4f46e5; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+	.ask-ai-btn:hover { background: #e0e7ff; border-color: #c7d2fe; }
 	.bookmark-btn {
 		background: var(--surface, #F8FAFC);
 		border: 1px solid var(--border, #E2E8F0);

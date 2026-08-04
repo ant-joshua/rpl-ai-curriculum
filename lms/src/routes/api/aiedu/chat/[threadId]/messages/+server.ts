@@ -24,6 +24,9 @@ export async function POST({ request, platform, params }: { request: Request; pl
 		).bind(params.threadId, session.user.id).first<any>();
 		if (!thread) return jsonResponse({ success: false, error: 'Thread not found' }, 404);
 
+		// If lesson_context present, it's a student AI-tutor thread
+		const isTutor = !!thread.lesson_context;
+
 		// Save user message
 		const userMsgId = crypto.randomUUID();
 		await db.prepare(
@@ -42,7 +45,14 @@ export async function POST({ request, platform, params }: { request: Request; pl
 			? `${thread.curriculum_name}${thread.curriculum_type ? ` (${thread.curriculum_type})` : ''}`
 			: 'Kurikulum Merdeka';
 
-		const systemPrompt = `Kamu adalah AI Chat Guru (AIEdu) — asisten pribadi untuk guru.
+		const systemPrompt = isTutor
+			? `Kamu adalah AI Tutor (AIEdu) — asisten belajar untuk SISWA.
+Konteks thread: Mapel ${thread.subject || '-'}, Kelas ${thread.grade || '-'}, Kurikulum ${curriculumContext}.
+${thread.lesson_context ? `MATERI LESSON YANG SEDANG DIPELAJARI:\n${thread.lesson_context}` : ''}
+Tugasmu membantu siswa memahami materi, menjawab pertanyaan pelajaran, kasih contoh soal, dan jelaskan dengan bahasa sederhana.
+Gunakan pendekatan Socratic (ajak siswa berpikir) tapi tetap beri jawaban jelas. Jangan buatkan perangkat ajar guru — fokus bantu siswa belajar.
+Jawab dalam Bahasa Indonesia, ringkas, ramah siswa. Gunakan markdown untuk poin/tabel.`
+			: `Kamu adalah AI Chat Guru (AIEdu) — asisten pribadi untuk guru.
 Konteks thread: Mapel ${thread.subject || '-'}, Kelas ${thread.grade || '-'}, Kurikulum ${curriculumContext}.
 Bantu guru membuat perangkat ajar (ATP, modul ajar, LKPD, soal, rubrik, PPT), strategi mengajar, penilaian, pengelolaan kelas, dan pedagogi.
 Jawab dalam Bahasa Indonesia, jelas, praktis, dengan contoh bila diminta. Gunakan markdown untuk poin/tabel.`;

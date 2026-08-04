@@ -39,13 +39,50 @@ export async function POST({ request, platform }: { request: Request; platform: 
 
 		const db = getDB(platform);
 		const body = await request.json();
-		const { title, subject, grade, curriculum_id } = body;
+		const { title, subject, grade, curriculum_id, lesson_id } = body;
 
 		const id = crypto.randomUUID();
+
+		// If lesson_id provided, fetch lesson + content blocks for context
+		let lessonContext = '';
+		let lessonSubject = subject || '';
+		let lessonGrade = grade || '';
+		if (lesson_id) {
+			const lesson = await db.prepare(
+				`SELECT l.*, co.name AS offering_name, co.tenant_id
+				 FROM lessons l
+				 LEFT JOIN course_offerings co ON co.id = l.course_offering_id
+				 WHERE l.id = ?`
+			).bind(lesson_id).first<any>();
+			if (lesson) {
+				lessonSubject = lessonSubject || lesson.offering_name || '';
+				lessonGrade = lessonGrade || '';
+				const { results: blocks } = await db.prepare(
+					`SELECT type, content FROM lesson_content_blocks WHERE lesson_id = ? ORDER BY order_index ASC LIMIT 30`
+				).bind(lesson_id).all<any>();
+				const blockText = (blocks || [])
+					.map((b: any) => {
+						let content = b.content || '';
+						if (typeof content === 'string' && (content.startsWith('[') || content.startsWith('{'))) {
+							try {
+								const parsed = JSON.parse(content);
+								content = typeof parsed === 'string' ? parsed : JSON.stringify(parsed).slice(0, 2000);
+							} catch { /* keep raw */ }
+						}
+						return `[${b.type}] ${content}`.slice(0, 3000);
+					})
+					.join('\n\n');
+				lessonContext = `Materi lesson "${lesson.title}":\n${blockText}`.slice(0, 8000);
+			}
+		}
+
 		await db.prepare(
-			`INSERT INTO aiedu_chat_threads (id, user_id, title, subject, grade, curriculum_id)
-			 VALUES (?, ?, ?, ?, ?, ?)`
-		).bind(id, session.user.id, title?.trim() || 'Chat Baru', subject || '', grade || '', curriculum_id || null).run();
+			`INSERT INTO aiedu_chat_threads (id, user_id, title, subject, grade, curriculum_id, lesson_id, lesson_context)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+		).bind(
+			id, session.user.id, title?.trim() || 'Chat Baru',
+			lessonSubject, lessonGrade, curriculum_id || null, lesson_id || null, lessonContext || null
+		).run();
 
 		return jsonResponse({ success: true, data: { id } }, 201);
 	} catch (e: unknown) {

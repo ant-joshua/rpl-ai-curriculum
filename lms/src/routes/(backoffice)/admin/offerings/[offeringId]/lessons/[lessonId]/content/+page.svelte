@@ -51,6 +51,17 @@
 	let mediaFiles = $state<any[]>([]);
 	let mediaLoading = $state(false);
 
+	// Lesson resources (files)
+	let resources = $state<any[]>([]);
+	let resourcesLoading = $state(true);
+	let showResourceModal = $state(false);
+	let resTitle = $state('');
+	let resUrl = $state('');
+	let resType = $state('file');
+	let resSaving = $state(false);
+	let resError = $state('');
+	let deletingResId = $state<string | null>(null);
+
 	onMount(() => {
 		if (browser) {
 			const pathParts = window.location.pathname.split('/');
@@ -92,6 +103,40 @@
 		} finally {
 			loading = false;
 		}
+		loadResources();
+	}
+
+	async function loadResources() {
+		resourcesLoading = true;
+		try {
+			const res = await fetch(`/api/admin/lessons/${lessonId}/resources`);
+			const json = await res.json();
+			resources = json.success ? (json.data || []) : [];
+		} catch { resources = []; } finally { resourcesLoading = false; }
+	}
+
+	async function saveResource() {
+		if (!resTitle.trim()) { resError = 'Judul wajib'; return; }
+		resSaving = true;
+		resError = '';
+		try {
+			const res = await fetch(`/api/admin/lessons/${lessonId}/resources`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ title: resTitle.trim(), file_url: resUrl || null, file_type: resType }),
+			});
+			const json = await res.json();
+			if (json.success) { showResourceModal = false; resTitle = ''; resUrl = ''; loadResources(); }
+			else resError = json.error || 'Gagal simpan';
+		} catch { resError = 'Gagal simpan'; } finally { resSaving = false; }
+	}
+
+	async function deleteResource(id: string) {
+		deletingResId = id;
+		try {
+			await fetch(`/api/admin/lessons/${lessonId}/resources/${id}`, { method: 'DELETE' });
+			resources = resources.filter((r: any) => r.id !== id);
+		} finally { deletingResId = null; }
 	}
 
 	function openCreateBlock() {
@@ -393,6 +438,67 @@
 	</Modal>
 {/if}
 
+<!-- Lesson Resources -->
+<div class="resources-section">
+	<div class="resources-header">
+		<h3 class="resources-title">📎 Lampiran / Sumber Belajar</h3>
+		<Button size="sm" onclick={() => { showResourceModal = true; resError = ''; }}>+ Tambah</Button>
+	</div>
+	{#if resourcesLoading}
+		<p class="resources-empty">Memuat...</p>
+	{:else if resources.length === 0}
+		<p class="resources-empty">Belum ada lampiran. Tambah file/URL sumber belajar untuk lesson ini.</p>
+	{:else}
+		<div class="resources-list">
+			{#each resources as r (r.id)}
+				<div class="resource-item">
+					<div class="resource-info">
+						<span class="resource-icon">📄</span>
+						<div class="resource-main">
+							<span class="resource-name">{r.title}</span>
+							{#if r.file_url}
+								<a href={r.file_url} target="_blank" class="resource-link">{r.file_url}</a>
+							{:else}
+								<span class="resource-link muted">(tanpa URL)</span>
+							{/if}
+						</div>
+						<span class="resource-type">{r.file_type}</span>
+					</div>
+					<Button size="sm" variant="danger" onclick={() => deleteResource(r.id)} loading={deletingResId === r.id}>Hapus</Button>
+				</div>
+			{/each}
+		</div>
+	{/if}
+</div>
+
+{#if showResourceModal}
+	<Modal
+		open={showResourceModal}
+		title="📎 Tambah Lampiran"
+		onclose={() => showResourceModal = false}
+	>
+		<div class="res-form">
+			{#if resError}<Alert variant="danger">{resError}</Alert>{/if}
+			<Input label="Judul *" bind:value={resTitle} placeholder="Contoh: Modul Bab 1" />
+			<Input label="URL File" bind:value={resUrl} placeholder="https://... (opsional, bisa diisi dari Media)" />
+			<Select
+				label="Tipe"
+				options={[
+					{ value: 'file', label: '📄 File' },
+					{ value: 'video', label: '🎬 Video' },
+					{ value: 'link', label: '🔗 Link' },
+					{ value: 'image', label: '🖼️ Gambar' },
+				]}
+				bind:value={resType}
+			/>
+		</div>
+		{#snippet footer()}
+			<Button variant="secondary" onclick={() => showResourceModal = false} disabled={resSaving}>Batal</Button>
+			<Button onclick={saveResource} loading={resSaving}>Simpan</Button>
+		{/snippet}
+	</Modal>
+{/if}
+
 {#if showMediaModal}
 	<Modal
 		open={showMediaModal}
@@ -537,4 +643,19 @@
 	.picker-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 4px; }
 	.picker-icon { font-size: 28px; padding: 10px 0; }
 	.picker-name { font-size: 11px; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+
+	.resources-section { margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.08); }
+	.resources-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+	.resources-title { font-size: 16px; font-weight: 600; margin: 0; }
+	.resources-empty { font-size: 13px; color: #64748b; margin: 0; }
+	.resources-list { display: flex; flex-direction: column; gap: 8px; }
+	.resource-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 9px; background: #fff; }
+	.resource-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+	.resource-icon { font-size: 18px; }
+	.resource-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+	.resource-name { font-size: 13px; font-weight: 600; }
+	.resource-link { font-size: 11px; color: #4F46E5; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px; }
+	.resource-link.muted { color: #94a3b8; }
+	.resource-type { font-size: 10px; background: rgba(79,70,229,0.08); color: #4F46E5; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+	.res-form { display: flex; flex-direction: column; gap: 12px; }
 </style>

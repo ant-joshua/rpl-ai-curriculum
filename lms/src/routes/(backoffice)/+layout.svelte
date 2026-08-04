@@ -55,6 +55,8 @@
 		{ path: '/admin/curriculum', icon: 'layers', label: 'Curriculum', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/curricula', icon: 'layers', label: 'Kurikulum Mapel', roles: ['superadmin','admin'] },
 		{ path: '/admin/aiedu', icon: 'sparkles', label: 'AIEdu', roles: ['superadmin','admin'] },
+		{ path: '/instructor/quiz', icon: 'help-circle', label: 'Quiz Builder', roles: ['instructor','admin','superadmin'] },
+		{ path: '/instructor/rapor', icon: 'file-text', label: 'Rapor Batch', roles: ['instructor','admin','superadmin'] },
 		{ path: '/admin/gradebook', icon: 'file-text', label: 'Gradebook', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/enrollments', icon: 'user-plus', label: 'Enrollments', roles: ['superadmin','admin'] },
 		{ path: '/admin/discussions', icon: 'message-square', label: 'Discussions', roles: ['superadmin','admin','instructor'] },
