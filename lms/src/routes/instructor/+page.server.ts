@@ -181,7 +181,37 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 		[userId]
 	);
 
-	return {
+	// --- AIEdu stats for this instructor ---
+const { results: aieduStats } = await cachedDbQuery<any>(
+	db,
+	`SELECT
+		(SELECT COUNT(*) FROM aiedu_documents WHERE user_id = ?) AS docs_created,
+		(SELECT COUNT(*) FROM aiedu_documents WHERE user_id = ? AND is_saved_to_bank = 1) AS docs_saved,
+		(SELECT COUNT(*) FROM aiedu_generations WHERE user_id = ?) AS generations_count,
+		(SELECT COUNT(*) FROM assessments a JOIN course_offerings co ON co.id = a.course_offering_id WHERE co.instructor_id = ?) AS quiz_count,
+		(SELECT COUNT(*) FROM assessment_submissions asub
+		 JOIN assessments a ON a.id = asub.assessment_id
+		 JOIN course_offerings co ON co.id = a.course_offering_id
+		 WHERE co.instructor_id = ? AND asub.status = 'graded') AS graded_count
+	`,
+	[userId, userId, userId, userId, userId]
+);
+
+// --- Recent student quiz attempts across courses ---
+const { results: recentAttempts } = await cachedDbQuery<any>(
+	db,
+	`SELECT asub.id, asub.score, asub.max_score, asub.status, asub.submitted_at,
+	        a.title AS assessment_title, u.display_name AS student_name, co.name AS offering_name
+	 FROM assessment_submissions asub
+	 JOIN assessments a ON a.id = asub.assessment_id
+	 JOIN course_offerings co ON co.id = a.course_offering_id
+	 JOIN users u ON u.id = asub.user_id
+	 WHERE co.instructor_id = ? AND asub.status IN ('graded', 'submitted')
+	 ORDER BY asub.submitted_at DESC LIMIT 10`,
+	[userId]
+);
+
+return {
 		courses: courseList,
 		courseStats: Object.fromEntries(courseStats),
 		pendingSubmissions: (pendingSubmissions || []).map(s => ({
@@ -221,6 +251,17 @@ export const load: PageServerLoad = async ({ request, platform, url }) => {
 			reviewerAvatar: r.reviewer_avatar || '',
 			offeringName: r.offering_name,
 			offeringId: r.offering_id,
+		})),
+		aieduStats: aieduStats?.[0] || { docs_created: 0, docs_saved: 0, generations_count: 0, quiz_count: 0, graded_count: 0 },
+		recentAttempts: (recentAttempts || []).map(a => ({
+			id: a.id,
+			score: a.score,
+			maxScore: a.max_score,
+			status: a.status,
+			submittedAt: a.submitted_at,
+			title: a.assessment_title,
+			studentName: a.student_name,
+			offeringName: a.offering_name,
 		})),
 		token,
 	};

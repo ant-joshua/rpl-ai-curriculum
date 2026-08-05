@@ -210,6 +210,8 @@ export async function POST({ params, request, platform }: { params: { id: string
 
 		const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
 		const passed = percentage >= assessment.passing_score;
+		let xpAwarded = 0;
+		let newBadges: any[] = [];
 
 		// Save submission — use draft ID if exists, else create new
 		const draftId = draftSub?.id || (allSubs || []).find(s => true)?.id;
@@ -259,6 +261,28 @@ export async function POST({ params, request, platform }: { params: { id: string
 			now
 		).run();
 
+		// --- Award XP for quiz completion (gamification) ---
+		if (passed) {
+			try {
+				const xpRes = await fetch(`${new URL(request.url).origin}/api/gamification/award`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': request.headers.get('Authorization') || '',
+					},
+					body: JSON.stringify({
+						reason: 'assessment_completed',
+						description: `Quiz passed: ${assessment.title || 'Quiz'} (${percentage}%)`,
+					}),
+				});
+				const xpJson = await xpRes.json().catch(() => null);
+				if (xpJson?.data?.xp_earned) {
+					xpAwarded = xpJson.data.xp_earned;
+					newBadges = xpJson.data.new_badges || [];
+				}
+			} catch { /* non-critical, don't fail quiz */ }
+		}
+
 		return jsonResponse({
 			success: true,
 			data: {
@@ -271,6 +295,8 @@ export async function POST({ params, request, platform }: { params: { id: string
 				results,
 				showResults: assessment.show_results === 1,
 				timeExpired: timeExpiredOnServer,
+				xpAwarded,
+				newBadges,
 			}
 		});
 	} catch (e: unknown) {

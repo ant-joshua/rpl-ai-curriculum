@@ -678,3 +678,26 @@ button, input, textarea, select { font-family: inherit; }
 .markdown-content img { max-width: 100%; border-radius: 6px; }
 .markdown-content a { color: var(--accent-secondary); text-decoration: none; }
 .markdown-content a:hover { text-decoration: underline; }
+
+/* ===== Global Mobile Touch Optimization ===== */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  button, a, [role="button"] { min-height: 44px; }
+  
+  /* Prevent text size adjust */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  
+  /* Smooth scrolling on iOS */
+  * { -webkit-overflow-scrolling: touch; }
+  
+  /* Disable hover effects on touch */
+  @media (hover: none) {
+    :hover { background: inherit !important; }
+  }
+  
+  /* Form inputs full width */
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="search"], textarea, select {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
+}

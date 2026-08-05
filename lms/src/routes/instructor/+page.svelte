@@ -11,6 +11,8 @@
 	let pendingCount = $derived(data.pendingCount ?? 0);
 	let upcomingDeadlines = $derived(data.upcomingDeadlines ?? []);
 	let recentReviews = $derived(data.recentReviews ?? []);
+	let aieduStats = $derived(data.aieduStats ?? { docs_created: 0, docs_saved: 0, generations_count: 0, quiz_count: 0, graded_count: 0 });
+	let recentAttempts = $derived(data.recentAttempts ?? []);
 
 	let courseCount = $derived(courses.length);
 	let totalStudents = $derived(courses.reduce((sum: number, c: any) => sum + (c.activeEnrollments || 0), 0));
@@ -67,6 +69,35 @@
 		<StatCard icon="👥" value={totalStudents} label="Siswa Aktif" />
 		<StatCard icon="📝" value={pendingCount} label="Menunggu Penilaian" />
 		<StatCard icon="✅" value="{avgCompletion}%" label="Rata-rata Penyelesaian" />
+	</section>
+
+	<!-- AIEdu Quick Stats -->
+	<section class="aiedu-stats-bar">
+		<h2 class="aiedu-title">✨ AIEdu Ringkasan</h2>
+		<div class="aiedu-chips">
+			<a href="/aiedu" class="aiedu-chip">
+				<span class="chip-val">{aieduStats.generations_count}</span>
+				<span class="chip-label">Generated</span>
+			</a>
+			<a href="/aiedu" class="aiedu-chip">
+				<span class="chip-val">{aieduStats.docs_saved}</span>
+				<span class="chip-label">Saved to Bank</span>
+			</a>
+			<a href="/instructor/quiz" class="aiedu-chip">
+				<span class="chip-val">{aieduStats.quiz_count}</span>
+				<span class="chip-label">Quiz Aktif</span>
+			</a>
+			<a href="/admin/gradebook" class="aiedu-chip">
+				<span class="chip-val">{aieduStats.graded_count}</span>
+				<span class="chip-label">Dinilai</span>
+			</a>
+		</div>
+		<div class="aiedu-quick">
+			<a href="/aiedu" class="quick-link">🤖 Generate Soal</a>
+			<a href="/instructor/quiz" class="quick-link">🎯 Quiz Builder</a>
+			<a href="/instructor/rapor" class="quick-link">📋 Rapor Batch</a>
+			<a href="/aiedu/analisis" class="quick-link">📈 Analisis Nilai</a>
+		</div>
 	</section>
 
 	<!-- Content Grid -->
@@ -216,11 +247,36 @@
 									<p class="review-comment muted">Tanpa komentar</p>
 								{/if}
 								<span class="review-meta">{rv.reviewerName} · {rv.offeringName}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</section>
+									</div>
+									{/each}
+								</div>
+								{/if}
+								</section>
+
+								<!-- Recent Quiz Attempts -->
+								<section class="panel-section">
+								<h2>🎯 Quiz Terbaru</h2>
+								{#if recentAttempts.length === 0}
+									<Card>
+										<CardContent>
+											<p class="empty-text">Belum ada submission quiz</p>
+										</CardContent>
+									</Card>
+								{:else}
+									<div class="attempt-list">
+										{#each recentAttempts as att}
+											<div class="attempt-item">
+												<span class="attempt-score">{att.score}/{att.maxScore}</span>
+												<div class="attempt-body">
+													<span class="attempt-title">{att.title}</span>
+													<span class="attempt-meta">{att.studentName} · {att.offeringName}</span>
+												</div>
+												<span class="attempt-time">{timeAgo(att.submittedAt)}</span>
+											</div>
+										{/each}
+									</div>
+								{/if}
+								</section>
 		</div>
 	</div>
 </div>
@@ -404,5 +460,63 @@
 		font-size: 10px;
 		font-weight: 400;
 		color: var(--text-secondary);
+	}
+
+	/* AIEdu Stats Bar */
+	.aiedu-stats-bar {
+		background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 16px 20px;
+		margin-bottom: 24px;
+	}
+	.aiedu-title { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+	.aiedu-chips { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+	.aiedu-chip {
+		display: flex; flex-direction: column; align-items: center;
+		padding: 10px 16px; background: white; border-radius: 10px;
+		border: 1px solid var(--border); text-decoration: none; min-width: 90px;
+		transition: transform .15s, box-shadow .15s;
+	}
+	.aiedu-chip:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+	.chip-val { font-size: 20px; font-weight: 700; color: var(--accent, #4F46E5); }
+	.chip-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+	.aiedu-quick { display: flex; gap: 8px; flex-wrap: wrap; }
+	.quick-link {
+		padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+		background: white; border: 1px solid var(--border); color: var(--text);
+		text-decoration: none; transition: all .15s;
+	}
+	.quick-link:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg, #eef2ff); }
+
+	/* Quiz Attempts */
+	.attempt-list { display: flex; flex-direction: column; gap: 6px; }
+	.attempt-item {
+		display: flex; align-items: center; gap: 10px;
+		padding: 10px 12px; border: 1px solid var(--border);
+		border-radius: 9px; background: white; font-size: 13px;
+	}
+	.attempt-score {
+		font-weight: 700; color: var(--accent); background: var(--accent-bg, #eef2ff);
+		padding: 4px 10px; border-radius: 6px; font-size: 12px; flex-shrink: 0;
+	}
+	.attempt-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+	.attempt-title { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.attempt-meta { font-size: 11px; color: var(--text-secondary); }
+	.attempt-time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.instructor-page { padding: 16px 12px; }
+		.stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+		.content-grid { grid-template-columns: 1fr; }
+		.aiedu-chips { gap: 8px; }
+		.aiedu-chip { min-width: 70px; padding: 8px 10px; }
+		.chip-val { font-size: 16px; }
+		.aiedu-quick { gap: 6px; }
+		.quick-link { padding: 6px 10px; font-size: 11px; }
+		.course-row { flex-direction: column; gap: 8px; }
+		.course-row-stats { flex-wrap: wrap; }
+		.side-panel { gap: 16px; }
 	}
 </style>

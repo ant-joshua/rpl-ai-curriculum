@@ -15,6 +15,10 @@
 	let attemptsRemaining = $state(0);
 	let attemptsUsed = $state(0);
 
+	// Practice mode
+	let practiceMode = $state(false);
+	let showFeedback: Record<number, boolean> = $state({});
+
 	// Timer — uses server-provided startedAt for drift-free countdown
 	let timeLimitMinutes = $state(0);
 	let startedAt = $state<string | null>(null);  // ISO string from server
@@ -46,6 +50,7 @@
 
 	onMount(() => {
 		if (!browser) return;
+		practiceMode = $page.url.searchParams.get('practice') === '1';
 		loadAssessment();
 	});
 
@@ -75,7 +80,7 @@
 			assessment = d.assessment;
 			questions = d.questions || [];
 
-			if (d.attemptsRemaining <= 0 && (d.previousAttempts || []).length > 0) {
+			if (d.attemptsRemaining <= 0 && (d.previousAttempts || []).length > 0 && !practiceMode) {
 				// Show last result
 				submitted = true;
 				resultData = d.previousAttempts[d.previousAttempts.length - 1];
@@ -92,7 +97,7 @@
 			}
 
 			// Timer — use server-originated startedAt for drift-free countdown
-			if (assessment.time_limit_minutes) {
+			if (assessment.time_limit_minutes && !practiceMode) {
 				timeLimitMinutes = assessment.time_limit_minutes;
 				startedAt = d.startedAt || new Date().toISOString();
 				secondsRemaining = recalcRemaining();
@@ -163,6 +168,26 @@
 
 	function handleConfirmSubmit() {
 		confirmSubmit = true;
+	}
+
+	function handlePracticeSubmit() {
+		if (submitting) return;
+		submitting = true;
+		// Local-only grading — no server call
+		let totalScore = 0;
+		let maxScore = 0;
+		const results = questions.map((q, i) => {
+			const pts = q.points || 1;
+			maxScore += pts;
+			const correct = (answers[q.id] || '').trim().toLowerCase() === (q.correctAnswer || '').trim().toLowerCase();
+			if (correct) totalScore += pts;
+			return { questionId: q.id, correct, points: pts, pointsAwarded: correct ? pts : 0, explanation: q.explanation || null };
+		});
+		const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
+		resultData = { results, score: totalScore, maxScore, percentage, passed: true, passingScore: 0, showResults: true, xpAwarded: 0, newBadges: [] };
+		submitted = true;
+		submitting = false;
+		if (timerInterval) clearInterval(timerInterval);
 	}
 
 	async function handleSubmit() {
@@ -258,6 +283,18 @@
 					{#if resultData.timeExpired}
 						<div class="time-expired-notice">⏰ Time expired — auto-submitted</div>
 					{/if}
+					{#if resultData.xpAwarded > 0}
+						<div class="xp-earned">
+							⭐ +{resultData.xpAwarded} XP
+							{#if resultData.newBadges?.length > 0}
+								<span class="new-badges">
+									{#each resultData.newBadges as badge}
+										<span class="badge-earned">🏅 {badge.name || 'Badge'}</span>
+									{/each}
+								</span>
+							{/if}
+						</div>
+					{/if}
 				</div>
 
 				{#if resultData.showResults}
@@ -307,7 +344,12 @@
 					<button class="btn btn-outline" onclick={() => goto('/my/grades')}>
 						Back to Grades
 					</button>
-					{#if attemptsRemaining > 0}
+					{#if practiceMode}
+						<button class="btn btn-primary" onclick={() => { submitted = false; resultData = null; answers = {}; showFeedback = {}; currentQuestionIndex = 0; loadAssessment(); }}>
+							🎯 Practice Again
+						</button>
+					{/if}
+					{#if attemptsRemaining > 0 && !practiceMode}
 						<button class="btn btn-primary" onclick={handleRetry}>
 							Retry ({attemptsRemaining} attempt{attemptsRemaining > 1 ? 's' : ''} left)
 						</button>
@@ -333,6 +375,9 @@
 			<div class="quiz-title-section">
 				<h1>{assessment.title}</h1>
 				<span class="quiz-type-badge badge--{assessment.type}">{assessment.type}</span>
+				{#if practiceMode}
+					<span class="practice-badge">🎯 Practice Mode</span>
+				{/if}
 			</div>
 
 			{#if timeLimitMinutes > 0}
@@ -450,9 +495,15 @@
 								Next →
 							</button>
 						{:else}
-							<button class="btn btn-success" onclick={handleConfirmSubmit} disabled={submitting}>
-								{submitting ? 'Submitting...' : 'Submit Assessment'}
-							</button>
+							{#if practiceMode}
+								<button class="btn btn-primary" onclick={handlePracticeSubmit} disabled={submitting}>
+									{submitting ? 'Checking...' : '✅ Check Answers'}
+								</button>
+							{:else}
+								<button class="btn btn-success" onclick={handleConfirmSubmit} disabled={submitting}>
+									{submitting ? 'Submitting...' : 'Submit Assessment'}
+								</button>
+							{/if}
 						{/if}
 					</div>
 				{/if}
@@ -579,6 +630,28 @@
 	@keyframes pulse {
 		0%, 100% { opacity: 1; }
 		50% { opacity: 0.6; }
+	}
+
+	/* XP Earned */
+	.xp-earned {
+		display: flex; align-items: center; gap: 8px;
+		margin-top: 12px; padding: 10px 16px;
+		background: linear-gradient(135deg, #fef3c7, #fde68a);
+		border: 1px solid #f59e0b; border-radius: 10px;
+		font-size: 16px; font-weight: 700; color: #92400e;
+	}
+	.new-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px; }
+	.badge-earned {
+		padding: 3px 10px; background: white; border: 1px solid #f59e0b;
+		border-radius: 6px; font-size: 12px; font-weight: 600; color: #92400e;
+	}
+
+	/* Practice Badge */
+	.practice-badge {
+		display: inline-block; padding: 4px 12px;
+		background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+		border: 1px solid #3b82f6; border-radius: 6px;
+		font-size: 12px; font-weight: 600; color: #1e40af;
 	}
 
 	/* Body */
@@ -1121,5 +1194,25 @@
 		gap: 12px;
 		justify-content: center;
 		margin-top: 24px;
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.quiz-container { padding: 12px; }
+		.quiz-header { flex-direction: column; gap: 10px; }
+		.quiz-title-section h1 { font-size: 20px; }
+		.quiz-timer { position: static; margin-top: 8px; }
+		.quiz-body { flex-direction: column; gap: 16px; }
+		.quiz-sidebar { order: -1; flex-direction: row; flex-wrap: wrap; gap: 6px; }
+		.q-nav-btn { width: 36px; height: 36px; font-size: 12px; }
+		.q-flag-btn { width: 36px; height: 36px; font-size: 12px; }
+		.q-number { font-size: 12px; }
+		.question-area { padding: 16px; }
+		.question-text { font-size: 15px; }
+		.option-item { padding: 12px 14px; font-size: 14px; }
+		.quiz-nav { flex-direction: column; }
+		.quiz-nav .btn { width: 100%; }
+		.practice-badge { font-size: 11px; padding: 3px 8px; }
+		.xp-earned { font-size: 14px; padding: 8px 12px; flex-wrap: wrap; }
 	}
 </style>
