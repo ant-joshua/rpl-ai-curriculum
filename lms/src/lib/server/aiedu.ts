@@ -292,3 +292,85 @@ Generate rapor.`,
 	const data = await res.json();
 	return data?.choices?.[0]?.message?.content || '';
 }
+
+// AI essay grading — returns JSON { score, max_score, feedback, keywords_missed }
+export async function gradeEssay(
+	platform: App.Platform,
+	question: string,
+	studentAnswer: string,
+	maxPoints: number,
+	rubric?: string,
+	modelAnswer?: string
+): Promise<{ score: number; feedback: string }> {
+	const apiKey = platform.env?.AI_API_KEY || '';
+	const model = DEFAULT_MODEL;
+
+	const payload = {
+		model,
+		messages: [
+			{
+				role: 'system',
+				content: `Kamu adalah asisten penilai jawaban essay (AIEdu). Selalu jawab dalam Bahasa Indonesia.
+Nilai jawaban essay siswa secara objektif dan adil berdasarkan rubric.
+Jawab HANYA dengan JSON valid tanpa markdown, format:
+{"score": <angka 0-max>, "feedback": "<paragraf feedback singkat 2-4 kalimat berisi apresiasi, kekurangan, dan saran>", "keywords_missed": ["kata kunci yang belum muncul"]}
+
+Aturan:
+- score harus angka bulat antara 0 dan ${maxPoints}
+- nilai berdasarkan kelengkapan, akurasi, dan pemahaman konsep
+- feedback harus spesifik menyebut bagian jawaban yang kurang
+- jangan memberi nilai maksimal jika jawaban kurang lengkap
+- jika jawaban kosong atau "tidak tahu", score = 0`,
+			},
+			{
+				role: 'user',
+				content: `Pertanyaan: ${question}
+${modelAnswer ? `Kunci jawaban/referensi: ${modelAnswer}\n` : ''}${rubric ? `Rubrik penilaian: ${rubric}\n` : ''}
+Jawaban siswa:
+---
+${studentAnswer || '(kosong)'}
+---
+
+Nilai essay ini. Maksimal ${maxPoints} poin. Jawab JSON.`,
+			},
+		],
+		temperature: 0.2,
+		max_tokens: 1024,
+	};
+
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+	const res = await fetch(NINE_ROUTER_URL, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(payload),
+	});
+
+	if (!res.ok) {
+		const errText = await res.text();
+		throw new Error(`AI API error ${res.status}: ${errText.slice(0, 300)}`);
+	}
+
+	const data = await res.json();
+	const content = data?.choices?.[0]?.message?.content || '';
+
+	// Parse JSON from response (may include markdown fences)
+	const jsonMatch = content.match(/\{[\s\S]*\}/);
+	if (!jsonMatch) throw new Error('AI returned invalid format');
+
+	let parsed: any;
+	try {
+		parsed = JSON.parse(jsonMatch[0]);
+	} catch {
+		throw new Error('AI returned invalid JSON');
+	}
+
+	const rawScore = Number(parsed.score);
+	if (isNaN(rawScore)) throw new Error('AI returned invalid score');
+
+	return {
+		score: Math.max(0, Math.min(maxPoints, Math.round(rawScore))),
+		feedback: String(parsed.feedback || ''),
+	};
+}

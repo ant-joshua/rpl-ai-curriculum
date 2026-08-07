@@ -51,6 +51,86 @@
 	let mediaFiles = $state<any[]>([]);
 	let mediaLoading = $state(false);
 
+	// AI Template modal
+	let showTemplateModal = $state(false);
+	let tplType = $state('modul_ajar');
+	let tplTopic = $state('');
+	let tplGenerating = $state(false);
+	let tplError = $state('');
+
+	const TEMPLATE_TYPES = [
+		{ value: 'atp', label: '🗺️ Alur Tujuan Pembelajaran (ATP)' },
+		{ value: 'modul_ajar', label: '📘 Modul Ajar' },
+		{ value: 'lkpd', label: '📝 LKPD' },
+		{ value: 'soal', label: '🧩 Bank Soal / Asesmen' },
+		{ value: 'rubrik', label: '📊 Rubrik Penilaian' },
+		{ value: 'ppt', label: '📑 Materi PPT' },
+	];
+
+	function openTemplateModal() {
+		showTemplateModal = true;
+		tplType = 'modul_ajar';
+		tplTopic = '';
+		tplError = '';
+	}
+
+	async function generateTemplateBlock() {
+		if (!tplTopic.trim()) { tplError = 'Topik/materi wajib diisi'; return; }
+		tplGenerating = true;
+		tplError = '';
+		try {
+			// Get offering subject/grade from lesson context
+			const offeringRes = await fetch(`/api/admin/offerings/${offeringId}`);
+			const offeringJson = await offeringRes.json();
+			const subject = offeringJson.data?.name || offeringJson.data?.subject || lesson?.title || 'Pemrograman';
+			const grade = offeringJson.data?.grade || 'XI';
+
+			// Generate via AIEdu
+			const genRes = await fetch('/api/aiedu/generate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					doc_type: tplType,
+					subject,
+					grade,
+					topic: tplTopic.trim(),
+					extra_context: `Lesson: ${lesson?.title || ''}`,
+				}),
+			});
+			const genJson = await genRes.json();
+			if (!genJson.success) {
+				tplError = genJson.error || 'Gagal generate';
+				return;
+			}
+			const content = genJson.data?.output || genJson.data?.content || '';
+
+			// Create content block with generated markdown
+			const body = { type: 'text', title: `${tplTopic.trim()} — ${tplType.toUpperCase()}`, body: content };
+			const res = await fetch('/api/admin/content-blocks', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			const json = await res.json();
+			if (!json.success) { tplError = json.error || 'Gagal membuat block'; return; }
+			const blockId = json.data.id;
+
+			// Link to lesson
+			await fetch('/api/admin/lesson-content-blocks', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ lessonId, contentBlockId: blockId, orderIndex: blocks.length }),
+			});
+
+			showTemplateModal = false;
+			loadData();
+		} catch {
+			tplError = 'Gagal terhubung';
+		} finally {
+			tplGenerating = false;
+		}
+	}
+
 	// Lesson resources (files)
 	let resources = $state<any[]>([]);
 	let resourcesLoading = $state(true);
@@ -354,6 +434,7 @@
 			</div>
 			<div class="header-actions">
 				<Button variant="secondary" href="/admin/offerings/{offeringId}/lessons">{t('admin.kembali')}</Button>
+				<Button variant="outline" onclick={openTemplateModal}>✨ AI Template</Button>
 				<Button onclick={openCreateBlock}>+ Content Block</Button>
 			</div>
 		</div>
@@ -529,6 +610,35 @@
 	</Modal>
 {/if}
 
+{#if showTemplateModal}
+	<Modal
+		open={showTemplateModal}
+		title="✨ Generate Konten AI (Template)"
+		onclose={() => showTemplateModal = false}
+	>
+		<p class="tpl-hint">Pilih template lalu isi topik. AI akan generate konten lengkap dan menambahkannya sebagai content block.</p>
+		{#if tplError}<Alert variant="danger">{tplError}</Alert>{/if}
+		<div class="tpl-form">
+			<label class="tpl-label">Jenis Template</label>
+			<div class="tpl-types">
+				{#each TEMPLATE_TYPES as tt}
+					<button
+						class="tpl-type-btn {tplType === tt.value ? 'active' : ''}"
+						onclick={() => tplType = tt.value}
+					>{tt.label}</button>
+				{/each}
+			</div>
+			<Input bind:value={tplTopic} label="Topik / Materi *" placeholder="Contoh: Pengenalan Algoritma, Basis Data Relasional, Struktur Data" />
+		</div>
+		{#snippet footer()}
+			<Button variant="secondary" onclick={() => showTemplateModal = false} disabled={tplGenerating}>Batal</Button>
+			<Button onclick={generateTemplateBlock} loading={tplGenerating}>
+				{tplGenerating ? 'Mengenerate...' : '✨ Generate & Tambahkan'}
+			</Button>
+		{/snippet}
+	</Modal>
+{/if}
+
 <style>
 	.content-editor-page { max-width: 1100px; }
 	.breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 16px; }
@@ -658,4 +768,17 @@
 	.resource-link.muted { color: #94a3b8; }
 	.resource-type { font-size: 10px; background: rgba(79,70,229,0.08); color: #4F46E5; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
 	.res-form { display: flex; flex-direction: column; gap: 12px; }
+
+	/* Template modal */
+	.tpl-hint { font-size: 13px; color: #64748b; margin: 0 0 12px; }
+	.tpl-form { display: flex; flex-direction: column; gap: 12px; }
+	.tpl-label { font-size: 13px; font-weight: 600; }
+	.tpl-types { display: flex; flex-direction: column; gap: 6px; }
+	.tpl-type-btn {
+		text-align: left; padding: 10px 12px; border-radius: 8px;
+		border: 1px solid rgba(0,0,0,0.1); background: #fff; cursor: pointer;
+		font-size: 13px; transition: all 0.15s;
+	}
+	.tpl-type-btn:hover { border-color: #4F46E5; }
+	.tpl-type-btn.active { background: #EEF2FF; border-color: #4F46E5; color: #4338CA; font-weight: 600; }
 </style>

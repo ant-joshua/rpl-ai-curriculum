@@ -130,7 +130,7 @@
 	$effect(() => {
 		if (!browser) return;
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js');
+			navigator.serviceWorker.register('/sw.js');
 		}
 	});
 
@@ -261,6 +261,7 @@
 	<meta name="theme-color" content="#FFFFFF" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
 	<link rel="alternate" type="application/rss+xml" title="RPL AI Curriculum RSS" href="/feed.xml" />
 	<link rel="alternate" type="application/feed+json" title="RPL AI Curriculum JSON Feed" href="/feed.json" />
 	<!-- SEO meta -->

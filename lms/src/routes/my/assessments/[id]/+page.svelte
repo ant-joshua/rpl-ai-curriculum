@@ -40,6 +40,17 @@
 	let resultData: any = $state(null);
 	let submitError = $state('');
 
+	// Map question index -> essay AI feedback
+	let essayFeedback = $derived.by(() => {
+		const map: Record<number, string> = {};
+		const essayScores = resultData?.essayScores || [];
+		essayScores.forEach((es: any) => {
+			const idx = questions.findIndex(q => q.id === es.questionId);
+			if (idx >= 0) map[idx] = es.feedback;
+		});
+		return map;
+	});
+
 	let assessmentId = $state('');
 
 	$effect(() => {
@@ -329,12 +340,18 @@
 										</div>
 									{/if}
 									{#if r.explanation}
-										<div class="result-explanation">
-											<span class="label">Explanation:</span>
-											<p>{r.explanation}</p>
-										</div>
-									{/if}
-								</div>
+																		<div class="result-explanation">
+																			<span class="label">Explanation:</span>
+																			<p>{r.explanation}</p>
+																		</div>
+																	{/if}
+																	{#if essayFeedback[i]}
+																		<div class="result-essay-feedback">
+																			<span class="label">🤖 AI Feedback:</span>
+																			<p>{essayFeedback[i]}</p>
+																		</div>
+																	{/if}
+																</div>
 							</div>
 						{/each}
 					</div>
@@ -1185,6 +1202,21 @@
 	}
 
 	.result-explanation p {
+		margin-top: 4px;
+		line-height: 1.5;
+	}
+
+	.result-essay-feedback {
+		margin-top: 8px;
+		padding: 10px 12px;
+		background: #f0fdf4;
+		border: 1px solid #86efac;
+		border-radius: 8px;
+		font-size: 13px;
+		color: #14532d;
+	}
+
+	.result-essay-feedback p {
 		margin-top: 4px;
 		line-height: 1.5;
 	}

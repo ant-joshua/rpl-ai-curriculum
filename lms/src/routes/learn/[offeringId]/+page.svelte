@@ -281,6 +281,9 @@
 					<Button href={`/learn/${offering.id}/syllabus`} variant="secondary">
 						📋 Lihat Silabus
 					</Button>
+					<Button href={`/learn/${offering.id}/leaderboard`} variant="outline">
+						🏆 Peringkat
+					</Button>
 				</div>
 
 				{#if lastCompletedTitle}

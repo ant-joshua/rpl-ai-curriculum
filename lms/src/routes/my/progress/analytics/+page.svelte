@@ -1,93 +1,55 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { modules, type Module } from '$lib/stores/modules';
 
-	let xpData = $state<number[]>([]);
-	let completionDates = $state<string[]>([]);
-	let streak = $state(0);
-	let longestStreak = $state(0);
+	let loading = $state(true);
+	let apiError = $state('');
 	let totalXp = $state(0);
 	let level = $state(1);
-	let sessionCount = $state(0);
-	let quizResults = $state<{ name: string; passed: number; failed: number }[]>([]);
-	let moduleProgress = $state<{ slug: string; name: string; done: number; total: number }[]>([]);
+	let streak = $state(0);
+	let longestStreak = $state(0);
+	let attendancePct = $state(0);
+	let insights: string[] = $state([]);
+	let quizPerformance: any[] = $state([]);
+	let subjectMastery: any[] = $state([]);
+	let xpTimeline: { day: string; pts: number }[] = $state([]);
+
+	// Map for heatmap from xpTimeline
+	let xpMap = $derived(new Map(xpTimeline.map(e => [e.day, e.pts])));
 
 	onMount(() => {
 		if (!browser) return;
 		loadData();
 	});
 
-	function loadData() {
+	async function loadData() {
+		loading = true;
+		apiError = '';
 		try {
-			// XP
-			const xpRaw = localStorage.getItem('lms-xp');
-			totalXp = xpRaw ? parseInt(xpRaw, 10) || 0 : 0;
-			level = Math.max(1, Math.floor(totalXp / 100) + 1);
-
-			// Generate XP timeline (simulated from daily deltas)
-			const datesRaw = localStorage.getItem('lms-completion-dates');
-			completionDates = datesRaw ? JSON.parse(datesRaw) : [];
-
-			// Streak
-			streak = parseInt(localStorage.getItem('lms-streak') || '0', 10);
-			longestStreak = parseInt(localStorage.getItem('lms-streak-longest') || '0', 10);
-
-			// XP over last 30 days
-			const today = new Date();
-			const last30: number[] = [];
-			for (let i = 29; i >= 0; i--) {
-				const d = new Date(today);
-				d.setDate(d.getDate() - i);
-				const ds = d.toISOString().split('T')[0];
-				const count = completionDates.filter(cd => cd === ds).length;
-				// Each session = 10 XP
-				last30.push(count * 10);
-			}
-			xpData = last30;
-
-			// Module progress
-			moduleProgress = modules.map(mod => {
-				const key = `lms-progress-${mod.slug}`;
-				const raw = localStorage.getItem(key);
-				const ids: string[] = raw ? JSON.parse(raw) : [];
-				return {
-					slug: mod.slug,
-					name: mod.title || mod.slug,
-					done: ids.length,
-					total: mod.sessions.length,
-				};
+			const token = localStorage.getItem('token') || '';
+			const res = await fetch('/api/my/analytics', {
+				headers: { Authorization: `Bearer ${token}` },
 			});
-
-			// Quiz results from localStorage
-			const qResults: { name: string; passed: number; failed: number }[] = [];
-			for (const mod of modules) {
-				for (const ses of mod.sessions) {
-					const qKey = `lms-quiz-${mod.slug}-${ses.id}`;
-					const raw = localStorage.getItem(qKey);
-					if (raw) {
-						try {
-							const parsed = JSON.parse(raw);
-							if (typeof parsed === 'object' && parsed !== null) {
-								const passed = typeof parsed.passed === 'number' ? parsed.passed : (parsed.score >= 70 ? 1 : 0);
-								const failed = typeof parsed.failed === 'number' ? parsed.failed : (parsed.score < 70 ? 1 : 0);
-								qResults.push({
-									name: ses.title || ses.id,
-									passed,
-									failed,
-								});
-							}
-						} catch { /* skip */ }
-					}
-				}
+			const json = await res.json();
+			if (!json.success) {
+				apiError = json.error || 'Gagal memuat data';
+				return;
 			}
-			quizResults = qResults;
-
-			// Session count
-			sessionCount = completionDates.length;
-
-		} catch { /* ignore localStorage errors */ }
+			const d = json.data;
+			totalXp = d.totalXp || 0;
+			level = d.level || 1;
+			streak = d.streak || 0;
+			longestStreak = d.longestStreak || 0;
+			attendancePct = d.attendancePct || 0;
+			insights = d.insights || [];
+			quizPerformance = d.quizPerformance || [];
+			subjectMastery = d.subjectMastery || [];
+			xpTimeline = d.xpTimeline || [];
+		} catch {
+			apiError = 'Network error';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function formatDateLabel(index: number): string {
@@ -103,6 +65,19 @@
 	const CHART_PAD = { top: 20, right: 10, bottom: 24, left: 40 };
 	const CHART_INNER_W = CHART_W - CHART_PAD.left - CHART_PAD.right;
 	const CHART_INNER_H = CHART_H - CHART_PAD.top - CHART_PAD.bottom;
+
+	// Daily XP for last 30 days (fill missing days with 0)
+	let xpData = $derived.by(() => {
+		const today = new Date();
+		const out: number[] = [];
+		for (let i = 29; i >= 0; i--) {
+			const d = new Date(today);
+			d.setDate(d.getDate() - i);
+			const ds = d.toISOString().split('T')[0];
+			out.push(xpMap.get(ds) || 0);
+		}
+		return out;
+	});
 
 	const maxXp = $derived(Math.max(...xpData, 10));
 
@@ -126,7 +101,6 @@
 			const y = CHART_PAD.top + CHART_INNER_H - (v / maxXp) * CHART_INNER_H;
 			d += `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)} `;
 		});
-		// Close to bottom
 		const lastX = CHART_PAD.left + (xpData.length - 1) * stepX;
 		d += `L ${lastX.toFixed(1)} ${CHART_PAD.top + CHART_INNER_H} L ${CHART_PAD.left} ${CHART_PAD.top + CHART_INNER_H} Z`;
 		return d;
@@ -136,13 +110,11 @@
 	const heatmapData = $derived.by(() => {
 		const today = new Date();
 		const cells: { date: string; count: number; day: number }[] = [];
-		// Last 12*7 = 84 days
 		for (let i = 83; i >= 0; i--) {
 			const d = new Date(today);
 			d.setDate(d.getDate() - i);
 			const ds = d.toISOString().split('T')[0];
-			const count = completionDates.filter(cd => cd === ds).length;
-			cells.push({ date: ds, count, day: d.getDay() });
+			cells.push({ date: ds, count: xpMap.get(ds) || 0, day: d.getDay() });
 		}
 		return cells;
 	});
@@ -152,17 +124,47 @@
 	const HEATMAP_COLS = 12;
 	const WEEKS = 12;
 
-	const totalCompleted = $derived(sessionCount);
-	const totalModulesCount = $derived(moduleProgress.length);
-	const completedModulesCount = $derived(moduleProgress.filter(m => m.done >= m.total).length);
-	const overallProgress = $derived(
-		moduleProgress.length > 0
-			? Math.round((completedModulesCount / moduleProgress.length) * 100)
+	// Derived stats
+	const passedCount = $derived(quizPerformance.filter(q => q.passed).length);
+	const failedCount = $derived(quizPerformance.length - passedCount);
+	const quizAvg = $derived(
+		quizPerformance.length > 0
+			? Math.round(quizPerformance.reduce((a: number, q: any) => a + q.pct, 0) / quizPerformance.length)
 			: 0
 	);
+	const overallProgress = $derived(
+		subjectMastery.length > 0
+			? Math.round(subjectMastery.reduce((a: number, s: any) => a + s.mastery, 0) / subjectMastery.length)
+			: 0
+	);
+
+	function pctColor(pct: number): string {
+		if (pct >= 80) return 'var(--green, #22c55e)';
+		if (pct >= 60) return 'var(--amber, #f59e0b)';
+		return 'var(--red, #ef4444)';
+	}
 </script>
 
 <div class="analytics">
+	<!-- Loading / Error -->
+	{#if loading}
+		<div class="empty-chart">Memuat data...</div>
+	{:else if apiError}
+		<div class="empty-chart" style="color: var(--red, #ef4444)">{apiError}</div>
+	{:else}
+	<!-- AI Insights Banner -->
+	<div class="insights-banner">
+		<div class="insights-head">
+			<span class="insights-icon">🤖</span>
+			<span class="insights-title">AI Insights — Analisis Personal</span>
+		</div>
+		<ul class="insights-list">
+			{#each insights as ins}
+				<li class="insight-item">{@html ins}</li>
+			{/each}
+		</ul>
+	</div>
+
 	<!-- Header Stats -->
 	<div class="stats-row">
 		<div class="stat-card">
@@ -170,6 +172,13 @@
 			<div class="stat-body">
 				<span class="stat-value">{totalXp}</span>
 				<span class="stat-label">XP Total</span>
+			</div>
+		</div>
+		<div class="stat-card">
+			<span class="stat-icon">🎖️</span>
+			<div class="stat-body">
+				<span class="stat-value">Lv {level}</span>
+				<span class="stat-label">Level</span>
 			</div>
 		</div>
 		<div class="stat-card">
@@ -187,24 +196,17 @@
 			</div>
 		</div>
 		<div class="stat-card">
-			<span class="stat-icon">📚</span>
-			<div class="stat-body">
-				<span class="stat-value">{completedModulesCount}/{totalModulesCount}</span>
-				<span class="stat-label">Modul Selesai</span>
-			</div>
-		</div>
-		<div class="stat-card">
 			<span class="stat-icon">📊</span>
 			<div class="stat-body">
 				<span class="stat-value">{overallProgress}%</span>
-				<span class="stat-label">Progres Total</span>
+				<span class="stat-label">Penguasaan Mapel</span>
 			</div>
 		</div>
 		<div class="stat-card">
-			<span class="stat-icon">💻</span>
+			<span class="stat-icon">📅</span>
 			<div class="stat-body">
-				<span class="stat-value">{totalCompleted}</span>
-				<span class="stat-label">Sesi Belajar</span>
+				<span class="stat-value">{attendancePct}%</span>
+				<span class="stat-label">Kehadiran</span>
 			</div>
 		</div>
 	</div>
@@ -254,7 +256,7 @@
 	<!-- Study Heatmap -->
 	<div class="chart-card">
 		<h3 class="chart-title">Aktivitas Belajar (12 Minggu)</h3>
-		{#if completionDates.length > 0}
+		{#if xpMap.size > 0}
 			<div class="heatmap-container">
 				<div class="heatmap-labels">
 					<span>Sen</span>
@@ -266,11 +268,11 @@
 						<div
 							class="heatmap-cell"
 							data-count={cell.count}
-							title="{cell.date}: {cell.count} sesi"
+							title="{cell.date}: {cell.count} XP"
 							style="background: {cell.count === 0 ? '#F1F5F9' :
-								cell.count <= 1 ? '#C7D2FE' :
-								cell.count <= 2 ? '#818CF8' :
-								cell.count <= 4 ? '#4F46E5' :
+								cell.count <= 20 ? '#C7D2FE' :
+								cell.count <= 50 ? '#818CF8' :
+								cell.count <= 100 ? '#4F46E5' :
 								'#3730A3'}"
 						></div>
 					{/each}
@@ -281,46 +283,50 @@
 		{/if}
 	</div>
 
-	<!-- Module Progress -->
+	<!-- Subject Mastery -->
 	<div class="chart-card">
-		<h3 class="chart-title">Progres Modul</h3>
-		{#if moduleProgress.length > 0}
+		<h3 class="chart-title">Penguasaan per Mapel</h3>
+		{#if subjectMastery.length > 0}
 			<div class="module-list">
-				{#each moduleProgress as mp}
+				{#each subjectMastery as sm}
 					<div class="module-item">
 						<div class="module-header">
-							<span class="module-name">{mp.name}</span>
-							<span class="module-count">{mp.done}/{mp.total} sesi</span>
+							<span class="module-name">{sm.name}</span>
+							<span class="module-count">{sm.mastery}% · {sm.count} quiz</span>
 						</div>
 						<div class="module-bar-track">
 							<div
 								class="module-bar-fill"
-								style="width: {mp.total > 0 ? (mp.done / mp.total) * 100 : 0}%"
+								style="width: {sm.mastery}%; background: {pctColor(sm.mastery)}"
 							></div>
 						</div>
 					</div>
 				{/each}
 			</div>
 		{:else}
-			<div class="empty-chart">Belum ada progres modul.</div>
+			<div class="empty-chart">Belum cukup data quiz untuk menghitung penguasaan mapel.</div>
 		{/if}
 	</div>
 
-	<!-- Quiz Accuracy -->
+	<!-- Quiz Performance -->
 	<div class="chart-card">
 		<h3 class="chart-title">Hasil Quiz</h3>
-		{#if quizResults.length > 0}
+		<div class="quiz-overview">
+			<span class="quiz-avg big">Rata-rata: <strong style="color:{pctColor(quizAvg)}">{quizAvg}%</strong></span>
+			<span class="quiz-pass-badge">✓ Lulus {passedCount}</span>
+			<span class="quiz-fail-badge">✗ Gagal {failedCount}</span>
+		</div>
+		{#if quizPerformance.length > 0}
 			<div class="quiz-grid">
-				{#each quizResults as q}
+				{#each quizPerformance as q}
 					<div class="quiz-item">
-						<div class="quiz-name">{q.name}</div>
-						<div class="quiz-bars">
-							<div class="quiz-pass-bar" style="flex: {q.passed || 0.5}">
-								<span class="quiz-bar-label">Lulus {q.passed}</span>
-							</div>
-							<div class="quiz-fail-bar" style="flex: {q.failed || 0.5}">
-								<span class="quiz-bar-label">Gagal {q.failed}</span>
-							</div>
+						<div class="quiz-name">{q.title} <span class="quiz-offering">{q.offering}</span></div>
+						<div class="quiz-bar-track">
+							<div class="quiz-bar-fill" style="width:{q.pct}%; background:{pctColor(q.pct)}"></div>
+						</div>
+						<div class="quiz-meta">
+							<span class="quiz-pct">{q.pct}%</span>
+							<span class="quiz-date">{q.date?.slice(0,10)}</span>
 						</div>
 					</div>
 				{/each}
@@ -329,6 +335,7 @@
 			<div class="empty-chart">Belum ada hasil quiz.</div>
 		{/if}
 	</div>
+	{/if}
 </div>
 
 <style>
@@ -337,6 +344,20 @@
 		margin: 0 auto;
 		padding: 0 12px 32px;
 	}
+
+	/* AI Insights Banner */
+	.insights-banner {
+		background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+		border: 1px solid #c7d2fe;
+		border-radius: var(--radius, 12px);
+		padding: 16px 20px;
+		margin-bottom: 16px;
+	}
+	.insights-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+	.insights-icon { font-size: 18px; }
+	.insights-title { font-weight: 700; font-size: 14px; color: #3730a3; }
+	.insights-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+	.insight-item { font-size: 13px; color: #4338ca; line-height: 1.5; }
 
 	/* Stats row */
 	.stats-row {
@@ -489,6 +510,17 @@
 	}
 
 	/* Quiz */
+	.quiz-overview { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+	.quiz-avg { font-size: 13px; color: var(--text-secondary, #64748b); }
+	.quiz-avg.big { font-size: 15px; }
+	.quiz-pass-badge {
+		background: #dcfce7; color: #166534; padding: 3px 10px;
+		border-radius: 999px; font-size: 12px; font-weight: 600;
+	}
+	.quiz-fail-badge {
+		background: #fee2e2; color: #991b1b; padding: 3px 10px;
+		border-radius: 999px; font-size: 12px; font-weight: 600;
+	}
 	.quiz-grid {
 		display: flex;
 		flex-direction: column;
@@ -500,36 +532,23 @@
 		font-weight: 500;
 		color: var(--text, #1a1a2e);
 		margin-bottom: 4px;
+		display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 	}
-	.quiz-bars {
-		display: flex;
-		gap: 4px;
-		height: 20px;
+	.quiz-offering { font-size: 10px; color: var(--text-secondary, #64748b); font-weight: 400; }
+	.quiz-bar-track {
+		height: 8px;
+		background: var(--border, #E2E8F0);
+		border-radius: 9999px;
+		overflow: hidden;
 	}
-	.quiz-pass-bar {
-		background: #22C55E;
-		border-radius: 4px;
-		display: flex;
-		align-items: center;
-		padding: 0 6px;
-		min-width: 40px;
-		transition: flex 0.3s ease;
+	.quiz-bar-fill {
+		height: 100%;
+		border-radius: 9999px;
+		transition: width 0.5s ease;
 	}
-	.quiz-fail-bar {
-		background: #EF4444;
-		border-radius: 4px;
-		display: flex;
-		align-items: center;
-		padding: 0 6px;
-		min-width: 40px;
-		transition: flex 0.3s ease;
-	}
-	.quiz-bar-label {
-		font-size: 9px;
-		font-weight: 600;
-		color: #fff;
-		white-space: nowrap;
-	}
+	.quiz-meta { display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px; color: var(--text-secondary, #64748b); }
+	.quiz-pct { font-weight: 700; }
+	.quiz-date { }
 
 	.empty-chart {
 		padding: 24px;

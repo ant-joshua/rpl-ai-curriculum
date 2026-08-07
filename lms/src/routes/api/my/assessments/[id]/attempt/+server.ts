@@ -1,5 +1,6 @@
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
+import { gradeEssay } from '$lib/server/aiedu';
 
 export async function GET({ params, request, platform }: { params: { id: string }; request: Request; platform: App.Platform }): Promise<Response> {
 	try {
@@ -169,6 +170,8 @@ export async function POST({ params, request, platform }: { params: { id: string
 		// Grade answers
 		let totalScore = 0;
 		let maxScore = 0;
+		let pointsAwarded = 0;
+		const essayScores: { questionId: string; score: number; feedback: string }[] = [];
 		const results: Array<{
 			questionId: string;
 			correct: boolean;
@@ -191,11 +194,22 @@ export async function POST({ params, request, platform }: { params: { id: string
 			} else if (qk.type === 'short_answer') {
 				correct = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
 			} else if (qk.type === 'essay') {
+				// Auto-grade essay with AI — but don't fail submission if AI fails
 				correct = false;
+				try {
+					const gradeRes = await gradeEssay(platform, qk.question || '', userAnswer, qk.points, undefined, correctAnswer || undefined);
+					pointsAwarded = gradeRes.score;
+					totalScore += pointsAwarded;
+					essayScores.push({ questionId: qk.question_id, score: pointsAwarded, feedback: gradeRes.feedback });
+				} catch {
+					// AI failed — leave 0, instructor grades later
+					pointsAwarded = 0;
+					totalScore += 0;
+				}
+			} else {
+				pointsAwarded = correct ? qk.points : 0;
+				totalScore += pointsAwarded;
 			}
-
-			const pointsAwarded = correct ? qk.points : 0;
-			totalScore += pointsAwarded;
 
 			results.push({
 				questionId: qk.question_id,
@@ -297,6 +311,7 @@ export async function POST({ params, request, platform }: { params: { id: string
 				timeExpired: timeExpiredOnServer,
 				xpAwarded,
 				newBadges,
+				essayScores,
 			}
 		});
 	} catch (e: unknown) {
