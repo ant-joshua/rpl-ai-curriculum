@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { PageHeader, Button, Spinner, EmptyState, Alert } from '$lib/components/ui';
 	import { parseMarkdown } from '$lib/utils/markdown';
+	import { SpeechReader } from '$lib/speech';
 
 	let threads = $state<any[]>([]);
 	let loading = $state(true);
@@ -17,6 +18,8 @@
 	let newCurriculum = $state('');
 	let curricula = $state<any[]>([]);
 	let chatRef = $state<any>(null);
+	let reader = new (typeof window !== 'undefined' ? SpeechReader : Object)() as SpeechReader;
+	let voicesId = $state('')
 
 	async function loadThreads() {
 		try {
@@ -40,6 +43,7 @@
 
 	onMount(() => {
 		if (!browser) return;
+		reader = new SpeechReader();
 		loadThreads();
 		fetch('/api/curricula').then((r) => r.json()).then((j) => { if (j.success) curricula = j.data || []; }).catch(() => {});
 	});
@@ -117,6 +121,19 @@
 			else alert(json.error || 'Gagal simpan');
 		} catch { alert('Gagal simpan ke bank'); }
 	}
+
+	function speakMessage(content: string) {
+		if (!reader || !reader.isSupported()) {
+			alert('Browser tidak mendukung text-to-speech');
+			return;
+		}
+		if (reader.speaking) {
+			reader.stop();
+			return;
+		}
+		const plain = content.replace(/[#*_`>|~-]+/g, ' ').replace(/\s+/g, ' ').trim();
+		reader.speak(plain, 1);
+	}
 </script>
 
 <PageHeader title="AI Chat Guru" subtitle="Asisten AI untuk guru — tanya strategi mengajar, perangkat ajar, penilaian" />
@@ -191,6 +208,7 @@
 							{:else}
 								<div class="md">{@html parseMarkdown(m.content)}</div>
 								<div class="msg-actions">
+									<button class="save-bank" onclick={() => speakMessage(m.content)} title="Dengarkan jawaban AI">🔊 Dengarkan</button>
 									<button class="save-bank" onclick={() => saveMsgToBank(m.id)} title="Simpan ke Bank Materi">📚 Simpan ke Bank</button>
 								</div>
 							{/if}

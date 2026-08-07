@@ -15,6 +15,8 @@
     display_name: string | null;
     avatar_url: string | null;
     user_role: string | null;
+    like_count?: number;
+    liked_by_me?: boolean;
     replies?: DiscussionComment[];
   }
 
@@ -29,6 +31,7 @@
   let postingReply = $state(false);
   let currentUserId = $state<string | null>(null);
   let currentUserRole = $state<string | null>(null);
+  let liking = $state<string | null>(null);
 
   function getToken(): string | null {
     if (typeof localStorage === 'undefined') return null;
@@ -41,6 +44,45 @@
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
+  }
+
+  async function toggleLike(comment: DiscussionComment) {
+    if (liking) return;
+    liking = comment.id;
+    try {
+      const res = await fetch(`/api/lessons/${lessonId}/discussions/${comment.id}/like`, {
+        method: 'POST',
+        headers: authHeaders()
+      });
+      const json = await res.json();
+      if (json.success) {
+        const liked = json.data.liked;
+        const count = json.data.like_count;
+        // Apply to nested reply or top-level comment
+        let found = false;
+        comments = comments.map(c => {
+          if (c.id === comment.id) { found = true; return { ...c, liked_by_me: liked, like_count: count }; }
+          if (c.replies) {
+            for (let i = 0; i < c.replies.length; i++) {
+              if (c.replies[i].id === comment.id) {
+                found = true;
+                const repl = [...c.replies];
+                repl[i] = { ...repl[i], liked_by_me: liked, like_count: count };
+                return { ...c, replies: repl };
+              }
+            }
+          }
+          return c;
+        });
+        if (!found) addToast('Komentar belum dimuat', 'warning');
+      } else {
+        addToast(json.error || 'Gagal like', 'error');
+      }
+    } catch {
+      addToast('Gagal like', 'error');
+    } finally {
+      liking = null;
+    }
   }
 
   $effect(() => {
@@ -197,6 +239,37 @@
   function isInstructor(c: DiscussionComment): boolean {
     return c.user_role === 'instructor' || c.user_role === 'admin' || c.user_role === 'superadmin';
   }
+
+  function roleBadgeLabel(role: string | null): string {
+    switch (role) {
+      case 'instructor': return 'Instructor';
+      case 'admin': return 'Admin';
+      case 'superadmin': return 'Super Admin';
+      case 'ta': return 'Asisten';
+      case 'parent': return 'Orang Tua';
+      case 'student': return 'Siswa';
+      default: return '';
+    }
+  }
+
+  function roleBadgeClass(role: string | null): string {
+    switch (role) {
+      case 'instructor': return 'badge-instructor';
+      case 'admin':
+      case 'superadmin': return 'badge-admin';
+      case 'ta': return 'badge-ta';
+      case 'parent': return 'badge-parent';
+      case 'student': return 'badge-student';
+      default: return '';
+    }
+  }
+
+  // Render content with @mention highlight and bold
+  function renderContent(content: string): string {
+    return content
+      .replace(/@(\w[\w\s]{1,40}?)(?=\s|$)/g, '<span class="mention">@$1</span>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
 </script>
 
 <div class="discussions-section">
@@ -243,13 +316,17 @@
           <div class="comment-body">
             <div class="comment-header">
               <span class="comment-author">{userName(comment)}</span>
-              {#if isInstructor(comment)}
-                <span class="instructor-badge">Instructor</span>
+              {#if roleBadgeLabel(comment.user_role)}
+                <span class="role-badge {roleBadgeClass(comment.user_role)}">{roleBadgeLabel(comment.user_role)}</span>
               {/if}
               <span class="comment-time">{timeAgo(comment.created_at)}</span>
             </div>
-            <div class="comment-content">{comment.content}</div>
+            <div class="comment-content">{@html renderContent(comment.content)}</div>
             <div class="comment-actions">
+              <button class="like-btn" class:liked={comment.liked_by_me} onclick={() => toggleLike(comment)} disabled={!!liking}>
+                <span class="like-icon">{comment.liked_by_me ? '👍' : '👍'}</span>
+                <span class="like-count">{comment.like_count || 0}</span>
+              </button>
               <button class="reply-btn" onclick={() => startReply(comment)}>Balas</button>
               {#if canDelete(comment)}
                 <button class="delete-btn" onclick={() => deleteComment(comment.id)}>Hapus</button>
@@ -267,13 +344,17 @@
                     <div class="comment-body">
                       <div class="comment-header">
                         <span class="comment-author">{userName(reply)}</span>
-                        {#if isInstructor(reply)}
-                          <span class="instructor-badge">Instructor</span>
+                        {#if roleBadgeLabel(reply.user_role)}
+                          <span class="role-badge {roleBadgeClass(reply.user_role)}">{roleBadgeLabel(reply.user_role)}</span>
                         {/if}
                         <span class="comment-time">{timeAgo(reply.created_at)}</span>
                       </div>
-                      <div class="comment-content">{reply.content}</div>
+                      <div class="comment-content">{@html renderContent(reply.content)}</div>
                       <div class="comment-actions">
+                        <button class="like-btn" class:liked={reply.liked_by_me} onclick={() => toggleLike(reply)} disabled={!!liking}>
+                          <span class="like-icon">{reply.liked_by_me ? '👍' : '👍'}</span>
+                          <span class="like-count">{reply.like_count || 0}</span>
+                        </button>
                         {#if canDelete(reply)}
                           <button class="delete-btn" onclick={() => deleteComment(reply.id)}>Hapus</button>
                         {/if}
@@ -408,14 +489,43 @@
     color: var(--text);
   }
 
-  .instructor-badge {
+  .instructor-badge,
+  .role-badge {
     font-size: 10px;
     font-weight: 600;
     padding: 1px 8px;
     border-radius: 4px;
-    background: rgba(79, 70, 229, 0.15);
-    color: var(--accent);
   }
+  .role-badge.badge-instructor { background: rgba(79, 70, 229, 0.15); color: #4F46E5; }
+  .role-badge.badge-admin { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+  .role-badge.badge-ta { background: rgba(217, 119, 6, 0.15); color: #d97706; }
+  .role-badge.badge-parent { background: rgba(16, 185, 129, 0.15); color: #0d9488; }
+  .role-badge.badge-student { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+  .comment-content :global(.mention) {
+    color: #4F46E5;
+    font-weight: 600;
+    background: rgba(79, 70, 229, 0.1);
+    border-radius: 4px;
+    padding: 0 3px;
+  }
+
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--text-secondary);
+    transition: color 0.15s;
+  }
+  .like-btn:hover { color: var(--accent); }
+  .like-btn.liked { color: var(--accent); }
+  .like-icon { font-size: 12px; }
 
   .comment-time {
     font-size: 11px;

@@ -12,14 +12,16 @@ export async function GET({ request, platform, params }: { request: Request; pla
     const db = getDB(platform);
     const { lessonId } = params;
 
-    // Get all discussions for this lesson, ordered by creation date
+    // Get all discussions for this lesson, ordered by creation date, with like counts
     const { results } = await db.prepare(
-      `SELECT ld.*, u.display_name, u.avatar_url, u.role as user_role
+      `SELECT ld.*, u.display_name, u.avatar_url, u.role as user_role,
+              (SELECT COUNT(*) FROM discussion_likes dl WHERE dl.discussion_id = ld.id) as like_count,
+              EXISTS(SELECT 1 FROM discussion_likes dl2 WHERE dl2.discussion_id = ld.id AND dl2.user_id = ?) as liked_by_me
        FROM lesson_discussions ld
        LEFT JOIN users u ON ld.user_id = u.id
        WHERE ld.lesson_id = ?
        ORDER BY ld.created_at ASC`
-    ).bind(lessonId).all<any>();
+    ).bind(session.user.id, lessonId).all<any>();
 
     // Build threaded structure: top-level comments first, replies nested under parent_id
     const topLevel = (results || []).filter(r => !r.parent_id);

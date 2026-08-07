@@ -14,6 +14,7 @@
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
 	import Textarea from '$lib/components/ui/Textarea.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { SpeechReader, collectBlockText } from '$lib/speech';
 
 	let { data } = $props();
 
@@ -65,6 +66,40 @@
 	let noteContent = $state('');
 	let isSavingNote = $state(false);
 	let lessonResources = $state<any[]>([]);
+	let reader = $state<SpeechReader | null>(null);
+	let isReading = $state(false);
+	let readingRate = $state(1);
+
+	function toggleReadAloud() {
+		if (!reader) reader = new SpeechReader();
+		if (!reader.isSupported()) {
+			addToast('Browser tidak mendukung text-to-speech', 'warning');
+			return;
+		}
+		if (isReading) {
+			reader.stop();
+			isReading = false;
+			return;
+		}
+		const text = collectBlockText(contentBlocks);
+		if (!text) {
+			addToast('Tidak ada konten untuk dibacakan', 'warning');
+			return;
+		}
+		const res = reader.speak(text, readingRate);
+		if (res.error) {
+			addToast(res.error, 'warning');
+			return;
+		}
+		isReading = true;
+		// Auto-reset when finished
+		const checkDone = setInterval(() => {
+			if (reader && !reader.speaking) {
+				clearInterval(checkDone);
+				isReading = false;
+			}
+		}, 1500);
+	}
 
 	// Load lesson resources (materi pendukung)
 	$effect(() => {
@@ -458,6 +493,19 @@
 					>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 						<span>Tanya AI</span>
+					</button>
+					<button
+						class="ask-ai-btn"
+						onclick={() => toggleReadAloud()}
+						title={isReading ? 'Berhenti membacakan' : 'Bacakan materi (text-to-speech)'}
+					>
+						{#if isReading}
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+							<span>Berhenti</span>
+						{:else}
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+							<span>Bacakan</span>
+						{/if}
 					</button>
 					<button
 						class="bookmark-btn"

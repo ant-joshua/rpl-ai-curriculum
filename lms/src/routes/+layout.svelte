@@ -76,6 +76,7 @@
 					{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
 					{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
 					{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
+					{ href: '/my/export', icon: 'download', label: 'Export' },
 					{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
 				]
 			},
