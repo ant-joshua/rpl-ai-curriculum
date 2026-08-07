@@ -7,6 +7,8 @@
 	let email = $state('');
 	let password = $state('');
 	let confirmPassword = $state('');
+	let childCode = $state('');
+	let accountType = $state<'student' | 'parent'>('student');
 		let loading = $state(false);
 		let error = $state('');
 		let showVerifyNotice = $state(false);
@@ -23,14 +25,19 @@
 
 		loading = true;
 		try {
-			const res = await fetch('/api/auth/register/student', {
+			const endpoint = accountType === 'parent' ? '/api/auth/register/parent' : '/api/auth/register/student';
+			const payload: Record<string, string> = {
+				name: name.trim(),
+				email: email.trim(),
+				password,
+			};
+			if (accountType === 'parent' && childCode.trim()) {
+				payload.child_code = childCode.trim();
+			}
+			const res = await fetch(endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					name: name.trim(),
-					email: email.trim(),
-					password,
-				}),
+				body: JSON.stringify(payload),
 			});
 			const json = await res.json();
 			if (json.success) {
@@ -39,7 +46,7 @@
 					localStorage.setItem('token', json.token);
 				}
 				showVerifyNotice = true;
-				setTimeout(() => goto('/dashboard'), 2500);
+				setTimeout(() => goto(accountType === 'parent' ? '/parent' : '/dashboard'), 2500);
 			} else {
 				error = json.error || 'Pendaftaran gagal';
 			}
@@ -72,16 +79,42 @@
 			{/if}
 
 			<div class="form-group">
-				<label for="name">{t('register.fullname')}</label>
+				<label>Daftar sebagai</label>
+				<div class="account-type">
+					<button type="button" class="type-btn {accountType === 'student' ? 'active' : ''}" onclick={() => accountType = 'student'}>
+						🎓 Siswa
+					</button>
+					<button type="button" class="type-btn {accountType === 'parent' ? 'active' : ''}" onclick={() => accountType = 'parent'}>
+						👨‍👩‍👧 Orang Tua / Wali
+					</button>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="name">{accountType === 'parent' ? 'Nama Lengkap (Orang Tua)' : t('register.fullname')}</label>
 				<input
 					id="name"
 					type="text"
 					bind:value={name}
-					placeholder="Masukkan nama lengkap"
+					placeholder={accountType === 'parent' ? 'Nama orang tua / wali' : 'Masukkan nama lengkap'}
 					required
 					disabled={loading}
 				/>
 			</div>
+
+			{#if accountType === 'parent'}
+				<div class="form-group">
+					<label for="childCode">Kode Anak (opsional)</label>
+					<input
+						id="childCode"
+						type="text"
+						bind:value={childCode}
+						placeholder="Username / ID anak murid — cek di akun siswa"
+						disabled={loading}
+					/>
+					<small class="field-hint">Isi kalau tahu kode anak. Bisa ditambahkan nanti dari portal.</small>
+				</div>
+			{/if}
 
 			<div class="form-group">
 				<label for="email">{t('register.email')}</label>
@@ -240,8 +273,42 @@
 	.login-link {
 		text-align: center;
 		margin-top: 16px;
-		font-size: 13px;
-		color: var(--text-secondary, #64748b);
+		font-size: 14px;
+	}
+
+	.account-type {
+		display: flex;
+		gap: 8px;
+		margin-top: 6px;
+	}
+
+	.type-btn {
+		flex: 1;
+		padding: 10px 12px;
+		border: 1px solid var(--border, #E2E8F0);
+		border-radius: 10px;
+		background: var(--surface, #FFFFFF);
+		font-size: 14px;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.type-btn:hover {
+		border-color: #4F46E5;
+	}
+
+	.type-btn.active {
+		background: #EEF2FF;
+		border-color: #4F46E5;
+		color: #4338CA;
+		font-weight: 600;
+	}
+
+	.field-hint {
+		display: block;
+		margin-top: 4px;
+		font-size: 12px;
+		color: var(--text-muted, #94A3B8);
 	}
 	.login-link a {
 		color: #4F46E5;

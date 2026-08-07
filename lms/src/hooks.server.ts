@@ -194,6 +194,35 @@ export async function handle({ event, resolve }: {
 		currentUser = user;
 	}
 
+	// Parent API auth check — parents access their linked students' progress
+	if (path.startsWith('/api/parent/')) {
+		const token = getBearerToken(event.request);
+		if (!token) {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			}));
+		}
+		const session = await getSession(event.platform, token);
+		if (!session) {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			}));
+		}
+		const db = getDB(event.platform);
+		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
+		if (!user || !['parent', 'superadmin', 'admin'].includes(user.role)) {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — parent role required' }), {
+				status: 403,
+				headers: { 'Content-Type': 'application/json' },
+			}));
+		}
+		event.locals = event.locals || {};
+		event.locals.user = user;
+		currentUser = user;
+	}
+
 	// Activity logging — capture full HTTP metadata
 	const method = event.request.method;
 	const startTime = Date.now();

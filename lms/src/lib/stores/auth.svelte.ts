@@ -7,6 +7,7 @@ export interface OAuthUser {
 	email: string;
 	avatar?: string;
 	provider: 'google' | 'github';
+	role?: string;
 }
 
 const AUTH_KEY = 'lms-auth-token';

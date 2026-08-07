@@ -60,7 +60,7 @@
 				progress.updateStreak();
 				addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
 				setTimeout(() => {
-					window.location.href = '/dashboard';
+					window.location.href = data.user.role === 'parent' ? '/parent' : '/dashboard';
 				}, 50);
 			}
 		} catch {
@@ -94,7 +94,7 @@
 				progress.updateStreak();
 				addToast('Verifikasi 2FA berhasil!', 'success');
 				setTimeout(() => {
-					window.location.href = '/dashboard';
+					window.location.href = data.user.role === 'parent' ? '/parent' : '/dashboard';
 				}, 50);
 			} else {
 				error = data.error || 'Kode verifikasi salah';

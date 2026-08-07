@@ -141,10 +141,19 @@ export async function GET({ request, platform }: {
 
 		const finalUserId = existing?.id || userId;
 		await getOrCreateUsersRow(platform, finalUserId, userInfo.email, userInfo.name);
+
+		// Fetch role for parent-aware redirect
+		let oauthRole = 'student';
+		try {
+			const lmsDb = getDB(platform);
+			const u = await lmsDb.prepare('SELECT role FROM users WHERE id = ?').bind(finalUserId).first<any>();
+			oauthRole = u?.role || 'student';
+		} catch { /* keep default */ }
+
 		const token = await createSession(platform, finalUserId, provider);
 
 		const userJson = encodeURIComponent(JSON.stringify({
-			id: finalUserId, name: userInfo.name, email: userInfo.email, avatar: userInfo.avatar, provider,
+			id: finalUserId, name: userInfo.name, email: userInfo.email, avatar: userInfo.avatar, provider, role: oauthRole,
 		}));
 
 		return new Response(null, {

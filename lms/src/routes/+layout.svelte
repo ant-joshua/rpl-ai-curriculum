@@ -26,44 +26,61 @@
 	import GamificationToast from '$lib/components/toast/GamificationToast.svelte';
 	import QuestCompletePopup from '$lib/components/QuestCompletePopup.svelte';
 
-	const navSections = $derived.by(() => [
-		{
-			name: 'Main Nav',
-			links: [
-				{ href: '/', icon: 'home', label: t('nav.dashboard') },
-				{ href: '/my/courses', icon: 'book', label: t('nav.courses') },
-				{ href: '/planner', icon: 'calendar', label: t('nav.calendar') },
-				{ href: '/announcements', icon: 'message-square', label: t('nav.messages') },
-			]
-		},
-		{
-			name: 'Learning',
-			links: [
-				{ href: '/catalog', icon: 'compass', label: t('nav.catalog') },
-				{ href: '/path', icon: 'map-pin', label: t('nav.paths') },
-				{ href: '/progress', icon: 'trending-up', label: t('nav.progress') },
-			]
-		},
-		{
-			name: 'Tools',
-			links: [
-				{ href: '/tutor', icon: 'robot', label: t('nav.tutor') },
-				{ href: '/aiedu', icon: 'sparkles', label: 'AIEdu' },
-				{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
-				{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
-				{ href: '/projects', icon: 'rocket', label: t('nav.projects') },
-			]
-		},
-		{
-			name: 'Account',
-			links: [
-				{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
-				{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
-				{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
-				{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
-			]
-		},
-	]);
+	const roleLabel = $derived(auth.authUser?.role || '');
+	// For parent role, only show a minimal parent-focused nav.
+	const parentNav = $derived(roleLabel === 'parent');
+	const navSections = $derived.by(() => {
+		if (parentNav) {
+			return [
+				{
+					name: 'Portal',
+					links: [
+						{ href: '/parent', icon: 'users', label: 'Portal Orang Tua' },
+						{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
+						{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
+					]
+				},
+			];
+		}
+		return [
+			{
+				name: 'Main Nav',
+				links: [
+					{ href: '/', icon: 'home', label: t('nav.dashboard') },
+					{ href: '/my/courses', icon: 'book', label: t('nav.courses') },
+					{ href: '/planner', icon: 'calendar', label: t('nav.calendar') },
+					{ href: '/announcements', icon: 'message-square', label: t('nav.messages') },
+				]
+			},
+			{
+				name: 'Learning',
+				links: [
+					{ href: '/catalog', icon: 'compass', label: t('nav.catalog') },
+					{ href: '/path', icon: 'map-pin', label: t('nav.paths') },
+					{ href: '/progress', icon: 'trending-up', label: t('nav.progress') },
+				]
+			},
+			{
+				name: 'Tools',
+				links: [
+					{ href: '/tutor', icon: 'robot', label: t('nav.tutor') },
+					{ href: '/aiedu', icon: 'sparkles', label: 'AIEdu' },
+					{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
+					{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
+					{ href: '/projects', icon: 'rocket', label: t('nav.projects') },
+				]
+			},
+			{
+				name: 'Account',
+				links: [
+					{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
+					{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
+					{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
+					{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
+				]
+			},
+		];
+	});
 
 	let { children } = $props();
 
@@ -110,7 +127,7 @@
 					user.username = oauthUser.name;
 				}
 				setTimeout(() => {
-					window.location.href = '/dashboard';
+					window.location.href = (oauthUser as any).role === 'parent' ? '/parent' : '/dashboard';
 				}, 50);
 			} catch {
 				// ignore bad parse
@@ -123,6 +140,14 @@
 		if (!browser) return;
 		if (auth.authToken && !auth.authUser) {
 			auth.validateSession();
+		}
+	});
+
+	// Redirect parent away from student dashboard to their portal
+	$effect(() => {
+		if (!browser) return;
+		if (roleLabel === 'parent' && $page.url.pathname === '/dashboard') {
+			window.location.href = '/parent';
 		}
 	});
 
