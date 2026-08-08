@@ -281,6 +281,9 @@
 			<div class="lessons-header">
 				<h3 class="section-title">Materi ({lessons.length})</h3>
 				<div class="header-actions">
+					<a href={`/instructor/courses/${courseId}/submissions`}>
+						<Button size="sm" variant="secondary">📋 Review Tugas</Button>
+					</a>
 					<a href={`/api/instructor/courses/${courseId}/export`} download>
 						<Button size="sm" variant="secondary">📥 Export Markdown</Button>
 					</a>

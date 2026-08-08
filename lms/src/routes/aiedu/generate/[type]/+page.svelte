@@ -122,6 +122,45 @@
 	let lastGenId = $state('');
 	let savingBank = $state(false);
 
+	// Generate soal langsung dari materi yang di-paste
+	let material = $state('');
+	let questionCount = $state(10);
+	let generatingFromMaterial = $state(false);
+
+	async function generateFromMaterial() {
+		if (!material.trim() || material.trim().length < 50) {
+			error = 'Paste materi dulu (minimal 50 karakter)';
+			return;
+		}
+		generatingFromMaterial = true;
+		error = '';
+		try {
+			const res = await fetch('/api/aiedu/soal/generate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					material: material.trim(),
+					subject: subject.trim(),
+					grade,
+					topic: topic.trim(),
+					count: questionCount,
+					course_offering_id: curriculumId || undefined,
+				}),
+			});
+			const json = await res.json();
+			if (json.success) {
+				alert(`✅ ${json.data.count} soal berhasil dibuat dari materi dan masuk Question Bank!`);
+				material = '';
+			} else {
+				error = json.error || 'Gagal generate';
+			}
+		} catch {
+			error = 'Gagal menghubungi AI';
+		} finally {
+			generatingFromMaterial = false;
+		}
+	}
+
 	async function saveToBank() {
 		if (!lastGenId) return;
 		savingBank = true;
@@ -174,7 +213,26 @@
 					✨ Generate
 				</Button>
 				{#if error}
-					<Alert variant="error" class="gen-error">{error}</Alert>
+					<Alert variant="danger" class="gen-error">{error}</Alert>
+				{/if}
+				{#if docType === 'soal'}
+					<div class="material-gen">
+						<div class="material-gen-title">🧠 Generate Soal dari Materi</div>
+						<p class="material-gen-hint">Paste/upload materi belajar — AI langsung buat soal + kunci ke Question Bank, tanpa review.</p>
+						<textarea
+							bind:value={material}
+							rows={6}
+							placeholder="Tempel isi materi di sini (teks pelajaran, ringkasan, catatan)..."
+							class="material-input"
+						></textarea>
+						<label class="material-count">
+							<span>Jumlah soal:</span>
+							<input type="number" min="3" max="20" bind:value={questionCount} class="count-input" />
+						</label>
+						<Button variant="primary" fullWidth onclick={generateFromMaterial} loading={generatingFromMaterial}>
+							⚡ Generate + Simpan ke QBank
+						</Button>
+					</div>
 				{/if}
 			</CardContent>
 		</Card>
@@ -215,6 +273,12 @@
 		font-size: 14px; font-family: inherit; width: 100%; box-sizing: border-box;
 	}
 	.gen-error { margin-top: 10px; }
+	.material-gen { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+	.material-gen-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+	.material-gen-hint { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; line-height: 1.5; }
+	.material-input { width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; box-sizing: border-box; resize: vertical; }
+	.material-count { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 10px 0; }
+	.count-input { width: 70px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; }
 	.center { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 0; }
 	.gen-loading { font-size: 13px; color: var(--text-muted); }
 	.result-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }

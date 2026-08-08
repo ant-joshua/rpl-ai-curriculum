@@ -70,6 +70,13 @@
   function isToday(dt: string): boolean {
     return dt?.slice(0, 10) === new Date().toISOString().slice(0, 10);
   }
+
+  function exportCalendar() {
+    if (!browser) return;
+    const token = localStorage.getItem('lms-auth-token');
+    const url = `/api/my/calendar.ics${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    window.open(url, '_blank');
+  }
 </script>
 
 <svelte:head>
@@ -79,10 +86,15 @@
 <div class="schedule-page">
   <PageHeader title="Jadwal Saya" subtitle="Pantau jadwal kuliah dan kegiatan belajar">
     {#snippet action()}
-      <div class="filter-row">
-        <button class="filter-btn" class:active={filter === 'upcoming'} onclick={() => filter = 'upcoming'}>Akan Datang</button>
-        <button class="filter-btn" class:active={filter === 'today'} onclick={() => filter = 'today'}>Hari Ini</button>
-        <button class="filter-btn" class:active={filter === 'all'} onclick={() => filter = 'all'}>Semua</button>
+      <div class="header-actions">
+        <button class="export-cal-btn" onclick={exportCalendar} title="Export ke Google Calendar / iCal">
+          📅 Export Kalender
+        </button>
+        <div class="filter-row">
+          <button class="filter-btn" class:active={filter === 'upcoming'} onclick={() => filter = 'upcoming'}>Akan Datang</button>
+          <button class="filter-btn" class:active={filter === 'today'} onclick={() => filter = 'today'}>Hari Ini</button>
+          <button class="filter-btn" class:active={filter === 'all'} onclick={() => filter = 'all'}>Semua</button>
+        </div>
       </div>
     {/snippet}
   </PageHeader>
@@ -225,6 +237,21 @@
   .item-title { font-size: 14px; font-weight: 590; color: #1a1a2e; display: block; font-feature-settings: 'cv01', 'ss03'; }
   .item-offering { font-size: 12px; color: #64748b; }
   .item-desc { font-size: 12px; color: #64748b; margin: 4px 0 0; }
+
+  .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .export-cal-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    background: #4F46E5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: inherit;
+  }
+  .export-cal-btn:hover { opacity: 0.9; }
   .item-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
   .meta-tag { font-size: 11px; color: #64748b; }
   .meta-link { color: #4F46E5; }

@@ -54,7 +54,7 @@ export async function PUT({ request, params, platform, locals }: {
 			return jsonResponse({ success: false, error: 'Forbidden' }, 403);
 		}
 
-		const existing = await db.prepare('SELECT * FROM assignment_submissions WHERE id = ?').bind(params.id).first<any>();
+		const existing = await db.prepare('SELECT * FROM assignment_submissions WHERE id = ?').bind(params.id).first() as any;
 		if (!existing) {
 			return jsonResponse({ success: false, error: 'Submission not found' }, 404);
 		}
