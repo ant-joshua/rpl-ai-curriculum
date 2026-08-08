@@ -77,6 +77,7 @@
 | FE-0604 | Exercises per module | ✅ | `api/admin/exercises*`, `exercises/*` | `exercises` |
 | FE-0605 | Educator essay grading (AI) | ✅ | `api/instructor/grade-essay` | — |
 | FE-0606 | Submission grading (admin + instructor review UI + grade) | ✅ | `api/admin/submissions/[id]/grade`, `instructor/courses/[id]/submissions*`, `api/instructor/courses/[offeringId]/submissions*` | `submissions` |
+| FE-0607 | Live Quiz (real-time classroom: instructor hosts via 6-digit PIN, students join, per-question polling timer, instant grading, live leaderboard) | ✅ | `instructor/live-quiz/*`, `live-quiz/*`, `api/instructor/live-quizzes*`, `api/my/live-quiz/*` | `live_quizzes`, `live_quiz_participants`, `live_quiz_responses` |
 
 ## EPIC 7: AIEdu (A-AIEDU)
 
