@@ -5,6 +5,7 @@
   import { Card, CardContent, EmptyState, Skeleton, PageHeader } from '$lib/components/ui';
 
   let schedules = $state<any[]>([]);
+  let assignments = $state<any[]>([]);
   let loading = $state(true);
   let error = $state('');
 
@@ -24,7 +25,8 @@
       });
       const json = await res.json();
       if (json.success) {
-        schedules = json.data || [];
+        schedules = json.data?.schedules || [];
+        assignments = json.data?.assignments || [];
       } else {
         error = json.error || 'Gagal memuat jadwal';
       }
@@ -35,16 +37,50 @@
     }
   }
 
+  // Combine schedules + assignment deadlines into one event stream
+  let allEvents = $derived.by(() => {
+    const events: any[] = [];
+    for (const s of schedules) {
+      events.push({
+        kind: 'schedule',
+        date: s.start_time?.slice(0, 10),
+        time: s.start_time,
+        endTime: s.end_time,
+        title: s.title || 'Kelas',
+        offering: s.offering_name,
+        courseIcon: s.course_icon || '📚',
+        courseOfferingId: s.course_offering_id,
+        id: s.id,
+      });
+    }
+    for (const a of assignments) {
+      events.push({
+        kind: 'assignment',
+        date: a.due_date?.slice(0, 10),
+        time: a.due_date,
+        endTime: null,
+        title: a.title,
+        offering: a.offering_name,
+        courseIcon: a.course_icon || '📝',
+        courseOfferingId: null,
+        id: a.id,
+        submissionStatus: a.submission_status,
+        submissionScore: a.submission_score,
+      });
+    }
+    return events.sort((a, b) => (a.date + ' ' + (a.time || '')).localeCompare(b.date + ' ' + (b.time || '')));
+  });
+
   let filteredSchedules = $derived.by(() => {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     if (filter === 'today') {
-      return schedules.filter((s: any) => s.start_time?.slice(0, 10) === today);
+      return allEvents.filter((e: any) => e.date === today);
     }
     if (filter === 'upcoming') {
-      return schedules.filter((s: any) => s.start_time >= now.toISOString());
+      return allEvents.filter((e: any) => e.date >= today);
     }
-    return schedules;
+    return allEvents;
   });
 
   let groupedSchedules = $derived.by(() => {
@@ -107,7 +143,7 @@
         <div class="empty-mini"><p class="empty-text">{error}</p></div>
       </CardContent>
     </Card>
-  {:else if schedules.length === 0}
+  {:else if schedules.length === 0 && assignments.length === 0}
     <EmptyState icon="📅" title="Belum ada jadwal" description="Kamu belum memiliki jadwal untuk kursus yang terdaftar" />
   {:else if groupedSchedules.length === 0}
     <EmptyState icon="📅" title="Tidak ada jadwal" description="Tidak ada jadwal dengan filter ini" />
@@ -123,32 +159,43 @@
           </div>
           <div class="day-items">
             {#each items as item}
-              <a href="/learn/{item.course_offering_id}" class="schedule-item">
+              <a href={item.kind === 'assignment' ? `/my/assignments/${item.id}` : `/learn/${item.courseOfferingId}`} class="schedule-item" class:assignment-item={item.kind === 'assignment'}>
                 <div class="item-time">
-                  <span class="item-clock">{formatTime(item.start_time)}</span>
-                  {#if item.end_time}
-                    <span class="item-clock-end">- {formatTime(item.end_time)}</span>
+                  <span class="item-clock">{formatTime(item.time)}</span>
+                  {#if item.endTime}
+                    <span class="item-clock-end">- {formatTime(item.endTime)}</span>
                   {/if}
                 </div>
                 <div class="item-body">
                   <div class="item-header">
-                    <span class="item-icon">{item.course_icon || '📚'}</span>
+                    <span class="item-icon">{item.courseIcon || '📚'}</span>
                     <div>
-                      <span class="item-title">{item.title}</span>
-                      <span class="item-offering">{item.offering_name}</span>
+                      <span class="item-title">
+                        {item.kind === 'assignment' ? '⏰ ' : ''}{item.title}
+                      </span>
+                      <span class="item-offering">{item.offering}</span>
                     </div>
                   </div>
-                  {#if item.description}
+                  {#if item.kind === 'assignment'}
+                    <div class="item-meta">
+                      {#if item.submissionStatus === 'graded'}
+                        <span class="meta-tag status-graded">✅ Dinilai {item.submissionScore ? `(${item.submissionScore}%)` : ''}</span>
+                      {:else if item.submissionStatus === 'submitted'}
+                        <span class="meta-tag status-submitted">📤 Sudah dikumpulkan</span>
+                      {/if}
+                      <span class="meta-tag">📝 Tugas</span>
+                    </div>
+                  {:else if item.description}
                     <p class="item-desc">{item.description}</p>
+                    <div class="item-meta">
+                      {#if item.location}
+                        <span class="meta-tag">📍 {item.location}</span>
+                      {/if}
+                      {#if item.meeting_link}
+                        <span class="meta-tag meta-link">🔗 Online</span>
+                      {/if}
+                    </div>
                   {/if}
-                  <div class="item-meta">
-                    {#if item.location}
-                      <span class="meta-tag">📍 {item.location}</span>
-                    {/if}
-                    {#if item.meeting_link}
-                      <span class="meta-tag meta-link">🔗 Online</span>
-                    {/if}
-                  </div>
                 </div>
               </a>
             {/each}
@@ -220,6 +267,13 @@
     background: rgba(0,0,0,0.04);
     border-color: rgba(255,255,255,0.12);
   }
+  .schedule-item.assignment-item {
+    border-left: 3px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.03);
+  }
+  .schedule-item.assignment-item:hover { border-left-color: #f59e0b; }
+  .status-graded { background: #f0fdf4; color: #16a34a; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .status-submitted { background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .item-time {
     min-width: 80px;
     text-align: right;
