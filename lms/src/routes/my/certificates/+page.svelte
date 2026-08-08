@@ -54,6 +54,7 @@
 						<p class="cert-date">📅 {formatDate(cert.issuedAt)}</p>
 						<p class="cert-number">No. {cert.certNumber}</p>
 						<div class="cert-actions">
+							<a class="cert-download-link" href={`/api/my/certificates/${cert.id}/download`} target="_blank">⬇️ Download PDF</a>
 							<a class="cert-verify-link" href="/certificates/verify?code={cert.certNumber}" target="_blank">🔍 Verifikasi Publik</a>
 						</div>
 					</CardContent>
@@ -83,9 +84,20 @@
 	.cert-name strong { color: var(--text); }
 	.cert-instructor, .cert-date { font-size: 12px; color: var(--text-muted); margin: 0 0 4px; }
 	.cert-number { font-size: 11px; color: #94a3b8; margin: 10px 0 0; font-family: monospace; }
-	.cert-actions { margin-top: 12px; }
+	.cert-actions { margin-top: 12px; display: flex; gap: 14px; }
+	.cert-download-link, .cert-verify-link {
+		font-size: 12px; font-weight: 600; text-decoration: none;
+	}
+	.cert-download-link {
+		color: #16a34a;
+		background: #f0fdf4;
+		border: 1px solid #bbf7d0;
+		padding: 6px 12px;
+		border-radius: 8px;
+	}
+	.cert-download-link:hover { background: #dcfce7; text-decoration: none; }
 	.cert-verify-link {
-		font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;
+		color: #2563eb; align-self: center;
 	}
 	.cert-verify-link:hover { text-decoration: underline; }
 </style>

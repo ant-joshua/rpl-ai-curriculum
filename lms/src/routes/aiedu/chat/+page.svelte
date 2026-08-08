@@ -20,6 +20,47 @@
 	let chatRef = $state<any>(null);
 	let reader = new (typeof window !== 'undefined' ? SpeechReader : Object)() as SpeechReader;
 	let voicesId = $state('')
+	let recording = $state(false);
+	let recognition: any = null;
+	let speechSupported = $state(false);
+
+	onMount(() => {
+		if (!browser) return;
+		speechSupported = !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
+	});
+
+	function toggleRecording() {
+		if (!browser) return;
+		const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+		if (!SR) {
+			alert('Browser tidak mendukung voice input. Coba Chrome/Edge.');
+			return;
+		}
+		if (recording) {
+			recognition?.stop();
+			recording = false;
+			return;
+		}
+		recognition = new SR();
+		recognition.lang = 'id-ID';
+		recognition.interimResults = true;
+		recognition.continuous = false;
+		recognition.onresult = (e: any) => {
+			let transcript = '';
+			for (let i = e.resultIndex; i < e.results.length; i++) {
+				transcript += e.results[i][0].transcript;
+			}
+			draft = transcript;
+		};
+		recognition.onend = () => { recording = false; };
+		recognition.onerror = () => { recording = false; };
+		try {
+			recognition.start();
+			recording = true;
+		} catch {
+			recording = false;
+		}
+	}
 
 	async function loadThreads() {
 		try {
@@ -218,7 +259,12 @@
 				{#if sending}<div class="typing"><Spinner size="sm" /> <span>AI menulis...</span></div>{/if}
 			</div>
 			<div class="chat-input">
-				<textarea bind:value={draft} rows={2} placeholder="Tulis pertanyaan untuk AI Guru..." onkeydown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}></textarea>
+				{#if speechSupported}
+					<button class="mic-btn" class:recording={recording} onclick={toggleRecording} title={recording ? 'Berhenti merekam' : 'Input suara (voice)'}>
+						{recording ? '🛑' : '🎤'}
+					</button>
+				{/if}
+				<textarea bind:value={draft} rows={2} placeholder="Tulis pertanyaan untuk AI Guru... (atau tekan 🎤 untuk bicara)" onkeydown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}></textarea>
 				<Button variant="primary" onclick={send} loading={sending} disabled={!draft.trim()}>Kirim</Button>
 			</div>
 		{/if}
@@ -267,5 +313,25 @@
 	.md :global(th), .md :global(td) { border: 1px solid var(--border); padding: 4px 8px; }
 	.typing { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); padding: 4px 0; }
 	.chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); }
+	.mic-btn {
+		flex-shrink: 0;
+		width: 40px;
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		background: white;
+		cursor: pointer;
+		font-size: 16px;
+		transition: background 0.15s, border-color 0.15s;
+	}
+	.mic-btn:hover { border-color: var(--primary); }
+	.mic-btn.recording {
+		background: #fee2e2;
+		border-color: #ef4444;
+		animation: pulse 1s infinite;
+	}
+	@keyframes pulse {
+		0%, 100% { transform: scale(1); }
+		50% { transform: scale(1.08); }
+	}
 	.chat-input textarea { flex: 1; resize: none; padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; }
 </style>

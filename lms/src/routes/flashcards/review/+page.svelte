@@ -18,11 +18,36 @@
   let bestStreak = $state(0);
   let refreshKey = $state(0);
   let deckFilter = $state('');
+  let testMode = $state(false);
+  let selectedOption = $state<string | null>(null);
+  let options = $state<string[]>([]);
 
   let currentCard = $derived(cards[currentIndex]);
   let totalCards = $derived(cards.length);
   let progressPct = $derived(totalCards > 0 ? Math.round((reviewCount / totalCards) * 100) : 0);
   let accuracy = $derived(reviewCount > 0 ? Math.round((correctCount / reviewCount) * 100) : 0);
+
+  function shuffleArray<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildOptions(card: import('$lib/stores/flashcards.svelte').Flashcard): string[] {
+    // Correct answer + 3 distractors from other cards (same deck first, then any)
+    const all = flashcards.getCards().filter(c => c.id !== card.id);
+    const sameDeck = all.filter(c => c.moduleSlug === card.moduleSlug);
+    const pool = sameDeck.length >= 3 ? sameDeck : all;
+    const distractors = shuffleArray(pool).slice(0, 3).map(c => c.back);
+    // Fallback distractors if pool too small
+    while (distractors.length < 3) {
+      distractors.push(`Jawaban: ${card.back.length > 30 ? card.back.slice(0, 30) + '…' : card.back} (opsi ${distractors.length + 1})`);
+    }
+    return shuffleArray([card.back, ...distractors]);
+  }
 
   onMount(() => {
     // Check for deck filter in URL params
@@ -43,7 +68,46 @@
     if (cards.length === 0) {
       isFinished = true;
     }
+    // Start in test mode from URL ?test=1
+    testMode = new URLSearchParams(window.location.search).get('test') === '1';
+    if (testMode && cards.length > 0) {
+      options = buildOptions(cards[0]);
+    }
   });
+
+  function toggleTestMode() {
+    testMode = !testMode;
+    selectedOption = null;
+    if (testMode && currentCard) options = buildOptions(currentCard);
+  }
+
+  function selectOption(opt: string) {
+    if (!currentCard || selectedOption !== null) return;
+    selectedOption = opt;
+    const isCorrect = opt === currentCard.back;
+    reviewCount++;
+    if (isCorrect) {
+      correctCount++;
+      streak++;
+      if (streak > bestStreak) bestStreak = streak;
+      flashcards.reviewCard(currentCard.id, 1); // very easy — promote interval
+    } else {
+      streak = 0;
+      flashcards.reviewCard(currentCard.id, 4); // hard — reset interval
+    }
+    rated = true;
+    setTimeout(() => {
+      if (currentIndex < totalCards - 1) {
+        currentIndex++;
+        flipped = false;
+        rated = false;
+        selectedOption = null;
+        if (testMode) options = buildOptions(cards[currentIndex]);
+      } else {
+        isFinished = true;
+      }
+    }, 900);
+  }
 
   function flipCard() {
     if (!rated) flipped = !flipped;
@@ -67,6 +131,8 @@
         currentIndex++;
         flipped = false;
         rated = false;
+        selectedOption = null;
+        if (testMode) options = buildOptions(cards[currentIndex]);
       } else {
         isFinished = true;
       }
@@ -120,7 +186,12 @@
       {#if deckFilter}
         <span class="deck-label">📂 {deckFilter}</span>
       {/if}
-      <span class="streak-display">🔥 {streak}</span>
+      <div class="header-actions">
+        <button class="mode-toggle" class:active={testMode} onclick={toggleTestMode} title="Mode Tes (pilih jawaban)">
+          📝 Mode Tes
+        </button>
+        <span class="streak-display">🔥 {streak}</span>
+      </div>
     </div>
 
     <!-- Progress bar -->
@@ -152,8 +223,40 @@
       </div>
     </div>
 
+    <!-- MCQ Options (test mode) -->
+    {#if testMode && options.length > 0}
+      <div class="mcq-section" transition:fade>
+        <p class="mcq-label">Pilih jawaban yang benar:</p>
+        <div class="mcq-options">
+          {#each options as opt, i}
+            <button
+              class="mcq-option"
+              class:selected={selectedOption === opt}
+              class:correct={selectedOption !== null && opt === currentCard.back}
+              class:wrong={selectedOption === opt && opt !== currentCard.back}
+              onclick={() => selectOption(opt)}
+              disabled={selectedOption !== null}
+            >
+              <span class="mcq-key">{['A', 'B', 'C', 'D'][i]}</span>
+              <span class="mcq-text">{opt}</span>
+              {#if selectedOption !== null && opt === currentCard.back}
+                <span class="mcq-mark">✅</span>
+              {:else if selectedOption === opt && opt !== currentCard.back}
+                <span class="mcq-mark">❌</span>
+              {/if}
+            </button>
+          {/each}
+        </div>
+        {#if selectedOption !== null}
+          <p class="mcq-feedback">
+            {selectedOption === currentCard.back ? '🎉 Benar!' : `❌ Salah. Jawaban: ${currentCard.back}`}
+          </p>
+        {/if}
+      </div>
+    {/if}
+
     <!-- Rating Buttons (shown after flip) -->
-    {#if flipped && !rated}
+    {#if flipped && !rated && !testMode}
       <div class="rating-section" transition:fade>
         <p class="rating-label">Seberapa mudah kartu ini?</p>
         <div class="rating-buttons">
@@ -349,6 +452,60 @@
   .rating-btn.easy:hover { border-color: #3b82f6; background: rgba(59,130,246,0.08); }
   .rating-btn.medium:hover { border-color: #f59e0b; background: rgba(245,158,11,0.08); }
   .rating-btn.hard:hover { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+
+  /* Header actions + mode toggle */
+  .header-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+  .mode-toggle {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .mode-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .mode-toggle.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* MCQ Test Mode */
+  .mcq-section { text-align: center; margin-top: 16px; }
+  .mcq-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500; }
+  .mcq-options { display: flex; flex-direction: column; gap: 8px; max-width: 560px; margin: 0 auto; }
+  .mcq-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .mcq-option:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
+  .mcq-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.1); }
+  .mcq-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+  .mcq-key {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--surface-2, #f0f2f5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  }
+  .mcq-text { flex: 1; line-height: 1.4; }
+  .mcq-mark { font-size: 16px; }
+  .mcq-feedback { margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--text); }
 
   /* End Screen */
   .end-screen {
