@@ -37,11 +37,19 @@ export async function GET({ request, platform }: { request: Request; platform: A
        LIMIT 100`
     ).bind(userId, userId).all<any>();
 
+    // 3. Academic calendar events (tenant default)
+    const { results: calendarEvents } = await db.prepare(
+      `SELECT * FROM academic_calendar
+       WHERE tenant_id = 'default'
+       ORDER BY start_date ASC`
+    ).all<any>();
+
     return jsonResponse({
       success: true,
       data: {
         schedules: results || [],
         assignments: assignments || [],
+        calendarEvents: calendarEvents || [],
       },
     });
   } catch (e: unknown) {

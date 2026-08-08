@@ -70,6 +70,7 @@
 		{ path: '/admin/faculties', icon: 'building', label: 'Faculties', roles: ['superadmin','admin'] },
 		{ path: '/admin/classes-structure', icon: 'grid', label: 'K13 Structure', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/academic-semesters', icon: 'calendar', label: 'Academic Semesters', roles: ['superadmin','admin'] },
+		{ path: '/admin/academic-calendar', icon: 'calendar', label: 'Academic Calendar', roles: ['superadmin','admin'] },
 		{ path: '/admin/course-catalog', icon: 'book-open', label: 'Course Catalog', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/class-sessions', icon: 'users', label: 'Class Sessions', roles: ['superadmin','admin','instructor'] },
 		{ path: '/admin/exam-scheduler', icon: 'clipboard', label: 'Exam Scheduler', roles: ['superadmin','admin','instructor'] },

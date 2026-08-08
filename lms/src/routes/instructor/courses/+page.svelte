@@ -13,6 +13,17 @@
 	let newCode = $state('');
 	let newStart = $state('');
 	let newEnd = $state('');
+	let newClassId = $state('');
+	let classes = $state<any[]>([]);
+
+	// Bind offering to a class (K13 path) — auto-enroll class members
+	async function loadClasses() {
+		try {
+			const res = await fetch('/api/admin/classes-structure/classes');
+			const json = await res.json();
+			if (json.success) classes = json.data || [];
+		} catch { classes = []; }
+	}
 
 	const statusMap: Record<string, { label: string; variant: 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'primary' }> = {
 		draft: { label: 'Draft', variant: 'secondary' },
@@ -22,7 +33,7 @@
 	};
 
 	onMount(() => {
-		if (browser) load();
+		if (browser) { load(); loadClasses(); }
 	});
 
 	async function load() {
@@ -48,12 +59,13 @@
 					code: newCode.trim() || undefined,
 					start_date: newStart || undefined,
 					end_date: newEnd || undefined,
+					class_id: newClassId || undefined,
 				}),
 			});
 			const json = await res.json();
 			if (json.success) {
 				showCreate = false;
-				newName = ''; newCode = ''; newStart = ''; newEnd = '';
+				newName = ''; newCode = ''; newStart = ''; newEnd = ''; newClassId = '';
 				load();
 				location.href = `/instructor/courses/${json.data.id}`;
 			} else {
@@ -92,6 +104,18 @@
 					<span>Tanggal Selesai</span>
 					<input type="date" bind:value={newEnd} />
 				</label>
+				<label class="field">
+					<span>Terikat Kelas (opsional)</span>
+					<select bind:value={newClassId}>
+						<option value="">— Mandiri / Self-paced —</option>
+						{#each classes as c}
+							<option value={c.id}>{c.name}{c.code ? ` (${c.code})` : ''}</option>
+						{/each}
+					</select>
+					{#if newClassId}
+						<span class="field-hint">✨ Anggota kelas otomatis di-enroll saat kursus dibuat</span>
+					{/if}
+				</label>
 			</div>
 			<div class="form-actions">
 				<Button variant="secondary" onclick={() => (showCreate = false)}>Batal</Button>
@@ -115,6 +139,9 @@
 					<div class="course-meta">
 						<span>👥 {c.enrolled_count ?? 0} siswa</span>
 						<span>📄 {c.lesson_count ?? 0} lesson</span>
+						{#if c.class_name}
+							<span class="class-tag">🏫 {c.class_name}</span>
+						{/if}
 					</div>
 				</div>
 				<div class="course-card-side">
@@ -130,7 +157,8 @@
 	.form-title { margin: 0 0 14px; font-size: 16px; }
 	.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 	.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
-	.field input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+	.field input, .field select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--bg-secondary); color: var(--text); }
+	.field-hint { font-size: 12px; font-weight: 400; color: var(--info); }
 	.form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 	.center { display: flex; justify-content: center; padding: 40px; }
 	.course-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
@@ -144,5 +172,6 @@
 	.course-card h3 { margin: 0 0 4px; font-size: 15px; }
 	.course-code { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; }
 	.course-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-secondary); }
+	.class-tag { padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 600; }
 	.course-card-side { flex-shrink: 0; }
 </style>

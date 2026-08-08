@@ -140,6 +140,42 @@ const dayColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
+// ===== Self check-in via QR / kode =====
+let checkinCode = $state('');
+let checkinError = $state('');
+let checkinMsg = $state('');
+let checkingIn = $state(false);
+
+async function doCheckIn() {
+	if (!checkinCode.trim()) {
+		checkinError = 'Masukkan kode presensi dulu';
+		return;
+	}
+	checkingIn = true;
+	checkinError = '';
+	checkinMsg = '';
+	try {
+		const res = await fetch('/api/my/attendance/check-in', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ code: checkinCode.trim() }),
+		});
+		const json = await res.json();
+		if (json.success) {
+			checkinMsg = json.data?.message || 'Absen berhasil! ✅';
+			checkinCode = '';
+			// Refresh riwayat
+			loadAttendance();
+		} else {
+			checkinError = json.error || 'Gagal check-in';
+		}
+	} catch {
+		checkinError = 'Gagal terhubung ke server';
+	} finally {
+		checkingIn = false;
+	}
+}
+
 </script>
 
 <svelte:head>
@@ -152,6 +188,35 @@ const dayColumns: ColumnDef<any, any>[] = [
 			<h1>{t('siswa.absensi_saya')}</h1>
 			<p class="subtitle">{t('siswa.absensi_subtitle')}</p>
 		</div>
+	</div>
+
+	<div class="checkin-card">
+		<div class="checkin-info">
+			<span class="checkin-icon">📍</span>
+			<div>
+				<h3 class="checkin-title">Absen Mandiri</h3>
+				<p class="checkin-desc">Scan QR / ketik kode presensi dari layar guru</p>
+			</div>
+		</div>
+		<div class="checkin-form">
+			<input
+				type="text"
+				class="checkin-input"
+				placeholder="Kode presensi 16 digit..."
+				bind:value={checkinCode}
+				onkeydown={(e) => { if (e.key === 'Enter') doCheckIn(); }}
+				maxlength="32"
+			/>
+			<button class="checkin-btn" onclick={doCheckIn} disabled={checkingIn}>
+				{checkingIn ? 'Memproses...' : '✓ Absen Sekarang'}
+			</button>
+		</div>
+		{#if checkinError}
+			<div class="checkin-error">{checkinError}</div>
+		{/if}
+		{#if checkinMsg}
+			<div class="checkin-msg">{checkinMsg}</div>
+		{/if}
 	</div>
 
 	<div class="filters">
@@ -217,6 +282,34 @@ const dayColumns: ColumnDef<any, any>[] = [
 	.page-header h1 { font-size: 24px; margin: 0 0 4px; }
 	.subtitle { font-size: 14px; color: var(--text-secondary); margin: 0; }
 	.error-state { padding: 40px 20px; text-align: center; color: var(--danger); }
+
+	.checkin-card {
+		display: flex; flex-direction: column; gap: 10px;
+		background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+		border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;
+		color: #fff;
+	}
+	.checkin-info { display: flex; gap: 12px; align-items: center; }
+	.checkin-icon { font-size: 26px; }
+	.checkin-title { font-size: 16px; font-weight: 700; margin: 0; }
+	.checkin-desc { font-size: 12px; opacity: 0.85; margin: 2px 0 0; }
+	.checkin-form { display: flex; gap: 8px; flex-wrap: wrap; }
+	.checkin-input {
+		flex: 1; min-width: 200px;
+		padding: 10px 14px; border: none; border-radius: 8px;
+		font-size: 15px; font-family: inherit; letter-spacing: 1px;
+		background: rgba(255,255,255,0.95); color: #1a1a2e;
+	}
+	.checkin-input:focus { outline: 2px solid rgba(255,255,255,0.5); }
+	.checkin-btn {
+		padding: 10px 18px; border: none; border-radius: 8px;
+		background: #fff; color: #4f46e5; font-size: 14px; font-weight: 700;
+		cursor: pointer; font-family: inherit; transition: transform 0.12s;
+	}
+	.checkin-btn:hover { transform: translateY(-1px); }
+	.checkin-btn:disabled { opacity: 0.6; cursor: wait; }
+	.checkin-error { background: rgba(239,68,68,0.2); color: #fecaca; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
+	.checkin-msg { background: rgba(34,197,94,0.2); color: #bbf7d0; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
 
 	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
 	.filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 150px; }

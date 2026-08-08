@@ -86,6 +86,29 @@ export async function GET({ request, platform }: { request: Request; platform: A
       );
     }
 
+    // Academic calendar events
+    const { results: acal } = await db.prepare(
+      `SELECT * FROM academic_calendar WHERE tenant_id = 'default' ORDER BY start_date ASC`
+    ).all<any>();
+    for (const ev of (acal || [])) {
+      const start = new Date(ev.start_date.replace(' ', 'T') + 'Z');
+      const end = ev.end_date
+        ? new Date(ev.end_date.replace(' ', 'T') + 'Z')
+        : new Date(start.getTime() + (ev.all_day ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000));
+      const uid = `acal-${ev.id}@rpl-ai-lms`;
+      ics.push(
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${fmtDate(now)}`,
+        `DTSTART:${fmtDate(start)}`,
+        `DTEND:${fmtDate(end)}`,
+        `SUMMARY:${esc(ev.title)}`,
+        `DESCRIPTION:${esc(ev.description || 'Academic calendar event')}`,
+        `CATEGORIES:${esc((ev.event_type || 'event').toUpperCase())}`,
+        'END:VEVENT'
+      );
+    }
+
     ics.push('END:VCALENDAR');
 
     const body = ics.join('\r\n') + '\r\n';

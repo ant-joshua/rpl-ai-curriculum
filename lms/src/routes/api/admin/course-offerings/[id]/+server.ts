@@ -21,12 +21,12 @@ export async function PUT({ request, params, platform }: { request: Request; par
 		const body = await request.json();
 		const merged = { ...existing, ...body };
 		await db.prepare(
-			'UPDATE course_offerings SET course_id = ?, name = ?, code = ?, instructor_id = ?, start_date = ?, end_date = ?, enrollment_start = ?, enrollment_end = ?, max_students = ?, status = ?, updated_at = datetime(\'now\') WHERE id = ?'
+			'UPDATE course_offerings SET course_id = ?, name = ?, code = ?, instructor_id = ?, start_date = ?, end_date = ?, enrollment_start = ?, enrollment_end = ?, max_students = ?, status = ?, class_id = ?, updated_at = datetime(\'now\') WHERE id = ?'
 		).bind(
 			merged.course_id, merged.name, merged.code, merged.instructor_id,
 			merged.start_date, merged.end_date, merged.enrollment_start,
 			merged.enrollment_end, merged.max_students, merged.status,
-			merged.id
+			merged.class_id || null, merged.id
 		).run();
 		return jsonResponse({ success: true, data: merged });
 	} catch (e: unknown) {

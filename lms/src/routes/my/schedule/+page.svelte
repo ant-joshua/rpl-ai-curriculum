@@ -6,6 +6,7 @@
 
   let schedules = $state<any[]>([]);
   let assignments = $state<any[]>([]);
+  let calendarEvents = $state<any[]>([]);
   let loading = $state(true);
   let error = $state('');
 
@@ -27,6 +28,7 @@
       if (json.success) {
         schedules = json.data?.schedules || [];
         assignments = json.data?.assignments || [];
+        calendarEvents = json.data?.calendarEvents || [];
       } else {
         error = json.error || 'Gagal memuat jadwal';
       }
@@ -36,6 +38,14 @@
       loading = false;
     }
   }
+
+  const EVENT_TYPE_LABEL: Record<string, string> = {
+    semester: 'Semester',
+    holiday: 'Libur',
+    exam: 'Ujian',
+    event: 'Acara',
+    deadline: 'Tenggat',
+  };
 
   // Combine schedules + assignment deadlines into one event stream
   let allEvents = $derived.by(() => {
@@ -66,6 +76,21 @@
         id: a.id,
         submissionStatus: a.submission_status,
         submissionScore: a.submission_score,
+      });
+    }
+    for (const ev of calendarEvents) {
+      events.push({
+        kind: 'calendarevent',
+        date: ev.start_date?.slice(0, 10),
+        time: ev.all_day ? `${ev.start_date}T00:00:00` : `${ev.start_date}T00:00:00`,
+        endTime: null,
+        title: ev.title,
+        offering: EVENT_TYPE_LABEL[ev.event_type] || 'Acara',
+        courseIcon: ev.event_type === 'holiday' ? '🏖️' : ev.event_type === 'exam' ? '📝' : ev.event_type === 'semester' ? '📚' : '🎉',
+        courseOfferingId: null,
+        id: ev.id,
+        eventColor: ev.color,
+        description: ev.description,
       });
     }
     return events.sort((a, b) => (a.date + ' ' + (a.time || '')).localeCompare(b.date + ' ' + (b.time || '')));
@@ -159,6 +184,25 @@
           </div>
           <div class="day-items">
             {#each items as item}
+              {#if item.kind === 'calendarevent'}
+                <div class="schedule-item calendar-item" style={`border-left-color: ${item.eventColor || '#4F46E5'}`}>
+                  <div class="item-time">
+                    <span class="item-clock">Acara</span>
+                  </div>
+                  <div class="item-body">
+                    <div class="item-header">
+                      <span class="item-icon">{item.courseIcon || '🎉'}</span>
+                      <div>
+                        <span class="item-title">{item.title}</span>
+                        <span class="item-offering">{item.offering}</span>
+                      </div>
+                    </div>
+                    {#if item.description}
+                      <p class="item-desc">{item.description}</p>
+                    {/if}
+                  </div>
+                </div>
+              {:else}
               <a href={item.kind === 'assignment' ? `/my/assignments/${item.id}` : `/learn/${item.courseOfferingId}`} class="schedule-item" class:assignment-item={item.kind === 'assignment'}>
                 <div class="item-time">
                   <span class="item-clock">{formatTime(item.time)}</span>
@@ -198,6 +242,7 @@
                   {/if}
                 </div>
               </a>
+              {/if}
             {/each}
           </div>
         </div>
@@ -272,6 +317,7 @@
     background: rgba(245, 158, 11, 0.03);
   }
   .schedule-item.assignment-item:hover { border-left-color: #f59e0b; }
+  .calendar-item { border-left: 3px solid #4F46E5; background: rgba(79,70,229,0.03); cursor: default; }
   .status-graded { background: #f0fdf4; color: #16a34a; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .status-submitted { background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .item-time {
