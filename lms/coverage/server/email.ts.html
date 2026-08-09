@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -121,31 +121,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -155,9 +137,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,13 +173,13 @@
  * Falls back silently on failure — email is a non-critical notification.
  */
 &nbsp;
-const FROM_EMAIL = <span class="cstat-no" title="statement not covered" >'noreply@rpl-ai-curriculum.com';</span>
-const FROM_NAME = <span class="cstat-no" title="statement not covered" >'RPL AI Curriculum';</span>
+const FROM_EMAIL = 'noreply@rpl-ai-curriculum.com';
+const FROM_NAME = 'RPL AI Curriculum';
 &nbsp;
-export async function <span class="fstat-no" title="function not covered" >sendEmail(r</span>ecipient: string, subject: string, body: string): Promise&lt;boolean&gt; {
-<span class="cstat-no" title="statement not covered" >	if (!recipient) <span class="cstat-no" title="statement not covered" >return false;</span></span>
-<span class="cstat-no" title="statement not covered" >	try {</span>
-		const res = <span class="cstat-no" title="statement not covered" >await fetch('https://api.mailchannels.net/tx/v1/send', {</span>
+export async function sendEmail(recipient: string, subject: string, body: string): Promise&lt;boolean&gt; {
+	if (!recipient) return false;
+	try {
+		const res = await fetch('https://api.mailchannels.net/tx/v1/send', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -189,15 +189,15 @@ export async function <span class="fstat-no" title="function not covered" >sendE
 				content: [{ type: 'text/plain', value: body }],
 			}),
 		});
-<span class="cstat-no" title="statement not covered" >		return res.ok;</span>
+		return res.ok;
 	} catch (e) {
-<span class="cstat-no" title="statement not covered" >		console.error('sendEmail failed:', e);</span>
-<span class="cstat-no" title="statement not covered" >		return false;</span>
+		console.error('sendEmail failed:', e);
+		return false;
 	}
 }
 &nbsp;
-export async function <span class="fstat-no" title="function not covered" >send2FAEnabledEmail(e</span>mail: string): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >	await sendEmail(</span>
+export async function send2FAEnabledEmail(email: string): Promise&lt;void&gt; {
+	await sendEmail(
 		email,
 		'2FA Enabled — RPL AI Curriculum',
 		`Two-factor authentication (2FA) has been enabled on your account.
@@ -208,8 +208,8 @@ RPL AI Curriculum Security Team`,
 	);
 }
 &nbsp;
-export async function <span class="fstat-no" title="function not covered" >send2FADisabledEmail(e</span>mail: string): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >	await sendEmail(</span>
+export async function send2FADisabledEmail(email: string): Promise&lt;void&gt; {
+	await sendEmail(
 		email,
 		'2FA Disabled — RPL AI Curriculum',
 		`Two-factor authentication (2FA) has been disabled on your account.
@@ -226,7 +226,7 @@ RPL AI Curriculum Security Team`,
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-08-09T17:44:45.035Z
+                at 2026-08-09T19:08:31.414Z
             </div>
         <script src="../prettify.js"></script>
         <script>

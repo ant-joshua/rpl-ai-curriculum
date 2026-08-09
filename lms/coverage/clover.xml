@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1786297485047" clover="3.2.0">
-  <project timestamp="1786297485047" name="All files">
-    <metrics statements="429" coveredstatements="32" conditionals="318" coveredconditionals="19" methods="95" coveredmethods="7" elements="842" coveredelements="58" complexity="0" loc="429" ncloc="429" packages="2" files="21" classes="21"/>
+<coverage generated="1786302511426" clover="3.2.0">
+  <project timestamp="1786302511426" name="All files">
+    <metrics statements="429" coveredstatements="184" conditionals="318" coveredconditionals="150" methods="95" coveredmethods="46" elements="842" coveredelements="380" complexity="0" loc="429" ncloc="429" packages="2" files="21" classes="21"/>
     <package name="server">
-      <metrics statements="372" coveredstatements="32" conditionals="290" coveredconditionals="19" methods="70" coveredmethods="7"/>
+      <metrics statements="372" coveredstatements="184" conditionals="290" coveredconditionals="150" methods="70" coveredmethods="46"/>
       <file name="aiedu.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/aiedu.ts">
         <metrics statements="74" coveredstatements="0" conditionals="62" coveredconditionals="0" methods="7" coveredmethods="0"/>
         <line num="3" count="0" type="stmt"/>
@@ -82,10 +82,10 @@
         <line num="372" count="0" type="stmt"/>
       </file>
       <file name="analytics.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/analytics.ts">
-        <metrics statements="3" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
+        <metrics statements="3" coveredstatements="3" conditionals="18" coveredconditionals="12" methods="1" coveredmethods="1"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
       </file>
       <file name="auth-rate-limit.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/auth-rate-limit.ts">
         <metrics statements="24" coveredstatements="0" conditionals="12" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -115,27 +115,27 @@
         <line num="62" count="0" type="stmt"/>
       </file>
       <file name="auth.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/auth.ts">
-        <metrics statements="36" coveredstatements="11" conditionals="27" coveredconditionals="9" methods="7" coveredmethods="3"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="43" count="0" type="stmt"/>
-        <line num="54" count="0" type="stmt"/>
-        <line num="55" count="0" type="stmt"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="63" count="0" type="stmt"/>
-        <line num="68" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="71" count="0" type="stmt"/>
-        <line num="76" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="77" count="0" type="stmt"/>
-        <line num="83" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="85" count="0" type="stmt"/>
-        <line num="86" count="0" type="stmt"/>
-        <line num="89" count="0" type="stmt"/>
-        <line num="96" count="0" type="stmt"/>
-        <line num="97" count="0" type="stmt"/>
+        <metrics statements="36" coveredstatements="36" conditionals="27" coveredconditionals="21" methods="7" coveredmethods="7"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="38" count="6" type="stmt"/>
+        <line num="43" count="6" type="stmt"/>
+        <line num="54" count="5" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
+        <line num="58" count="5" type="stmt"/>
+        <line num="63" count="5" type="stmt"/>
+        <line num="68" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="71" count="3" type="stmt"/>
+        <line num="76" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="77" count="2" type="stmt"/>
+        <line num="83" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="86" count="1" type="stmt"/>
+        <line num="89" count="2" type="stmt"/>
+        <line num="96" count="1" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
         <line num="104" count="5" type="stmt"/>
         <line num="105" count="5" type="cond" truecount="4" falsecount="0"/>
         <line num="106" count="2" type="cond" truecount="1" falsecount="1"/>
@@ -146,188 +146,188 @@
         <line num="119" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="120" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="125" count="2" type="stmt"/>
-        <line num="134" count="0" type="stmt"/>
-        <line num="135" count="0" type="stmt"/>
-        <line num="136" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="138" count="0" type="stmt"/>
-        <line num="139" count="0" type="stmt"/>
-        <line num="150" count="0" type="stmt"/>
+        <line num="134" count="2" type="stmt"/>
+        <line num="135" count="2" type="stmt"/>
+        <line num="136" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="138" count="1" type="stmt"/>
+        <line num="139" count="1" type="stmt"/>
+        <line num="150" count="1" type="stmt"/>
       </file>
       <file name="badges.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/badges.ts">
-        <metrics statements="25" coveredstatements="0" conditionals="19" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="28" count="0" type="stmt"/>
-        <line num="33" count="0" type="stmt"/>
-        <line num="39" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="40" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="44" count="0" type="cond" truecount="0" falsecount="5"/>
-        <line num="46" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="49" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="52" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="59" count="0" type="stmt"/>
-        <line num="62" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="63" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="68" count="0" type="stmt"/>
-        <line num="72" count="0" type="stmt"/>
+        <metrics statements="25" coveredstatements="25" conditionals="19" coveredconditionals="14" methods="2" coveredmethods="2"/>
+        <line num="8" count="7" type="stmt"/>
+        <line num="9" count="7" type="stmt"/>
+        <line num="12" count="7" type="stmt"/>
+        <line num="15" count="7" type="stmt"/>
+        <line num="20" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="23" count="7" type="stmt"/>
+        <line num="28" count="7" type="stmt"/>
+        <line num="33" count="7" type="stmt"/>
+        <line num="39" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="40" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="8" type="stmt"/>
+        <line num="44" count="8" type="cond" truecount="5" falsecount="0"/>
+        <line num="46" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="49" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="50" count="2" type="stmt"/>
+        <line num="52" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="62" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="5" type="stmt"/>
+        <line num="64" count="5" type="stmt"/>
+        <line num="68" count="5" type="stmt"/>
+        <line num="72" count="7" type="stmt"/>
       </file>
       <file name="cache.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/cache.ts">
-        <metrics statements="22" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="6" count="0" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="22" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="41" count="0" type="stmt"/>
-        <line num="42" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="43" count="0" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
-        <line num="46" count="0" type="stmt"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="57" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="59" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="60" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="72" count="0" type="stmt"/>
+        <metrics statements="22" coveredstatements="22" conditionals="16" coveredconditionals="16" methods="6" coveredmethods="6"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="20" count="13" type="stmt"/>
+        <line num="21" count="13" type="stmt"/>
+        <line num="22" count="13" type="cond" truecount="4" falsecount="0"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="25" count="11" type="stmt"/>
+        <line num="26" count="11" type="stmt"/>
+        <line num="27" count="11" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="41" count="2" type="stmt"/>
+        <line num="42" count="2" type="cond" truecount="4" falsecount="0"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="57" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="72" count="25" type="stmt"/>
       </file>
       <file name="d1.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/d1.ts">
-        <metrics statements="3" coveredstatements="2" conditionals="3" coveredconditionals="2" methods="3" coveredmethods="2"/>
-        <line num="4" count="0" type="stmt"/>
+        <metrics statements="3" coveredstatements="3" conditionals="3" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="4" count="25" type="stmt"/>
         <line num="8" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="12" count="1" type="stmt"/>
       </file>
       <file name="email.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/email.ts">
-        <metrics statements="10" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="43" count="0" type="stmt"/>
+        <metrics statements="10" coveredstatements="10" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="11" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="5" type="stmt"/>
+        <line num="13" count="5" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
       </file>
       <file name="error-logger.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/error-logger.ts">
-        <metrics statements="4" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="24" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
+        <metrics statements="4" coveredstatements="4" conditionals="18" coveredconditionals="16" methods="1" coveredmethods="1"/>
+        <line num="24" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
       </file>
       <file name="midtrans.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/midtrans.ts">
-        <metrics statements="23" coveredstatements="0" conditionals="21" coveredconditionals="0" methods="7" coveredmethods="0"/>
-        <line num="46" count="0" type="stmt"/>
-        <line num="47" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="57" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="65" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="79" count="0" type="stmt"/>
-        <line num="80" count="0" type="stmt"/>
-        <line num="82" count="0" type="stmt"/>
-        <line num="90" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="91" count="0" type="stmt"/>
-        <line num="94" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="95" count="0" type="stmt"/>
-        <line num="103" count="0" type="stmt"/>
-        <line num="113" count="0" type="stmt"/>
-        <line num="115" count="0" type="cond" truecount="0" falsecount="5"/>
-        <line num="116" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="117" count="0" type="stmt"/>
-        <line num="120" count="0" type="stmt"/>
-        <line num="138" count="0" type="stmt"/>
-        <line num="139" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="146" count="0" type="stmt"/>
-        <line num="153" count="0" type="stmt"/>
+        <metrics statements="23" coveredstatements="23" conditionals="21" coveredconditionals="19" methods="7" coveredmethods="7"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="47" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="56" count="6" type="stmt"/>
+        <line num="57" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="58" count="5" type="stmt"/>
+        <line num="65" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="79" count="5" type="stmt"/>
+        <line num="80" count="5" type="stmt"/>
+        <line num="82" count="5" type="stmt"/>
+        <line num="90" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="94" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="103" count="4" type="stmt"/>
+        <line num="113" count="4" type="stmt"/>
+        <line num="115" count="4" type="cond" truecount="5" falsecount="0"/>
+        <line num="116" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="117" count="1" type="stmt"/>
+        <line num="120" count="3" type="stmt"/>
+        <line num="138" count="1" type="stmt"/>
+        <line num="139" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="146" count="1" type="stmt"/>
+        <line num="153" count="3" type="stmt"/>
       </file>
       <file name="pagination.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/pagination.ts">
-        <metrics statements="20" coveredstatements="0" conditionals="30" coveredconditionals="0" methods="5" coveredmethods="0"/>
-        <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="12" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="13" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="14" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="25" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="26" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="28" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="47" count="0" type="stmt"/>
-        <line num="48" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="51" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="52" count="0" type="stmt"/>
-        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="57" count="0" type="stmt"/>
-        <line num="59" count="0" type="stmt"/>
+        <metrics statements="20" coveredstatements="20" conditionals="30" coveredconditionals="28" methods="5" coveredmethods="5"/>
+        <line num="9" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="10" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="13" count="7" type="cond" truecount="4" falsecount="0"/>
+        <line num="14" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="15" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="16" count="7" type="stmt"/>
+        <line num="25" count="4" type="cond" truecount="4" falsecount="0"/>
+        <line num="26" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="48" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="51" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
       </file>
       <file name="r2.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/r2.ts">
-        <metrics statements="5" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="5" coveredmethods="0"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="44" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="51" count="0" type="stmt"/>
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="5" coveredmethods="5"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="44" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="51" count="1" type="stmt"/>
       </file>
       <file name="rate-limit.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/rate-limit.ts">
-        <metrics statements="37" coveredstatements="19" conditionals="21" coveredconditionals="8" methods="6" coveredmethods="2"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="24" count="1" type="stmt"/>
-        <line num="27" count="133" type="stmt"/>
-        <line num="29" count="133" type="cond" truecount="1" falsecount="1"/>
+        <metrics statements="37" coveredstatements="33" conditionals="21" coveredconditionals="18" methods="6" coveredmethods="6"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="27" count="267" type="stmt"/>
+        <line num="29" count="267" type="cond" truecount="1" falsecount="1"/>
         <line num="30" count="0" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="33" count="0" type="stmt"/>
-        <line num="43" count="133" type="stmt"/>
-        <line num="45" count="133" type="stmt"/>
-        <line num="46" count="133" type="stmt"/>
-        <line num="48" count="133" type="cond" truecount="4" falsecount="0"/>
-        <line num="50" count="3" type="stmt"/>
-        <line num="51" count="3" type="stmt"/>
-        <line num="54" count="130" type="stmt"/>
-        <line num="56" count="130" type="cond" truecount="2" falsecount="0"/>
-        <line num="57" count="2" type="stmt"/>
-        <line num="58" count="2" type="stmt"/>
-        <line num="59" count="2" type="stmt"/>
-        <line num="62" count="128" type="stmt"/>
-        <line num="70" count="0" type="stmt"/>
-        <line num="71" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="72" count="0" type="stmt"/>
-        <line num="73" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="74" count="0" type="stmt"/>
-        <line num="81" count="0" type="stmt"/>
-        <line num="102" count="0" type="stmt"/>
-        <line num="103" count="0" type="stmt"/>
-        <line num="104" count="0" type="stmt"/>
-        <line num="105" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="106" count="0" type="stmt"/>
-        <line num="107" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="108" count="0" type="stmt"/>
-        <line num="110" count="0" type="stmt"/>
+        <line num="43" count="267" type="stmt"/>
+        <line num="45" count="267" type="stmt"/>
+        <line num="46" count="267" type="stmt"/>
+        <line num="48" count="267" type="cond" truecount="4" falsecount="0"/>
+        <line num="50" count="5" type="stmt"/>
+        <line num="51" count="5" type="stmt"/>
+        <line num="54" count="262" type="stmt"/>
+        <line num="56" count="262" type="cond" truecount="2" falsecount="0"/>
+        <line num="57" count="7" type="stmt"/>
+        <line num="58" count="7" type="stmt"/>
+        <line num="59" count="7" type="stmt"/>
+        <line num="62" count="255" type="stmt"/>
+        <line num="70" count="137" type="stmt"/>
+        <line num="71" count="137" type="cond" truecount="2" falsecount="0"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="73" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="81" count="6" type="stmt"/>
+        <line num="102" count="2" type="stmt"/>
+        <line num="103" count="134" type="stmt"/>
+        <line num="104" count="134" type="stmt"/>
+        <line num="105" count="134" type="cond" truecount="4" falsecount="0"/>
+        <line num="106" count="134" type="stmt"/>
+        <line num="107" count="134" type="cond" truecount="2" falsecount="0"/>
+        <line num="108" count="5" type="stmt"/>
+        <line num="110" count="129" type="stmt"/>
       </file>
       <file name="tenant-features.ts" path="/home/midory/rpl-ai-curriculum/lms/src/lib/server/tenant-features.ts">
         <metrics statements="13" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="3" coveredmethods="0"/>
