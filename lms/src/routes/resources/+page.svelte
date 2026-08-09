@@ -9,6 +9,7 @@
 	>([]);
 	let searchQuery = $state('');
 	let loaded = $state(false);
+	let loadError = $state('');
 
 	$effect(() => {
 		(async () => {
@@ -17,8 +18,12 @@
 				if (res.ok) {
 					const idx = await res.json();
 					pdfFiles = idx.files;
+				} else {
+					loadError = 'Gagal memuat daftar resource';
 				}
-			} catch { /* ignore */ }
+			} catch {
+				loadError = 'Gagal memuat daftar resource';
+			}
 			loaded = true;
 		})();
 	});
@@ -141,6 +146,8 @@
 				<Skeleton variant="card" />
 			{/each}
 		</div>
+	{:else if loadError}
+		<EmptyState icon="⚠️" title="Terjadi kesalahan" description={loadError} />
 	{:else if totalFiles === 0}
 		<EmptyState
 			icon="📄"

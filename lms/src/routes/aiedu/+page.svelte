@@ -32,8 +32,12 @@
 	let bankFilter = $state('');
 	let bankMine = $state(false);
 	let bankQuery = $state('');
+	let bankLoading = $state(false);
+	let bankError = $state('');
 
 	async function loadBank() {
+		bankLoading = true;
+		bankError = '';
 		try {
 			const qs = new URLSearchParams();
 			if (bankMine) qs.set('mine', '1');
@@ -42,7 +46,12 @@
 			const res = await fetch(`/api/aiedu/bank?${qs}`);
 			const json = await res.json();
 			if (json.success) bankDocs = json.data || [];
-		} catch { /* ignore */ }
+			else bankError = json.error || 'Gagal memuat bank materi';
+		} catch {
+			bankError = 'Gagal memuat bank materi. Cek koneksi.';
+		} finally {
+			bankLoading = false;
+		}
 	}
 
 	onMount(() => {
@@ -101,18 +110,24 @@
 	</div>
 
 	<div class="bank-grid">
-		{#each bankDocs as doc}
-			<a class="bank-card" href="/aiedu/bank/{doc.id}">
-				<div class="bank-card-top">
-					<span class="bank-type">{doc.doc_type.replace(/_/g, ' ')}</span>
-					<span class="bank-source">{doc.source}</span>
-				</div>
-				<h3 class="bank-title">{doc.title}</h3>
-				<p class="bank-subject">{doc.subject}</p>
-			</a>
+		{#if bankLoading}
+			<Card><CardContent><p class="bank-empty">Memuat bank materi...</p></CardContent></Card>
+		{:else if bankError}
+			<Card><CardContent><p class="bank-empty bank-error">{bankError}</p></CardContent></Card>
 		{:else}
-			<Card><CardContent><p class="bank-empty">Belum ada dokumen. Pilih kategori di atas.</p></CardContent></Card>
-		{/each}
+			{#each bankDocs as doc}
+				<a class="bank-card" href="/aiedu/bank/{doc.id}">
+					<div class="bank-card-top">
+						<span class="bank-type">{doc.doc_type.replace(/_/g, ' ')}</span>
+						<span class="bank-source">{doc.source}</span>
+					</div>
+					<h3 class="bank-title">{doc.title}</h3>
+					<p class="bank-subject">{doc.subject}</p>
+				</a>
+			{:else}
+				<Card><CardContent><p class="bank-empty">Belum ada dokumen. Pilih kategori di atas.</p></CardContent></Card>
+			{/each}
+		{/if}
 	</div>
 </div>
 
@@ -151,4 +166,5 @@
 	.bank-title { font-size: 14px; font-weight: 600; margin: 0 0 4px; }
 	.bank-subject { font-size: 12px; color: var(--text-muted); margin: 0; }
 	.bank-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px; margin: 0; }
+	.bank-error { color: var(--danger, #dc2626); }
 </style>
