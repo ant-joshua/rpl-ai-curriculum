@@ -42,6 +42,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			}
 		} else if (password !== 'password123') {
 			// Fallback for legacy users without password_hash
+			return jsonResponse({ success: false, error: 'Invalid password' }, 401);
 		}
 
 		// If user has 2FA enabled, issue temp_token instead of full session

@@ -1,7 +1,7 @@
 import { getSession, getBearerToken, getTokenFromRequest } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
 import { logActivity } from '$lib/server/analytics';
-import { rateLimit } from '$lib/server/rate-limit';
+import { rateLimit, getClientIp, rateLimitResponse } from '$lib/server/rate-limit';
 import { logError } from '$lib/server/error-logger';
 
 // Allow admin roles — superadmin and admin have full access
@@ -24,19 +24,13 @@ export async function handle({ event, resolve }: {
 	let path = url.pathname;
 
 	// Rate limiting for API routes (skip static files)
+	// Method-aware: mutations (POST/PATCH/DELETE) get a stricter limit
 	if (path.startsWith('/api/')) {
-		const ip = event.request.headers.get('cf-connecting-ip')
-			|| event.request.headers.get('x-forwarded-for')
-			|| 'unknown';
-		const result = rateLimit(ip);
+		const ip = getClientIp(event.request);
+		const isMutation = !['GET', 'HEAD', 'OPTIONS'].includes(event.request.method);
+		const result = rateLimit(ip, isMutation ? 30 : 100);
 		if (!result.allowed) {
-			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Too many requests' }), {
-				status: 429,
-				headers: {
-					'Content-Type': 'application/json',
-					'Retry-After': String(result.retryAfter),
-				},
-			}));
+			return addSecurityHeaders(rateLimitResponse(result.retryAfter));
 		}
 	}
 
@@ -284,8 +278,8 @@ async function logActivityAsync(
 	try {
 		// Determine action type from method + path
 		let action: string | null = null;
-		let entityType: string | null = null;
-		let entityId: string | null = null;
+		let entityType: string | undefined;
+		let entityId: string | undefined;
 
 		// Try to classify the request by method + path pattern
 		if (statusCode >= 400) {
