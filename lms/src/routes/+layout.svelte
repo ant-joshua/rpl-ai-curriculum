@@ -75,6 +75,7 @@
 				name: 'Account',
 				links: [
 					{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
+					{ href: '/my/messages', icon: 'message-square', label: 'Pesan' },
 					{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
 					{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
 					{ href: '/my/export', icon: 'download', label: 'Export' },
@@ -171,7 +172,14 @@
 	$effect(() => {
 		if (!browser) return;
 
-		function onOnline() { offline = false; dismissedOffline = false; }
+		function onOnline() {
+			offline = false;
+			dismissedOffline = false;
+			// Ask service worker to replay any queued offline requests
+			if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+				navigator.serviceWorker.controller.postMessage({ type: 'REPLAY_QUEUE' });
+			}
+		}
 		function onOffline() { offline = true; dismissedOffline = false; }
 
 		window.addEventListener('online', onOnline);
