@@ -22,6 +22,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
+	import { startPolling as startDmPolling, stopPolling as stopDmPolling, getSnapshot as getDmSnapshot, subscribe as subscribeDm } from '$lib/stores/direct-unread.svelte';
 	import AchievementToast from '$lib/components/toast/AchievementToast.svelte';
 	import GamificationToast from '$lib/components/toast/GamificationToast.svelte';
 	import QuestCompletePopup from '$lib/components/QuestCompletePopup.svelte';
@@ -167,6 +168,21 @@
 		if (!browser) return;
 		startPolling(30000);
 		return () => stopPolling();
+	});
+
+	// DM unread badge — reactive store
+	let dmUnread = $state(0);
+	$effect(() => {
+		if (!browser) return;
+		startDmPolling();
+		const unsub = subscribeDm(() => {
+			dmUnread = getDmSnapshot().count;
+		});
+		dmUnread = getDmSnapshot().count;
+		return () => {
+			unsub();
+			stopDmPolling();
+		};
 	});
 
 	$effect(() => {
@@ -370,6 +386,9 @@
 						>
 							<Icon name={link.icon} size={18} />
 							<span class="nav-item-label">{link.label}</span>
+							{#if link.href === '/my/messages' && dmUnread > 0}
+								<span class="nav-badge dm-badge">{dmUnread}</span>
+							{/if}
 							{#if isActive(link.href)}
 								<span class="nav-active-indicator"></span>
 							{/if}
@@ -981,6 +1000,22 @@
 		font-weight: 590;
 		color: #22C55E;
 		font-feature-settings: 'cv01', 'ss03';
+	}
+
+	.nav-badge {
+		margin-left: auto;
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		border-radius: 9px;
+		background: var(--accent, #6366F1);
+		color: #fff;
+		font-size: 11px;
+		font-weight: 600;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
 	}
 
 	.xp-amount {

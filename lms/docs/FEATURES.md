@@ -193,7 +193,7 @@
 |---|---|---|---|
 | FE-9991 | Dark mode | ✅ | `theme.svelte.ts` CSS-var swap (dark/light), toggle in sidebar | — |
 | FE-9992 | Groups (member content, member management, auth-integrated) | ✅ | `groups`, `groups/[id]`, `api/groups`, `api/groups/[id]`, `api/groups/[id]/join`, `api/groups/[id]/messages`, `api/groups/[id]/members/[memberId]` | `study_groups`, `group_members`, `group_messages` |
-| FE-9993 | Teacher/student direct messaging (1:1) | ✅ | `my/messages`, `my/messages/[userId]`, `api/direct/conversations`, `api/direct/conversations/[userId]`, `api/direct/search` | `direct_messages` |
+| FE-9993 | Teacher/student direct messaging (1:1) | ✅ | `my/messages`, `my/messages/[userId]`, `api/direct/conversations`, `api/direct/conversations/[userId]`, `api/direct/search`, `api/direct/unread-count` (+ sidebar unread badge) | `direct_messages` |
 | FE-9994 | Live quizzes during class | ✅ | `instructor/live-quiz/*`, `live-quiz/*`, `api/instructor/live-quizzes*`, `api/my/live-quiz/*` | `live_quizzes`, `live_quiz_participants`, `live_quiz_responses` |
 | FE-9995 | Offline-first PWA (cache) | ✅ | service-worker SWR for API GET, offline POST queue (IndexedDB), replay on reconnect | — |
 | FE-9996 | SSO / SAML / LDAP | ✅ | OAuth Google + GitHub + Microsoft (Entra ID), `api/auth/oauth/redirect/*` + `api/auth/callback` | `oauth_users` |
