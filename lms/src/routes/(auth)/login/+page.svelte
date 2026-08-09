@@ -180,6 +180,10 @@
 					<span class="oauth-icon">🐙</span>
 					<span>Login dengan GitHub</span>
 				</a>
+				<a href="/api/auth/oauth/redirect/microsoft" class="oauth-btn microsoft" role="button">
+					<span class="oauth-icon">🪟</span>
+					<span>Login dengan Microsoft</span>
+				</a>
 			</div>
 
 			<p class="reset-link">
@@ -354,6 +358,11 @@
 		cursor: pointer;
 		transition: all 0.15s ease;
 		text-decoration: none !important;
+	}
+
+	.oauth-btn.microsoft:hover {
+		border-color: #0078d4;
+		background: rgba(0, 120, 212, 0.04);
 	}
 
 	.oauth-btn:hover {
