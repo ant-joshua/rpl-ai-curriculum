@@ -5,23 +5,38 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lms
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: lms/package-lock.json
       - run: npm ci
-        continue-on-error: true
       - run: npm test
+      - run: npm run check
         continue-on-error: true
-  deploy:
+  build:
     needs: quality
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lms
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: lms/package-lock.json
+      - run: npm ci
+      - run: npm run build
       - name: Deploy ke Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy . --project-name rpl-ai-curriculum --branch main
+          command: pages deploy .svelte-kit/cloudflare --project-name rpl-ai-curriculum --branch main

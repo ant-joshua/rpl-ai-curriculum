@@ -6,6 +6,9 @@ export default defineConfig({
 	test: {
 		environment: 'node',
 		include: ['tests/**/*.test.ts'],
+		// Live smoke tests hit the production API — they need a token budget
+		// and can 429 under shared CI IPs. Run them only when SMOKE=1.
+		testNamePattern: process.env.SMOKE === '1' ? undefined : '^(?!.*API smoke).*',
 		testTimeout: 30000,
 		hookTimeout: 30000,
 		// API smoke tests hit live endpoints — run serially to avoid
