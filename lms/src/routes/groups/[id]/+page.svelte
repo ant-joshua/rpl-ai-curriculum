@@ -9,8 +9,10 @@
 	let groupId = $derived($page.params.id);
 	let messageText = $state('');
 	let sending = $state(false);
-	let members = $state<{ id: string; user_id: string; role: string; username?: string }[]>([]);
+	let members = $state<{ id: string; user_id: string; role: string; username?: string; display_name?: string }[]>([]);
 	let groupName = $state('');
+	let myRole = $state<string | null>(null);
+	let groupCreatedBy = $state('');
 
 	let pollInterval: ReturnType<typeof setInterval> | undefined;
 
@@ -19,6 +21,7 @@
 		groupsStore.loadMessages(groupId);
 		pollInterval = setInterval(() => {
 			groupsStore.loadMessages(groupId);
+			loadGroup();
 		}, 30000);
 	});
 
@@ -35,8 +38,62 @@
 			if (json.success && json.data) {
 				groupName = json.data.name;
 				members = json.data.members || [];
+				myRole = json.data.my_role || null;
+				groupCreatedBy = json.data.created_by || '';
 			}
 		} catch { /* ignore */ }
+	}
+
+	function memberDisplayName(m: any): string {
+		return m.display_name || m.username || m.user_id.slice(0, 8);
+	}
+
+	async function changeRole(memberId: string, role: string) {
+		if (!confirm(role === 'admin' ? 'Jadikan admin?' : 'Turunkan jadi anggota?')) return;
+		const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ role }),
+		});
+		const json = await res.json();
+		if (json.success) {
+			await loadGroup();
+		} else {
+			alert(json.error || 'Gagal mengubah role');
+		}
+	}
+
+	async function kickMember(memberId: string) {
+		if (!confirm('Keluarkan anggota ini dari grup?')) return;
+		const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, { method: 'DELETE' });
+		const json = await res.json();
+		if (json.success) {
+			await loadGroup();
+		} else {
+			alert(json.error || 'Gagal mengeluarkan anggota');
+		}
+	}
+
+	async function leaveGroup() {
+		if (!confirm('Keluar dari grup ini?')) return;
+		const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
+		const json = await res.json();
+		if (json.success) {
+			window.location.href = '/groups';
+		} else {
+			alert(json.error || 'Gagal keluar grup');
+		}
+	}
+
+	async function deleteGroup() {
+		if (!confirm('Hapus grup ini? Semua pesan dan anggota akan hilang. Tindakan ini tidak bisa dibatalkan.')) return;
+		const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
+		const json = await res.json();
+		if (json.success) {
+			window.location.href = '/groups';
+		} else {
+			alert(json.error || 'Gagal menghapus grup');
+		}
 	}
 
 	async function handleSend() {
@@ -90,17 +147,40 @@
 		</div>
 
 		<aside class="member-sidebar">
-			<h3>Anggota ({members.length})</h3>
+			<div class="member-sidebar-head">
+				<h3>Anggota ({members.length})</h3>
+				{#if myRole === 'admin'}
+					<span class="admin-badge">👑 Admin</span>
+				{/if}
+			</div>
 			<div class="member-list">
 				{#each members as m}
 					<div class="member-item">
 						<span class="member-avatar">👤</span>
 						<div class="member-info">
-							<span class="member-name">{m.username || m.user_id.slice(0, 8)}</span>
+							<span class="member-name">{memberDisplayName(m)}</span>
 							<span class="member-role">{m.role === 'admin' ? '👑 Admin' : 'Anggota'}</span>
+							{#if myRole === 'admin' && m.user_id !== groupCreatedBy}
+								<div class="member-actions">
+									{#if m.role === 'member'}
+										<button class="mini-btn" onclick={() => changeRole(m.id, 'admin')} title="Jadikan admin">⭐</button>
+									{:else}
+										<button class="mini-btn" onclick={() => changeRole(m.id, 'member')} title="Turunkan jadi anggota">⬇</button>
+									{/if}
+									<button class="mini-btn danger" onclick={() => kickMember(m.id)} title="Keluarkan">✕</button>
+								</div>
+							{/if}
 						</div>
 					</div>
 				{/each}
+			</div>
+			<div class="group-actions">
+				{#if myRole !== null}
+					<button class="action-btn leave" onclick={leaveGroup}>Keluar Grup</button>
+				{/if}
+				{#if myRole === 'admin'}
+					<button class="action-btn delete" onclick={deleteGroup}>Hapus Grup</button>
+				{/if}
 			</div>
 		</aside>
 	</div>
@@ -267,5 +347,77 @@
 	.member-role {
 		font-size: 10px;
 		color: var(--text-secondary);
+	}
+	.member-sidebar-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 12px;
+	}
+	.member-sidebar-head h3 {
+		margin-bottom: 0;
+	}
+	.admin-badge {
+		font-size: 11px;
+		font-weight: 600;
+		color: #b45309;
+		background: #fef3c7;
+		padding: 2px 8px;
+		border-radius: 20px;
+	}
+	.member-actions {
+		display: flex;
+		gap: 4px;
+		margin-top: 4px;
+	}
+	.mini-btn {
+		width: 22px;
+		height: 22px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: var(--bg);
+		cursor: pointer;
+		font-size: 11px;
+		line-height: 1;
+	}
+	.mini-btn:hover {
+		border-color: var(--accent);
+	}
+	.mini-btn.danger:hover {
+		border-color: #ef4444;
+		background: #fef2f2;
+	}
+	.group-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: 16px;
+		padding-top: 12px;
+		border-top: 1px solid var(--border);
+	}
+	.action-btn {
+		padding: 8px 12px;
+		border-radius: 8px;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		font-family: inherit;
+		border: 1px solid var(--border);
+		background: var(--bg);
+		color: var(--text-secondary);
+	}
+	.action-btn:hover {
+		color: var(--text);
+		border-color: var(--text-secondary);
+	}
+	.action-btn.delete {
+		color: #ef4444;
+	}
+	.action-btn.delete:hover {
+		background: #fef2f2;
+		border-color: #fecaca;
 	}
 </style>

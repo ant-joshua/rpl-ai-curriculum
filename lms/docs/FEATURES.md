@@ -192,9 +192,9 @@
 | ID | Feature | Status | Notes |
 |---|---|---|---|
 | FE-9991 | Dark mode | 🔜 | Only toggle exists; no full dark theming |
-| FE-9992 | Groups (member content) | 🔜 | Skeleton — no member interactions |
+| FE-9992 | Groups (member content, member management, auth-integrated) | ✅ | `groups`, `groups/[id]`, `api/groups`, `api/groups/[id]`, `api/groups/[id]/join`, `api/groups/[id]/messages`, `api/groups/[id]/members/[memberId]` | `study_groups`, `group_members`, `group_messages` |
 | FE-9993 | Teacher/student direct messaging (1:1) | 🔜 | Only course chat + parent messages exist |
-| FE-9994 | Live quizzes during class | 🔜 | — |
+| FE-9994 | Live quizzes during class | ✅ | `instructor/live-quiz/*`, `live-quiz/*`, `api/instructor/live-quizzes*`, `api/my/live-quiz/*` | `live_quizzes`, `live_quiz_participants`, `live_quiz_responses` |
 | FE-9995 | Offline-first PWA (cache) | 🔜 | sw exists, no full offline data |
 | FE-9996 | SSO / SAML / LDAP | 🔜 | OAuth only |
 

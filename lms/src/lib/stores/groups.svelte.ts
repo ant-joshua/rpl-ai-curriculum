@@ -9,6 +9,8 @@ export interface StudyGroup {
 	created_by: string;
 	created_at: string;
 	member_count?: number;
+	is_member?: number;
+	is_admin?: number;
 }
 
 export interface GroupMember {

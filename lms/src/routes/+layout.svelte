@@ -68,6 +68,7 @@
 					{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
 					{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
 					{ href: '/projects', icon: 'rocket', label: t('nav.projects') },
+					{ href: '/groups', icon: 'users', label: 'Study Groups' },
 				]
 			},
 			{

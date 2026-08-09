@@ -1,4 +1,5 @@
-import { getDB, getDeviceId } from '$lib/server/d1';
+import { getDB, jsonResponse, getDeviceId } from '$lib/server/d1';
+import { getTokenFromRequest, getSession } from '$lib/server/auth';
 
 function corsHeaders() {
 	return {
@@ -8,16 +9,17 @@ function corsHeaders() {
 	};
 }
 
-function json(data: unknown, status = 200): Response {
-	const body = JSON.stringify(data);
-	return new Response(body, {
-		status,
-		headers: { 'Content-Type': 'application/json', ...corsHeaders() },
-	});
-}
-
 export async function OPTIONS(): Promise<Response> {
 	return new Response(null, { headers: corsHeaders() });
+}
+
+async function resolveUserId(platform: App.Platform, request: Request): Promise<string> {
+	const token = getTokenFromRequest(request);
+	if (token) {
+		const session = await getSession(platform, token);
+		if (session?.user) return session.user.id;
+	}
+	return getDeviceId(request);
 }
 
 export async function GET({ params, platform }: { params: { id: string }; platform: App.Platform }): Promise<Response> {
@@ -25,10 +27,11 @@ export async function GET({ params, platform }: { params: { id: string }; platfo
 		const db = getDB(platform);
 		const { id } = params;
 
-		// Check user is member
 		const { results } = await db
 			.prepare(`
-				SELECT gm.*, COALESCE(u.username, gm.user_id) as username
+				SELECT gm.id, gm.group_id, gm.user_id, gm.content, gm.created_at,
+					COALESCE(u.username, u.display_name, gm.user_id) as username,
+					COALESCE(u.role, '') as user_role
 				FROM group_messages gm
 				LEFT JOIN users u ON u.id = gm.user_id
 				WHERE gm.group_id = ?
@@ -38,32 +41,32 @@ export async function GET({ params, platform }: { params: { id: string }; platfo
 			.bind(id)
 			.all<any>();
 
-		return json({ success: true, data: (results || []).reverse() });
+		return jsonResponse({ success: true, data: (results || []).reverse() });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }
 
 export async function POST({ params, request, platform }: { params: { id: string }; request: Request; platform: App.Platform }): Promise<Response> {
 	try {
 		const db = getDB(platform);
-		const deviceId = getDeviceId(request);
+		const userId = await resolveUserId(platform, request);
 		const { id } = params;
 		const body: { content?: string } = await request.json();
 
 		if (!body.content || !body.content.trim()) {
-			return json({ success: false, error: 'content required' }, 400);
+			return jsonResponse({ success: false, error: 'content required' }, 400);
 		}
 
 		// Check membership
 		const member = await db
-			.prepare('SELECT * FROM group_members WHERE group_id = ? AND user_id = ?')
-			.bind(id, deviceId)
+			.prepare('SELECT role FROM group_members WHERE group_id = ? AND user_id = ?')
+			.bind(id, userId)
 			.first();
 
 		if (!member) {
-			return json({ success: false, error: 'Not a member of this group' }, 403);
+			return jsonResponse({ success: false, error: 'Not a member of this group' }, 403);
 		}
 
 		const msgId = `gmsg-${id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -71,12 +74,12 @@ export async function POST({ params, request, platform }: { params: { id: string
 
 		await db
 			.prepare('INSERT INTO group_messages (id, group_id, user_id, content, created_at) VALUES (?, ?, ?, ?, ?)')
-			.bind(msgId, id, deviceId, body.content.trim(), now)
+			.bind(msgId, id, userId, body.content.trim(), now)
 			.run();
 
-		return json({ success: true, data: { id: msgId, created_at: now } });
+		return jsonResponse({ success: true, data: { id: msgId, created_at: now } });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return jsonResponse({ success: false, error: msg }, 500);
 	}
 }
