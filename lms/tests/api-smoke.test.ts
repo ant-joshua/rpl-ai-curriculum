@@ -1,5 +1,4 @@
-import { test, describe } from 'node:test';
-import assert from 'node:assert/strict';
+import { describe, it, expect } from 'vitest';
 
 const BASE = process.env.SMOKE_BASE_URL || 'https://rpl-ai-curriculum.pages.dev';
 
@@ -13,40 +12,60 @@ async function get(path: string, headers: Record<string, string> = {}) {
 	}
 }
 
+// Mutation requests — the global rate limiter (30/min/IP) can 429 during
+// full-suite runs. Retry with a short backoff like a real client would.
+
+async function postJson(path: string, body: unknown, headers: Record<string, string> = {}): Promise<Response> {
+	for (let attempt = 0; attempt < 3; attempt++) {
+		const res = await fetch(`${BASE}${path}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', ...headers },
+			body: JSON.stringify(body),
+		});
+		if (res.status !== 429 || attempt === 2) return res;
+		await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+	}
+	throw new Error('unreachable');
+}
+async function mutation(path: string, body: unknown, token: string): Promise<Response> {
+	for (let attempt = 0; attempt < 3; attempt++) {
+		const res = await fetch(`${BASE}${path}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+			body: JSON.stringify(body),
+		});
+		if (res.status !== 429 || attempt === 2) return res;
+		await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+	}
+	throw new Error('unreachable');
+}
+
 describe('API smoke — public endpoints', () => {
-	test('GET /api/health returns 200', async () => {
+	it('GET /api/health returns 200', async () => {
 		const { status } = await get('/api/health');
-		assert.equal(status, 200);
+		expect(status).toBe(200);
 	});
 
-	test('GET /api/modules returns JSON', async () => {
+	it('GET /api/modules returns JSON', async () => {
 		const { status, body } = await get('/api/modules');
-		assert.equal(status, 200);
+		expect(status).toBe(200);
 		const data = JSON.parse(body);
-		assert.ok(Array.isArray(data.modules) || Array.isArray(data));
+		expect(Array.isArray(data.modules) || Array.isArray(data)).toBeTruthy();
 	});
 
-	test('login rejects bad password', async () => {
-		const res = await fetch(`${BASE}/api/auth/login`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username: 'guru1@school.com', password: 'wrong-password' }),
-		});
+	it('login rejects bad password', async () => {
+		const res = await postJson('/api/auth/login', { username: 'guru1@school.com', password: 'wrong-password' });
 		const data = await res.json();
-		assert.equal(res.status, 401);
-		assert.equal(data.success, false);
+		expect(res.status).toBe(401);
+		expect(data.success).toBe(false);
 	});
 
-	test('login succeeds with fallback password', async () => {
-		const res = await fetch(`${BASE}/api/auth/login`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username: 'guru1@school.com', password: 'password123' }),
-		});
+	it('login succeeds with fallback password', async () => {
+		const res = await postJson('/api/auth/login', { username: 'guru1@school.com', password: 'password123' });
 		const data = await res.json();
-		assert.equal(res.status, 200);
-		assert.equal(data.success, true);
-		assert.ok(data.token || data.sessionToken || data.user);
+		expect(res.status).toBe(200);
+		expect(data.success).toBe(true);
+		expect(data.token || data.sessionToken || data.user).toBeTruthy();
 	});
 });
 
@@ -54,72 +73,70 @@ describe('API smoke — register + direct messages', () => {
 	const email = `smoke${Date.now()}@test.dev`;
 	let token = '';
 
-	test('register creates a new student', async () => {
-		const res = await fetch(`${BASE}/api/auth/register/student`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: 'Smoke Test', email, password: 'password123' }),
-		});
+	it('register creates a new student', async () => {
+		const res = await postJson('/api/auth/register/student', { name: 'Smoke Test', email, password: 'password123' });
 		const data = await res.json();
-		assert.equal(res.status, 200);
-		assert.equal(data.success, true);
+		expect(res.status).toBe(200);
+		expect(data.success).toBe(true);
 	});
 
-	test('new user can login', async () => {
-		const res = await fetch(`${BASE}/api/auth/login`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username: email, password: 'password123' }),
-		});
+	it('new user can login', async () => {
+		const res = await postJson('/api/auth/login', { username: email, password: 'password123' });
 		const data = await res.json();
-		assert.equal(res.status, 200);
-		assert.ok(data.token);
+		expect(res.status).toBe(200);
+		expect(data.token).toBeTruthy();
 		token = data.token;
 	});
 
-	test('conversations endpoint requires auth', async () => {
+	it('conversations endpoint requires auth', async () => {
 		const { status } = await get('/api/direct/conversations');
-		assert.equal(status, 401);
+		expect(status).toBe(401);
 	});
 
-	test('conversations endpoint returns list for authed user', async () => {
+	it('conversations endpoint returns list for authed user', async () => {
 		const res = await fetch(`${BASE}/api/direct/conversations`, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
-		assert.equal(res.status, 200);
+		expect(res.status).toBe(200);
 		const data = await res.json();
-		assert.equal(data.success, true);
-		assert.ok(Array.isArray(data.data));
+		expect(data.success).toBe(true);
+		expect(Array.isArray(data.data)).toBeTruthy();
 	});
 
-	test('send direct message to teacher', async () => {
-		const res = await fetch(`${BASE}/api/direct/conversations/21f2215633f242b7b9314dc78d2562d3`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-			body: JSON.stringify({ content: 'halo bu, dari smoke test' }),
-		});
+	it('send direct message to teacher', async () => {
+		const res = await mutation('/api/direct/conversations/21f2215633f242b7b9314dc78d2562d3', { content: 'halo bu, dari smoke test' }, token);
 		const data = await res.json();
-		assert.equal(res.status, 201);
-		assert.equal(data.success, true);
+		expect(res.status).toBe(201);
+		expect(data.success).toBe(true);
 	});
 
-	test('conversation appears in list after sending', async () => {
+	it('conversation appears in list after sending', async () => {
 		const res = await fetch(`${BASE}/api/direct/conversations`, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
 		const data = await res.json();
 		const convs = data.data as Array<{ partner_id: string }>;
-		assert.ok(convs.some((c) => c.partner_id === '21f2215633f242b7b9314dc78d2562d3'));
+		expect(convs.some((c) => c.partner_id === '21f2215633f242b7b9314dc78d2562d3')).toBeTruthy();
 	});
 
-	test('unread-count endpoint returns count', async () => {
+	it('unread-count endpoint returns count', async () => {
 		const res = await fetch(`${BASE}/api/direct/unread-count`, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
-		assert.equal(res.status, 200);
+		expect(res.status).toBe(200);
 		const data = await res.json();
-		assert.equal(data.success, true);
-		assert.equal(typeof data.unread, 'number');
+		expect(data.success).toBe(true);
+		expect(typeof data.unread).toBe('number');
+	});
+
+	it('notifications unread-count returns count', async () => {
+		const res = await fetch(`${BASE}/api/notifications/unread-count`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.success).toBe(true);
+		expect(typeof data.unreadCount).toBe('number');
 	});
 });
 
@@ -127,52 +144,118 @@ describe('API smoke — instructor offerings', () => {
 	const email = 'guru1@school.com';
 	let token = '';
 
-	test('instructor login', async () => {
-		const res = await fetch(`${BASE}/api/auth/login`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username: email, password: 'password123' }),
-		});
+	it('instructor login', async () => {
+		const res = await postJson('/api/auth/login', { username: email, password: 'password123' });
 		const data = await res.json();
-		assert.equal(res.status, 200);
-		assert.ok(data.token);
+		expect(res.status).toBe(200);
+		expect(data.token).toBeTruthy();
 		token = data.token;
 	});
 
-	test('create course offering (self-paced, no class)', async () => {
-		const res = await fetch(`${BASE}/api/instructor/courses`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-			body: JSON.stringify({ name: `Smoke Course ${Date.now()}` }),
-		});
+	it('create course offering (self-paced, no class)', async () => {
+		const res = await mutation('/api/instructor/courses', { name: `Smoke Course ${Date.now()}` }, token);
 		const data = await res.json();
-		assert.equal(res.status, 201);
-		assert.equal(data.success, true);
-		assert.ok(data.data?.id || data.id || data.offering_id || data.offering);
+		expect(res.status).toBe(201);
+		expect(data.success).toBe(true);
+		expect(data.data?.id || data.id || data.offering_id || data.offering).toBeTruthy();
 	});
 
-	test('list offerings returns array', async () => {
+	it('list offerings returns array', async () => {
 		const res = await fetch(`${BASE}/api/instructor/courses`, {
 			headers: { Authorization: `Bearer ${token}` },
 		});
-		assert.equal(res.status, 200);
+		expect(res.status).toBe(200);
 		const data = await res.json();
-		assert.ok(Array.isArray(data.offerings) || Array.isArray(data.data) || Array.isArray(data.courses));
+		expect(Array.isArray(data.offerings) || Array.isArray(data.data) || Array.isArray(data.courses)).toBeTruthy();
 	});
 
-	test('student cannot create offering (403)', async () => {
-		const res = await fetch(`${BASE}/api/auth/login`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ username: 'siswa1@school.com', password: 'password123' }),
-		});
+	it('student cannot create offering (403)', async () => {
+		const res = await postJson('/api/auth/login', { username: 'siswa1@school.com', password: 'password123' });
 		const student = await res.json();
-		assert.ok(student.token);
-		const r2 = await fetch(`${BASE}/api/instructor/courses`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${student.token}` },
-			body: JSON.stringify({ name: 'Should Fail' }),
+		expect(student.token).toBeTruthy();
+		const r2 = await mutation('/api/instructor/courses', { name: 'Should Fail' }, student.token);
+		expect(r2.status).toBe(403);
+	});
+});
+
+describe('API smoke — study groups', () => {
+	const email = 'guru1@school.com';
+	let token = '';
+	let groupId = '';
+
+	it('instructor login', async () => {
+		const res = await postJson('/api/auth/login', { username: email, password: 'password123' });
+		const data = await res.json();
+		expect(res.status).toBe(200);
+		expect(data.token).toBeTruthy();
+		token = data.token;
+	});
+
+	it('create group', async () => {
+		const res = await mutation('/api/groups', {
+			name: `Smoke Group ${Date.now()}`,
+			path_slug: `smoke-${Date.now()}`,
+			description: 'auto-test',
+		}, token);
+		const data = await res.json();
+		expect(res.status).toBe(200);
+		expect(data.success).toBe(true);
+		expect(data.data?.id).toBeTruthy();
+		groupId = data.data?.id;
+	});
+
+	it('list groups includes created', async () => {
+		const res = await fetch(`${BASE}/api/groups`, {
+			headers: { Authorization: `Bearer ${token}` },
 		});
-		assert.equal(r2.status, 403);
+		const data = await res.json();
+		expect(res.status).toBe(200);
+		const groups = data.data as Array<{ id: string }>;
+		expect(groups.some((g) => g.id === groupId)).toBeTruthy();
+	});
+
+	it('get group detail', async () => {
+		const res = await fetch(`${BASE}/api/groups/${groupId}`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.success).toBe(true);
+		expect(data.data?.id || data.id).toBe(groupId);
+	});
+
+	it('post message to group', async () => {
+		const res = await mutation(`/api/groups/${groupId}/messages`, { content: 'halo group dari smoke' }, token);
+		const data = await res.json();
+		expect(res.status).toBe(200);
+		expect(data.success).toBe(true);
+	});
+
+	it('messages list has the message', async () => {
+		const res = await fetch(`${BASE}/api/groups/${groupId}/messages`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		const data = await res.json();
+		expect(res.status).toBe(200);
+		const msgs = data.data || data.messages || [];
+		expect(Array.isArray(msgs)).toBeTruthy();
+		expect(msgs.some((m: { content: string }) => m.content?.includes('halo group'))).toBeTruthy();
+	});
+
+	it('delete group', async () => {
+		const res = await fetch(`${BASE}/api/groups/${groupId}`, {
+			method: 'DELETE',
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		expect(res.status).toBe(200);
+		const data = await res.json();
+		expect(data.success).toBe(true);
+	});
+
+	it('deleted group returns 404', async () => {
+		const res = await fetch(`${BASE}/api/groups/${groupId}`, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		expect(res.status).toBe(404);
 	});
 });
