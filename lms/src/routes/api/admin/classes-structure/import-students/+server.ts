@@ -156,6 +156,9 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 			}
 		}
 
+		// Sync all members of this class into its linked study group (if any)
+		await syncClassGroupMembers(db, classId, tenantId);
+
 		return jsonResponse({
 			success: true,
 			data: {
@@ -169,5 +172,47 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}
+
+// Sync active class members into the class-linked study group (if any).
+// Creates the group on demand when the class has no group yet.
+async function syncClassGroupMembers(db: any, classId: string, tenantId: string): Promise<void> {
+	try {
+		let group = await db
+			.prepare('SELECT id FROM study_groups WHERE class_id = ?')
+			.bind(classId)
+			.first();
+		if (!group) {
+			const cls = await db
+				.prepare('SELECT name, code, homeroom_teacher_id FROM classes WHERE id = ?')
+				.bind(classId)
+				.first();
+			if (!cls) return;
+			const g: any = cls;
+			const groupId = `grp-class-${classId}`;
+			const slug = `kelas-${(g.code || g.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`;
+			await db
+				.prepare('INSERT INTO study_groups (id, name, path_slug, description, created_by, class_id) VALUES (?, ?, ?, ?, ?, ?)')
+				.bind(groupId, g.name, slug, `Grup diskusi resmi kelas ${g.name}`, g.homeroom_teacher_id || 'system', classId)
+				.run();
+			group = { id: groupId };
+		}
+		const groupId = (group as any).id;
+
+		// Sync active students (and teacher) into group members
+		const members = await db
+			.prepare(`SELECT DISTINCT user_id, role FROM class_members WHERE class_id = ? AND status = 'active'`)
+			.bind(classId)
+			.all();
+		for (const m of (members as any).results) {
+			const role = m.role === 'student' ? 'member' : 'admin';
+			await db
+				.prepare('INSERT OR IGNORE INTO group_members (id, group_id, user_id, role) VALUES (?, ?, ?, ?)')
+				.bind(`gm-${groupId}-${m.user_id}`, groupId, m.user_id, role)
+				.run();
+		}
+	} catch {
+		// Best effort: never fail class import because of group sync
 	}
 }

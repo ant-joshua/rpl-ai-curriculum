@@ -87,6 +87,25 @@ export async function POST({ request, platform }: { request: Request; platform: 
 				);
 				await db.batch(stmts);
 			}
+
+			// Sync class members into the class-linked study group (best effort)
+			try {
+				const group = await db
+					.prepare('SELECT id FROM study_groups WHERE class_id = ?')
+					.bind(class_id)
+					.first();
+				if (group) {
+					const gid = (group as any).id;
+					const gm = classStudents.map((m: any) =>
+						db.prepare(
+							'INSERT OR IGNORE INTO group_members (id, group_id, user_id, role) VALUES (?, ?, ?, ?)'
+						).bind(`gm-${gid}-${m.user_id}`, gid, m.user_id, 'member')
+					);
+					if (gm.length > 0) await db.batch(gm);
+				}
+			} catch {
+				// best effort
+			}
 		}
 
 		return jsonResponse({ success: true, data: { id, autoEnrolled: classStudents.length } }, 201);

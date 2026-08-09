@@ -27,7 +27,12 @@ export async function GET({ params, platform }: { params: { id: string }; platfo
 		ORDER BY cm.nis ASC
 	`).bind(params.id).all();
 
-	return json({ success: true, data: { ...classData, students: students.results } });
+	const linkedGroup = await db
+		.prepare('SELECT id, name, path_slug FROM study_groups WHERE class_id = ?')
+		.bind(params.id)
+		.first();
+
+	return json({ success: true, data: { ...classData, students: students.results, group: linkedGroup || null } });
 }
 
 export async function PATCH({ params, request, platform }: { params: { id: string }; request: Request; platform: App.Platform }) {
@@ -59,6 +64,19 @@ export async function PATCH({ params, request, platform }: { params: { id: strin
 
 export async function DELETE({ params, platform }: { params: { id: string }; platform: App.Platform }) {
 	const db = getDB(platform);
+
+	// Delete linked study group (members + messages) if any
+	const group = await db
+		.prepare('SELECT id FROM study_groups WHERE class_id = ?')
+		.bind(params.id)
+		.first();
+	if (group) {
+		const gid = (group as any).id;
+		await db.prepare('DELETE FROM group_messages WHERE group_id = ?').bind(gid).run();
+		await db.prepare('DELETE FROM group_members WHERE group_id = ?').bind(gid).run();
+		await db.prepare('DELETE FROM study_groups WHERE id = ?').bind(gid).run();
+	}
+
 	await db.prepare('DELETE FROM class_members WHERE class_id = ?').bind(params.id).run();
 	await db.prepare('DELETE FROM class_subjects WHERE class_id = ?').bind(params.id).run();
 	await db.prepare('DELETE FROM classes WHERE id = ?').bind(params.id).run();

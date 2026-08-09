@@ -96,10 +96,16 @@
 				<span class="info-value">{kelas.academic_period_name || kelas.academicPeriodName || '—'}</span>
 			</div>
 			<div class="info-card">
-				<span class="info-label">{t('common.status')}</span>
-				<span class="info-value" class:active={kelas.is_active !== false}>{(kelas.is_active !== false) ? 'Aktif' : 'Nonaktif'}</span>
-			</div>
-		</div>
+						<span class="info-label">{t('common.status')}</span>
+						<span class="info-value" class:active={kelas.is_active !== false}>{(kelas.is_active !== false) ? 'Aktif' : 'Nonaktif'}</span>
+					</div>
+					{#if kelas.group}
+						<a class="info-card group-link" href="/groups/{kelas.group.id}">
+							<span class="info-label">Study Group</span>
+							<span class="info-value">💬 {kelas.group.name} →</span>
+						</a>
+					{/if}
+				</div>
 
 		<div class="card">
 			<div class="card-header">
@@ -139,6 +145,8 @@
 	.info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); font-weight: 600; }
 	.info-value { font-size: 16px; font-weight: 600; color: var(--text); }
 	.info-value.active { color: #10b981; }
+	.group-link { text-decoration: none; transition: border-color 0.15s; }
+	.group-link:hover { border-color: var(--accent); }
 
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); }

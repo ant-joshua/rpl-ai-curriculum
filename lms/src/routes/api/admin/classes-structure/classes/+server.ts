@@ -86,9 +86,43 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			WHERE c.id = ?
 		`).bind(id).first<any>();
 
+		// Auto-create linked study group for this class
+		await ensureClassStudyGroup(db, id, name, code, homeroom_teacher_id);
+
 		return jsonResponse({ success: true, data: row }, 201);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return jsonResponse({ success: false, error: msg }, 500);
+	}
+}
+
+// Create (or reuse) a study group linked to a class.
+// Group name mirrors class name; homeroom teacher becomes admin.
+async function ensureClassStudyGroup(db: any, classId: string, className: string, classCode: string | null, teacherId: string | null): Promise<string | null> {
+	try {
+		const existing = await db
+			.prepare('SELECT id FROM study_groups WHERE class_id = ?')
+			.bind(classId)
+			.first();
+		if (existing) return (existing as any).id;
+
+		const groupId = `grp-class-${classId}`;
+		const slug = `kelas-${(classCode || className).toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`;
+		await db
+			.prepare('INSERT INTO study_groups (id, name, path_slug, description, created_by, class_id) VALUES (?, ?, ?, ?, ?, ?)')
+			.bind(groupId, className, slug, `Grup diskusi resmi kelas ${className}`, teacherId || 'system', classId)
+			.run();
+
+		// Teacher joins as admin
+		if (teacherId) {
+			await db
+				.prepare('INSERT OR IGNORE INTO group_members (id, group_id, user_id, role) VALUES (?, ?, ?, ?)')
+				.bind(`gm-${groupId}-${teacherId}`, groupId, teacherId, 'admin')
+				.run();
+		}
+
+		return groupId;
+	} catch {
+		return null;
 	}
 }
