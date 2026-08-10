@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -11,21 +12,14 @@ function checkAuth(locals: any) {
 	return user;
 }
 
-export async function GET({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+export async function GET({ params, platform, locals }: { params: any; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		// Get enrollment with package details
-		const enrollment = await db.prepare(
-			`SELECT be.*, lp.name AS package_name, lp.description AS package_description,
-			 lp.type AS package_type, lp.duration_sessions, lp.duration_days, lp.price
-			 FROM batch_enrollments be
-			 LEFT JOIN learning_packages lp ON lp.id = be.package_id
-			 WHERE be.id = ? AND be.tenant_id = ?`
-		).bind(params.id, tenantId).first<any>();
-
+		const enrollment = await repo.getEnrollment(params.id);
 		if (!enrollment) throw error(404, 'Enrollment not found');
 		return json({ success: true, data: enrollment });
 	} catch (e: unknown) {
@@ -35,33 +29,33 @@ export async function GET({ params, platform, locals }: { params: { id: string }
 	}
 }
 
-export async function POST({ request, params, platform, locals }: { request: Request; params: { id: string }; platform: App.Platform; locals: any }) {
+export async function POST({ params, request, platform, locals }: { params: any; request: Request; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
+		const body = await request.json();
 
-		// Verify enrollment exists
-		const existing = await db.prepare(
-			'SELECT id FROM batch_enrollments WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
+		const existing = await repo.getEnrollment(params.id);
 		if (!existing) throw error(404, 'Enrollment not found');
 
-		const body = await request.json();
-		const { package_id, remaining_sessions, paid_amount, payment_status } = body;
-		if (!package_id) throw error(400, 'package_id required');
+		let package_id = body.package_id ?? existing.package_id ?? undefined;
+		let sessions = body.remaining_sessions ?? existing.remaining_sessions ?? undefined;
 
-		// Verify package exists
-		const pkg = await db.prepare(
-			'SELECT id, duration_sessions FROM learning_packages WHERE id = ? AND tenant_id = ?'
-		).bind(package_id, tenantId).first<any>();
-		if (!pkg) throw error(404, 'Package not found');
+		if (body.package_id && body.package_id !== existing.package_id) {
+			const pkg = await repo.getPackage(body.package_id);
+			if (!pkg) throw error(404, 'Package not found');
+			package_id = pkg.id;
+			sessions = pkg.duration_sessions ?? existing.remaining_sessions ?? undefined;
+		}
 
-		// Assign package to enrollment
-		const sessions = remaining_sessions ?? pkg.duration_sessions ?? 0;
-		await db.prepare(
-			'UPDATE batch_enrollments SET package_id = ?, remaining_sessions = ?, paid_amount = ?, payment_status = ? WHERE id = ?'
-		).bind(package_id, sessions, paid_amount ?? null, payment_status || 'pending', params.id).run();
+		await repo.updateEnrollment(params.id, {
+			package_id,
+			remaining_sessions: sessions,
+			paid_amount: body.paid_amount ?? undefined,
+			payment_status: body.payment_status || undefined
+		});
 
 		return json({ success: true, data: { id: params.id } });
 	} catch (e: unknown) {

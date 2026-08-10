@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { BimbelRepository } from '$lib/repositories/bimbel.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -16,19 +17,10 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new BimbelRepository(db, tenantId);
 
-		const status = url.searchParams.get('status');
-
-		let query = 'SELECT * FROM learning_packages WHERE tenant_id = ? AND type = ?';
-		const params: any[] = [tenantId, 'bimbel_batch'];
-
-		if (status) {
-			query += ' AND status = ?';
-			params.push(status);
-		}
-		query += ' ORDER BY created_at DESC';
-
-		const { results } = await db.prepare(query).bind(...params).all<any>();
+		const status = url.searchParams.get('status') || undefined;
+		const results = await repo.getBimbelBatches({ status });
 		return json({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
@@ -42,24 +34,24 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new BimbelRepository(db, tenantId);
 		const body = await request.json();
 
-		const { name, description, duration_sessions, duration_days, price, max_students, subjects } = body;
-		if (!name) throw error(400, 'name required');
+		if (!body.name) throw error(400, 'name required');
 
-		const id = crypto.randomUUID();
-		await db.prepare(
-			`INSERT INTO learning_packages (id, tenant_id, name, description, type, duration_sessions, duration_days, price, max_students, subjects, status)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-		).bind(
-			id, tenantId, name, description || null, 'bimbel_batch',
-			duration_sessions ?? null, duration_days ?? null,
-			price ?? null, max_students ?? null,
-			subjects ? JSON.stringify(subjects) : null,
-			body.status || 'active'
-		).run();
+		const created = await repo.createBimbelBatch({
+			name: body.name,
+			description: body.description || undefined,
+			duration_sessions: body.duration_sessions ?? undefined,
+			duration_days: body.duration_days ?? undefined,
+			price: body.price ?? undefined,
+			max_students: body.max_students ?? undefined,
+			subjects: body.subjects,
+			includes_tryout: body.includes_tryout ?? 0,
+			status: body.status || 'active'
+		});
 
-		return json({ success: true, data: { id } }, { status: 201 });
+		return json({ success: true, data: { id: created.id } }, { status: 201 });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

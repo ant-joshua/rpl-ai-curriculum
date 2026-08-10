@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -11,18 +12,16 @@ function checkAuth(locals: any) {
 	return user;
 }
 
-export async function GET({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+export async function GET({ params, platform, locals }: { params: any; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		const row = await db.prepare(
-			'SELECT * FROM tutoring_sessions WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
-
-		if (!row) throw error(404, 'Session not found');
-		return json({ success: true, data: row });
+		const result = await repo.getSession(params.id);
+		if (!result) throw error(404, 'Session not found');
+		return json({ success: true, data: result });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -30,45 +29,32 @@ export async function GET({ params, platform, locals }: { params: { id: string }
 	}
 }
 
-export async function PATCH({ request, params, platform, locals }: { request: Request; params: { id: string }; platform: App.Platform; locals: any }) {
+export async function PATCH({ params, request, platform, locals }: { params: any; request: Request; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
-
-		const existing = await db.prepare(
-			'SELECT * FROM tutoring_sessions WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
-		if (!existing) throw error(404, 'Session not found');
-
+		const repo = new TutorRepository(db, tenantId);
 		const body = await request.json();
-		const merged = { ...existing, ...body };
 
-		// Recalculate duration if times changed
-		if (body.date || body.start_time || body.end_time) {
-			const date = merged.date;
-			const start = merged.start_time;
-			const end = merged.end_time;
-			if (date && start && end) {
-				const startDt = new Date(`${date}T${start}`);
-				const endDt = new Date(`${date}T${end}`);
-				merged.duration_minutes = Math.round((endDt.getTime() - startDt.getTime()) / 60000);
+		// Conflict check when time changes
+		if (body.tutor_id && (body.date || body.start_time || body.end_time)) {
+			const current = await repo.getSession(params.id);
+			if (current?.tutor_id) {
+				const conflict = await repo.checkConflict(
+					body.tutor_id || current.tutor_id,
+					body.date || current.date,
+					body.start_time || current.start_time,
+					body.end_time || current.end_time,
+					params.id
+				);
+				if (conflict) throw error(409, 'Tutor already has a session at this time');
 			}
 		}
 
-		const now = new Date().toISOString();
-		await db.prepare(
-			`UPDATE tutoring_sessions SET tutor_id=?, student_id=?, type=?, title=?, date=?, start_time=?, end_time=?, duration_minutes=?, room=?, status=?, notes=?, materials=?, updated_at=?
-			 WHERE id=?`
-		).bind(
-			merged.tutor_id, merged.student_id, merged.type, merged.title,
-			merged.date, merged.start_time, merged.end_time,
-			merged.duration_minutes, merged.room, merged.status,
-			merged.notes, merged.materials ? (typeof merged.materials === 'string' ? merged.materials : JSON.stringify(merged.materials)) : null,
-			now, params.id
-		).run();
-
-		return json({ success: true, data: merged });
+		const updated = await repo.updateSession(params.id, body);
+		if (!updated) throw error(404, 'Session not found');
+		return json({ success: true, data: updated });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -76,24 +62,16 @@ export async function PATCH({ request, params, platform, locals }: { request: Re
 	}
 }
 
-export async function DELETE({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+export async function DELETE({ params, platform, locals }: { params: any; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		const existing = await db.prepare(
-			'SELECT id FROM tutoring_sessions WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
-		if (!existing) throw error(404, 'Session not found');
-
-		// Soft cancel — set status to cancelled
-		const now = new Date().toISOString();
-		await db.prepare(
-			'UPDATE tutoring_sessions SET status = ?, updated_at = ? WHERE id = ?'
-		).bind('cancelled', now, params.id).run();
-
-		return json({ success: true });
+		const result = await repo.cancelSession(params.id);
+		if (!result) throw error(404, 'Session not found');
+		return json({ success: true, data: result });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

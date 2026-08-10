@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -16,25 +17,12 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		const batchId = url.searchParams.get('batch_id');
-		const status = url.searchParams.get('status');
+		const batchId = url.searchParams.get('batch_id') || undefined;
+		const status = url.searchParams.get('status') || undefined;
 
-		let query = `
-			SELECT be.*, u.display_name, u.email, u.username, lp.name AS package_name
-			FROM batch_enrollments be
-			JOIN users u ON u.id = be.user_id
-			LEFT JOIN learning_packages lp ON lp.id = be.package_id
-			WHERE be.tenant_id = ?
-		`;
-		const params: any[] = [tenantId];
-
-		if (batchId) { query += ' AND be.batch_id = ?'; params.push(batchId); }
-		if (status) { query += ' AND be.status = ?'; params.push(status); }
-
-		query += ' ORDER BY be.enrollment_date DESC';
-
-		const { results } = await db.prepare(query).bind(...params).all<any>();
+		const results = await repo.getEnrollments({ batchId, status });
 		return json({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
@@ -48,31 +36,25 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 		const body = await request.json();
 
-		const { user_id, batch_id, package_id, paid_amount, remaining_sessions } = body;
-		if (!user_id) throw error(400, 'user_id required');
-
-		// Check duplicate
-		if (batch_id) {
-			const dup = await db.prepare(
-				'SELECT id FROM batch_enrollments WHERE batch_id = ? AND user_id = ?'
-			).bind(batch_id, user_id).first<any>();
-			if (dup) throw error(409, 'Student already enrolled in this batch');
+		if (!body.user_id) {
+			throw error(400, 'user_id required');
 		}
 
-		const id = crypto.randomUUID();
-		const now = new Date().toISOString();
-		await db.prepare(
-			`INSERT INTO batch_enrollments (id, tenant_id, batch_id, user_id, package_id, enrollment_date, paid_amount, payment_status, remaining_sessions, status)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-		).bind(
-			id, tenantId, batch_id || null, user_id, package_id || null,
-			now, paid_amount ?? null, body.payment_status || 'pending',
-			remaining_sessions ?? null, body.status || 'active'
-		).run();
+		const created = await repo.createEnrollment({
+			user_id: body.user_id,
+			package_id: body.package_id || undefined,
+			batch_id: body.batch_id || undefined,
+			enrollment_date: body.enrollment_date || undefined,
+			paid_amount: body.paid_amount ?? undefined,
+			payment_status: body.payment_status || undefined,
+			remaining_sessions: body.remaining_sessions ?? undefined,
+			status: body.status || 'active'
+		});
 
-		return json({ success: true, data: { id } }, { status: 201 });
+		return json({ success: true, data: created }, { status: 201 });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

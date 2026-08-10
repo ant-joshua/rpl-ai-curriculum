@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -11,20 +12,15 @@ function checkAuth(locals: any) {
 	return user;
 }
 
-export async function GET({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+export async function GET({ params, url, platform, locals }: { params: any; url: URL; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		const { results } = await db.prepare(
-			`SELECT sp.*, u.display_name
-			 FROM session_progress sp
-			 JOIN users u ON u.id = sp.student_id
-			 WHERE sp.session_id = ? AND sp.tenant_id = ?
-			 ORDER BY sp.created_at DESC`
-		).bind(params.id, tenantId).all<any>();
-
+		const studentId = url.searchParams.get('student_id') || undefined;
+		const results = await repo.getSessionProgress(params.id, studentId);
 		return json({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
@@ -33,63 +29,36 @@ export async function GET({ params, platform, locals }: { params: { id: string }
 	}
 }
 
-export async function POST({ request, params, platform, locals }: { request: Request; params: { id: string }; platform: App.Platform; locals: any }) {
+export async function POST({ params, request, platform, locals }: { params: any; request: Request; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
-
-		const session = await db.prepare(
-			'SELECT id, student_id FROM tutoring_sessions WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
-		if (!session) throw error(404, 'Session not found');
-
+		const repo = new TutorRepository(db, tenantId);
 		const body = await request.json();
-		const {
-			student_id, topic_covered, understanding_level, notes,
-			next_session_plan, homework_given, homework_completed
-		} = body;
 
-		if (!student_id) throw error(400, 'student_id required');
+		if (!body.student_id) {
+			throw error(400, 'student_id required');
+		}
 
 		const validLevels = ['paham', 'cukup', 'kurang', 'tidak_paham'];
-		if (understanding_level && !validLevels.includes(understanding_level)) {
+		if (body.understanding_level && !validLevels.includes(body.understanding_level)) {
 			throw error(400, 'invalid understanding_level');
 		}
 
-		// Upsert — one progress record per student per session
-		const existing = await db.prepare(
-			'SELECT id FROM session_progress WHERE session_id = ? AND student_id = ?'
-		).bind(params.id, student_id).first<any>();
+		const result = await repo.saveSessionProgress({
+			session_id: params.id,
+			student_id: body.student_id,
+			topic_covered: body.topic_covered || undefined,
+			understanding_level: body.understanding_level || undefined,
+			notes: body.notes || undefined,
+			next_session_plan: body.next_session_plan || undefined,
+			homework_given: body.homework_given || undefined,
+			homework_completed: body.homework_completed ?? 0,
+			created_by: locals.user?.id
+		});
 
-		const now = new Date().toISOString();
-
-		if (existing) {
-			await db.prepare(
-				`UPDATE session_progress SET topic_covered=?, understanding_level=?, notes=?, next_session_plan=?, homework_given=?, homework_completed=?, created_by=?
-				 WHERE id=?`
-			).bind(
-				topic_covered || null, understanding_level || null,
-				notes || null, next_session_plan || null,
-				homework_given || null, homework_completed ?? 0,
-				locals.user.id, existing.id
-			).run();
-			return json({ success: true, data: { id: existing.id } });
-		}
-
-		const id = crypto.randomUUID();
-		await db.prepare(
-			`INSERT INTO session_progress (id, tenant_id, session_id, student_id, topic_covered, understanding_level, notes, next_session_plan, homework_given, homework_completed, created_by, created_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-		).bind(
-			id, tenantId, params.id, student_id,
-			topic_covered || null, understanding_level || null,
-			notes || null, next_session_plan || null,
-			homework_given || null, homework_completed ?? 0,
-			locals.user.id, now
-		).run();
-
-		return json({ success: true, data: { id } }, { status: 201 });
+		return json({ success: true, data: result }, { status: 201 });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -16,23 +17,12 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
-		const status = url.searchParams.get('status');
-		const type = url.searchParams.get('type');
+		const repo = new TutorRepository(db, tenantId);
 
-		let query = 'SELECT * FROM learning_packages WHERE tenant_id = ?';
-		const params: any[] = [tenantId];
+		const status = url.searchParams.get('status') || undefined;
+		const type = url.searchParams.get('type') || undefined;
 
-		if (status) {
-			query += ' AND status = ?';
-			params.push(status);
-		}
-		if (type) {
-			query += ' AND type = ?';
-			params.push(type);
-		}
-		query += ' ORDER BY created_at DESC';
-
-		const { results } = await db.prepare(query).bind(...params).all<any>();
+		const results = await repo.getPackages({ status, type });
 		return json({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
@@ -46,6 +36,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 		const body = await request.json();
 
 		const { name, type, description, duration_sessions, duration_days, price, max_students, subjects, includes_tryout } = body;
@@ -58,19 +49,20 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 			throw error(400, 'invalid type');
 		}
 
-		const id = crypto.randomUUID();
-		await db.prepare(
-			`INSERT INTO learning_packages (id, tenant_id, name, description, type, duration_sessions, duration_days, price, max_students, subjects, includes_tryout, status)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-		).bind(
-			id, tenantId, name, description || null, type,
-			duration_sessions ?? null, duration_days ?? null,
-			price ?? null, max_students ?? null,
-			subjects ? JSON.stringify(subjects) : null,
-			includes_tryout ?? 0, body.status || 'active'
-		).run();
+		const created = await repo.createPackage({
+			name,
+			type,
+			description: description || undefined,
+			duration_sessions: duration_sessions ?? undefined,
+			duration_days: duration_days ?? undefined,
+			price: price ?? undefined,
+			max_students: max_students ?? undefined,
+			subjects: subjects ? JSON.stringify(subjects) : undefined,
+			includes_tryout: includes_tryout ?? 0,
+			status: body.status || 'active'
+		});
 
-		return json({ success: true, data: { id } }, { status: 201 });
+		return json({ success: true, data: { id: created.id } }, { status: 201 });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

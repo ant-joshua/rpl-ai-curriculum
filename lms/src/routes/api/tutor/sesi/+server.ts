@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { TutorRepository } from '$lib/repositories/tutor.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -16,23 +17,14 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 
-		const tutorId = url.searchParams.get('tutor_id');
-		const studentId = url.searchParams.get('student_id');
-		const date = url.searchParams.get('date');
-		const status = url.searchParams.get('status');
+		const tutorId = url.searchParams.get('tutor_id') || undefined;
+		const studentId = url.searchParams.get('student_id') || undefined;
+		const date = url.searchParams.get('date') || undefined;
+		const status = url.searchParams.get('status') || undefined;
 
-		let query = 'SELECT * FROM tutoring_sessions WHERE tenant_id = ?';
-		const params: any[] = [tenantId];
-
-		if (tutorId) { query += ' AND tutor_id = ?'; params.push(tutorId); }
-		if (studentId) { query += ' AND student_id = ?'; params.push(studentId); }
-		if (date) { query += ' AND date = ?'; params.push(date); }
-		if (status) { query += ' AND status = ?'; params.push(status); }
-
-		query += ' ORDER BY date DESC, start_time ASC';
-
-		const { results } = await db.prepare(query).bind(...params).all<any>();
+		const results = await repo.getSessions({ tutorId, studentId, date, status });
 		return json({ success: true, data: results || [] });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
@@ -46,48 +38,41 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new TutorRepository(db, tenantId);
 		const body = await request.json();
 
-		const { tutor_id, student_id, type, title, date, start_time, end_time, room, notes, materials } = body;
-		if (!tutor_id || !date || !start_time || !end_time) {
+		if (!body.tutor_id || !body.date || !body.start_time || !body.end_time) {
 			throw error(400, 'tutor_id, date, start_time, end_time required');
 		}
 
-		const validTypes = ['privat_1on1', 'bimbel_kelas', 'kelompok_kecil', 'online', 'tryout'];
-		if (type && !validTypes.includes(type)) {
-			throw error(400, 'invalid session type');
-		}
-
-		// Check time conflict for same tutor
-		const conflict = await db.prepare(
-			`SELECT id FROM tutoring_sessions
-			 WHERE tenant_id = ? AND tutor_id = ? AND date = ? AND status != 'cancelled'
-			 AND ((start_time < ? AND end_time > ?))`
-		).bind(tenantId, tutor_id, date, end_time, start_time).first<any>();
-
+		const conflict = await repo.checkConflict(
+			body.tutor_id,
+			body.date,
+			body.start_time,
+			body.end_time
+		);
 		if (conflict) {
-			throw error(409, 'Schedule conflict — tutor already has a session in this time slot');
+			throw error(409, 'Tutor already has a session at this time');
 		}
 
-		const startDt = new Date(`${date}T${start_time}`);
-		const endDt = new Date(`${date}T${end_time}`);
-		const durationMin = Math.round((endDt.getTime() - startDt.getTime()) / 60000);
+		const created = await repo.createSession({
+			batch_id: body.batch_id || undefined,
+			tutor_id: body.tutor_id,
+			student_id: body.student_id || undefined,
+			type: body.type || 'privat_1on1',
+			title: body.title || undefined,
+			date: body.date,
+			start_time: body.start_time,
+			end_time: body.end_time,
+			duration_minutes: body.duration_minutes ?? undefined,
+			room: body.room || undefined,
+			status: body.status || 'scheduled',
+			notes: body.notes || undefined,
+			materials: body.materials || undefined,
+			homework: body.homework || undefined
+		});
 
-		const id = crypto.randomUUID();
-		const now = new Date().toISOString();
-		await db.prepare(
-			`INSERT INTO tutoring_sessions (id, tenant_id, tutor_id, student_id, type, title, date, start_time, end_time, duration_minutes, room, status, notes, materials, created_at, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-		).bind(
-			id, tenantId, tutor_id, student_id || null,
-			type || 'privat_1on1', title || null, date, start_time, end_time,
-			durationMin > 0 ? durationMin : null,
-			room || null, 'scheduled', notes || null,
-			materials ? JSON.stringify(materials) : null,
-			now, now
-		).run();
-
-		return json({ success: true, data: { id } }, { status: 201 });
+		return json({ success: true, data: created }, { status: 201 });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === "object" && "status" in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';

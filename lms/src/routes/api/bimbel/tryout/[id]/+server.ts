@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
+import { BimbelRepository } from '$lib/repositories/bimbel.repository';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'instructor'];
 
@@ -11,77 +12,54 @@ function checkAuth(locals: any) {
 	return user;
 }
 
-export async function GET({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
+export async function GET({ params, platform, locals }: { params: any; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new BimbelRepository(db, tenantId);
 
-		const tryout = await db.prepare(
-			'SELECT * FROM tryout_batches WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
+		const tryout = await repo.getBatch(params.id);
 		if (!tryout) throw error(404, 'Tryout not found');
 
-		// Participants with stats
-		const { results: participants } = await db.prepare(
-			`SELECT tp.*, u.display_name, u.email, u.username
-			 FROM tryout_participants tp
-			 JOIN users u ON u.id = tp.user_id
-			 WHERE tp.tryout_batch_id = ?
-			 ORDER BY COALESCE(tp.total_score, 0) DESC`
-		).bind(params.id).all<any>();
+		const participants = await repo.getParticipants(params.id);
+		const analysis = await repo.getAnalysis(params.id);
 
-		// Analysis summary
-		const { results: analysis } = await db.prepare(
-			'SELECT * FROM tryout_analysis WHERE tryout_batch_id = ?'
-		).bind(params.id).all<any>();
-
-		return json({
-			success: true,
-			data: {
-				...tryout,
-				participants: participants || [],
-				analysis: analysis || [],
-				participant_count: (participants || []).length,
-				avg_score: participants?.length
-					? participants.reduce((sum: number, p: any) => sum + (p.total_score || 0), 0) / participants.length
-					: 0
-			}
-		});
+		return json({ success: true, data: { ...tryout, participants: participants || [], analysis: analysis || [] } });
 	} catch (e: unknown) {
-		if (e !== null && typeof e === "object" && "status" in e) throw e;
+		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return json({ success: false, error: msg }, { status: 500 });
 	}
 }
 
-export async function PATCH({ request, params, platform, locals }: { request: Request; params: { id: string }; platform: App.Platform; locals: any }) {
+export async function PATCH({ params, request, platform, locals }: { params: any; request: Request; platform: App.Platform; locals: any }) {
 	try {
 		checkAuth(locals);
 		const db = getDB(platform);
 		const tenantId = locals.tenant?.id || 'default';
+		const repo = new BimbelRepository(db, tenantId);
+		const body = await request.json();
 
-		const existing = await db.prepare(
-			'SELECT * FROM tryout_batches WHERE id = ? AND tenant_id = ?'
-		).bind(params.id, tenantId).first<any>();
+		const existing = await repo.getBatch(params.id);
 		if (!existing) throw error(404, 'Tryout not found');
 
-		const body = await request.json();
-		const merged = { ...existing, ...body };
-
+		// updateBatch not in repo — inline SQL
 		await db.prepare(
-			`UPDATE tryout_batches SET batch_id=?, title=?, date=?, duration_minutes=?, question_count=?, subjects=?
-			 WHERE id=?`
+			`UPDATE tryout_batches SET batch_id=?, title=?, date=?, duration_minutes=?, question_count=?, subjects=? WHERE id=? AND tenant_id=?`
 		).bind(
-			merged.batch_id, merged.title, merged.date,
-			merged.duration_minutes, merged.question_count,
-			merged.subjects ? (typeof merged.subjects === 'string' ? merged.subjects : JSON.stringify(merged.subjects)) : null,
-			params.id
+			body.batch_id !== undefined ? body.batch_id : existing.batch_id,
+			body.title !== undefined ? body.title : existing.title,
+			body.date !== undefined ? body.date : existing.date,
+			body.duration_minutes !== undefined ? body.duration_minutes : existing.duration_minutes,
+			body.question_count !== undefined ? body.question_count : existing.question_count,
+			body.subjects !== undefined ? (Array.isArray(body.subjects) ? JSON.stringify(body.subjects) : body.subjects) : existing.subjects,
+			params.id, tenantId
 		).run();
 
-		return json({ success: true, data: merged });
+		return json({ success: true, data: { id: params.id } });
 	} catch (e: unknown) {
-		if (e !== null && typeof e === "object" && "status" in e) throw e;
+		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
 		const msg = e instanceof Error ? e.message : 'Unknown error';
 		return json({ success: false, error: msg }, { status: 500 });
 	}
