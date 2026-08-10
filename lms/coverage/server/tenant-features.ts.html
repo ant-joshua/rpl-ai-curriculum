@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>8/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -126,7 +126,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -137,29 +137,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Tenant feature flags — read from tenants.features JSON.
@@ -175,7 +175,7 @@ export type TenantFeatureKey =
 	| 'certificates'      // certificate generation
 	| 'discussions';      // lesson discussion threads
 &nbsp;
-export const DEFAULT_FEATURES: Record&lt;TenantFeatureKey, boolean&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+export const DEFAULT_FEATURES: Record&lt;TenantFeatureKey, boolean&gt; = {
 	gamification: true,
 	daily_quests: true,
 	leaderboard: true,
@@ -185,30 +185,30 @@ export const DEFAULT_FEATURES: Record&lt;TenantFeatureKey, boolean&gt; = <span c
 };
 &nbsp;
 /** Parse tenant.features JSON (stored as string). */
-export function <span class="fstat-no" title="function not covered" >parseFeatures(r</span>aw: string | null | undefined): Record&lt;string, boolean&gt; {
-<span class="cstat-no" title="statement not covered" >	try {</span>
-<span class="cstat-no" title="statement not covered" >		return raw ? JSON.parse(raw) : {};</span>
+export function parseFeatures(raw: string | null | undefined): Record&lt;string, boolean&gt; {
+	try {
+		return raw ? JSON.parse(raw) : {};
 	} catch {
-<span class="cstat-no" title="statement not covered" >		return {};</span>
+		return {};
 	}
 }
 &nbsp;
 /** Check if a tenant has a feature enabled (falls back to default). */
-export function <span class="fstat-no" title="function not covered" >hasFeature(t</span>enant: any, key: TenantFeatureKey): boolean {
-<span class="cstat-no" title="statement not covered" >	if (!tenant) <span class="cstat-no" title="statement not covered" >return DEFAULT_FEATURES[key] ?? true;</span></span>
-	const features = <span class="cstat-no" title="statement not covered" >parseFeatures(tenant.features);</span>
-	const val = <span class="cstat-no" title="statement not covered" >features[key];</span>
-<span class="cstat-no" title="statement not covered" >	return val === undefined ? (DEFAULT_FEATURES[key] ?? true) : Boolean(val);</span>
+export function hasFeature(tenant: any, key: TenantFeatureKey): boolean {
+	if (!tenant) return DEFAULT_FEATURES[key] ?? <span class="branch-1 cbranch-no" title="branch not covered" >true;</span>
+	const features = parseFeatures(tenant.features);
+	const val = features[key];
+	return val === undefined ? (DEFAULT_FEATURES[key] ?? <span class="branch-1 cbranch-no" title="branch not covered" >true) : B</span>oolean(val);
 }
 &nbsp;
 /** Get full feature map for a tenant (defaults merged). */
-export function <span class="fstat-no" title="function not covered" >getFeatures(t</span>enant: any): Record&lt;string, boolean&gt; {
-	const merged: Record&lt;string, boolean&gt; = <span class="cstat-no" title="statement not covered" >{ ...DEFAULT_FEATURES };</span>
-	const parsed = <span class="cstat-no" title="statement not covered" >parseFeatures(tenant?.features);</span>
-<span class="cstat-no" title="statement not covered" >	for (const [k, v] of Object.entries(parsed)) {</span>
-<span class="cstat-no" title="statement not covered" >		merged[k] = Boolean(v);</span>
+export function getFeatures(tenant: any): Record&lt;string, boolean&gt; {
+	const merged: Record&lt;string, boolean&gt; = { ...DEFAULT_FEATURES };
+	const parsed = parseFeatures(tenant?.features);
+	for (const [k, v] of Object.entries(parsed)) {
+		merged[k] = Boolean(v);
 	}
-<span class="cstat-no" title="statement not covered" >	return merged;</span>
+	return merged;
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -217,7 +217,7 @@ export function <span class="fstat-no" title="function not covered" >getFeatures
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-08-10T04:39:54.653Z
+                at 2026-08-10T04:50:08.226Z
             </div>
         <script src="../prettify.js"></script>
         <script>

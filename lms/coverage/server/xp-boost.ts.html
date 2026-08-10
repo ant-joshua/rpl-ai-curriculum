@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">92.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>13/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -123,8 +123,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -134,20 +134,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { D1Database } from '@cloudflare/workers-types';
 &nbsp;
@@ -165,9 +165,9 @@ export interface XpBoost {
  * Find active XP boost for a tenant+reason at this moment.
  * Returns highest multiplier among matching active events.
  */
-export async function <span class="fstat-no" title="function not covered" >getActiveBoost(d</span>b: D1Database, tenantId: string | null | undefined, reason: string): Promise&lt;XpBoost | null&gt; {
-<span class="cstat-no" title="statement not covered" >	try {</span>
-		const { results } = <span class="cstat-no" title="statement not covered" >await db.prepare(`</span>
+export async function getActiveBoost(db: D1Database, tenantId: string | null | undefined, reason: string): Promise&lt;XpBoost | null&gt; {
+	try {
+		const { results } = await db.prepare(`
 			SELECT id, title, multiplier, reason_filter, tenant_id, start_at, end_at
 			FROM xp_boost_events
 			WHERE enabled = 1
@@ -175,22 +175,22 @@ export async function <span class="fstat-no" title="function not covered" >getAc
 				AND (tenant_id IS NULL OR tenant_id = ?)
 			ORDER BY multiplier DESC
 			LIMIT 1
-		`).bind(tenantId ?? '').all&lt;XpBoost&gt;();
+		`).bind(tenantId ?? <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.all&lt;XpBoost&gt;();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >		if (!results || results.length === 0) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+		if (!results || results.length === 0) return null;
 &nbsp;
-		const boost = <span class="cstat-no" title="statement not covered" >results[0];</span>
+		const boost = results[0];
 		// reason_filter: 'all' matches everything; otherwise must match
-<span class="cstat-no" title="statement not covered" >		if (boost.reason_filter !== 'all' &amp;&amp; boost.reason_filter !== reason) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-<span class="cstat-no" title="statement not covered" >		return boost;</span>
+		if (boost.reason_filter !== 'all' &amp;&amp; boost.reason_filter !== reason) return null;
+		return boost;
 	} catch {
-<span class="cstat-no" title="statement not covered" >		return null;</span>
+		return null;
 	}
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >applyBoost(b</span>aseXp: number, boost: XpBoost | null): number {
-<span class="cstat-no" title="statement not covered" >	if (!boost || boost.multiplier &lt;= 1) <span class="cstat-no" title="statement not covered" >return baseXp;</span></span>
-<span class="cstat-no" title="statement not covered" >	return Math.round(baseXp * boost.multiplier);</span>
+export function applyBoost(baseXp: number, boost: XpBoost | null): number {
+	if (!boost || boost.multiplier &lt;= 1) return baseXp;
+	return Math.round(baseXp * boost.multiplier);
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -199,7 +199,7 @@ export function <span class="fstat-no" title="function not covered" >applyBoost(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-08-10T04:39:54.653Z
+                at 2026-08-10T04:50:08.226Z
             </div>
         <script src="../prettify.js"></script>
         <script>

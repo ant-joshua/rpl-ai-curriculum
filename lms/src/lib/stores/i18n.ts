@@ -197,12 +197,15 @@ const translations: Record<Lang, Record<string, string>> = {
 
 let currentLang: Lang = 'id';
 
+export function initLang(saved: string | null): void {
+  if (saved === 'id' || saved === 'en') {
+    currentLang = saved;
+  }
+}
+
 if (typeof window !== 'undefined') {
   try {
-    const saved = localStorage.getItem('lms-lang');
-    if (saved === 'id' || saved === 'en') {
-      currentLang = saved;
-    }
+    initLang(localStorage.getItem('lms-lang'));
   } catch {
     // localStorage not available
   }
