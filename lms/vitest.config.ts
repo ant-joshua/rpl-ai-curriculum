@@ -25,9 +25,9 @@ export default defineConfig({
 			include: ['src/lib/server/**', 'src/lib/stores/**'],
 			exclude: ['**/*.d.ts', '**/*.svelte.ts'],
 			thresholds: {
-				lines: 30,
-				functions: 40,
-				statements: 30,
+				lines: 75,
+				functions: 60,
+				statements: 75,
 			},
 		},
 	},
