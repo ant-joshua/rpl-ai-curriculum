@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { UniversityRepository } from '$lib/repositories/university.repository';
+import { UniversityRepository } from '$lib/repositories/university';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	try {

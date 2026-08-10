@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
 import { getBearerToken, getSession } from '$lib/server/auth';
-import { UniversityRepository } from '$lib/repositories/university.repository';
+import { UniversityRepository } from '$lib/repositories/university';
 
 async function getAuthenticatedUser(platform: App.Platform, request: Request): Promise<any> {
 	const token = getBearerToken(request);
