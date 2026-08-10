@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { PaymentMethodsRepository } from '$lib/repositories/payment-gateway';
 
 export async function GET({ platform, locals }: { platform: App.Platform; locals: any }) {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
-		const methods = await PaymentGatewayRepository.getPaymentMethods(platform, tenantId);
+		const methods = await PaymentMethodsRepository.getPaymentMethods(platform, tenantId);
 		return json({ success: true, data: methods });
 	} catch (e: unknown) {
 		if (e !== null && typeof e === 'object' && 'status' in e) throw e;
@@ -17,7 +17,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 	try {
 		const tenantId = locals.tenant?.id || 'default';
 		const body = await request.json();
-		const id = await PaymentGatewayRepository.createPaymentMethod(platform, tenantId, {
+		const id = await PaymentMethodsRepository.createPaymentMethod(platform, tenantId, {
 			code: body.code,
 			name: body.name,
 			type: body.type,

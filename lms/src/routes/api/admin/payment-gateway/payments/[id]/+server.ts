@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { PaymentsRepository } from '$lib/repositories/payment-gateway';
 
 export async function PUT({ params, request, platform, locals }: { params: { id: string }; request: Request; platform: App.Platform; locals: any }) {
 	try {
@@ -8,11 +8,11 @@ export async function PUT({ params, request, platform, locals }: { params: { id:
 		const userId = locals.user?.id || 'admin';
 
 		if (body.action === 'verify') {
-			const data = await PaymentGatewayRepository.verifyPayment(platform, params.id, tenantId, userId);
+			const data = await PaymentsRepository.verifyPayment(platform, params.id, tenantId, userId);
 			if (!data) throw error(404, 'Payment tidak ditemukan');
 			return json({ success: true, data });
 		} else if (body.action === 'reject') {
-			const data = await PaymentGatewayRepository.rejectPayment(platform, params.id, tenantId);
+			const data = await PaymentsRepository.rejectPayment(platform, params.id, tenantId);
 			if (!data) throw error(404, 'Payment tidak ditemukan');
 			return json({ success: true, data });
 		} else {

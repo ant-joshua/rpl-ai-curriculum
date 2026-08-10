@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { InvoicesRepository } from '$lib/repositories/payment-gateway';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	try {
@@ -10,7 +10,7 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		const studentId = url.searchParams.get('studentId') || undefined;
 		const academicYear = url.searchParams.get('academicYear') || undefined;
 
-		const result = await PaymentGatewayRepository.listInvoices(platform, tenantId, {
+		const result = await InvoicesRepository.listInvoices(platform, tenantId, {
 			status,
 			studentId,
 			academicYear,
@@ -33,7 +33,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 			throw error(400, 'Minimal satu item invoice wajib diisi');
 		}
 
-		const data = await PaymentGatewayRepository.createInvoice(platform, tenantId, {
+		const data = await InvoicesRepository.createInvoice(platform, tenantId, {
 			student_id: body.student_id,
 			items: body.items,
 			due_date: body.due_date,

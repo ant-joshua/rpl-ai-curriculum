@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { PaymentsRepository } from '$lib/repositories/payment-gateway';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	try {
@@ -10,7 +10,7 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		const invoiceId = url.searchParams.get('invoiceId') || undefined;
 		const studentId = url.searchParams.get('studentId') || undefined;
 
-		const result = await PaymentGatewayRepository.listPayments(platform, tenantId, {
+		const result = await PaymentsRepository.listPayments(platform, tenantId, {
 			status,
 			invoiceId,
 			studentId,
@@ -33,7 +33,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		if (!body.amount || body.amount <= 0) throw error(400, 'Nominal pembayaran harus lebih dari 0');
 		if (!body.payment_date) throw error(400, 'Tanggal pembayaran wajib diisi');
 
-		const data = await PaymentGatewayRepository.createPayment(platform, tenantId, {
+		const data = await PaymentsRepository.createPayment(platform, tenantId, {
 			invoice_id: body.invoice_id,
 			student_id: body.student_id,
 			amount: body.amount,

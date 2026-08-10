@@ -1,10 +1,10 @@
 import { json, error } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { InvoicesRepository } from '$lib/repositories/payment-gateway';
 
 export async function GET({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
-		const data = await PaymentGatewayRepository.getInvoice(platform, params.id, tenantId);
+		const data = await InvoicesRepository.getInvoice(platform, params.id, tenantId);
 		if (!data) throw error(404, 'Invoice tidak ditemukan');
 		return json({ success: true, data });
 	} catch (e: unknown) {
@@ -25,7 +25,7 @@ export async function PUT({ params, request, platform, locals }: { params: { id:
 			throw error(400, 'Status tidak valid');
 		}
 
-		const data = await PaymentGatewayRepository.updateInvoiceStatus(platform, params.id, tenantId, body.status);
+		const data = await InvoicesRepository.updateInvoiceStatus(platform, params.id, tenantId, body.status);
 		if (!data) throw error(404, 'Invoice tidak ditemukan');
 		return json({ success: true, data });
 	} catch (e: unknown) {
@@ -38,7 +38,7 @@ export async function PUT({ params, request, platform, locals }: { params: { id:
 export async function DELETE({ params, platform, locals }: { params: { id: string }; platform: App.Platform; locals: any }) {
 	try {
 		const tenantId = locals.tenant?.id || 'default';
-		const deleted = await PaymentGatewayRepository.deleteInvoice(platform, params.id, tenantId);
+		const deleted = await InvoicesRepository.deleteInvoice(platform, params.id, tenantId);
 		if (!deleted) throw error(404, 'Invoice tidak ditemukan');
 		return json({ success: true, message: 'Invoice berhasil dihapus' });
 	} catch (e: unknown) {

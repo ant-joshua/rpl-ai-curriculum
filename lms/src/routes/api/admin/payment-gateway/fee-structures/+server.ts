@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { PaymentGatewayRepository } from '$lib/repositories/payment-gateway.repository';
+import { FeeStructuresRepository } from '$lib/repositories/payment-gateway';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	try {
@@ -10,7 +10,7 @@ export async function GET({ url, platform, locals }: { url: URL; platform: App.P
 		if (fee_type) filters.fee_type = fee_type;
 		if (academic_year) filters.academic_year = academic_year;
 
-		const data = await PaymentGatewayRepository.getFeeStructures(platform, tenantId, filters);
+		const data = await FeeStructuresRepository.getFeeStructures(platform, tenantId, filters);
 		return json({ success: true, data });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
@@ -26,7 +26,7 @@ export async function POST({ request, platform, locals }: { request: Request; pl
 		if (body.amount === undefined || body.amount === null) throw error(400, 'Jumlah nominal wajib diisi');
 		if (!body.fee_type) throw error(400, 'Tipe fee wajib diisi');
 
-		const data = await PaymentGatewayRepository.createFeeStructure(platform, tenantId, {
+		const data = await FeeStructuresRepository.createFeeStructure(platform, tenantId, {
 			name: body.name,
 			code: body.code,
 			description: body.description,
