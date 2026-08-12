@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { Button, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 

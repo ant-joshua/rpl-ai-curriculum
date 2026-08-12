@@ -86,7 +86,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 	}
 
 	let filtered = $derived(projects.filter(p => tab === 'all' || p.status === tab));
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

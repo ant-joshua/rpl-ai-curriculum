@@ -122,7 +122,7 @@
 		if (val) params.set('type', val); else params.delete('type');
 		goto(`/admin/classes-structure/kd?${params.toString()}`);
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <div class="page-header">

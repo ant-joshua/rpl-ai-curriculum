@@ -124,7 +124,7 @@
 			cell: ({ row }) => `<button class="btn-danger-icon" onclick="window.__deleteAssignment('${row.original.id}')" title="Hapus">✕</button>`
 		},
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

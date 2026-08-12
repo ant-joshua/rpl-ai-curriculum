@@ -186,7 +186,7 @@
 		if (file.url.startsWith('http')) return file.url;
 		return file.url;
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

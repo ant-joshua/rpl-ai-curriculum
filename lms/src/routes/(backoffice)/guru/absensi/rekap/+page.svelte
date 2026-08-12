@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { DataTable, Skeleton, EmptyState, Select, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 
 	type DayRecord = {
 		date: string;

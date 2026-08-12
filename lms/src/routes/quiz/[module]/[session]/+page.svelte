@@ -1,6 +1,6 @@
 <script lang="ts">
   import Confetti from '$lib/components/ui/Confetti.svelte';
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';

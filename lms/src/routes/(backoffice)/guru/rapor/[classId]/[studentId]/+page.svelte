@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { Skeleton, Badge, Button, DataTable, Textarea } from '$lib/components/ui/index.js';
 import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	let classId = $state('');
 	let studentId = $state('');

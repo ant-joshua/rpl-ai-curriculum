@@ -102,7 +102,7 @@
 		} catch { restoreError = 'Gagal mengupload file restore'; }
 		finally { restoring = false; input.value = ''; }
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

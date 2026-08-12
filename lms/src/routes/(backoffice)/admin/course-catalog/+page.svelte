@@ -150,7 +150,7 @@
 			cell: ({ getValue }) => `<a href="/admin/course-catalog/${getValue()}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">Detail</a>`
 		}
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

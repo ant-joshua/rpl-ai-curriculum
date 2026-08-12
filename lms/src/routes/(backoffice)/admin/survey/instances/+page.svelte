@@ -133,7 +133,7 @@
 	function templateName(id: string): string {
 		return templates.find((t: any) => t.id === id)?.name || id.slice(0, 8) + '...';
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

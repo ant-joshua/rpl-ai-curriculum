@@ -263,7 +263,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	function offeringName(id: string): string {
 		return offerings.find(o => o.id === id)?.name || id;
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head><title>${t('admin.title')}</title></svelte:head>

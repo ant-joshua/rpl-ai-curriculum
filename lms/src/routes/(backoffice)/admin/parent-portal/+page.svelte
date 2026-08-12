@@ -75,7 +75,7 @@
 	];
 
 	onMount(loadStats);
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <div class="pp-dashboard">

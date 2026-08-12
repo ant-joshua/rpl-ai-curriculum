@@ -98,7 +98,7 @@
 		}
 		generating = false;
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

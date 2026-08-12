@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { onMount } from 'svelte';
 	import { Card, EmptyState, SkeletonCard } from '$lib/components/ui';

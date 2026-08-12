@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	let { data } = $props();
 
 	import { parseMarkdown } from '$lib/utils/markdown';

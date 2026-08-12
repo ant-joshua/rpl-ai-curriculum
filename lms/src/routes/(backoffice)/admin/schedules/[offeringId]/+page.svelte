@@ -166,7 +166,7 @@
     const d = new Date(dt + (dt.endsWith('Z') ? '' : 'Z'));
     return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   }
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

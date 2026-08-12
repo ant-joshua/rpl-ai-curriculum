@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { DataTable, Skeleton, EmptyState, StatCard } from '$lib/components/ui';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	type DayRec = {
 		date: string;

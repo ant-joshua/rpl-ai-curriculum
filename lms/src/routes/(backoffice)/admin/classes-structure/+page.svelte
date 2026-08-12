@@ -36,7 +36,7 @@
 		{ path: '/admin/classes-structure/guru-mapel', icon: '👨‍🏫', title: 'Guru Mapel', desc: 'Atur penugasan guru per kelas-mapel' },
 		{ path: '/admin/classes-structure/import-siswa', icon: '📥', title: 'Import Siswa', desc: 'Import data siswa dari CSV' },
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

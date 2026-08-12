@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
   import { caseStudies, type CaseStudy } from '$lib/stores/case-studies';
   import { page } from '$app/stores';
   import { fade } from 'svelte/transition';

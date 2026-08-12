@@ -245,7 +245,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	];
 
 	onMount(loadInvoices);
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <div class="pg-page">

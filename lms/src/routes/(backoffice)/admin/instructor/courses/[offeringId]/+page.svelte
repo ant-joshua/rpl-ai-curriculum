@@ -206,7 +206,7 @@
 		if (!dueDate || !sub.submitted_at) return false;
 		return new Date(sub.submitted_at) > new Date(dueDate + 'Z');
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

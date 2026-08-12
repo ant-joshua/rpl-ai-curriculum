@@ -5,7 +5,7 @@
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { page } from '$app/stores';
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 
 	type Student = {
 		id: string;

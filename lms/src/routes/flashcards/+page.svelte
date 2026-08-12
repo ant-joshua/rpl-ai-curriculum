@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { flashcards, type Flashcard } from '$lib/stores/flashcards.svelte';
 	import { modules } from '$lib/stores/modules';

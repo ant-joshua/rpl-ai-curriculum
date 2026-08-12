@@ -72,7 +72,7 @@
 			} else alert(json.error || 'Gagal menghapus');
 		} catch { alert('Terjadi kesalahan'); }
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

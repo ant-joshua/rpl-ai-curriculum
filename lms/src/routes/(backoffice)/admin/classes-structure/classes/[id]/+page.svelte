@@ -52,7 +52,7 @@
 			cell: ({ row }) => `<span style="color:var(--text-secondary);font-size:12px">${row.original.joined_at || row.original.joinedAt ? new Date(row.original.joined_at || row.original.joinedAt).toLocaleDateString() : '—'}</span>`
 		},
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

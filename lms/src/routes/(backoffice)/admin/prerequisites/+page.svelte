@@ -115,7 +115,7 @@
 			error = e instanceof Error ? e.message : 'Network error.';
 		}
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

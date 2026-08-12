@@ -405,7 +405,7 @@
 		if (mediaFiles.length === 0) loadMediaFiles();
 		showMediaModal = true;
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

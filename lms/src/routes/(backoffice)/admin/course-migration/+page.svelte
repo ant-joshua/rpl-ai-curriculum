@@ -79,7 +79,7 @@
 		} catch { importError = 'Gagal mengupload file'; }
 		finally { importing = false; input.value = ''; }
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

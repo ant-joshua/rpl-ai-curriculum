@@ -57,7 +57,7 @@
 			cell: ({ getValue }) => `<a href="/admin/tenants/${getValue()}" style="color:var(--accent);text-decoration:none;font-size:0.85rem;font-weight:500">Detail</a>`
 		}
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

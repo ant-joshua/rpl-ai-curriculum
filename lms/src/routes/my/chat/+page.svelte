@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { Card, CardContent } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();

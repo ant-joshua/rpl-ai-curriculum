@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Skeleton, EmptyState, Badge, Modal, Input, Textarea, Button, Select } from '$lib/components/ui/index.js';

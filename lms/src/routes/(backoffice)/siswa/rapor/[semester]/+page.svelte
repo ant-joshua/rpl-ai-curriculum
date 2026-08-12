@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { Skeleton, Badge, Button, DataTable } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	let semester = $state('');
 	let rapor: any = $state(null);

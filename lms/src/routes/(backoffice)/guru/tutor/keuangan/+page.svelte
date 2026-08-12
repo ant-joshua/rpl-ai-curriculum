@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { Skeleton, EmptyState, Badge, DataTable, Select } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	type Invoice = {
 		id: string;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { modules, type Module, type Session } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { paths, computePathProgress } from '$lib/stores/paths';

@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 
 	let { data } = $props();
 

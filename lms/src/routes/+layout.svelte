@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import 'katex/dist/katex.min.css';
-	import { t, toggleLang, getLang } from '$lib/stores/i18n.svelte';
+	import { t, toggleLang, getLang } from '$lib/stores/i18n';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
 	import ScrollProgress from '$lib/components/ui/ScrollProgress.svelte';

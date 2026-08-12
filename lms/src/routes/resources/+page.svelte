@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { modules } from '$lib/stores/modules';
 	import { EmptyState, Skeleton } from '$lib/components/ui';
 	import { fade } from 'svelte/transition';

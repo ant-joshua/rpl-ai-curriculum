@@ -133,7 +133,7 @@
 			cell: ({ getValue }) => formatDate(getValue() as string)
 		}
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

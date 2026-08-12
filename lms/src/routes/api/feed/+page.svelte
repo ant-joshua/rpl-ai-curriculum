@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
   import { redirect } from '@sveltejs/kit';
   import type { PageLoad } from './$types';
   

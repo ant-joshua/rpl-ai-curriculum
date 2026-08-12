@@ -56,7 +56,7 @@
 		} catch { exportError = 'Download failed'; }
 		finally { exporting = null; }
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

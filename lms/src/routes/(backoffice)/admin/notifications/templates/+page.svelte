@@ -98,7 +98,7 @@
 		const map: Record<string,string> = { assessment:'cat-academic', assignment:'cat-academic', attendance:'cat-attendance', payment:'cat-payment', grade:'cat-grade', system:'cat-system', announcement:'cat-announcement' };
 		return map[t] || 'cat-general';
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

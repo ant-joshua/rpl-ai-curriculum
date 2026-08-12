@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader, Button } from '$lib/components/ui';

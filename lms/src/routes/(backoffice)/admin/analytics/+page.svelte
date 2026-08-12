@@ -133,7 +133,7 @@
 		{ id: 'course-compare', label: 'Course Compare', icon: '🔍' },
 		{ id: 'activity', label: 'Activity', icon: '🕐' },
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

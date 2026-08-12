@@ -29,7 +29,7 @@
 
 	const totalStudents = $derived(courses.reduce((s, c) => s + (c.student_count || 0), 0));
 	const totalAssignments = $derived(courses.reduce((s, c) => s + (c.assignment_count || 0), 0));
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

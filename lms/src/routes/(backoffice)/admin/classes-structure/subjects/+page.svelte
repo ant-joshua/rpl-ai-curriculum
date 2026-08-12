@@ -122,7 +122,7 @@
 			cell: ({ row }) => `<a href="/admin/classes-structure/mapel/${row.original.id}" style="color:var(--accent);text-decoration:none;font-size:13px;font-weight:500">KD</a>`
 		},
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

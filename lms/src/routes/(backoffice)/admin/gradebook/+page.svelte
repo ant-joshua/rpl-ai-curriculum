@@ -23,7 +23,7 @@
 		} catch { error = 'Failed to load offerings'; }
 		finally { loading = false; }
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

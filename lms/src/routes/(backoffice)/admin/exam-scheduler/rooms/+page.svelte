@@ -154,7 +154,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 	},
 ];
 
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <div class="page">

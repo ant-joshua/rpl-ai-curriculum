@@ -227,7 +227,7 @@
 		(window as any).__closeSession = closeSession;
 		return () => { delete (window as any).__closeSession; };
 	});
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

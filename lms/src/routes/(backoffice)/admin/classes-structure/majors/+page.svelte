@@ -94,7 +94,7 @@
 			cell: ({ getValue }) => `<a href="/admin/classes-structure/kelas?jurusan=${getValue()}" class="btn-small">$'+t('admin.lihat_kelas')+'</a>`
 		}
 	];
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

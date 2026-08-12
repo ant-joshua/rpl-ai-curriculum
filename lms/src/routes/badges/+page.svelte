@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { gamification, type Badge } from '$lib/stores/gamification.svelte';
 	import { onMount } from 'svelte';
 

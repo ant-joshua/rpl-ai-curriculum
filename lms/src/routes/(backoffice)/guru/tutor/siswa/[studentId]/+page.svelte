@@ -4,7 +4,7 @@
 	import { Skeleton, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	type Session = {
 		id: string;

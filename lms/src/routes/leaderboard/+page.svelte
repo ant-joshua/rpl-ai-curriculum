@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { user } from '$lib/stores/user.svelte';
 	import { getDeviceId } from '$lib/utils/api';
 	import ShareButton from '$lib/components/ShareButton.svelte';

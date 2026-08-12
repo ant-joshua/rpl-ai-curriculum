@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { DataTable, Button, Skeleton, EmptyState, Select } from '$lib/components/ui/index.js';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n.svelte';
+import { t } from '$lib/stores/i18n';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
   import Icon from '$lib/components/ui/Icon.svelte';
   import { EmptyState } from '$lib/components/ui/index.js';
 

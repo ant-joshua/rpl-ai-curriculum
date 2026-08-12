@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { user } from '$lib/stores/user.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { progress } from '$lib/stores/progress.svelte';

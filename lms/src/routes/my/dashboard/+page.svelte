@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t } from '$lib/stores/i18n.svelte';
+	import { t } from '$lib/stores/i18n';
 	import { Avatar, Card, CardContent, Alert, Button } from '$lib/components/ui';
 	import DailyQuests from '$lib/components/DailyQuests.svelte';
 	import { onMount } from 'svelte';

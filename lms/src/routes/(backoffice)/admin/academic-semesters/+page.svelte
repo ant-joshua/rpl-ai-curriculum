@@ -131,7 +131,7 @@
 	$effect(() => {
 		(window as any).__semSetActive = setActive;
 	});
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>

@@ -45,7 +45,7 @@
 	function statusBadge(ok: boolean) {
 		return ok ? 'status-ok' : 'status-err';
 	}
-  import { t } from '$lib/stores/i18n.svelte';
+  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>
