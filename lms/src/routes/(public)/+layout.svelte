@@ -15,8 +15,15 @@
 			</svg>
 			<span class="logo-text">RPL AI</span>
 		</a>
+		<nav class="topbar-nav" aria-label="Main navigation">
+			<a href="/catalog">Modul</a>
+			<a href="/path">Path</a>
+			<a href="/ai">AI Tutor</a>
+			<a href="/feed">Blog</a>
+		</nav>
 		<div class="topbar-actions">
-			<a href="/login" class="login-btn">Login</a>
+			<a href="/login" class="login-link">Login</a>
+			<a href="/register" class="login-btn">Daftar Gratis</a>
 		</div>
 	</nav>
 
@@ -85,6 +92,38 @@
 		gap: 8px;
 	}
 
+	.topbar-nav {
+		display: flex;
+		align-items: center;
+		gap: 26px;
+	}
+
+	.topbar-nav a {
+		color: #475569;
+		font-size: 14px;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.topbar-nav a:hover {
+		color: #4F46E5;
+	}
+
+	.login-link {
+		padding: 8px 16px;
+		border-radius: 8px;
+		color: #4F46E5;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		transition: background 0.15s ease;
+	}
+
+	.login-link:hover {
+		background: #EEF2FF;
+	}
+
 	.login-btn {
 		padding: 8px 20px;
 		border-radius: 8px;
@@ -106,13 +145,14 @@
 	.content {
 		flex: 1;
 		width: 100%;
-		max-width: 960px;
+		max-width: 1180px;
 		margin: 0 auto;
 		padding: 32px 24px;
 	}
 
 	@media (max-width: 640px) {
 		.topbar { padding: 0 16px; }
+		.topbar-nav { display: none; }
 		.content { padding: 20px 16px; }
 	}
 </style>
