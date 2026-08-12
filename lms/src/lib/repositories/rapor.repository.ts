@@ -1,5 +1,5 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import { K13GradeRepository } from './k13-grade.repository';
+import { K13GradeRepository } from './k13-grade';
 
 interface RaporRow {
 	id: string;

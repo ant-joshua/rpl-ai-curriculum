@@ -1,6 +1,6 @@
 import { getBearerToken, getSession } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
-import { ReportCardRepository } from '$lib/repositories/report-card.repository';
+import { ReportCardRepository } from '$lib/repositories/report-card';
 
 export async function GET({ params, url, platform, request }: { params: { id: string }; url: URL; platform: App.Platform; request: Request }): Promise<Response> {
 	try {

@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { K13GradeRepository } from '$lib/repositories/k13-grade.repository';
+import { K13GradeRepository } from '$lib/repositories/k13-grade';
 
 export async function GET({ url, platform, locals }: { url: URL; platform: App.Platform; locals: any }) {
 	const user = locals.user;

@@ -11,7 +11,7 @@ export type {
 	PredikatThresholds
 } from './k13-calc';
 
-export { K13GradeRepository } from '../repositories/k13-grade.repository';
+export { K13GradeRepository } from '../repositories/k13-grade';
 export type {
 	SavePhInput,
 	SavePtsInput,
@@ -19,4 +19,4 @@ export type {
 	SaveSkillsInput,
 	SaveAttitudeInput,
 	SaveExtracurricularInput
-} from '../repositories/k13-grade.repository';
+} from '../repositories/k13-grade';
