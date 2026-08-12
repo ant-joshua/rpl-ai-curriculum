@@ -682,6 +682,8 @@
 	.hero-visual {
 		position: relative;
 		z-index: 2;
+		min-width: 0;
+		padding-left: 40px;
 	}
 
 	.browser-mock {
