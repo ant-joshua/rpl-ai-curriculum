@@ -339,7 +339,7 @@
 	<div class="sidebar-overlay" onclick={closeSidebar} role="button" tabindex="-1"></div>
 {/if}
 
-<div class="layout-body">
+<div class="layout-body" class:layout-body--minimal={isMinimalRoute}>
 	<aside class="sidebar" class:sidebar--open={sidebarOpen}>
 		<!-- Logo + Search -->
 		<div class="sidebar-header">
@@ -777,6 +777,23 @@
 		display: flex;
 		min-height: 100vh;
 		overflow-x: hidden;
+	}
+
+	/* Bypass sidebar layout for public/auth/minimal routes */
+	.layout-body--minimal {
+		display: contents;
+	}
+
+	.layout-body--minimal .sidebar,
+	.layout-body--minimal .hamburger,
+	.layout-body--minimal .sidebar-overlay {
+		display: none !important;
+	}
+
+	.layout-body--minimal .main-content {
+		padding: 0;
+		overflow: visible;
+		background: transparent;
 	}
 
 	/* ===== Sidebar ===== */

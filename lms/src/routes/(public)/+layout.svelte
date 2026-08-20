@@ -28,7 +28,9 @@
 	</nav>
 
 	<main class="content">
-		{@render children()}
+		<div class="public-container">
+			{@render children()}
+		</div>
 	</main>
 </div>
 
@@ -145,6 +147,11 @@
 	.content {
 		flex: 1;
 		width: 100%;
+		margin: 0 auto;
+		padding: 0;
+	}
+
+	.public-container {
 		max-width: 1180px;
 		margin: 0 auto;
 		padding: 32px 24px;
