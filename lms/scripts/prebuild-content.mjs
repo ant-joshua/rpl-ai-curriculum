@@ -42,6 +42,30 @@ for (const dir of moduleDirs) {
   });
 }
 
+// Also build AI Complete Course content from lms/content/slides/ai-course/
+const aiCourseDir = resolve(process.cwd(), 'content', 'slides', 'ai-course');
+const aiCourseOutput = join(outputDir, 'ai-course');
+mkdirSync(aiCourseOutput, { recursive: true });
+
+if (existsSync(aiCourseDir)) {
+	const aiFiles = readdirSync(aiCourseDir).filter(f => f.endsWith('.md'));
+	const aiContent = {};
+	for (const file of aiFiles) {
+		const key = file.replace('.md', '');
+		const raw = readFileSync(join(aiCourseDir, file), 'utf-8');
+		aiContent[key] = raw;
+		totalFiles++;
+		totalBytes += raw.length;
+	}
+	// Write as individual JSON files (one per module) + combined JSON
+	for (const [key, val] of Object.entries(aiContent)) {
+		writeFileSync(join(aiCourseOutput, `${key}.json`), JSON.stringify({ content: val }));
+	}
+	writeFileSync(join(aiCourseOutput, 'index.json'), JSON.stringify(aiContent));
+	manifest.push({ dir: 'ai-course', files: Object.keys(aiContent), size_bytes: Buffer.byteLength(JSON.stringify(aiContent)) });
+	console.log(`  ✅ AI Course: ${aiFiles.length} modules`);
+}
+
 // Write manifest
 writeFileSync(join(outputDir, 'manifest.json'), JSON.stringify(manifest));
 

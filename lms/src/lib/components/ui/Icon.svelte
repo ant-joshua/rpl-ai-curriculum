@@ -66,6 +66,9 @@
   {:else if name === 'award'}
     <circle cx="12" cy="8" r="6"/>
     <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+  {:else if name === 'graduation-cap'}
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+    <path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/>
   {:else if name === 'settings'}
     <circle cx="12" cy="12" r="3"/>
     <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>

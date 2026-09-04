@@ -1,0 +1,208 @@
+<script lang="ts">
+	import { aiModules } from '$lib/stores/ai-course';
+	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
+	import { onMount } from 'svelte';
+
+	let completedModules = $state<Set<string>>(new Set());
+	let mounted = $state(false);
+
+	onMount(() => {
+		try {
+			const saved = localStorage.getItem('ai-course-progress');
+			if (saved) completedModules = new Set(JSON.parse(saved));
+		} catch {}
+		mounted = true;
+	});
+
+	function toggleComplete(slug: string) {
+		const next = new Set(completedModules);
+		if (next.has(slug)) next.delete(slug);
+		else next.add(slug);
+		completedModules = next;
+		try { localStorage.setItem('ai-course-progress', JSON.stringify([...next])); } catch {}
+	}
+
+	const totalDone = $derived(completedModules.size);
+	const totalModules = aiModules.length;
+	const progressPct = $derived(Math.round((totalDone / totalModules) * 100));
+
+	const levels = ['Pemula', 'Intermediate', 'Advanced'] as const;
+	const levelColors: Record<string, string> = { Pemula: '#22c55e', Intermediate: '#f59e0b', Advanced: '#ef4444' };
+
+	function getLevelModules(level: string) {
+		return aiModules.filter(m => m.level === level);
+	}
+</script>
+
+<svelte:head>
+	<title>🎓 AI Complete Course — Dari Nol sampai Mahir</title>
+	<meta name="description" content="Panduan lengkap AI untuk semua kalangan — SMK, Kuliah, dan Profesional" />
+</svelte:head>
+
+<div class="ai-course-page">
+	<!-- Hero -->
+	<div class="hero">
+		<div class="hero-badge">🎓 Free Course</div>
+		<h1>AI Complete Course</h1>
+		<p class="hero-sub">Dari Nol sampai Mahir — Pengenalan AI, Prompt Engineering, Agents, Coding, dan Use Case Sehari-hari</p>
+		<div class="hero-meta">
+			<span>📚 {totalModules} Modul</span>
+			<span>⏱️ ~10 jam total</span>
+			<span>🎯 Semua level</span>
+		</div>
+
+		<!-- Progress -->
+		<div class="progress-section">
+			<div class="progress-header">
+				<span>Progress kamu</span>
+				<span>{totalDone}/{totalModules} ({progressPct}%)</span>
+			</div>
+			<div class="progress-bar">
+				<div class="progress-fill" style="width: {progressPct}%"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Module Grid by Level -->
+	{#each levels as level}
+		<section class="level-section">
+			<h2 class="level-title">
+				<span class="level-dot" style="background: {levelColors[level]}"></span>
+				Level {level}
+				<span class="level-count">{getLevelModules(level).length} modul</span>
+			</h2>
+			<div class="module-grid">
+				{#each getLevelModules(level) as mod (mod.slug)}
+					<a href="/ai-course/{mod.slug}" class="module-card" class:completed={completedModules.has(mod.slug)}>
+						<div class="module-top">
+							<span class="module-icon">{mod.icon}</span>
+							<span class="module-num">#{mod.index}</span>
+						</div>
+						<h3 class="module-title">{mod.title}</h3>
+						<p class="module-desc">{mod.description}</p>
+						<div class="module-footer">
+							<span class="module-duration">⏱️ {mod.duration}</span>
+							<button
+								class="check-btn"
+								class:done={completedModules.has(mod.slug)}
+								onclick={(e) => { e.preventDefault(); e.stopPropagation(); toggleComplete(mod.slug); }}
+								title={completedModules.has(mod.slug) ? 'Tandai belum selesai' : 'Tandai selesai'}
+							>
+								{completedModules.has(mod.slug) ? '✅' : '⬜'}
+							</button>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/each}
+
+	<!-- Bottom CTA -->
+	<div class="bottom-cta">
+		{#if totalDone === totalModules}
+			<div class="congrats">
+				<h2>🎉 Selamat!</h2>
+				<p>Kamu udah selesai semua {totalModules} modul! Kamu sekarang paham AI dari dasar sampai lanjutan.</p>
+			</div>
+		{:else}
+			<div class="suggestion">
+				<p>💡 <strong>Tip:</strong> Kerjakan modul berurutan dari Level Pemula untuk hasil terbaik.</p>
+				<p>Progress kamu disimpan otomatis di browser ini.</p>
+			</div>
+		{/if}
+	</div>
+</div>
+
+<style>
+	.ai-course-page {
+		max-width: 1180px;
+		margin: 0 auto;
+		padding: 32px 24px 64px;
+	}
+
+	/* Hero */
+	.hero { text-align: center; margin-bottom: 48px; }
+	.hero-badge {
+		display: inline-block;
+		background: #f0f4ff;
+		color: #2563eb;
+		font-size: 13px;
+		font-weight: 600;
+		padding: 4px 14px;
+		border-radius: 100px;
+		margin-bottom: 16px;
+	}
+	.hero h1 { font-size: 36px; font-weight: 700; color: #1a1a1a; margin: 0 0 12px; }
+	.hero-sub { font-size: 17px; color: #666; max-width: 640px; margin: 0 auto 20px; line-height: 1.6; }
+	.hero-meta { display: flex; justify-content: center; gap: 24px; color: #888; font-size: 14px; margin-bottom: 28px; }
+
+	/* Progress */
+	.progress-section { max-width: 480px; margin: 0 auto; }
+	.progress-header { display: flex; justify-content: space-between; font-size: 14px; color: #555; margin-bottom: 8px; }
+	.progress-bar { height: 8px; background: #e5e7eb; border-radius: 100px; overflow: hidden; }
+	.progress-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 100px; transition: width 0.4s ease; }
+
+	/* Level Section */
+	.level-section { margin-bottom: 40px; }
+	.level-title {
+		display: flex; align-items: center; gap: 10px;
+		font-size: 20px; font-weight: 700; color: #1a1a1a;
+		margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid #eee;
+	}
+	.level-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+	.level-count { font-size: 13px; color: #999; font-weight: 400; margin-left: auto; }
+
+	/* Module Grid */
+	.module-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 16px;
+	}
+	.module-card {
+		background: #fff;
+		border: 1px solid #eee;
+		border-radius: 12px;
+		padding: 20px;
+		text-decoration: none;
+		color: inherit;
+		transition: box-shadow 0.2s, border-color 0.2s;
+		cursor: pointer;
+	}
+	.module-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: #d1d5db; }
+	.module-card.completed { border-color: #bbf7d0; background: #f0fdf4; }
+
+	.module-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+	.module-icon { font-size: 28px; }
+	.module-num { font-size: 12px; color: #aaa; font-weight: 600; }
+	.module-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px; }
+	.module-desc { font-size: 13px; color: #666; line-height: 1.5; margin: 0 0 14px; }
+	.module-footer { display: flex; justify-content: space-between; align-items: center; }
+	.module-duration { font-size: 12px; color: #999; }
+
+	.check-btn {
+		background: none; border: none; font-size: 18px; cursor: pointer;
+		padding: 2px; border-radius: 4px; transition: transform 0.15s;
+	}
+	.check-btn:hover { transform: scale(1.2); }
+	.check-btn.done { opacity: 0.7; }
+
+	/* Bottom CTA */
+	.bottom-cta { text-align: center; margin-top: 48px; }
+	.congrats {
+		background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+		border-radius: 16px; padding: 32px;
+	}
+	.congrats h2 { font-size: 24px; margin: 0 0 8px; }
+	.congrats p { color: #555; margin: 0; }
+	.suggestion {
+		background: #fffbeb; border: 1px solid #fde68a;
+		border-radius: 12px; padding: 20px; text-align: left; max-width: 600px; margin: 0 auto;
+	}
+	.suggestion p { margin: 4px 0; font-size: 14px; color: #666; }
+
+	@media (max-width: 640px) {
+		.hero h1 { font-size: 26px; }
+		.hero-meta { flex-direction: column; gap: 6px; }
+		.module-grid { grid-template-columns: 1fr; }
+	}
+</style>

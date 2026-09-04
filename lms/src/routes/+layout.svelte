@@ -57,6 +57,7 @@
 				name: 'Learning',
 				links: [
 					{ href: '/catalog', icon: 'compass', label: t('nav.catalog') },
+					{ href: '/ai-course', icon: 'graduation-cap', label: 'AI Course' },
 					{ href: '/path', icon: 'map-pin', label: t('nav.paths') },
 					{ href: '/progress', icon: 'trending-up', label: t('nav.progress') },
 				]
