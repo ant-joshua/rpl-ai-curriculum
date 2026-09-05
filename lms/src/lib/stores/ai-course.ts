@@ -54,9 +54,19 @@ export const aiModules: AiModule[] = [
 		duration: '45 menit',
 	},
 	{
+		slug: '04b-prompt-build-website',
+		exerciseSlug: '',
+		index: 5,
+		title: 'Prompt Build Website + PRD',
+		description: 'PRD-first approach: tentukan requirements dulu, baru prompt AI untuk build website. 10 contoh prompt website.',
+		icon: '🌐',
+		level: 'Intermediate',
+		duration: '40 menit',
+	},
+	{
 		slug: '05-prompt-engineering-lanjutan',
 		exerciseSlug: '05-latihan-prompt-lanjutan',
-		index: 5,
+		index: 6,
 		title: 'Prompt Engineering Lanjutan',
 		description: 'Tree of Thought, ReAct, meta-prompting, anti-hallucination.',
 		icon: '🧠',
@@ -66,7 +76,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '06-ai-agents',
 		exerciseSlug: '06-latihan-agents',
-		index: 6,
+		index: 7,
 		title: 'AI Agents',
 		description: 'Agent vs chat biasa, cara kerja, tools, function calling, multi-agent.',
 		icon: '⚙️',
@@ -76,7 +86,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '07-use-case-seharihari',
 		exerciseSlug: '07-latihan-seharihari',
-		index: 7,
+		index: 8,
 		title: 'Use Case Sehari-hari',
 		description: 'Masak, keuangan, jadwal, komunikasi, brainstorming, hiburan.',
 		icon: '🏠',
@@ -86,7 +96,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '08-use-case-smk',
 		exerciseSlug: '08-latihan-smk',
-		index: 8,
+		index: 9,
 		title: 'Use Case SMK & Sekolah',
 		description: 'Belajar, praktikum, debug, proposal, PKL, CV, interview.',
 		icon: '🎒',
@@ -96,7 +106,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '09-use-case-kuliah',
 		exerciseSlug: '09-latihan-kuliah',
-		index: 9,
+		index: 10,
 		title: 'Use Case Kuliah',
 		description: 'Jurnal, makalah, data, skripsi, organisasi kampus.',
 		icon: '🎓',
@@ -106,7 +116,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '10-use-case-kerja',
 		exerciseSlug: '10-latihan-kerja',
-		index: 10,
+		index: 11,
 		title: 'Use Case Kerja & Profesional',
 		description: 'Email, meeting, laporan, data analysis, manajemen proyek.',
 		icon: '💼',
@@ -116,7 +126,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '11-ai-untuk-coding-dasar',
 		exerciseSlug: '11-latihan-coding-dasar',
-		index: 11,
+		index: 12,
 		title: 'AI untuk Coding (Pemula)',
 		description: 'Belajar syntax, debug, function, CRUD app pertama.',
 		icon: '💻',
@@ -126,7 +136,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '12-ai-untuk-coding-lanjutan',
 		exerciseSlug: '12-latihan-coding-lanjutan',
-		index: 12,
+		index: 13,
 		title: 'AI untuk Coding (Lanjutan)',
 		description: 'Refactoring, architecture, DB schema, full-stack building.',
 		icon: '🏗️',
@@ -136,7 +146,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '13-ai-untuk-presentasi',
 		exerciseSlug: '13-latihan-presentasi',
-		index: 13,
+		index: 14,
 		title: 'AI untuk Presentasi',
 		description: 'Outline, konten, speaker notes, desain, pitch deck.',
 		icon: '📊',
@@ -146,7 +156,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '14-ai-untuk-desain-grafis',
 		exerciseSlug: '14-latihan-desain',
-		index: 14,
+		index: 15,
 		title: 'AI untuk Desain Grafis',
 		description: 'Canva AI, Midjourney, DALL-E, Figma, logo, social media.',
 		icon: '🎨',
@@ -154,9 +164,19 @@ export const aiModules: AiModule[] = [
 		duration: '30 menit',
 	},
 	{
+		slug: '14b-prompt-generate-image',
+		exerciseSlug: '',
+		index: 16,
+		title: 'Prompt Generate Image',
+		description: 'Anatomy prompt image, 20 contoh copy-paste ready, style cheat sheet, negative prompts. Logo, social media, ilustrasi, presentasi.',
+		icon: '🖼️',
+		level: 'Intermediate',
+		duration: '40 menit',
+	},
+	{
 		slug: '15-ai-untuk-data-science',
 		exerciseSlug: '15-latihan-data-science',
-		index: 15,
+		index: 17,
 		title: 'AI untuk Data Science',
 		description: 'Pandas, matplotlib, statistical analysis, ML basics, dashboard.',
 		icon: '📈',
@@ -166,7 +186,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '16-ai-untuk-bahasa-asing',
 		exerciseSlug: '16-latihan-bahasa',
-		index: 16,
+		index: 18,
 		title: 'AI untuk Bahasa Asing',
 		description: 'Conversation, grammar, vocabulary, TOEFL/IELTS prep.',
 		icon: '🌍',
@@ -176,7 +196,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '17-ai-untuk-osint-research',
 		exerciseSlug: '17-latihan-research',
-		index: 17,
+		index: 19,
 		title: 'AI untuk OSINT & Research',
 		description: 'Perplexity, fact-checking, literature review, market research.',
 		icon: '🔍',
@@ -186,7 +206,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '18-ai-untuk-video-musik',
 		exerciseSlug: '18-latihan-video-musik',
-		index: 18,
+		index: 20,
 		title: 'AI untuk Video & Musik',
 		description: 'CapCut AI, Runway, Suno, podcast, script writing.',
 		icon: '🎬',
@@ -196,7 +216,7 @@ export const aiModules: AiModule[] = [
 	{
 		slug: '19-ai-ethics-safety',
 		exerciseSlug: '19-latihan-ethics',
-		index: 19,
+		index: 21,
 		title: 'AI Ethics & Safety',
 		description: 'Deepfakes, bias, privacy, regulasi, responsible AI use.',
 		icon: '⚖️',
