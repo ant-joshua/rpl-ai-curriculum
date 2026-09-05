@@ -12,6 +12,7 @@
 	let error = $state('');
 	let completedModules = $state<Set<string>>(new Set());
 	let showSidebar = $state(false);
+	let fullscreen = $state(true);
 	let activeTab = $state<'materi' | 'latihan'>('materi');
 
 	const mod = $derived(data.module as AiModule);
@@ -87,7 +88,12 @@
 	{showSidebar ? '✕' : '☰'} Daftar Modul
 </button>
 
-<div class="module-layout" class:sidebar-open={showSidebar}>
+<!-- Fullscreen toggle -->
+<button class="fs-toggle" onclick={() => fullscreen = !fullscreen} title={fullscreen ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}>
+	{fullscreen ? '☰' : '✕'}
+</button>
+
+<div class="module-layout" class:sidebar-open={showSidebar} class:fullscreen={fullscreen}>
 	<!-- Sidebar -->
 	<aside class="module-sidebar">
 		<div class="sidebar-header">
@@ -377,4 +383,20 @@
 		.module-nav { grid-template-columns: 1fr; }
 		.nav-next { text-align: left; }
 	}
+
+	/* Fullscreen toggle */
+	.fs-toggle {
+		position: fixed; top: 14px; left: 14px; z-index: 90;
+		background: var(--surface, #fff); border: 1px solid var(--border, #e2e8f0);
+		border-radius: 6px; padding: 8px 10px; cursor: pointer;
+		color: var(--text-secondary, #666); font-size: 16px;
+		transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	}
+	.fs-toggle:hover { background: var(--surface-alt, #f4f4f5); color: var(--text, #1a1a1a); }
+
+	/* Fullscreen mode — hide course sidebar, content w-full */
+	.module-layout.fullscreen .module-sidebar { display: none; }
+	.module-layout.fullscreen { grid-template-columns: 1fr; max-width: none; margin: 0; }
+	.module-layout.fullscreen .module-content { padding: 32px 64px 64px; max-width: 900px; margin: 0 auto; }
+	.module-layout.fullscreen .fs-toggle { left: 14px; }
 </style>

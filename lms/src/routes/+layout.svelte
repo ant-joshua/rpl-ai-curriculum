@@ -302,6 +302,7 @@
 		$page.route.id?.startsWith('/(backoffice)') ||
 		$page.route.id?.startsWith('/my/') ||
 		$page.route.id === '/my' ||
+		$page.route.id?.startsWith('/ai-course/') ||
 		false
 	);
 </script>
