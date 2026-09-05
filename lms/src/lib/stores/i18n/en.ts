@@ -100,6 +100,7 @@ export const enTranslations: Record<string, string> = {
     'nav.messages': 'Messages',
     'nav.catalog': 'Catalog',
     'nav.projects': 'Project Studio',
+    'nav.groups': 'Study Groups',
     'nav.grades': 'Grades',
     'nav.admin': 'Admin',
     'nav.home': 'Home',

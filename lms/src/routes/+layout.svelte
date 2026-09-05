@@ -45,7 +45,7 @@
 		}
 		return [
 			{
-				name: 'Main Nav',
+				name: 'utama',
 				links: [
 					{ href: '/', icon: 'home', label: t('nav.dashboard') },
 					{ href: '/my/courses', icon: 'book', label: t('nav.courses') },
@@ -54,7 +54,7 @@
 				]
 			},
 			{
-				name: 'Learning',
+				name: 'belajar',
 				links: [
 					{ href: '/catalog', icon: 'compass', label: t('nav.catalog') },
 					{ href: '/ai-course', icon: 'graduation-cap', label: 'AI Course' },
@@ -63,24 +63,24 @@
 				]
 			},
 			{
-				name: 'Tools',
+				name: 'tools',
 				links: [
 					{ href: '/tutor', icon: 'robot', label: t('nav.tutor') },
 					{ href: '/aiedu', icon: 'sparkles', label: 'AIEdu' },
 					{ href: '/flashcards', icon: 'layers', label: t('nav.flashcards') },
 					{ href: '/exercises', icon: 'dumbbell', label: t('nav.exercises') },
 					{ href: '/projects', icon: 'rocket', label: t('nav.projects') },
-					{ href: '/groups', icon: 'users', label: 'Study Groups' },
+					{ href: '/groups', icon: 'users', label: t('nav.groups') },
 				]
 			},
 			{
-				name: 'Account',
+				name: 'akun',
 				links: [
 					{ href: '/my/profile', icon: 'user', label: t('nav.profile') },
-					{ href: '/my/messages', icon: 'message-square', label: 'Pesan' },
+					{ href: '/my/messages', icon: 'message-square', label: t('nav.messages') },
 					{ href: '/my/grades', icon: 'file-text', label: t('nav.grades') },
 					{ href: '/my/certificates', icon: 'award', label: t('nav.certificate') },
-					{ href: '/my/export', icon: 'download', label: 'Export' },
+					{ href: '/my/export', icon: 'download', label: t('nav.export') },
 					{ href: '/my/settings', icon: 'settings', label: t('nav.settings') },
 				]
 			},

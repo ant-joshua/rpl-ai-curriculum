@@ -100,6 +100,7 @@ export const idTranslations: Record<string, string> = {
     'nav.messages': 'Pesan',
     'nav.catalog': 'Katalog',
     'nav.projects': 'Project Studio',
+    'nav.groups': 'Grup Belajar',
     'nav.grades': 'Nilai',
     'nav.admin': 'Admin',
     'nav.home': 'Beranda',
