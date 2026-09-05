@@ -805,8 +805,8 @@
 		height: 100vh;
 		position: sticky;
 		top: 0;
-		background: #FFFFFF;
-		border-right: 1px solid #E2E8F0;
+		background: var(--surface);
+		border-right: 1px solid var(--border);
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
@@ -825,7 +825,7 @@
 		gap: 8px;
 		font-size: 16px;
 		font-weight: 590;
-		color: #1a1a2e !important;
+		color: var(--text) !important;
 		text-decoration: none !important;
 		font-feature-settings: 'cv01', 'ss03';
 		letter-spacing: -0.24px;
@@ -854,9 +854,9 @@
 		left: 10px;
 		top: 50%;
 		transform: translateY(-50%);
-		color: #64748b;
-		pointer-events: none;
-		opacity: 0.6;
+			color: var(--text-secondary);
+			pointer-events: none;
+			opacity: 0.6;
 	}
 
 	.sidebar-search-input {
@@ -866,8 +866,8 @@
 		font-family: inherit;
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: 6px;
-		background: rgba(255, 255, 255, 0.02);
-		color: #1a1a2e;
+		background: var(--surface-alt);
+		color: var(--text);
 		outline: none;
 		transition: border-color 0.15s ease;
 		font-feature-settings: 'cv01', 'ss03';
@@ -940,12 +940,12 @@
 	}
 
 	.nav-item:hover {
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--surface-alt);
 		color: #1a1a2e;
 	}
 
 	.nav-item.active {
-		background: rgba(79, 70, 229, 0.12);
+		background: var(--accent-light);
 		color: #4F46E5;
 	}
 
@@ -968,7 +968,7 @@
 	/* ===== Sidebar Footer ===== */
 	.sidebar-footer {
 		padding: 8px;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		border-top: 1px solid var(--border);
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
@@ -981,7 +981,7 @@
 
 	.xp-bar-track {
 		height: 4px;
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--border-light);
 		border-radius: 2px;
 		overflow: hidden;
 		margin-bottom: 6px;
@@ -1054,7 +1054,7 @@
 	}
 
 	.user-section:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-alt);
 	}
 
 	.user-avatar {
@@ -1094,7 +1094,7 @@
 	.user-name {
 		font-size: 13px;
 		font-weight: 510;
-		color: #1a1a2e;
+		color: var(--text);
 		font-feature-settings: 'cv01', 'ss03';
 		white-space: nowrap;
 		overflow: hidden;
@@ -1124,8 +1124,8 @@
 	}
 
 	.login-btn:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #1a1a2e;
+		background: var(--surface-alt);
+		color: var(--text);
 	}
 
 	/* Action buttons row */
@@ -1151,8 +1151,8 @@
 	}
 
 	.sidebar-action-btn:hover {
-		background: rgba(255, 255, 255, 0.04);
-		color: #1a1a2e;
+		background: var(--surface-alt);
+		color: var(--text);
 	}
 
 	.sidebar-action-btn--danger:hover {

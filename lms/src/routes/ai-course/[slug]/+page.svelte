@@ -14,6 +14,7 @@
 	let showSidebar = $state(false);
 	let fullscreen = $state(true);
 	let activeTab = $state<'materi' | 'latihan'>('materi');
+	let readProgress = $state(0);
 
 	const mod = $derived(data.module as AiModule);
 	const next = $derived(data.next as AiModule | undefined);
@@ -77,11 +78,26 @@
 		loadContent();
 		loadExercise();
 	});
+	$effect(() => {
+		const handleScroll = () => {
+			const el = document.querySelector('.module-content');
+			if (!el) return;
+			const rect = el.getBoundingClientRect();
+			const scrolled = -rect.top;
+			const total = rect.height - window.innerHeight;
+			readProgress = Math.min(100, Math.max(0, (scrolled / total) * 100));
+		};
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
 <svelte:head>
 	<title>{isFinalProject ? finalProject.title : mod.title} — AI Complete Course</title>
 </svelte:head>
+
+<!-- Reading progress bar -->
+<div class="read-progress" style="width: {readProgress}%"></div>
 
 <!-- Mobile sidebar toggle -->
 <button class="sidebar-toggle" onclick={() => showSidebar = !showSidebar}>
@@ -144,6 +160,13 @@
 
 	<!-- Main content -->
 	<main class="module-content">
+		<!-- Breadcrumb -->
+		<nav class="breadcrumb">
+			<a href="/ai-course">📚 AI Course</a>
+			<span class="bc-sep">›</span>
+			<span class="bc-current">{isFinalProject ? finalProject.title : mod.title}</span>
+		</nav>
+
 		<!-- Module header -->
 		<div class="module-header">
 			<div class="mh-top">
@@ -384,6 +407,18 @@
 		.nav-next { text-align: left; }
 	}
 
+	/* Reading progress */
+	.read-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 3px;
+		background: linear-gradient(90deg, #4F46E5, #7C3AED);
+		z-index: 200;
+		transition: width 0.1s ease-out;
+		border-radius: 0 2px 2px 0;
+	}
+
 	/* Fullscreen toggle */
 	.fs-toggle {
 		position: fixed; top: 14px; left: 14px; z-index: 90;
@@ -399,4 +434,19 @@
 	.module-layout.fullscreen { grid-template-columns: 1fr; max-width: none; margin: 0; }
 	.module-layout.fullscreen .module-content { padding: 32px 64px 64px; max-width: 900px; margin: 0 auto; }
 	.module-layout.fullscreen .fs-toggle { left: 14px; }
+
+	/* Breadcrumb */
+	.breadcrumb {
+		display: flex; align-items: center; gap: 8px;
+		font-size: 13px; margin-bottom: 24px; padding-bottom: 16px;
+		border-bottom: 1px solid #eee;
+	}
+	.breadcrumb a { color: #2563eb; text-decoration: none; font-weight: 500; }
+	.breadcrumb a:hover { text-decoration: underline; }
+	.bc-sep { color: #ccc; font-size: 16px; }
+	.bc-current { color: #666; font-weight: 600; }
+
+	/* Fade-in on load */
+	.module-content { animation: fadeIn 0.25s ease-out; }
+	@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 </style>
