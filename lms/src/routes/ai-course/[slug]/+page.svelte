@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
 	import { aiModules, finalProject, type AiModule } from '$lib/stores/ai-course';
+	import { Skeleton } from '$lib/components/ui';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -15,6 +16,7 @@
 	let fullscreen = $state(true);
 	let activeTab = $state<'materi' | 'latihan'>('materi');
 	let readProgress = $state(0);
+	let showShortcuts = $state(false);
 
 	const mod = $derived(data.module as AiModule);
 	const next = $derived(data.next as AiModule | undefined);
@@ -89,6 +91,22 @@
 		};
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		return () => window.removeEventListener('scroll', handleScroll);
+	});
+	$effect(() => {
+		const handler = (e: KeyboardEvent) => {
+			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+			if (e.key === 'ArrowRight' && next) {
+				window.location.href = `/ai-course/${next.slug}`;
+			} else if (e.key === 'ArrowLeft' && prev) {
+				window.location.href = `/ai-course/${prev.slug}`;
+			} else if (e.key === 'Escape') {
+				fullscreen = !fullscreen;
+			} else if (e.key === '?') {
+				showShortcuts = !showShortcuts;
+			}
+		};
+		window.addEventListener('keydown', handler);
+		return () => window.removeEventListener('keydown', handler);
 	});
 </script>
 
@@ -199,7 +217,12 @@
 		<!-- Content -->
 		{#if activeTab === 'materi'}
 			{#if loading}
-				<div class="loading">Memuat konten...</div>
+				<div class="loading-skeleton" aria-label="Memuat konten...">
+					<Skeleton variant="title" width="50%" />
+					<Skeleton variant="text" count={8} gap="0.75rem" />
+					<Skeleton variant="block" height="120px" />
+					<Skeleton variant="text" count={4} gap="0.75rem" />
+				</div>
 			{:else if error}
 				<div class="error-msg">
 					<h2>{error}</h2>
@@ -212,7 +235,11 @@
 			{/if}
 		{:else}
 			{#if exerciseLoading}
-				<div class="loading">Memuat latihan...</div>
+				<div class="loading-skeleton" aria-label="Memuat latihan...">
+					<Skeleton variant="title" width="40%" />
+					<Skeleton variant="text" count={6} gap="0.75rem" />
+					<Skeleton variant="block" height="100px" />
+				</div>
 			{:else if exerciseContent}
 				<article class="markdown-body">
 					{@html exerciseContent}
@@ -253,6 +280,18 @@
 		</div>
 	</main>
 </div>
+{#if showShortcuts}
+	<div class="shortcuts-overlay" onclick={() => showShortcuts = false} onkeydown={(e) => { if (e.key === 'Escape') showShortcuts = false; }} role="presentation">
+		<div class="shortcuts-panel" onclick={(e) => e.stopPropagation()} role="dialog" tabindex="-1">
+			<h3>⌨️ Keyboard Shortcuts</h3>
+			<div class="sc-row"><kbd>←</kbd> Previous module</div>
+			<div class="sc-row"><kbd>→</kbd> Next module</div>
+			<div class="sc-row"><kbd>Esc</kbd> Toggle fullscreen</div>
+			<div class="sc-row"><kbd>?</kbd> Show/hide shortcuts</div>
+			<button class="sc-close" onclick={() => showShortcuts = false}>Got it</button>
+		</div>
+	</div>
+{/if}
 
 <style>
 	/* Layout */
@@ -335,14 +374,14 @@
 	.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
 	/* Loading / Error */
-	.loading, .error-msg, .empty-exercise { text-align: center; padding: 64px 24px; }
-	.loading { color: var(--text-muted); font-size: 16px; }
+	.loading-skeleton, .error-msg, .empty-exercise { text-align: center; padding: 32px 24px; }
+	.loading-skeleton { display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch; }
 	.error-msg h2 { font-size: 24px; color: var(--danger); }
 	.error-msg p { color: var(--text-muted); }
 	.empty-exercise p { color: var(--text-muted); font-size: 15px; }
 
 	/* Markdown body */
-	.markdown-body { line-height: 1.75; font-size: 16px; color: var(--text); }
+	.markdown-body { line-height: 1.75; font-size: 16px; color: var(--text); font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif; }
 	.markdown-body :global(h1) { font-size: 28px; font-weight: 700; margin: 40px 0 16px; color: var(--text); }
 	.markdown-body :global(h2) { font-size: 22px; font-weight: 700; margin: 36px 0 12px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 	.markdown-body :global(h3) { font-size: 18px; font-weight: 700; margin: 28px 0 10px; color: var(--text); }
@@ -350,11 +389,11 @@
 	.markdown-body :global(p) { margin: 0 0 16px; }
 	.markdown-body :global(ul), .markdown-body :global(ol) { margin: 0 0 16px; padding-left: 24px; }
 	.markdown-body :global(li) { margin-bottom: 6px; }
-	.markdown-body :global(code) { background: #f4f4f5; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: 'JetBrains Mono', monospace; }
+	.markdown-body :global(code) { background: var(--surface-alt); padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: 'JetBrains Mono', monospace; }
 	.markdown-body :global(pre) { background: #1a1a2e; color: #e2e8f0; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 0 0 20px; }
 	.markdown-body :global(pre code) { background: none; padding: 0; color: inherit; font-size: 13px; }
 	.markdown-body :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
-	.markdown-body :global(th), .markdown-body :global(td) { padding: 10px 12px; border: 1px solid #e5e7eb; text-align: left; }
+	.markdown-body :global(th), .markdown-body :global(td) { padding: 10px 12px; border: 1px solid var(--border); text-align: left; }
 	.markdown-body :global(th) { background: #f9fafb; font-weight: 600; }
 	.markdown-body :global(blockquote) { border-left: 4px solid var(--accent); padding: 12px 20px; margin: 0 0 20px; background: var(--accent-light); border-radius: 0 8px 8px 0; }
 	.markdown-body :global(a) { color: var(--accent); }
@@ -378,7 +417,7 @@
 		text-decoration: none;
 		transition: border-color 0.2s, box-shadow 0.2s;
 	}
-	.nav-btn:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
+	.nav-btn:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.1); }
 	.nav-next { text-align: right; }
 	.nav-dir { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 	.nav-title { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
@@ -405,6 +444,12 @@
 		.module-content { padding: 24px 16px 64px; }
 		.module-nav { grid-template-columns: 1fr; }
 		.nav-next { text-align: left; }
+		.breadcrumb { font-size: 12px; }
+		.bc-current { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+		.mh-title { font-size: 22px; }
+		.module-tabs { gap: 0; }
+		.module-tab { padding: 10px 14px; font-size: 13px; }
+		.reading-progress-bar { display: none; }
 	}
 
 	/* Reading progress */
@@ -413,7 +458,7 @@
 		top: 0;
 		left: 0;
 		height: 3px;
-		background: linear-gradient(90deg, #4F46E5, #7C3AED);
+		background: var(--accent);
 		z-index: 200;
 		transition: width 0.1s ease-out;
 		border-radius: 0 2px 2px 0;
@@ -449,4 +494,12 @@
 	/* Fade-in on load */
 	.module-content { animation: fadeIn 0.25s ease-out; }
 	@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+	/* Keyboard shortcuts */
+	.shortcuts-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+	.shortcuts-panel { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-lg); max-width: 360px; width: 90%; }
+	.shortcuts-panel h3 { margin: 0 0 20px; font-size: 18px; color: var(--text); }
+	.sc-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; color: var(--text-secondary); }
+	kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 28px; padding: 0 8px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', monospace; font-size: 12px; font-weight: 600; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+	.sc-close { margin-top: 20px; width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
 </style>

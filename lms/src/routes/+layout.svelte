@@ -326,6 +326,10 @@
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="RPL AI Curriculum" />
 	<meta name="twitter:description" content="Platform pembelajaran AI untuk Rekayasa Perangkat Lunak." />
+	<!-- Academic reading typography -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
 </svelte:head>
 
 <!-- Mobile hamburger -->

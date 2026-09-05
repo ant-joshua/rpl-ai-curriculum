@@ -184,10 +184,10 @@
 		padding: 20px;
 		text-decoration: none;
 		color: inherit;
-		transition: box-shadow 0.2s, border-color 0.2s;
+		transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 		cursor: pointer;
 	}
-	.module-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: #d1d5db; }
+	.module-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-color: var(--text-muted); transform: translateY(-2px); }
 	.module-card.completed { border-color: var(--success); background: var(--success-light); }
 
 	.module-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -215,14 +215,15 @@
 		text-decoration: none; color: inherit;
 		transition: border-color 0.2s, box-shadow 0.2s;
 	}
-	.final-project-card:hover { border-color: var(--accent)40; box-shadow: 0 4px 20px rgba(37,99,235,0.1); }
+	.final-project-card { transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+	.final-project-card:hover { border-color: var(--accent); box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.12); transform: translateY(-2px); }
 	.fp-icon { font-size: 40px; flex-shrink: 0; }
 	.fp-content { flex: 1; }
 	.fp-content h2 { font-size: 20px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
 	.fp-content p { font-size: 14px; color: var(--text-secondary); margin: 0 0 12px; }
 	.fp-options { display: flex; flex-wrap: wrap; gap: 8px; }
 	.fp-options span {
-		background: var(--surface); border: 1px solid #e5e7eb;
+		background: var(--surface); border: 1px solid var(--border);
 		padding: 4px 10px; border-radius: 100px;
 		font-size: 12px; font-weight: 500; color: var(--text-secondary);
 	}
@@ -242,6 +243,19 @@
 	}
 	.suggestion p { margin: 4px 0; font-size: 14px; color: var(--text-secondary); }
 
+	@media (max-width: 768px) {
+		.hero { margin-bottom: 32px; }
+		.hero h1 { font-size: 28px; }
+		.hero-sub { font-size: 15px; }
+		.hero-meta { flex-direction: column; gap: 6px; }
+		.module-grid { grid-template-columns: 1fr; }
+		.final-project-card { padding: 20px; }
+		.final-project-card h3 { font-size: 20px; }
+	}
+	@media (max-width: 480px) {
+		.hero h1 { font-size: 24px; }
+		.hero-sub { font-size: 14px; }
+	}
 	@media (max-width: 640px) {
 		.hero h1 { font-size: 26px; }
 		.hero-meta { flex-direction: column; gap: 6px; }
