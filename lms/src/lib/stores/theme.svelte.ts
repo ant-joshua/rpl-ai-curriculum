@@ -20,31 +20,33 @@ function createThemeStore() {
 		const root = document.documentElement;
 
 		if (t === 'light') {
-			// Light mode — bright, student-friendly
+			// Academic light — warm cream + navy/slate
 			root.setAttribute('data-theme', 'light');
-			root.style.setProperty('--bg', '#F4F7FA');
+			root.style.setProperty('--bg', '#F8F6F1');
 			root.style.setProperty('--surface', '#FFFFFF');
-			root.style.setProperty('--surface-alt', '#F1F5F9');
-			root.style.setProperty('--text', '#1a1a2e');
-			root.style.setProperty('--text-secondary', '#64748b');
-			root.style.setProperty('--text-muted', '#94a3b8');
-			root.style.setProperty('--border', '#E2E8F0');
-			root.style.setProperty('--border-light', 'rgba(0,0,0,0.06)');
-			root.style.setProperty('--accent', '#4F46E5');
-			root.style.setProperty('--accent-hover', '#4338CA');
-			root.style.setProperty('--accent-light', 'rgba(79,70,229,0.08)');
-			root.style.setProperty('--success', '#22C55E');
-			root.style.setProperty('--success-light', 'rgba(34,197,94,0.1)');
-			root.style.setProperty('--warning', '#F59E0B');
-			root.style.setProperty('--danger', '#EF4444');
-			root.style.setProperty('--danger-light', 'rgba(239,68,68,0.08)');
-			root.style.setProperty('--shadow-sm', '0 1px 2px rgba(0,0,0,0.05)');
-			root.style.setProperty('--shadow', '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)');
-			root.style.setProperty('--shadow-lg', '0 4px 12px rgba(0,0,0,0.08)');
-			root.style.setProperty('--shadow-3d', '0 4px 0 #3730A3');
-			root.style.setProperty('--radius', '12px');
-			root.style.setProperty('--radius-lg', '16px');
-			root.style.setProperty('--radius-sm', '8px');
+			root.style.setProperty('--surface-alt', '#F0EDE6');
+			root.style.setProperty('--text', '#1B2838');
+			root.style.setProperty('--text-secondary', '#5A6577');
+			root.style.setProperty('--text-muted', '#8B95A5');
+			root.style.setProperty('--border', '#DED8CC');
+			root.style.setProperty('--border-light', 'rgba(27,40,56,0.06)');
+			root.style.setProperty('--accent', '#1E3A5F');
+			root.style.setProperty('--accent-hover', '#162D4A');
+			root.style.setProperty('--accent-light', 'rgba(30,58,95,0.08)');
+			root.style.setProperty('--accent-rgb', '30, 58, 95');
+			root.style.setProperty('--success', '#2D7A4F');
+			root.style.setProperty('--success-light', 'rgba(45,122,79,0.08)');
+			root.style.setProperty('--warning', '#B8860B');
+			root.style.setProperty('--danger', '#A63D40');
+			root.style.setProperty('--danger-light', 'rgba(166,61,64,0.08)');
+			root.style.setProperty('--shadow-sm', '0 1px 2px rgba(0,0,0,0.04)');
+			root.style.setProperty('--shadow', '0 1px 3px rgba(0,0,0,0.06)');
+			root.style.setProperty('--shadow-lg', '0 4px 12px rgba(0,0,0,0.06)');
+			root.style.setProperty('--shadow-3d', '0 3px 0 #162D4A');
+			root.style.setProperty('--shadow-3d-success', '0 3px 0 #1E6B3A');
+			root.style.setProperty('--radius', '10px');
+			root.style.setProperty('--radius-lg', '14px');
+			root.style.setProperty('--radius-sm', '6px');
 			root.style.setProperty('--radius-full', '9999px');
 		} else {
 			// Dark mode — developer feel
@@ -60,6 +62,7 @@ function createThemeStore() {
 			root.style.setProperty('--accent', '#5e6ad2');
 			root.style.setProperty('--accent-hover', '#7170ff');
 			root.style.setProperty('--accent-light', 'rgba(94,106,210,0.15)');
+			root.style.setProperty('--accent-rgb', '94, 106, 210');
 			root.style.setProperty('--success', '#22C55E');
 			root.style.setProperty('--success-light', 'rgba(34,197,94,0.15)');
 			root.style.setProperty('--warning', '#F59E0B');
@@ -69,9 +72,10 @@ function createThemeStore() {
 			root.style.setProperty('--shadow', '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)');
 			root.style.setProperty('--shadow-lg', '0 4px 12px rgba(0,0,0,0.4)');
 			root.style.setProperty('--shadow-3d', '0 4px 0 #3730A3');
-			root.style.setProperty('--radius', '12px');
-			root.style.setProperty('--radius-lg', '16px');
-			root.style.setProperty('--radius-sm', '8px');
+			root.style.setProperty('--shadow-3d-success', '0 4px 0 #15803D');
+			root.style.setProperty('--radius', '10px');
+			root.style.setProperty('--radius-lg', '14px');
+			root.style.setProperty('--radius-sm', '6px');
 			root.style.setProperty('--radius-full', '9999px');
 		}
 	}

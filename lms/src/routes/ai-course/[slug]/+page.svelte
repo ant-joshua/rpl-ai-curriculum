@@ -19,7 +19,7 @@
 	const mod = $derived(data.module as AiModule);
 	const next = $derived(data.next as AiModule | undefined);
 	const prev = $derived(data.prev as AiModule | undefined);
-	const levelColors: Record<string, string> = { Pemula: '#22c55e', Intermediate: '#f59e0b', Advanced: '#ef4444' };
+	const levelColors: Record<string, string> = { Pemula: 'var(--success)', Intermediate: 'var(--warning)', Advanced: 'var(--danger)' };
 	const isFinalProject = $derived(data.slug === '20-final-project');
 
 	onMount(() => {
@@ -144,7 +144,7 @@
 				<span class="sl-icon">🏆</span>
 				<span class="sl-text">
 					<span class="sl-title">Final Project</span>
-					<span class="sl-level" style="color: #2563eb">Capstone</span>
+					<span class="sl-level" style="color: var(--accent)">Capstone</span>
 				</span>
 				{#if completedModules.has('20-final-project')}
 					<span class="sl-check">✅</span>
@@ -172,7 +172,7 @@
 			<div class="mh-top">
 				<span class="mh-icon">{isFinalProject ? finalProject.icon : mod.icon}</span>
 				<div>
-					<span class="mh-level" style="background: {isFinalProject ? '#2563eb' : levelColors[mod.level]}10; color: {isFinalProject ? '#2563eb' : levelColors[mod.level]}; border: 1px solid {isFinalProject ? '#2563eb' : levelColors[mod.level]}30">
+					<span class="mh-level" style="background: {isFinalProject ? 'var(--accent)' : levelColors[mod.level]}10; color: {isFinalProject ? 'var(--accent)' : levelColors[mod.level]}; border: 1px solid {isFinalProject ? 'var(--accent)' : levelColors[mod.level]}30">
 						{isFinalProject ? 'Capstone' : mod.level}
 					</span>
 					{#if !isFinalProject}
@@ -270,25 +270,25 @@
 		top: 0;
 		height: 100vh;
 		overflow-y: auto;
-		border-right: 1px solid #eee;
-		background: #fafafa;
+		border-right: 1px solid var(--border);
+		background: var(--surface-alt);
 		padding: 20px 0;
 	}
-	.sidebar-header { padding: 0 16px 16px; border-bottom: 1px solid #eee; }
-	.back-link { font-size: 13px; color: #2563eb; text-decoration: none; display: block; margin-bottom: 8px; }
+	.sidebar-header { padding: 0 16px 16px; border-bottom: 1px solid var(--border); }
+	.back-link { font-size: 13px; color: var(--accent); text-decoration: none; display: block; margin-bottom: 8px; }
 	.back-link:hover { text-decoration: underline; }
-	.sidebar-header h3 { font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 0; }
+	.sidebar-header h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
 
 	.sidebar-nav { padding: 8px 0; }
 	.sidebar-link {
 		display: flex; align-items: center; gap: 10px;
-		padding: 8px 16px; text-decoration: none; color: #555;
+		padding: 8px 16px; text-decoration: none; color: var(--text-secondary);
 		font-size: 13px; transition: background 0.15s;
 		border-left: 3px solid transparent;
 	}
-	.sidebar-link:hover { background: #f0f0f0; }
-	.sidebar-link.active { background: #eff6ff; border-left-color: #2563eb; color: #1a1a1a; font-weight: 600; }
-	.sidebar-link.completed .sl-title { color: #16a34a; }
+	.sidebar-link:hover { background: var(--surface-alt); }
+	.sidebar-link.active { background: var(--accent-light); border-left-color: var(--accent); color: var(--text); font-weight: 600; }
+	.sidebar-link.completed .sl-title { color: var(--success); }
 	.sl-icon { font-size: 16px; flex-shrink: 0; }
 	.sl-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 	.sl-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -299,7 +299,7 @@
 	.sidebar-toggle {
 		display: none;
 		position: fixed; bottom: 20px; right: 20px; z-index: 100;
-		background: #2563eb; color: #fff; border: none; border-radius: 100px;
+		background: var(--accent); color: #fff; border: none; border-radius: 100px;
 		padding: 10px 20px; font-size: 14px; font-weight: 600;
 		box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer;
 	}
@@ -309,43 +309,43 @@
 	.module-content { padding: 32px 48px 64px; min-width: 0; }
 
 	/* Module header */
-	.module-header { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+	.module-header { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
 	.mh-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 	.mh-icon { font-size: 32px; }
 	.mh-level {
 		display: inline-block; font-size: 12px; font-weight: 600;
 		padding: 2px 10px; border-radius: 100px; margin-right: 8px;
 	}
-	.mh-duration { font-size: 13px; color: #888; }
-	.mh-title { font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px; }
-	.mh-desc { font-size: 15px; color: #666; margin: 0; }
+	.mh-duration { font-size: 13px; color: var(--text-muted); }
+	.mh-title { font-size: 28px; font-weight: 700; color: var(--text); margin: 0 0 8px; }
+	.mh-desc { font-size: 15px; color: var(--text-secondary); margin: 0; }
 
 	/* Tabs */
 	.tab-bar {
 		display: flex; gap: 4px; margin-bottom: 24px;
-		border-bottom: 2px solid #eee; padding-bottom: 0;
+		border-bottom: 2px solid var(--border); padding-bottom: 0;
 	}
 	.tab {
 		padding: 10px 20px; border: none; background: none;
-		font-size: 14px; font-weight: 600; color: #888;
+		font-size: 14px; font-weight: 600; color: var(--text-muted);
 		cursor: pointer; border-bottom: 2px solid transparent;
 		margin-bottom: -2px; transition: color 0.15s, border-color 0.15s;
 	}
-	.tab:hover { color: #555; }
-	.tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+	.tab:hover { color: var(--text-secondary); }
+	.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
 	/* Loading / Error */
 	.loading, .error-msg, .empty-exercise { text-align: center; padding: 64px 24px; }
-	.loading { color: #888; font-size: 16px; }
-	.error-msg h2 { font-size: 24px; color: #ef4444; }
-	.error-msg p { color: #888; }
-	.empty-exercise p { color: #888; font-size: 15px; }
+	.loading { color: var(--text-muted); font-size: 16px; }
+	.error-msg h2 { font-size: 24px; color: var(--danger); }
+	.error-msg p { color: var(--text-muted); }
+	.empty-exercise p { color: var(--text-muted); font-size: 15px; }
 
 	/* Markdown body */
-	.markdown-body { line-height: 1.75; font-size: 16px; color: #333; }
-	.markdown-body :global(h1) { font-size: 28px; font-weight: 700; margin: 40px 0 16px; color: #1a1a1a; }
-	.markdown-body :global(h2) { font-size: 22px; font-weight: 700; margin: 36px 0 12px; color: #1a1a1a; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-	.markdown-body :global(h3) { font-size: 18px; font-weight: 700; margin: 28px 0 10px; color: #1a1a1a; }
+	.markdown-body { line-height: 1.75; font-size: 16px; color: var(--text); }
+	.markdown-body :global(h1) { font-size: 28px; font-weight: 700; margin: 40px 0 16px; color: var(--text); }
+	.markdown-body :global(h2) { font-size: 22px; font-weight: 700; margin: 36px 0 12px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+	.markdown-body :global(h3) { font-size: 18px; font-weight: 700; margin: 28px 0 10px; color: var(--text); }
 	.markdown-body :global(h4) { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
 	.markdown-body :global(p) { margin: 0 0 16px; }
 	.markdown-body :global(ul), .markdown-body :global(ol) { margin: 0 0 16px; padding-left: 24px; }
@@ -356,10 +356,10 @@
 	.markdown-body :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
 	.markdown-body :global(th), .markdown-body :global(td) { padding: 10px 12px; border: 1px solid #e5e7eb; text-align: left; }
 	.markdown-body :global(th) { background: #f9fafb; font-weight: 600; }
-	.markdown-body :global(blockquote) { border-left: 4px solid #2563eb; padding: 12px 20px; margin: 0 0 20px; background: #eff6ff; border-radius: 0 8px 8px 0; }
-	.markdown-body :global(a) { color: #2563eb; }
+	.markdown-body :global(blockquote) { border-left: 4px solid var(--accent); padding: 12px 20px; margin: 0 0 20px; background: var(--accent-light); border-radius: 0 8px 8px 0; }
+	.markdown-body :global(a) { color: var(--accent); }
 	.markdown-body :global(strong) { font-weight: 700; }
-	.markdown-body :global(hr) { border: none; border-top: 1px solid #eee; margin: 32px 0; }
+	.markdown-body :global(hr) { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
 	/* Navigation */
 	.module-nav {
@@ -368,26 +368,26 @@
 		gap: 16px;
 		margin-top: 48px;
 		padding-top: 24px;
-		border-top: 1px solid #eee;
+		border-top: 1px solid var(--border);
 	}
 	.nav-btn {
 		background: #f9fafb;
-		border: 1px solid #eee;
+		border: 1px solid var(--border);
 		border-radius: 10px;
 		padding: 16px;
 		text-decoration: none;
 		transition: border-color 0.2s, box-shadow 0.2s;
 	}
-	.nav-btn:hover { border-color: #2563eb; box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
+	.nav-btn:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
 	.nav-next { text-align: right; }
-	.nav-dir { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
-	.nav-title { display: block; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+	.nav-dir { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+	.nav-title { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
 	.nav-check {
-		background: #f9fafb; border: 1px solid #eee; border-radius: 10px;
+		background: #f9fafb; border: 1px solid var(--border); border-radius: 10px;
 		padding: 16px 20px; font-size: 14px; cursor: pointer;
 		transition: border-color 0.2s;
 	}
-	.nav-check:hover { border-color: #22c55e; }
+	.nav-check:hover { border-color: var(--success); }
 
 	/* Mobile responsive */
 	@media (max-width: 860px) {
@@ -439,12 +439,12 @@
 	.breadcrumb {
 		display: flex; align-items: center; gap: 8px;
 		font-size: 13px; margin-bottom: 24px; padding-bottom: 16px;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--border);
 	}
-	.breadcrumb a { color: #2563eb; text-decoration: none; font-weight: 500; }
+	.breadcrumb a { color: var(--accent); text-decoration: none; font-weight: 500; }
 	.breadcrumb a:hover { text-decoration: underline; }
-	.bc-sep { color: #ccc; font-size: 16px; }
-	.bc-current { color: #666; font-weight: 600; }
+	.bc-sep { color: var(--text-muted); font-size: 16px; }
+	.bc-current { color: var(--text-secondary); font-weight: 600; }
 
 	/* Fade-in on load */
 	.module-content { animation: fadeIn 0.25s ease-out; }

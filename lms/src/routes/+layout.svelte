@@ -428,8 +428,8 @@
 								/>
 								<defs>
 									<linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-										<stop offset="0%" stop-color="#4F46E5" />
-										<stop offset="100%" stop-color="#818CF8" />
+										<stop offset="0%" stop-color="var(--accent)" />
+										<stop offset="100%" stop-color="var(--text-secondary)" />
 									</linearGradient>
 								</defs>
 							</svg>
@@ -596,8 +596,8 @@
 		--shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
 		--shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
 		--shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
-		--shadow-3d: 0 4px 0 #3730A3;
-		--shadow-3d-success: 0 4px 0 #15803D;
+		--shadow-3d: 0 3px 0 var(--accent-hover);
+		--shadow-3d-success: 0 3px 0 #1E6B3A;
 		--radius: 12px;
 		--radius-lg: 16px;
 		--radius-sm: 8px;
@@ -650,12 +650,12 @@
 	:global(.btn-primary:hover:not(:disabled)) {
 		background: var(--accent-hover);
 		top: -1px;
-		box-shadow: 0 5px 0 #3730A3;
+		box-shadow: 0 4px 0 var(--accent-hover);
 		transform: scale(1.02);
 	}
 	:global(.btn-primary:active:not(:disabled)) {
 		top: 2px;
-		box-shadow: 0 2px 0 #3730A3;
+		box-shadow: 0 1px 0 var(--accent-hover);
 		transform: scale(0.98);
 	}
 	:global(.btn-primary:disabled) {
@@ -696,11 +696,11 @@
 	}
 	:global(.btn-success:hover:not(:disabled)) {
 		top: -1px;
-		box-shadow: 0 5px 0 #15803D;
+		box-shadow: 0 4px 0 #1E6B3A;
 	}
 	:global(.btn-success:active:not(:disabled)) {
 		top: 2px;
-		box-shadow: 0 2px 0 #15803D;
+		box-shadow: 0 1px 0 #1E6B3A;
 	}
 
 	:global(.card) {
@@ -833,12 +833,12 @@
 	}
 
 	.logo-svg {
-		color: #4F46E5;
+		color: var(--accent);
 		flex-shrink: 0;
 	}
 
 	.logo-text {
-		background: linear-gradient(135deg, #4F46E5, #4F46E5);
+		background: var(--accent);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -874,8 +874,8 @@
 	}
 
 	.sidebar-search-input:focus {
-		border-color: #4F46E5;
-		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px var(--accent-light);
 	}
 
 	.sidebar-search-input::placeholder {
@@ -946,7 +946,7 @@
 
 	.nav-item.active {
 		background: var(--accent-light);
-		color: #4F46E5;
+		color: var(--accent);
 	}
 
 	.nav-item-label {
@@ -956,9 +956,9 @@
 	.nav-active-indicator {
 		width: 3px;
 		height: 16px;
-		background: #4F46E5;
+		background: var(--accent);
 		border-radius: 2px;
-		box-shadow: 0 0 8px rgba(79, 70, 229, 0.4);
+		box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
 		position: absolute;
 		right: -8px;
 		top: 50%;
@@ -989,7 +989,7 @@
 
 	.xp-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #22C55E, #16A34A);
+		background: var(--success);
 		border-radius: 2px;
 		transition: width 0.3s ease;
 	}
@@ -1061,7 +1061,7 @@
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #4F46E5, #4F46E5);
+		background: var(--accent);
 		color: #fff;
 		display: flex;
 		align-items: center;
@@ -1241,7 +1241,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+		box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 		transition: all 0.2s ease;
 		text-decoration: none;
 		font-size: 18px;
@@ -1249,7 +1249,7 @@
 
 	.floating-action-btn:hover {
 		transform: scale(1.1);
-		box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+		box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.4);
 		background: var(--accent-hover);
 		color: #fff;
 		text-decoration: none;
