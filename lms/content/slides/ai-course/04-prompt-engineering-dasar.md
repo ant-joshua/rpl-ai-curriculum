@@ -37,6 +37,37 @@ Prompt yang baik  → Seperti resep lengkap
 
 ## 🔧 10 Teknik Prompt Engineering Dasar
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 📊 Kapan Pakai Teknik Mana?
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│               📊 TEKNIK: KAPAN PAKAI?                          │
+├───────────┬─────────────────┬─────────────────┬─────────────────┤
+│  Komplek- │   Zero-Shot     │   Few-Shot      │  Chain of       │
+│  sitas    │  (Tanpa Contoh) │ (Ada Contoh)    │  Thought        │
+├───────────┼─────────────────┼─────────────────┼─────────────────┤
+│  Rendah   │  ✅ Paling cocok │  ⚠️ Overkill    │  ❌ Tidak perlu  │
+│  (Sederhana)│               │                 │                 │
+├───────────┼─────────────────┼─────────────────┼─────────────────┤
+│  Sedang   │  ⚠️ Kadang cukup │  ✅ Paling cocok │  ⚠️ Bisa pakai  │
+│           │                 │                 │                 │
+├───────────┼─────────────────┼─────────────────┼─────────────────┤
+│  Tinggi   │  ❌ Kurang tepat │  ⚠️ Perlu tambah │  ✅ Paling cocok │
+│  (Kompleks)│               │                 │                 │
+├───────────┼─────────────────┼─────────────────┼─────────────────┤
+│ Contoh    │ Klasifikasi     │ Konversi format │ Soal matematika │
+│           │ review, translate│ Email style    │ Logika, strategi│
+│           │                 │ Copywriting     │ Decision making │
+└───────────┴─────────────────┴─────────────────┴─────────────────┘
+
+  📌 Aturan praktis:
+  • Mulai dari Zero-Shot → Kurang bagus? → Tambah Few-Shot
+  • Masih kurang? → Tambah Chain of Thought
+  • Complex task? → Gabungkan: Few-Shot + CoT
+```
+
 ### Teknik 1: Zero-Shot Prompting
 
 **Apa itu:** Langsung memberi instruksi **tanpa contoh**.
@@ -220,6 +251,48 @@ BATASAN:
 **Kapan pakai:** Saat hasil pertama belum memuaskan atau butuh penyempurnaan.
 
 ```
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🔄 Prompt Iteration Loop
+
+┌─────────────────────────────────────────────────────────────┐
+│                    🔄 LITERASI PROMPT                       │
+│                                                             │
+│         ┌──────────────┐                                    │
+│         │  ✍️ WRITE    │  Tulis prompt awal                │
+│         │  Prompt      │  (mulai sederhana)                │
+│         └──────┬───────┘                                    │
+│                │                                            │
+│         ┌──────▼───────┐                                    │
+│         │  📨 KIRIM    │  Kirim ke AI                      │
+│         │  ke AI       │                                    │
+│         └──────┬───────┘                                    │
+│                │                                            │
+│         ┌──────▼───────┐                                    │
+│         │  👁️ EVALUASI │  Apakah output sesuai?            │
+│         │  Output      │  ⭐ Skor 1-10                     │
+│         └──────┬───────┘                                    │
+│                │                                            │
+│          ┌─────┴─────┐                                      │
+│          ▼           ▼                                      │
+│    ┌──────────┐ ┌──────────┐                                │
+│    │✅ Skor 8+ │ │❌ Skor <8 │                                │
+│    │SELESAI!  │ │PERBAIKI  │                                │
+│    └──────────┘ └────┬─────┘                                │
+│                      │                                      │
+│               ┌──────▼───────┐                              │
+│               │  🔧 REFINED  │  Tambah konteks, contoh,    │
+│               │  Prompt Baru │  format, atau constraint     │
+│               └──────┬───────┘                              │
+│                      │                                      │
+│                      └──────→ Kembali ke KIRIM             │
+│                                                             │
+│  💡 Rata-rata prompt engineer butuh 3-5 iterasi            │
+│     untuk hasil optimal!                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+```
 [RUN 1]
 Buatkan title slide untuk presentasi tentang AI.
 → AI: "Kecerdasan Buatan: Masa Depan Teknologi"
@@ -398,6 +471,42 @@ Anda adalah Head of Growth yang pernah scale startup dari
 ---
 
 ## 🧩 Framework CRISPE
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🏗️ Visual Framework CRISPE
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    🧩 FRAMEWORK CRISPE                          │
+│                                                                 │
+│  ┌──────────┐                                                  │
+│  │  C       │  CAPACITY & ROLE    → Siapa AI harus jadi?      │
+│  └────┬─────┘    "Kamu adalah senior copywriter"               │
+│       │                                                         │
+│  ┌────▼─────┐                                                  │
+│  │  R       │  RESPONSE           → Output apa yang diminta?   │
+│  └────┬─────┘    "Buatkan 3 strategi kampanye"                 │
+│       │                                                         │
+│  ┌────▼─────┐                                                  │
+│  │  I       │  INSIGHT            → Konteks & info tambahan    │
+│  └────┬─────┘    "Produk skincare, target usia 20-30"          │
+│       │                                                         │
+│  ┌────▼─────┐                                                  │
+│  │  S       │  STATEMENT          → Instruksi spesifik         │
+│  └────┬─────┘    "Setiap strategi: nama, channel, KPI"         │
+│       │                                                         │
+│  ┌────▼─────┐                                                  │
+│  │  P       │  PERSONALITY        → Gaya & nada respons        │
+│  └────┬─────┘    "Praktis, actionable, bisnis-friendly"        │
+│       │                                                         │
+│  ┌────▼─────┐                                                  │
+│  │  E       │  EXPERIMENT         → Minta variasi/alternatif   │
+│  └──────────┘    "Buat juga 1 strategi wildcard viral"         │
+│                                                                 │
+│  📌 CRISPE = Kerangka prompt lengkap untuk output berkualitas   │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 **CRISPE** = **C**apacity & Role + **R**esponse + **I**nsight + **S**tatement + **P**ersonality + **E**xperiment
 

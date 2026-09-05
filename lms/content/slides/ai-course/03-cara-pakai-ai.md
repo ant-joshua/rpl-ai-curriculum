@@ -23,6 +23,29 @@ Setelah modul ini, kamu akan bisa:
 
 ## 📋 Step 1: Pilih Platform AI
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🗺️ Peta Perjalanan: Mulai AI dalam 5 Langkah
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              🚀 5 LANGKAH MEMULAI AI                           │
+│                                                                 │
+│   ① PILIH      ② BUAT        ③ NGOBROL   ④ ITERASI   ⑤ JAGO  │
+│  ┌──────┐    ┌──────┐     ┌──────┐     ┌──────┐    ┌──────┐  │
+│  │      │───→│      │────→│      │────→│      │───→│      │  │
+│  │Pilih │    │Daftar│     │Kirim │     │Perba-│    │Master│  │
+│  │Platf.│    │Akun  │     │Prompt│     │ikki  │    │Skill │  │
+│  │      │    │      │     │Pertama│     │Prompt│    │      │  │
+│  └──────┘    └──────┘     └──────┘     └──────┘    └──────┘  │
+│   🖥️           📧            💬           🔄          🏆       │
+│                                                                 │
+│  ⏱️ ~5 menit   ⏱️ ~5 menit   ⏱️ ~10 menit  ⏱️ Ongoing   🎓     │
+│                                                                 │
+│  💡 KUNCI: Mulai GRATIS, langsung praktek, tidak perlu install!│
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### Perbandingan Platform untuk Pemula
 
 | Platform | Gratis? | Mudah Dipakai? | Daftar | Keunggulan Pemula |
@@ -284,6 +307,39 @@ Sempurna! Sekarang buatkan 2 versi subject line:
 
 ## 📋 Pattern Dasar Prompting
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🏗️ Anatomi Prompt yang Baik
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              🏗️ ANATOMI PROMPT YANG BAIK                      │
+│                                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │ 👤 ROLE  │  │ 🎯 TASK  │  │ 📋 KONTEKS│  │ 📐 FORMAT │      │
+│  │          │  │          │  │          │  │          │      │
+│  │ "Kamu    │  │ "Tulis   │  │ "Saya    │  │ "Dalam   │      │
+│  │ adalah   │  │ email    │  │ startup  │  │ bentuk   │      │
+│  │ senior   │  │ follow-  │  │ edtech"  │  │ tabel"   │      │
+│  │ copy-    │  │ up untuk │  │          │  │          │      │
+│  │ writer"  │  │ client"  │  │          │  │          │      │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘      │
+│       │              │              │              │             │
+│       └──────────────┴──────────────┴──────────────┘             │
+│                          │                                      │
+│                   ┌──────▼──────┐                               │
+│                   │  🏆 OUTPUT  │                               │
+│                   │  Berkualitas│                               │
+│                   │  Tinggi     │                               │
+│                   └─────────────┘                               │
+│                                                                 │
+│  💡 Tanpa ROLE     → AI tidak tahu perspektif                  │
+│  💡 Tanpa TASK     → AI menebak-nebak                          │
+│  💡 Tanpa KONTEKS  → Output terlalu generik                    │
+│  💡 Tanpa FORMAT   → Tidak sesuai kebutuhan                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### Pattern 1: Role-Task-Format (RTF)
 
 ```
@@ -374,6 +430,49 @@ target break-even di bulan ke-18.
 ---
 
 ## 📋 Common Mistakes dan Solusinya
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### ⚡ Before/After: Prompt Buruk vs Prompt Bagus
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│            ❌ SEBELUM vs ✅ SESUDAH                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ❌ PROMPT BURUK:                                              │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  "Buatkan email"                                         │   │
+│  │                                                          │   │
+│  │  ⚠️ Masalah:                                              │   │
+│  │  • Tidak ada konteks siapa penerima                       │   │
+│  │  • Tidak ada tujuan email                                 │   │
+│  │  • Tidak ada nada yang diinginkan                         │   │
+│  │  • Tidak ada batasan format                               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                          │                                      │
+│                    🔄 PERBAIKAN                                │
+│                          │                                      │
+│  ✅ PROMPT BAGUS:                                               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  "Tulis email follow-up untuk client yang belum bayar   │   │
+│  │   invoice Rp 15 juta yang sudah jatuh tempo 7 hari.     │   │
+│  │   Nada: profesional tapi tegas.                          │   │
+│  │   Sertakan deadline pembayaran dan konsekuensi.          │   │
+│  │   Maksimal 200 kata."                                    │   │
+│  │                                                          │   │
+│  │  ✅ Komponen:                                              │   │
+│  │  • ROLE: Professional writer                              │   │
+│  │  • TASK: Follow-up email                                  │   │
+│  │  • KONTEKS: Invoice Rp15jt, 7 hari jatuh tempo          │   │
+│  │  • TONE: Profesional tapi tegas                          │   │
+│  │  • BATASAN: Maks 200 kata                                │   │
+│  │  • ISI: Deadline + konsekuensi                           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  📊 Hasil: Prompt bagus = output 5-10x lebih relevan!          │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Mistake 1: Prompt Terlalu Pendek
 

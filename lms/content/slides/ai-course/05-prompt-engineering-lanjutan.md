@@ -29,6 +29,45 @@ Setelah modul ini, kamu akan bisa:
 
 **Kapan pakai:** Problem solving kompleks, strategi, decision making.
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🌳 Visual: Tree of Thought (Branching Pemikiran)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    🌳 TREE OF THOUGHT                           │
+│                                                                 │
+│                    ┌──────────┐                                 │
+│                    │ MASALAH  │                                 │
+│                    │  Awal    │                                 │
+│                    └────┬─────┘                                 │
+│              ┌──────────┼──────────┐                            │
+│              ▼          ▼          ▼                            │
+│        ┌──────────┐ ┌──────────┐ ┌──────────┐                  │
+│        │  JALUR   │ │  JALUR   │ │  JALUR   │                  │
+│        │    A     │ │    B     │ │    C     │                  │
+│        │ (Native) │ │(Cross-   │ │(No-code) │                  │
+│        └────┬─────┘ │ platform)│ └────┬─────┘                  │
+│             │        └────┬─────┘      │                        │
+│             ▼             ▼            ▼                        │
+│       ┌──────────┐  ┌──────────┐ ┌──────────┐                  │
+│       │Pro: UX   │  │Pro: Satu │ │Pro:      │                  │
+│       │Kon: $$$$ │  │  codebase│ │  Murah   │                  │
+│       │Est:45-60J│  │Kon: Kual │ │Kon:      │                  │
+│       │Verdict:❌│  │Est:25-35J│ │  Limited  │                  │
+│       └──────────┘  │Verdict:✅│ │Est:10-15J│                  │
+│                     └──────────┘ │Verdict:⚠️│                  │
+│                                  └──────────┘                  │
+│                                                                 │
+│              ════════════════════════════                       │
+│              🏆 KEPUTUSAN: JALUR B                              │
+│              (Best balance: budget + kualitas)                  │
+│              ════════════════════════════                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Kapan pakai:** Problem solving kompleks, strategi, decision making.
+
 ```
 [TEMPLATE]
 Analisis masalah ini dengan Tree of Thought:
@@ -92,6 +131,42 @@ Alasan: Best balance antara budget, timeline, dan kualitas.
 **Apa itu:** Menggabungkan **penalaran** dan **aksi** dalam satu prompt — AI berpikir, bertindak, mengamati, lalu mengulang.
 
 **Kapan pakai:** AI agent, research tasks, complex problem solving.
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🔄 Visual: Pola ReAct — Think → Act → Observe → Repeat
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 🔄 POLA ReAct (REASON + ACT)                   │
+│                                                                 │
+│  ┌──────────┐                                                  │
+│  │ 🎯 TUJUAN│  "Cari framework terbaik untuk chatbot WA"      │
+│  └────┬─────┘                                                  │
+│       ▼                                                        │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  💭 THINK  →  🖱️ ACT  →  👁️ OBSERVE  →  🔄 REPEAT?     │  │
+│  ├──────────────────────────────────────────────────────────┤  │
+│  │                                                          │  │
+│  │  THINK: "Saya perlu framework yang support WA API"      │  │
+│  │    ↓                                                     │  │
+│  │  ACT: Search "best Python WhatsApp framework 2025"      │  │
+│  │    ↓                                                     │  │
+│  │  OBSERVE: Hasil: python-wa, Twilio, Baileys             │  │
+│  │    ↓                                                     │  │
+│  │  THINK: "Perlu bandingkan dari segi kemudahan"           │  │
+│  │    ↓                                                     │  │
+│  │  ACT: Bandingkan 3 framework dalam tabel                │  │
+│  │    ↓                                                     │  │
+│  │  OBSERVE: Twilio paling practical untuk Python           │  │
+│  │    ↓                                                     │  │
+│  │  💡 FINAL ANSWER: Untuk MVP → python-wa                  │  │
+│  │                  Untuk Prod → Twilio WhatsApp API        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  📌 ReAct = Gabungan terbaik antara "berpikir" dan "bertindak" │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```
 [TEMPLATE]
@@ -294,6 +369,44 @@ Kemudian buatkan versi yang lebih baik dengan penjelasan perubahan.
 **Apa itu:** Menghubungkan beberapa prompt dalam **rantai** — output prompt 1 jadi input prompt 2.
 
 **Kapan pakai:** Tugas kompleks yang sulit diselesaikan dalam satu prompt.
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### ⛓️ Visual: Prompt Chaining — Rantai Prompt yang Terhubung
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              ⛓️ PROMPT CHAINING (RANTAI PROMPT)                │
+│                                                                 │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐ │
+│  │ 🔍 STEP 1│───→│ 📝 STEP 2│───→│ ✍️ STEP 3│───→│ 🔧 STEP 4│ │
+│  │Brainstorm│    │ Outline  │    │  Draft   │    │  Edit    │ │
+│  │ 10 ide   │    │ Detail   │    │  1000    │    │ Grammar  │ │
+│  │ artikel  │    │ struktur │    │  kata    │    │ Flow     │ │
+│  └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘ │
+│       │               │               │               │         │
+│       │  Output 1     │  Output 2     │  Output 3     │         │
+│       │  = Input 2    │  = Input 3    │  = Input 4    │         │
+│       │               │               │               │         │
+│       └───────────────┴───────┬───────┴───────────────┘         │
+│                               ▼                                 │
+│                        ┌──────────┐                             │
+│                        │ 🌐 STEP 5│                             │
+│                        │   SEO    │                             │
+│                        │Optimize  │                             │
+│                        └────┬─────┘                             │
+│                             ▼                                   │
+│                    ┌─────────────────┐                          │
+│                    │ 📄 ARTIKEL JADI │                          │
+│                    │  Siap Publish!  │                          │
+│                    └─────────────────┘                          │
+│                                                                 │
+│  💡 KEUNGGULAN CHAINING:                                        │
+│  • Setiap step fokus → hasil lebih bagus                       │
+│  • Bisa koreksi di step tengah tanpa mulai ulang               │
+│  • Output setiap step = quality checkpoint                     │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```
 [TEMPLATE — Rantai untuk Menulis Artikel]
@@ -500,6 +613,49 @@ brainstorm_response = openai.ChatCompletion.create(
 ---
 
 ## 🛡️ 8. Anti-Hallucination Techniques
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### ✅ Visual: Anti-Hallucination Checklist
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              🛡️ ANTI-HALLUCINATION CHECKLIST                    │
+│              (Centang semua untuk jawaban terpercaya!)          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ☑️ 1. GROUNDING                                               │
+│     └── "Berdasarkan data berikut..."                          │
+│     └── Selalu kasih data/referensi sebagai dasar              │
+│                                                                 │
+│  ☑️ 2. CITATION REQUIRED                                       │
+│     └── "Untuk setiap klaim, sertakan sumbernya"              │
+│     └── Minta AI menunjuk dari mana informasi datang           │
+│                                                                 │
+│  ☑️ 3. CONFIDENCE SCORING                                      │
+│     └── "Berikan confidence level: HIGH/MEDIUM/LOW"            │
+│     └── Skor 1-10 untuk tingkat kepastian                      │
+│                                                                 │
+│  ☑️ 4. DUAL VERIFICATION                                      │
+│     └── "Beri 2 jawaban dari perspektif berbeda"              │
+│     └── Cek konsistensi antar jawaban                          │
+│                                                                 │
+│  ☑️ 5. "TIDAK TAHU" DIPERBOLEHKAN                              │
+│     └── "Jika tidak yakin, katakan 'Data tidak tersedia'"     │
+│     └── Jangan paksa AI menebak                                │
+│                                                                 │
+│  📊 EFEKTIVITAS:                                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  Grounding     ████████████████████  95% efektif        │  │
+│  │  Citation      ██████████████████    88% efektif        │  │
+│  │  Confidence    ████████████████      78% efektif        │  │
+│  │  Dual Verif    ██████████████        72% efektif        │  │
+│  │  "Tidak Tahu"  ████████████████████  92% efektif        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  💡 GABUNGKAN semua 5 teknik untuk hasil terbaik!              │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Teknik 1: Grounding dengan Data
 

@@ -14,7 +14,61 @@ Setelah modul ini, kamu akan memahami bagaimana AI dapat membantu aktivitas bela
 
 ## 1. Belajar & Memahami Materi
 
+## 🔄 Alur Belajar Siswa SMK dengan AI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│          ALUR BELAJAR SISWA SMK DENGAN AI                  │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   📚 BELAJAR          🤖 AI BANTU         ✅ TUGAS SELESAI │
+│   ─────────          ───────────         ──────────────   │
+│   ┌─────────┐       ┌──────────┐        ┌──────────┐      │
+│   │ Materi  │ ────▶ │ ChatGPT  │ ────▶  │ Paham &  │      │
+│   │ Sulit   │       │ DeepSeek │        │ Selesai  │      │
+│   └─────────┘       └──────────┘        └──────────┘      │
+│       │                  │                    │             │
+│       ▼                  ▼                    ▼             │
+│   ┌─────────┐       ┌──────────┐        ┌──────────┐      │
+│   │ Prakti- │ ────▶ │ GitHub   │ ────▶  │ Kode     │      │
+│   │ kum     │       │ Copilot  │        │ Berjalan │      │
+│   └─────────┘       └──────────┘        └──────────┘      │
+│       │                  │                    │             │
+│       ▼                  ▼                    ▼             │
+│   ┌─────────┐       ┌──────────┐        ┌──────────┐      │
+│   │ Ujian / │ ────▶ │ AI Latih │ ────▶  │ Nilai    │      │
+│   │ Tugas   │       │ Soal     │        │ Naik 📈  │      │
+│   └─────────┘       └──────────┘        └──────────┘      │
+│                                                             │
+│  💡 Kunci: AI = Asisten, bukan pengganti belajar sendiri!  │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ### Mengapa AI Penting untuk Belajar?
+
+### 🧰 Tool Recommendation: Mana yang Cocok untuk Aktivitas Sekolah?
+
+```
+┌───────────────────────────────────────────────────────────────────┐
+│              REKOMENDASI TOOL AI UNTUK SISWA SMK                 │
+├──────────────────┬──────────────────┬─────────────────────────────┤
+│  AKTIVITAS       │  TOOL UTAMA      │  ALTERNATIF                 │
+├──────────────────┼──────────────────┼─────────────────────────────┤
+│ 📖 Pahami Materi │ ChatGPT (gratis) │ DeepSeek, Gemini            │
+│ 📝 Ringkasan     │ ChatGPT          │ Claude, Notion AI           │
+│ 🧪 Latihan Soal  │ ChatGPT          │ DeepSeek (reasoning kuat)   │
+│ 💻 Debug Kode    │ GitHub Copilot   │ ChatGPT, DeepSeek           │
+│ 📄 Buat Proposal │ ChatGPT          │ Gamma AI, Notion AI         │
+│ 📋 Buat Laporan  │ ChatGPT + Canva  │ Google Docs + AI            │
+│ 📧 Surat Lamaran │ ChatGPT          │ Gemini                      │
+│ 🎨 Portofolio    │ Canva AI         │ Figma                       │
+│ 📄 CV / Resume   │ ChatGPT + Canva  │ Novoresume, Kickresume      │
+│ 🎤 Simulasi Interview │ ChatGPT     │ Claude                      │
+└──────────────────┴──────────────────┴─────────────────────────────┘
+
+  🎯 Tips: Mulai dari ChatGPT (gratis & serbaguna), lalu eksplor
+     tool spesifik sesuai kebutuhanmu!
+```
 
 Di SMK, kamu mempelajari banyak materi teknis. AI bisa menjadi **tutor pribadi** yang selalu siap membantu kapan saja.
 
@@ -197,6 +251,39 @@ menggunakan PHP & MySQL. Buatkan:
 
 ## 3. Persiapan PKL/Prakerin
 
+### 📅 Timeline Persiapan PKL/Prakerin
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│              TIMELINE PERSIAPAN PKL/PRAKERIN                        │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  MINGGU 1-2          MINGGU 3-4          MINGGU 5-6                │
+│  ┌──────────┐       ┌──────────┐        ┌──────────┐               │
+│  │ 🔍 Riset │ ────▶ │ 📄 Buat  │ ────▶  │ 📧 Kirim │               │
+│  │ Perusahaan│      │ Dokumen  │        │ Lamaran  │               │
+│  └──────────┘       └──────────┘        └──────────┘               │
+│       │                  │                    │                      │
+│       ▼                  ▼                    ▼                      │
+│  • Cari info        • Surat lamaran     • Email resmi               │
+│    perusahaan       • CV menarik        • Tunggu response           │
+│  • Sesuaikan        • Portofolio        • Follow up                 │
+│    jurusan          • Proposal PKL                                   │
+│                                                                      │
+│  MINGGU 7-8          MINGGU 9-10         MULAI PKL!                │
+│  ┌──────────┐       ┌──────────┐        ┌──────────┐               │
+│  │ 🎤 Persi-│ ────▶ │ 📚 Persi-│ ────▶  │ 🚀 Mulai │               │
+│  │ pan Interview│   │ pan Teknis│       │ Praktik  │               │
+│  └──────────┘       └──────────┘        └──────────┘               │
+│       │                  │                    │                      │
+│       ▼                  ▼                    ▼                      │
+│  • Latihan jawab    • Pelajari tool    • Hari pertama!             │
+│  • Simulasi AI      • Siapkan laptop   • Catat aktivitas           │
+│  • Tips percaya     • Install software • Waktu PKL dimulai 🎉     │
+│    diri                                                            │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
 ### Mengapa PKL/Prakerin Penting?
 
 Praktik Kerja Lapangan (PKL) atau Praktik Kerja Industri (Prakerin) adalah pengalaman kerja nyata yang **wajib** bagi siswa SMK. AI bisa membantu mempersiapkan segalanya.
@@ -248,6 +335,45 @@ teknologi, screenshot description.
 ---
 
 ## 4. Persiapan Karir
+
+### 📄 Template Visual CV Siswa SMK
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                     📄 CV SISWA SMK                          │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────┐   NAMA LENGKAP                                │
+│  │          │   ──────────────                               │
+│  │  FOTO    │   📍 Alamat | 📱 Telepon | 📧 Email            │
+│  │  PROFIL  │   🔗 LinkedIn | 💻 GitHub                      │
+│  │          │                                                │
+│  └──────────┘                                                │
+├──────────────────────────────┬───────────────────────────────┤
+│                              │                               │
+│  🎓 RIWAYAT PENDIDIKAN       │  💡 SKILLS & TOOLS            │
+│  ─────────────────────       │  ────────────────             │
+│  SMK Negeri 1 Bandung        │  🟢 HTML ████████░░ 80%      │
+│  • Jurusan: RPL              │  🟢 CSS  ███████░░░ 70%      │
+│  • Tahun: 2022-2025          │  🟡 JavaScript ████░░░░ 40%  │
+│  • Rapor: Rata-rata 85       │  🟢 Python ██████░░░░ 60%    │
+│                              │  🔵 MySQL █████░░░░░ 50%     │
+│  ─────────────────────       │                               │
+│  🏆 PRESTASI                 │  📌 PORTOFOLIO                │
+│  • Juara 2 Lomba Web Design  │  ──────────────               │
+│  • Juara 3 Lomba Programming │  1. Website Profil Sekolah   │
+│  • Sertifikasi Mikrotik      │  2. Sistem Absensi (PHP)     │
+│                              │  3. Calculator App (Python)  │
+│  ─────────────────────       │                               │
+│  📜 SERTIFIKASI              │  🗣️ BAHASA                    │
+│  • Mikrotik MTCNA            │  • Indonesia: Mahir           │
+│  • BNSP Pemrograman Web      │  • Inggris: Menengah          │
+│                              │                               │
+├──────────────────────────────┴───────────────────────────────┤
+│  💡 Gunakan ChatGPT untuk mengisi konten CV, Canva untuk     │
+│     desain visual yang menarik!                              │
+└──────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 9: Curriculum Vitae (CV)
 

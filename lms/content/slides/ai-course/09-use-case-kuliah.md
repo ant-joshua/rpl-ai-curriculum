@@ -14,6 +14,42 @@ Setelah modul ini, kamu akan memahami bagaimana AI membantu kegiatan kuliah — 
 
 ## 1. Aktivitas Akademik
 
+## 🔬 Alur Riset Mahasiswa dengan AI
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              ALUR RISET MAHASISWA DENGAN AI                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  📌 TOPIK      📚 LITERATUR    🔧 METHOD      📊 DATA             │
+│  ────────      ────────────    ──────────     ────────            │
+│  ┌─────────┐  ┌──────────┐   ┌──────────┐   ┌──────────┐         │
+│  │ Brain-  │─▶│ Search   │──▶│ Pilih    │──▶│ Kumpul   │         │
+│  │ storm   │  │ Jurnal   │   │ Metode   │   │ Data     │         │
+│  └─────────┘  └──────────┘   └──────────┘   └──────────┘         │
+│       │            │               │               │                │
+│       ▼            ▼               ▼               ▼                │
+│  • ChatGPT    • Google       • ChatGPT       • ChatGPT             │
+│  • DeepSeek     Scholar      • DeepSeek      • Python/R            │
+│  • Gap        • AI tools     • Bandingkan    • Survei              │
+│    analysis   • Ringkasan      metode        • Eksperimen          │
+│                                                                     │
+│  📈 ANALISIS    ✍️ TULIS                                          │
+│  ──────────    ─────────                                          │
+│  ┌──────────┐ ┌──────────┐                                        │
+│  │ Olah     │▶│ Draft &  │                                        │
+│  │ Data     │ │ Review   │                                        │
+│  └──────────┘ └──────────┘                                        │
+│       │            │                                               │
+│       ▼            ▼                                               │
+│  • Statistik  • ChatGPT                                           │
+│  • Python     • Grammarly                                         │
+│  • Visual     • IEEE format                                       │
+│                                                                     │
+│  💡 Selalu verifikasi referensi — AI bisa hallucinate sumber!      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Mengapa Mahasiswa Perlu AI?
 
 Mahasiswa menghadapi tantangan unik: jurnal internasional berbahasa Inggris, riset yang kompleks, dan deadline yang padat. AI membantu mengatasi semua ini.
@@ -182,6 +218,49 @@ Saya punya 5 paper berikut: [daftar paper]
 
 ## 2. Skripsi & Tugas Akhir
 
+### 📅 Timeline Skripsi Visual (Semester 1-2)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                 TIMELINE SKRIPSI (2 SEMESTER)                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  SEMESTER 1                                                         │
+│  ════════════                                                       │
+│                                                                     │
+│  BULAN 1-2          BULAN 3-4          BULAN 5-6                   │
+│  ┌──────────┐      ┌──────────┐       ┌──────────┐                │
+│  │ 🎯 Topik │────▶│ 📄 Pro-  │────▶  │ 🔬 Mulai │                │
+│  │ & Proposal│      │ posal    │       │ Riset    │                │
+│  └──────────┘      └──────────┘       └──────────┘                │
+│       │                 │                   │                       │
+│       ▼                 ▼                   ▼                       │
+│  • Brainstorm       • Tulis            • Kumpul data               │
+│  • Gap analysis       proposal         • Eksperimen                │
+│  • Konsul dosen     • Review dosen     • Coding                    │
+│  • Judul final      • Sidang proposal  • Analisis                  │
+│                                                                     │
+│  SEMESTER 2                                                         │
+│  ════════════                                                       │
+│                                                                     │
+│  BULAN 7-8          BULAN 9-10         BULAN 11-12                 │
+│  ┌──────────┐      ┌──────────┐       ┌──────────┐                │
+│  │ 📊 Hasil │────▶│ ✍️ Tulis │────▶  │ 🎤 SIDANG│                │
+│  │ & Evaluasi│      │ Skripsi  │       │ FINAL! 🎉│                │
+│  └──────────┘      └──────────┘       └──────────┘                │
+│       │                 │                   │                       │
+│       ▼                 ▼                   ▼                       │
+│  • Analisis          • Draft            • Presentasi                │
+│    data                lengkap          • Tanya jawab              │
+│  • Evaluasi          • Review           • Perbaikan                │
+│    model               bahasa           • Wisuda! 🎓              │
+│  • Bandingkan        • Format                                  │
+│    baseline           akademik                                  │
+│                                                                     │
+│  💡 AI membantu di SETIAP tahap — dari topik hingga sidang!       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Tantangan Utama Skripsi
 
 | Tahap | Tantangan | Bantuan AI |
@@ -280,6 +359,58 @@ dan rekomendasi untuk studi saya.
 ---
 
 ## 3. Organisasi Kampus
+
+### ✍️ Academic Writing Pipeline
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│             ACADEMIC WRITING PIPELINE DENGAN AI                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐          │
+│  │ 📋      │──▶│ ✍️      │──▶│ 🤖      │──▶│ 📄      │          │
+│  │ OUTLINE │   │ DRAFT   │   │ REVIEW  │   │ FINAL   │          │
+│  └─────────┘   └─────────┘   └─────────┘   └─────────┘          │
+│       │             │             │             │                   │
+│       ▼             ▼             ▼             ▼                   │
+│  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐          │
+│  │ChatGPT  │   │ Tulis   │   │ChatGPT  │   │ Format  │          │
+│  │generate │   │ bebas   │   │review   │   │ final   │          │
+│  │struktur │   │ dulu    │   │ grammar │   │ + kirim │          │
+│  └─────────┘   └─────────┘   └─────────┘   └─────────┘          │
+│                                                                     │
+│  ⚠️  ATURAN PENTING:                                               │
+│  1. AI boleh bantu outline & review, TAPI kamu yang tulis draft!  │
+│  2. Selalu verifikasi data & referensi dari AI                    │
+│  3. Cek plagiarisme sebelum submit (gunakan Turnitin/dupli checker)│
+│  4. Format sesuai panduan kampus (IEEE, APA, atau lainnya)       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 🧰 Tool Comparison untuk Pekerjaan Akademik
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│            PERBANDINGAN TOOL UNTUK AKTIVITAS AKADEMIK               │
+├──────────────────┬────────────────────┬──────────────────────────────┤
+│  AKTIVITAS       │  TOOL REKOMENDASI  │  CATATAN                     │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ 📚 Membaca Jurnal│ ChatGPT + Gemini   │ Upload PDF, minta ringkasan  │
+│ ✍️ Menulis Makalah│ ChatGPT + Grammarly│ AI untuk draft, Grammarly    │
+│                  │                    │ untuk grammar final          │
+│ 📊 Analisis Data │ ChatGPT + Python   │ Generate kode analisis       │
+│ 🔍 Literatur     │ Semantic Scholar   │ + ChatGPT untuk ringkasan    │
+│    Review        │ + ChatGPT          │                              │
+│ 📐 Metodologi    │ ChatGPT + DeepSeek │ Bandingkan metode penelitian │
+│ 💻 Coding Skripsi│ GitHub Copilot     │ Auto-complete + debugging    │
+│ 📄 Sidang        │ ChatGPT + Gamma AI │ Simulasi Q&A + buat slide   │
+│ 📝 Dokumentasi   │ Notion AI + ChatGPT│ Organisasi & penulisan       │
+└──────────────────┴────────────────────┴──────────────────────────────┘
+
+  🎯 Strategy: Gunakan ChatGPT sebagai "AI hub" + tool spesifik
+     untuk aktivitas tertentu. Kombinasi = hasil terbaik!
+```
 
 ### Kategori 8: Proposal Kegiatan
 

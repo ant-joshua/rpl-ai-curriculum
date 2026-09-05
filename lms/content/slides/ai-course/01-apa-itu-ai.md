@@ -23,6 +23,43 @@ Setelah modul ini, kamu akan bisa:
 
 ## 📖 Apa Itu Kecerdasan Buatan (AI)?
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🗺️ Peta Kecerdasan Buatan: AI, ML, DL & Data Science
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   ┌───────────────────────────────────────────────┐         │
+│   │           DATA SCIENCE                        │         │
+│   │    ┌─────────────────────────────────┐        │         │
+│   │    │      ARTIFICIAL INTELLIGENCE    │        │         │
+│   │    │    ┌──────────────────────┐     │        │         │
+│   │    │    │  MACHINE LEARNING    │     │        │         │
+│   │    │    │  ┌──────────────┐   │     │        │         │
+│   │    │    │  │  DEEP        │   │     │        │         │
+│   │    │    │  │  LEARNING    │   │     │        │         │
+│   │    │    │  │  (Jaringan   │   │     │        │         │
+│   │    │    │  │   Syaraf)    │   │     │        │         │
+│   │    │    │  └──────────────┘   │     │        │         │
+│   │    │    └──────────────────────┘     │        │         │
+│   │    │  • Supervised Learning          │        │         │
+│   │    │  • Unsupervised Learning        │        │         │
+│   │    │  • Reinforcement Learning       │        │         │
+│   │    └─────────────────────────────────┘        │         │
+│   │  • Rule-based Systems, Expert Systems         │         │
+│   │  • NLP, Computer Vision, Robotics             │         │
+│   └───────────────────────────────────────────────┘         │
+│  • Statistics, Visualization, Data Wrangling               │
+│  • Business Intelligence, Big Data                         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+  📌 Keterangan:
+     Deep Learning ⊂ Machine Learning ⊂ AI ⊂ Data Science
+     (bagian dari)    (bagian dari)  (bagian dari) (topik luas)
+```
+
 **Kecerdasan Buatan (Artificial Intelligence / AI)** adalah bidang ilmu komputer yang berfokus pada pembuatan sistem yang mampu melakukan tugas-tugas yang biasanya memerlukan kecerdasan manusia.
 
 Contoh tugas tersebut meliputi:
@@ -48,6 +85,28 @@ Bayangkan AI seperti **rekan kerja digital** yang:
 ## ⚙️ Cara Kerja AI (Secara Sederhana)
 
 AI modern, terutama **Large Language Model (LLM)**, bekerja dengan konsep dasar:
+
+```
+🧠 ════════════════════════════════════════════════════════════════
+│                    BAGAIMANA AI BELAJAR                         │
+│                                                                 │
+│   📂 DATA         ⚙️ TRAINING       🧠 MODEL        🔮 PREDICT │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐ │
+│  │ Teks     │───→│ Pola     │───→│ Neural   │───→│ Output   │ │
+│  │ Gambar   │    │ Diekstrak│    │ Network  │    │ Respons  │ │
+│  │ Kode     │    │ &        │    │ Terlatih │    │ Akurat   │ │
+│  │ Data     │    │ Diuji    │    │          │    │          │ │
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘ │
+│       ↑                                              │         │
+│       │         ┌──────────────────────────┐         │         │
+│       │         │     FEEDBACK LOOP        │         │         │
+│       └─────────│  ⚠️ Error? → Perbaiki!   │←────────┘         │
+│                 └──────────────────────────┘                   │
+└─────────────────────────────────────────────────────────────────┘
+
+  📌 Alur: Data Pelatihan → Model Belajar Pola → Model Prediksi
+     (miliaran teks)        (weighted neurons)    (kata berikutnya)
+```
 
 ### 1. Training (Pelatihan)
 
@@ -236,6 +295,32 @@ Risiko: Dibahas luas oleh para peneliti AI
 ---
 
 ## 🎯 AI vs Manusia: Komplementer, Bukan Kompetitor
+
+```
+🧠 ════════════════════════════════════════════════════════════════
+│               🧠 OTAK MANUSIA  vs  🤖 OTAK AI                  │
+├───────────────────┬─────────────────────────────────────────────┤
+│  🧠 OTAK MANUSIA  │  🤖 OTAK AI                                │
+├───────────────────┼─────────────────────────────────────────────┤
+│  86 miliar neuron │  Miliaran parameter (weights)               │
+│  Belajar dari     │  Belajar dari miliaran data                 │
+│  pengalaman hidup │  contoh di internet                         │
+│  Insting & emosi  │  Pola statistik & probabilitas              │
+│  Bisa generalisasi│  Spesialis untuk tugas tertentu             │
+│  ke banyak domain │  (kecuali multimodal)                       │
+│  Mengerti konteks │  Mengikuti pola, tidak                       │
+│  sosial & budaya  │  "memahami" secara benar                   │
+│  Kelelahan ya     │  Tidak pernah lelah                         │
+│  Kreativitas asli │  Kreativitas berbasis pola                  │
+│  Satu per satu    │  Parallel processing masif                  │
+│  butuh istirahat  │  24/7 non-stop                              │
+├───────────────────┴─────────────────────────────────────────────┤
+│                                                                 │
+│  ✨ KUNCI: Manusia + AI = Kombinasi paling kuat!               │
+│  Manusia memberikan JUDGMENT, AI memberikan SPEED              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 | Aspek | Manusia 🧠 | AI 🤖 |
 |-------|-----------|-------|

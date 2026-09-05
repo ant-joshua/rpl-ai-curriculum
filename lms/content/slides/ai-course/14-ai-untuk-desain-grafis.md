@@ -14,6 +14,33 @@ Setelah modul ini, kamu akan memahami cara menggunakan AI untuk kebutuhan desain
 
 ## 1. Tools AI untuk Desain Grafis
 
+### 🎨 Design Process Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              DESIGN PROCESS — 4 TAHAP UTAMA                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐      │
+│  │ 🔍 RE-   │──▶│ ✏️ SKETCH │──▶│ 🤖 GENER-│──▶│ ✨ REFINE│      │
+│  │ SEARCH   │   │ & IDEA   │   │   ATE    │   │ & POLISH │      │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘      │
+│       │              │               │               │              │
+│       ▼              ▼               ▼               ▼              │
+│  • Kumpulkan     • Sketsa tangan  • Canva AI     • Review          │
+│    referensi     • Brainstorm     • Midjourney   • Adjust warna   │
+│  • Cari inspirasi • Mood board    • DALL-E       • Fine-tune       │
+│  • Cek kompetitor• Pilih style    • Leonardo AI  • Export final    │
+│  • Tentukan      • Buat wireframe • remove.bg    • Cek di          │
+│    audiens                                             berbagai    │
+│                                                        ukuran     │
+│  ⏱️ 5-10 menit   ⏱️ 10-15 menit  ⏱️ 10-20 menit ⏱️ 10-15 menit│
+│                                                                     │
+│  💡 Proses yang benar = hasil yang konsisten!                     │
+│     JANGAN langsung generate tanpa riset!                          │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Tools Terbaik untuk Desain dengan AI
 
 | Tool | Fungsi Utama | Harga | Level |
@@ -78,9 +105,118 @@ warm lighting, photorealistic"
 
 ### Prompt Engineering untuk Image Generation
 
-#### Struktur Prompt yang Efektif
+### Struktur Prompt yang Efektif
+
+### 🎨 AI Image Prompt Anatomy
 
 ```
+┌─────────────────────────────────────────────────────────────────────┐
+│              AI IMAGE PROMPT ANATOMY                               │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  📝 STRUKTUR PROMPT YANG EFEKTIF:                                  │
+│  ══════════════════════════════════                                │
+│                                                                     │
+│  [SUBJEK] + [GAYA] + [LINGKUNGAN] + [PENCAHAYAAN]                │
+│     + [KOMPOSISI] + [KUALITAS] + [PARAMETER]                      │
+│                                                                     │
+│  Contoh Prompt Lengkap:                                            │
+│  ┌──────────────────────────────────────────────────────────┐     │
+│  │ A young Indonesian woman entrepreneur                    │ ← Subjek  │
+│  │ wearing modern batik                                     │ ← Detail  │
+│  │ in a minimalist tech office                              │ ← Lingkungan│
+│  │ with soft natural lighting                               │ ← Cahaya  │
+│  │ portrait composition                                     │ ← Komposisi│
+│  │ photorealistic, 4K, detailed                             │ ← Kualitas│
+│  │ --ar 3:4 --style raw                                     │ ← Parameter│
+│  └──────────────────────────────────────────────────────────┘     │
+│                                                                     │
+│  🏷️ KOMPONEN PENTING:                                              │
+│  ┌──────────────┬──────────────────────────────────────────┐      │
+│  │ Komponen     │ Contoh                                   │      │
+│  ├──────────────┼──────────────────────────────────────────┤      │
+│  │ Subjek       │ "A futuristic city", "A cute cat"        │      │
+│  │ Gaya         │ "Watercolor", "Pixel art", "3D render"   │      │
+│  │ Lingkungan   │ "In a forest", "On Mars", "In cafe"      │      │
+│  │ Cahaya       │ "Golden hour", "Neon lights", "Studio"   │      │
+│  │ Komposisi    │ "Close-up", "Wide angle", "Bird's eye"  │      │
+│  │ Kualitas     │ "4K", "Ultra detailed", "Award-winning"  │      │
+│  │ Negatif      │ "--no text, watermark, blurry"           │      │
+│  │ Aspect Ratio │ "--ar 16:9" (landscape) "--ar 9:16"     │      │
+│  └──────────────┴──────────────────────────────────────────┘      │
+│                                                                     │
+│  💡 Tambahkan detail = lebih akurat hasilnya!                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 🔄 Color Theory: Dasar Pemilihan Warna
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              COLOR THEORY — WHEEL & KOMBINASI                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│              🔴 Merah (Passion)                                    │
+│                ╱          ╲                                        │
+│   🟠 Orange    ╱    ┌───┐    ╲   🟣 Ungu                           │
+│   (Energi)   ╱     │ 🎨│     ╲  (Kreatif)                         │
+│              ╱      │WHL│      ╲                                   │
+│   🟡 Kuning ╱       └───┘       ╲ 🔵 Biru                          │
+│   (Happy)  ╲       (Color       ╱   (Trust)                       │
+│              ╲      Wheel)     ╱                                    │
+│   🟢 Hijau   ╲               ╱   🟤 Cokelat                        │
+│   (Growth)    ╲             ╱    (Stable)                         │
+│                 🔴 Merah                                             │
+│                                                                     │
+│  🎯 KOMBINASI WARNA:                                               │
+│  ┌────────────────┬────────────────────────────────────────┐      │
+│  │ Tipe           │ Kombinasi                               │      │
+│  ├────────────────┼────────────────────────────────────────┤      │
+│  │ Complementary  │ 🔴 Merah + 🟢 Hijau (berseberangan)   │      │
+│  │ Analogous      │ 🔴→🟠→🟡 (berdekatan)                  │      │
+│  │ Triadic        │ 🔴 + 🔵 + 🟤 (segitiga)                │      │
+│  │ Monochromatic  │ Biru terang + Biru gelap (satu warna) │      │
+│  └────────────────┴────────────────────────────────────────┘      │
+│                                                                     │
+│  💡 Trik: Pilih 1 primary + 1 secondary + 1 accent untuk desain! │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 📱 Social Media Post Dimensions Table
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              DIMENSIONS MEDIA SOSIAL — CHEAT SHEET                 │
+├──────────────┬────────────────┬─────────────────────────────────────┤
+│  PLATFORM    │  DIMENSI       │  CATATAN                            │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 📸 Instagram │ 1080 x 1080px │ Square post (paling umum)          │
+│   Post       │ 1080 x 1350px │ Portrait (4:5, lebih besar)        │
+│   Story      │ 1080 x 1920px │ Full screen (9:16)                 │
+│   Carousel   │ 1080 x 1080px │ Multi-slide, max 10                │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 🐦 Twitter/X │ 1200 x 675px  │ Landscape (16:9)                   │
+│   Post       │ 1500 x 500px  │ Header/banner                      │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 👤 LinkedIn  │ 1200 x 627px  │ Landscape (1.91:1)                 │
+│   Post       │ 1584 x 396px  │ Banner                             │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 🎬 YouTube   │ 1280 x 720px  │ Thumbnail (16:9)                   │
+│   Thumbnail  │ 2560 x 1440px │ Channel art                        │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 📌 Pinterest │ 1000 x 1500px │ Vertical (2:3, performs best)      │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 💬 Facebook  │ 1200 x 630px  │ Link share (1.91:1)                │
+│   Post       │ 1080 x 1080px │ Square post                        │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│ 📱 TikTok    │ 1080 x 1920px │ Full screen (9:16)                 │
+├──────────────┼────────────────┼─────────────────────────────────────┤
+│  💡 Tips:   │ Canva AI punya "Magic Resize" untuk ubah ukuran    │
+│             │ dari satu format ke format lainnya secara otomatis! │
+└──────────────┴────────────────┴─────────────────────────────────────┘
+```
+
+### 📐 Struktur Prompt untuk Berbagai Kebutuhan Desain
 [Subjek] + [Gaya] + [Lingkungan] + [Pencahayaan] + [Komposisi] + [Kualitas]
 ```
 

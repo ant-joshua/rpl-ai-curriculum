@@ -1,27 +1,30 @@
 <script lang="ts">
 	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
-	import { aiModules, type AiModule } from '$lib/stores/ai-course';
+	import { aiModules, finalProject, type AiModule } from '$lib/stores/ai-course';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
 	let content = $state('');
+	let exerciseContent = $state('');
 	let loading = $state(true);
+	let exerciseLoading = $state(true);
 	let error = $state('');
 	let completedModules = $state<Set<string>>(new Set());
 	let showSidebar = $state(false);
+	let activeTab = $state<'materi' | 'latihan'>('materi');
 
 	const mod = $derived(data.module as AiModule);
 	const next = $derived(data.next as AiModule | undefined);
 	const prev = $derived(data.prev as AiModule | undefined);
 	const levelColors: Record<string, string> = { Pemula: '#22c55e', Intermediate: '#f59e0b', Advanced: '#ef4444' };
+	const isFinalProject = $derived(data.slug === '20-final-project');
 
 	onMount(() => {
 		try {
 			const saved = localStorage.getItem('ai-course-progress');
 			if (saved) completedModules = new Set(JSON.parse(saved));
 		} catch {}
-		// Mark current module as viewed
 		if (mod) {
 			completedModules.add(mod.slug);
 			completedModules = new Set(completedModules);
@@ -30,8 +33,10 @@
 	});
 
 	async function loadContent() {
+		loading = true;
 		try {
-			const res = await fetch(`/content/ai-course/${mod.slug}.json`);
+			const slug = isFinalProject ? '20-final-project' : mod.slug;
+			const res = await fetch(`/content/ai-course/${slug}.json`);
 			if (!res.ok) throw new Error('Content not found');
 			const json = await res.json();
 			const raw = json.content || '';
@@ -43,21 +48,38 @@
 		loading = false;
 	}
 
+	async function loadExercise() {
+		if (isFinalProject || !mod) return;
+		exerciseLoading = true;
+		try {
+			const res = await fetch(`/content/ai-course/${mod.exerciseSlug}.json`);
+			if (!res.ok) { exerciseContent = ''; return; }
+			const json = await res.json();
+			const raw = json.content || '';
+			const cleaned = stripFrontmatter(raw);
+			exerciseContent = parseMarkdown(cleaned);
+		} catch {
+			exerciseContent = '';
+		}
+		exerciseLoading = false;
+	}
+
 	function toggleComplete(slug: string) {
-		const next = new Set(completedModules);
-		if (next.has(slug)) next.delete(slug);
-		else next.add(slug);
-		completedModules = next;
-		try { localStorage.setItem('ai-course-progress', JSON.stringify([...next])); } catch {}
+		const nextSet = new Set(completedModules);
+		if (nextSet.has(slug)) nextSet.delete(slug);
+		else nextSet.add(slug);
+		completedModules = nextSet;
+		try { localStorage.setItem('ai-course-progress', JSON.stringify([...nextSet])); } catch {}
 	}
 
 	$effect(() => {
 		loadContent();
+		loadExercise();
 	});
 </script>
 
 <svelte:head>
-	<title>{mod.title} — AI Complete Course</title>
+	<title>{isFinalProject ? finalProject.title : mod.title} — AI Complete Course</title>
 </svelte:head>
 
 <!-- Mobile sidebar toggle -->
@@ -77,7 +99,7 @@
 				<a
 					href="/ai-course/{m.slug}"
 					class="sidebar-link"
-					class:active={m.slug === mod.slug}
+					class:active={m.slug === data.slug}
 					class:completed={completedModules.has(m.slug)}
 				>
 					<span class="sl-icon">{m.icon}</span>
@@ -90,6 +112,22 @@
 					{/if}
 				</a>
 			{/each}
+			<!-- Final Project -->
+			<a
+				href="/ai-course/20-final-project"
+				class="sidebar-link"
+				class:active={data.slug === '20-final-project'}
+				class:completed={completedModules.has('20-final-project')}
+			>
+				<span class="sl-icon">🏆</span>
+				<span class="sl-text">
+					<span class="sl-title">Final Project</span>
+					<span class="sl-level" style="color: #2563eb">Capstone</span>
+				</span>
+				{#if completedModules.has('20-final-project')}
+					<span class="sl-check">✅</span>
+				{/if}
+			</a>
 		</nav>
 	</aside>
 
@@ -103,30 +141,58 @@
 		<!-- Module header -->
 		<div class="module-header">
 			<div class="mh-top">
-				<span class="mh-icon">{mod.icon}</span>
+				<span class="mh-icon">{isFinalProject ? finalProject.icon : mod.icon}</span>
 				<div>
-					<span class="mh-level" style="background: {levelColors[mod.level]}10; color: {levelColors[mod.level]}; border: 1px solid {levelColors[mod.level]}30">
-						{mod.level}
+					<span class="mh-level" style="background: {isFinalProject ? '#2563eb' : levelColors[mod.level]}10; color: {isFinalProject ? '#2563eb' : levelColors[mod.level]}; border: 1px solid {isFinalProject ? '#2563eb' : levelColors[mod.level]}30">
+						{isFinalProject ? 'Capstone' : mod.level}
 					</span>
-					<span class="mh-duration">⏱️ {mod.duration}</span>
+					{#if !isFinalProject}
+						<span class="mh-duration">⏱️ {mod.duration}</span>
+					{/if}
 				</div>
 			</div>
-			<h1 class="mh-title">{mod.title}</h1>
-			<p class="mh-desc">{mod.description}</p>
+			<h1 class="mh-title">{isFinalProject ? finalProject.title : mod.title}</h1>
+			<p class="mh-desc">{isFinalProject ? finalProject.description : mod.description}</p>
 		</div>
 
-		<!-- Content -->
-		{#if loading}
-			<div class="loading">Memuat konten...</div>
-		{:else if error}
-			<div class="error-msg">
-				<h2>{error}</h2>
-				<p>Modul "{mod.slug}" tidak ditemukan.</p>
+		<!-- Tabs (only show if exercise exists) -->
+		{#if !isFinalProject && exerciseContent}
+			<div class="tab-bar">
+				<button class="tab" class:active={activeTab === 'materi'} onclick={() => activeTab = 'materi'}>
+					📖 Materi
+				</button>
+				<button class="tab" class:active={activeTab === 'latihan'} onclick={() => activeTab = 'latihan'}>
+					✏️ Latihan
+				</button>
 			</div>
+		{/if}
+
+		<!-- Content -->
+		{#if activeTab === 'materi'}
+			{#if loading}
+				<div class="loading">Memuat konten...</div>
+			{:else if error}
+				<div class="error-msg">
+					<h2>{error}</h2>
+					<p>Modul "{data.slug}" tidak ditemukan.</p>
+				</div>
+			{:else}
+				<article class="markdown-body">
+					{@html content}
+				</article>
+			{/if}
 		{:else}
-			<article class="markdown-body">
-				{@html content}
-			</article>
+			{#if exerciseLoading}
+				<div class="loading">Memuat latihan...</div>
+			{:else if exerciseContent}
+				<article class="markdown-body">
+					{@html exerciseContent}
+				</article>
+			{:else}
+				<div class="empty-exercise">
+					<p>📝 Latihan untuk modul ini belum tersedia.</p>
+				</div>
+			{/if}
 		{/if}
 
 		<!-- Navigation -->
@@ -140,8 +206,8 @@
 				<div></div>
 			{/if}
 
-			<button class="nav-check" onclick={() => toggleComplete(mod.slug)}>
-				{completedModules.has(mod.slug) ? '✅ Selesai' : '⬜ Tandai Selesai'}
+			<button class="nav-check" onclick={() => toggleComplete(data.slug)}>
+				{completedModules.has(data.slug) ? '✅ Selesai' : '⬜ Tandai Selesai'}
 			</button>
 
 			{#if next}
@@ -214,7 +280,7 @@
 	.module-content { padding: 32px 48px 64px; min-width: 0; }
 
 	/* Module header */
-	.module-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #eee; }
+	.module-header { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
 	.mh-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 	.mh-icon { font-size: 32px; }
 	.mh-level {
@@ -225,11 +291,26 @@
 	.mh-title { font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px; }
 	.mh-desc { font-size: 15px; color: #666; margin: 0; }
 
+	/* Tabs */
+	.tab-bar {
+		display: flex; gap: 4px; margin-bottom: 24px;
+		border-bottom: 2px solid #eee; padding-bottom: 0;
+	}
+	.tab {
+		padding: 10px 20px; border: none; background: none;
+		font-size: 14px; font-weight: 600; color: #888;
+		cursor: pointer; border-bottom: 2px solid transparent;
+		margin-bottom: -2px; transition: color 0.15s, border-color 0.15s;
+	}
+	.tab:hover { color: #555; }
+	.tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
 	/* Loading / Error */
-	.loading, .error-msg { text-align: center; padding: 64px 24px; }
+	.loading, .error-msg, .empty-exercise { text-align: center; padding: 64px 24px; }
 	.loading { color: #888; font-size: 16px; }
 	.error-msg h2 { font-size: 24px; color: #ef4444; }
 	.error-msg p { color: #888; }
+	.empty-exercise p { color: #888; font-size: 15px; }
 
 	/* Markdown body */
 	.markdown-body { line-height: 1.75; font-size: 16px; color: #333; }

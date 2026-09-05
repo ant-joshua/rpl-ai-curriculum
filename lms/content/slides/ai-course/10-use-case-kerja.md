@@ -14,6 +14,43 @@ Setelah modul ini, kamu akan memahami bagaimana AI meningkatkan produktivitas di
 
 ## 1. Produktivitas Kerja
 
+### 💼 Productivity Stack: Alur Kerja Harian
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              PRODUCTIVITY STACK — ALUR KERJA HARIAN                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ☀️ PAGI              🤝 SIANG              🌙 SORE                │
+│  ════════              ═══════              ═══════                │
+│  ┌──────────┐        ┌──────────┐        ┌──────────┐             │
+│  │ 📧 EMAIL │───────▶│ 🤝 MEET- │───────▶│ 📊 RE-   │             │
+│  │ & Tasks  │        │   ING    │        │   PORT   │             │
+│  └──────────┘        └──────────┘        └──────────┘             │
+│       │                   │                    │                    │
+│       ▼                   ▼                    ▼                    │
+│  ┌──────────┐        ┌──────────┐        ┌──────────┐             │
+│  │ChatGPT:  │        │ChatGPT:  │        │ChatGPT:  │             │
+│  │• Ringkas │        │• Notulen  │        │• Ringkas │             │
+│  │  email   │        │• Action   │        │  hasil   │             │
+│  │• Buat    │        │  items    │        │• Update  │             │
+│  │  to-do   │        │• Follow   │        │  status  │             │
+│  │• Prioritas│        │  up email│        │• Laporan │             │
+│  └──────────┘        └──────────┘        └──────────┘             │
+│                                                                     │
+│  ═══════════════════════════════════════════════════════════════   │
+│                                                                     │
+│  🎯 PROYEK & PLANNING (Sepanjang hari)                            │
+│  ┌──────────────────────────────────────────────────────────┐     │
+│  │  Break Down → Sprint Planning → Execute → Review → Done  │     │
+│  │       │            │              │          │      │     │     │
+│  │   ChatGPT      Jira/Trello    Copilot    Review  Deploy │     │
+│  └──────────────────────────────────────────────────────────┘     │
+│                                                                     │
+│  💡 Kunci Produktivitas: AI untuk semua task repetitif!           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### AI sebagai Asisten Kantor Pribadi
 
 | Aktivitas | Tanpa AI | Dengan AI | Penghematan Waktu |
@@ -114,6 +151,36 @@ Buatkan laporan executive summary 1 halaman.
 ---
 
 ## 2. Data & Analisis
+
+### 📊 Data Analysis Workflow
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              DATA ANALYSIS WORKFLOW DENGAN AI                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1️⃣ CLEAN ────▶ 2️⃣ ANALYZE ────▶ 3️⃣ VISUALIZE ──▶ 4️⃣ PRESENT│
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐    ┌──────────┐      │
+│  │ 🔧 Clean │   │ 📈 Analyze│   │ 📊 Visual│    │ 🎤 Present│     │
+│  │   Data   │──▶│   Data   │──▶│   Data   │──▶│   Data   │      │
+│  └──────────┘   └──────────┘   └──────────┘    └──────────┘      │
+│       │              │               │                │             │
+│       ▼              ▼               ▼                ▼             │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐    ┌──────────┐      │
+│  │• Handle  │   │• Statistik│  │• Chart   │    │• Dashboard│     │
+│  │  missing │   │  deskriptif│ │• Graph   │    │• Report   │     │
+│  │  data    │   │• Correlasi│ │• Heatmap │    │• Email    │     │
+│  │• Remove  │   │• Regresi  │ │• Plotly  │    │• Meeting  │     │
+│  │  duplikat│   │• Hypothesis││• Matplotlib│  │  Present  │     │
+│  │• Fix     │   │  testing  │ │          │    │           │      │
+│  │  format  │   │• Group by │ │          │    │           │      │
+│  └──────────┘   └──────────┘   └──────────┘    └──────────┘      │
+│                                                                     │
+│  🛠️ TOOLS: pandas + ChatGPT → scipy + ChatGPT → matplotlib → PPT │
+│                                                                     │
+│  💡 Tips: Selalu mulai dengan "Buatkan kode Python untuk..."       │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 4: Analisis Data Bisnis
 
@@ -218,6 +285,38 @@ fig.write_html('dashboard.html')
 
 ## 3. Proyek & Manajemen
 
+### 📊 Project Breakdown: WBS (Work Breakdown Structure)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│           WORK BREAKDOWN STRUCTURE — SISTEM ABSENSI ONLINE         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│                    🎯 SISTEM ABSENSI ONLINE                        │
+│                    ════════════════════════                         │
+│                           │                                         │
+│         ┌─────────────────┼─────────────────┐                      │
+│         │                 │                 │                      │
+│    ┌────▼────┐      ┌─────▼─────┐     ┌────▼────┐                │
+│    │ 🔐 AUTH │      │ 📋 FITUR  │     │ 📊 LAPORAN│               │
+│    │ SYSTEM  │      │  UTAMA    │     │  & ADMIN  │              │
+│    └────┬────┘      └─────┬─────┘     └────┬────┘                │
+│         │                 │                 │                      │
+│    ┌────┼────┐       ┌────┼────┐      ┌────┼────┐                │
+│    │    │    │       │    │    │      │    │    │                 │
+│   Login Regis  Face  Clock  Notif   Daily  Export  Dashboard     │
+│   Page  ter   Recog In/Out  Sistem  Report Excel  Admin          │
+│        tion   nition                                                 │
+│                                                                     │
+│  ⏱️ Estimasi: 4 minggu                                              │
+│  📅 Sprint 1: Auth + CRUD (Minggu 1-2)                            │
+│  📅 Sprint 2: Face Recognition + Clock (Minggu 3)                 │
+│  📅 Sprint 3: Laporan + Dashboard (Minggu 4)                      │
+│                                                                     │
+│  💡 Gunakan ChatGPT untuk break down task per sprint!              │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Kategori 6: Break Down Proyek
 
 **Prompt 11 — Pecah Proyek:**
@@ -281,6 +380,52 @@ rate limiting info, example curl commands.
 ---
 
 ## 4. Pengembangan Karir
+
+### 🪜 Career Development Ladder
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              CAREER DEVELOPMENT LADDER — TECH INDUSTRY             │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│                          ┌──────────┐                              │
+│                          │ 🏆 CTO / │                              │
+│                          │ Tech Lead│                              │
+│                          └────┬─────┘                              │
+│                               │ 7-10+ tahun                       │
+│                          ┌────▼─────┐                              │
+│                          │ 👨‍💼 Senior │                              │
+│                          │Developer │                              │
+│                          └────┬─────┘                              │
+│                               │ 4-7 tahun                         │
+│                          ┌────▼─────┐                              │
+│                          │ 💻 Mid   │                              │
+│                          │Developer │                              │
+│                          └────┬─────┘                              │
+│                               │ 2-4 tahun                         │
+│                          ┌────▼─────┐                              │
+│                          │ 🌱 Junior│                              │
+│                          │Developer │                              │
+│                          └────┬─────┘                              │
+│                               │ 0-2 tahun                         │
+│                          ┌────▼─────┐                              │
+│                          │ 🎓 Fresh │                              │
+│                          │ Graduate │                              │
+│                          └──────────┘                              │
+│                                                                     │
+│  🤖 AI UNTUK SETIAP LEVEL:                                         │
+│  ┌────────────┬──────────────────────────────────────────────┐    │
+│  │ Level      │ Gunakan AI Untuk                             │    │
+│  ├────────────┼──────────────────────────────────────────────┤    │
+│  │ Fresh Grad │ Buat CV, portofolio, latihan interview       │    │
+│  │ Junior     │ Debug kode, belajar framework baru           │    │
+│  │ Mid        │ Code review, arsitektur, mentor junior       │    │
+│  │ Senior     │ System design, mentoring, tech leadership    │    │
+│  │ Tech Lead  │ Strategi teknis, evaluasi team, presentasi   │    │
+│  └────────────┴──────────────────────────────────────────────┘    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 8: Salary Negotiation
 

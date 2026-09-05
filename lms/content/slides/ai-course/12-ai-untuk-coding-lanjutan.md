@@ -111,6 +111,50 @@ Tolong bantu saya:
 
 ## 3. Architecture Design
 
+### 🏗️ Architecture Diagram: Frontend → API → Database
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              FULL-STACK ARCHITECTURE OVERVIEW                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────┐      │
+│  │                    👤 USER / CLIENT                     │      │
+│  │              Browser / Mobile App / Desktop             │      │
+│  └───────────────────────┬─────────────────────────────────┘      │
+│                          │ HTTP/HTTPS                              │
+│  ┌───────────────────────▼─────────────────────────────────┐      │
+│  │                  🎨 FRONTEND LAYER                      │      │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │      │
+│  │  │ React /  │  │ Tailwind │  │ State    │              │      │
+│  │  │ Svelte   │  │ CSS      │  │ Manager  │              │      │
+│  │  └──────────┘  └──────────┘  └──────────┘              │      │
+│  └───────────────────────┬─────────────────────────────────┘      │
+│                          │ REST API / GraphQL                     │
+│  ┌───────────────────────▼─────────────────────────────────┐      │
+│  │                  ⚙️ BACKEND / API LAYER                  │      │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │      │
+│  │  │ Routes / │  │ Auth     │  │ Business │              │      │
+│  │  │ Handlers │  │ Middleware│  │ Logic    │              │      │
+│  │  └──────────┘  └──────────┘  └──────────┘              │      │
+│  │  Node.js / Express / FastAPI / Go / Laravel              │      │
+│  └───────────┬───────────────────────┬─────────────────────┘      │
+│              │                       │                             │
+│  ┌───────────▼───────────┐  ┌────────▼───────────────────┐      │
+│  │    🗄️ DATABASE        │  │   📦 EXTERNAL SERVICES      │      │
+│  │  ┌──────────┐         │  │  ┌──────────┐ ┌──────────┐ │      │
+│  │  │PostgreSQL│         │  │  │ Payment  │ │ Email    │ │      │
+│  │  │ / MySQL  │         │  │  │ Gateway  │ │ Service  │ │      │
+│  │  └──────────┘         │  │  └──────────┘ └──────────┘ │      │
+│  │  ┌──────────┐         │  │  ┌──────────┐ ┌──────────┐ │      │
+│  │  │  Redis   │         │  │  │ Cloud    │ │ CDN      │ │      │
+│  │  │ (Cache)  │         │  │  │ Storage  │ │          │ │      │
+│  │  └──────────┘         │  │  └──────────┘ └──────────┘ │      │
+│  └───────────────────────┘  └────────────────────────────┘      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Kategori 2: Arsitektur Aplikasi
 
 **Prompt 3 — Pilih Arsitektur:**
@@ -330,6 +374,39 @@ Sertakan:
 
 ## 6. Testing
 
+### 🧱 Testing Pyramid
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    TESTING PYRAMID                                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│                           /\                                        │
+│                          /  \                                       │
+│                         / E2E\        🔵 E2E TESTS (10%)          │
+│                        / TESTS\       • Selenium, Playwright       │
+│                       /────────\      • Full user journey          │
+│                      /          \     • Slow & expensive           │
+│                     / Integration\    🟡 INTEGRATION TESTS (30%)   │
+│                    /    TESTS    \   • API testing                 │
+│                   /──────────────\  • Database integration         │
+│                  /                \ • Moderate speed                │
+│                 /   UNIT TESTS     \🟢 UNIT TESTS (60%)           │
+│                /                    • Jest, Vitest, Pytest         │
+│               /────────────────────\• Fast & cheap                 │
+│              /                      • Test individual functions    │
+│             /                        • Highest coverage target    │
+│                                                                     │
+│  📊 Rule of Thumb:                                                 │
+│  • 60% Unit Tests — test fungsi satu per satu                     │
+│  • 30% Integration — test komponen bekerja sama                   │
+│  • 10% E2E — test user journey lengkap                            │
+│                                                                     │
+│  🤖 AI membantu menulis test di SEMUA level!                      │
+│  Prompt: "Buatkan unit test untuk fungsi [nama] menggunakan Jest" │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Kategori 5: Automated Testing
 
 **Prompt 9 — Unit Test:**
@@ -450,6 +527,83 @@ Bantu saya optimasi:
 ---
 
 ## 8. Full-Stack Project
+
+### 📂 Full-Stack Project Structure Tree
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              FULL-STACK PROJECT STRUCTURE                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  📁 my-fullstack-app/                                              │
+│  ├── 📁 frontend/              ← React / Svelte / Vue              │
+│  │   ├── 📁 src/                                                │
+│  │   │   ├── 📁 components/      ← Reusable UI components         │
+│  │   │   ├── 📁 pages/           ← Route pages                    │
+│  │   │   ├── 📁 hooks/           ← Custom hooks                   │
+│  │   │   ├── 📁 store/           ← State management               │
+│  │   │   ├── 📁 utils/           ← Helper functions               │
+│  │   │   └── App.tsx             ← Entry point                    │
+│  │   ├── 📁 public/              ← Static assets                  │
+│  │   ├── package.json                                                │
+│  │   └── vite.config.ts                                             │
+│  │                                                                   │
+│  ├── 📁 backend/               ← Express / FastAPI / Laravel      │
+│  │   ├── 📁 src/                                                │
+│  │   │   ├── 📁 routes/          ← API endpoints                  │
+│  │   │   ├── 📁 controllers/     ← Request handlers               │
+│  │   │   ├── 📁 services/        ← Business logic                 │
+│  │   │   ├── 📁 models/          ← Database models                │
+│  │   │   ├── 📁 middleware/       ← Auth, validation, etc.        │
+│  │   │   └── app.ts              ← Server entry point             │
+│  │   ├── 📁 tests/               ← Unit & integration tests       │
+│  │   └── package.json                                                │
+│  │                                                                   │
+│  ├── 📁 database/              ← Migrations & seeds               │
+│  │   ├── 📁 migrations/                                           │
+│  │   └── 📁 seeds/                                               │
+│  │                                                                   │
+│  ├── docker-compose.yml       ← Dev environment                   │
+│  ├── .env.example             ← Environment variables             │
+│  └── README.md                                                  │
+│                                                                     │
+│  💡 Struktur ini = best practice untuk project apapun!            │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 🔄 API Design Flowchart
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              API REQUEST FLOW — ENDPOINT → RESPONSE                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐      │
+│  │ 🌐 Client│──▶│ 🔀 Route │──▶│ 🔐 Auth  │──▶│ ⚙️ Handler│      │
+│  │ Request  │   │ Matching │   │ Middleware│   │ /Controller│     │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘      │
+│                                                       │             │
+│                    ┌──────────────────────────────────┘             │
+│                    ▼                                                │
+│              ┌──────────┐   ┌──────────┐   ┌──────────┐          │
+│              │ 🔧 Valid- │──▶│ 📦 Busi- │──▶│ 🗄️ Data  │          │
+│              │ ation    │   │ ness Log │   │ Access   │          │
+│              └──────────┘   └──────────┘   └──────────┘          │
+│                                                       │             │
+│                    ┌──────────────────────────────────┘             │
+│                    ▼                                                │
+│              ┌──────────┐   ┌──────────┐                          │
+│              │ 📤 Forma-│──▶│ 🌐 Client│                          │
+│              │ t Respose│   │ Response │                          │
+│              └──────────┘   └──────────┘                          │
+│                                                                     │
+│  Response Format:                                                  │
+│  { "status": "success", "data": {...}, "meta": {...} }           │
+│  { "status": "error", "error": { "code": "...", "message": "..." } }│
+│                                                                     │
+│  💡 Setiap request melewati pipeline ini — pahami alurnya!        │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 7: Build Complete App
 

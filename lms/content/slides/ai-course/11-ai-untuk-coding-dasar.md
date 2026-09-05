@@ -42,6 +42,35 @@ Setelah modul ini, kamu akan bisa menggunakan AI sebagai partner belajar coding 
 
 ## 2. Pahami Dasar dengan AI
 
+### 🗺️ Code Learning Path: dari Nol sampai Bisa
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              CODE LEARNING PATH — PEMULA → BISA                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  MINGGU 1-2        MINGGU 3-4        MINGGU 5-6       MINGGU 7-8  │
+│  ┌──────────┐     ┌──────────┐     ┌──────────┐    ┌──────────┐  │
+│  │ 📄 HTML  │────▶│ 🎨 CSS   │────▶│ ⚡ JS    │───▶│ 🚀 FRAME-│  │
+│  │          │     │          │     │          │    │   WORK   │  │
+│  └──────────┘     └──────────┘     └──────────┘    └──────────┘  │
+│       │                │                │                │         │
+│       ▼                ▼                ▼                ▼         │
+│  • Struktur      • Selectors       • Variables        • React     │
+│  • Tags          • Box Model       • Functions        • Vue.js    │
+│  • Forms         • Flexbox         • DOM              • Svelte    │
+│  • Semantics     • Grid            • Events           • Next.js   │
+│  • Responsive    • Animasi         • Fetch API        • Tailwind  │
+│                                                                     │
+│  🛠️ AI Tools: GitHub Copilot (auto-complete), ChatGPT (penjelasan)│
+│  💡 Pro Tips:                                                      │
+│  • Bangun 1 mini-project di akhir setiap minggu                   │
+│  • Jangan skip fondasi — HTML & CSS = pondasi web development     │
+│  • AI bantu percepat, tapi kamu harus MEMAHAMI kodenya!          │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Kategori 1: Belajar Syntax Baru
 
 **Prompt 1 — Hello World di Python:**
@@ -139,6 +168,37 @@ Jawab dengan roadmap yang terstruktur:
 ---
 
 ## 3. Debug Error dengan AI
+
+### 🐛 Debug Workflow: Error → Fix → Done!
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    DEBUG WORKFLOW DENGAN AI                         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐      │
+│  │ 🔴 ERROR │──▶│ 🤖 Copy  │──▶│ 💡 Get   │──▶│ ✅ Test  │      │
+│  │ Terjadi! │   │ to AI    │   │ Fix      │   │ & Done!  │      │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘      │
+│       │              │               │               │              │
+│       ▼              ▼               ▼               ▼              │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐      │
+│  │• Baca    │   │• Paste   │   │• Pahami  │   │• Jalankan │      │
+│  │  error   │   │  kode    │   │  kenapa  │   │  kode     │      │
+│  │  message │   │• Paste   │   │  error   │   │• Cek      │      │
+│  │• Pahami  │   │  error   │   │• Copy    │   │  hasil    │      │
+│  │  apa yang│   │• Jelaskan│   │  fix-nya │   │• Kalau    │      │
+│  │  terjadi │   │  konteks │   │          │   │  masih    │      │
+│  └──────────┘   └──────────┘   └──────────┘   │  error,   │      │
+│                                                 │  ulang!   │      │
+│  🔑 TIPS:                                       └──────────┘      │
+│  • JANGAN langsung copy-paste solusi AI tanpa pahami!            │
+│  • Minta AI menjelaskan step-by-step                             │
+│  • Pahami error-nya dulu, baru lihat solusi AI                   │
+│  • Simpan error yang pernah dihadapi = pengalaman berharga       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 4: Debug Kode
 
@@ -276,6 +336,41 @@ def hitung_luas(panjang: float, lebar: float) -> float:
 ---
 
 ## 5. CRUD App Pertama
+
+### 🔄 CRUD Operations Visual Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              CRUD OPERATIONS — APA DAN BAGAIMANA?                  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │ 📝 C     │  │ 📖 R     │  │ ✏️ U     │  │ 🗑️ D     │          │
+│  │ CREATE   │  │  READ    │  │  UPDATE  │  │  DELETE  │          │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘          │
+│       │              │             │              │                  │
+│       ▼              ▼             ▼              ▼                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │ Tambah   │  │ Lihat    │  │ Ubah     │  │ Hapus    │          │
+│  │ Data     │  │ Semua    │  │ Data     │  │ Data     │          │
+│  │ Baru     │  │ Data     │  │          │  │          │          │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘          │
+│       │              │             │              │                  │
+│       ▼              ▼             ▼              ▼                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │INSERT    │  │SELECT *  │  │UPDATE    │  │DELETE    │          │
+│  │INTO...   │  │FROM...   │  │SET...    │  │FROM...   │          │
+│  │VALUES... │  │WHERE...  │  │WHERE...  │  │WHERE...  │          │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘          │
+│                                                                     │
+│  🐍 Python + CSV:                                                  │
+│  C → writerow()     R → reader() / pd.read_csv()                 │
+│  U → overwite row   D → filter & rewrite                          │
+│                                                                     │
+│  💡 CRUD = fondasi 90% aplikasi! Kuasai ini, kamu bisa bangun     │
+│     hampir semua jenis aplikasi.                                   │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Kategori 6: Membangun CRUD
 

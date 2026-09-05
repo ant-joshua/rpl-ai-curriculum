@@ -29,6 +29,70 @@ Setelah modul ini, kamu akan bisa membuat presentasi profesional menggunakan AI 
 
 ## 2. Outline & Struktur Presentasi
 
+### 🎯 Presentation Structure: Hook → Content → CTA
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              PRESENTATION STRUCTURE — 3 PART FORMULA               │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  🎣 HOOK               📋 CONTENT             📢 CTA              │
+│  (Slide 1-2)           (Slide 3-8)            (Slide 9-10)        │
+│  ══════════            ═══════════            ═══════════         │
+│                                                                     │
+│  ┌──────────┐         ┌──────────┐          ┌──────────┐          │
+│  │ CERITA   │────────▶│ DATA &   │─────────▶│ CALL TO  │          │
+│  │ MENARIK  │         │ SOLUSI   │          │ ACTION   │          │
+│  └──────────┘         └──────────┘          └──────────┘          │
+│       │                    │                     │                  │
+│       ▼                    ▼                     ▼                  │
+│  • Pertanyaan         • Problem              • Summary             │
+│    retoris              statement          • Next steps           │
+│  • Fakta yang         • Solusi/ide          • Contact info        │
+│    mengejutkan        • Data pendukung      • Thank you           │
+│  • Quote/meme         • Studi kasus         • Q&A                 │
+│  • Analogi            • Visual/charts                             │
+│                                                                     │
+│  ⏱️ Durasi Ideal per Bagian:                                       │
+│  Hook: 10-15% waktu │ Content: 70-75% │ CTA: 10-15%              │
+│                                                                     │
+│  💡 "You never get a second chance to make a first impression"    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 📐 Slide Layout Templates
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              TEMPLATE LAYOUT YANG SERING DIGUNAKAN                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1️⃣ TITLE SLIDE          2️⃣ TWO COLUMN          3️⃣ IMAGE + TEXT │
+│  ┌──────────────────┐   ┌────────┬────────┐    ┌──────┬─────────┐│
+│  │                  │   │        │        │    │      │         ││
+│  │    JUDUL         │   │ TEXT   │ IMAGE  │    │IMAGE │  TEXT   ││
+│  │    BESAR         │   │  or   │  or    │    │      │  or     ││
+│  │                  │   │ LIST   │ CHART  │    │      │  LIST   ││
+│  │  Subtitle        │   │        │        │    │      │         ││
+│  │                  │   │        │        │    │      │         ││
+│  └──────────────────┘   └────────┴────────┘    └──────┴─────────┘│
+│                                                                     │
+│  4️⃣ QUOTE SLIDE          5️⃣ ICON GRID           6️⃣ TIMELINE    │
+│  ┌──────────────────┐   ┌────┬────┬────┐    ┌──▼──┬──▼──┬──▼──┐│
+│  │                  │   │ 📌 │ 📌 │ 📌 │    │ ●───│─●───│─●   ││
+│  │   "Quote here"   │   ├────┼────┼────┤    │     │     │     ││
+│  │                  │   │ 📌 │ 📌 │ 📌 │    └──▲──┴──▲──┴──▲──┘│
+│  │   — Author       │   ├────┼────┼────┤    │     │     │     ││
+│  │                  │   │ 📌 │ 📌 │ 📌 │    Langkah  Langkah ││
+│  └──────────────────┘   └────┴────┴────┘      1      2      3 │
+│                                                                     │
+│  💡 Pilih layout yang sesuai dengan jenis konten!                 │
+│     • Data → Chart / Table                                        │
+│     • Cerita → Image + Text                                       │
+│     • Key points → Icon Grid                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Membuat Outline dengan AI
 
 **Prompt 1 — Outline Presentasi Umum:**
@@ -177,6 +241,48 @@ Tone: Inspirasional, realistis, tidak berlebihan
 
 ## 5. Desain & Template
 
+### 🎨 Design Principles: CRAP (Contrast, Repetition, Alignment, Proximity)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              DESIGN PRINCIPLES — CRAP FRAMEWORK                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  🎨 CONTRAST            🔄 REPETITION          ⚖️ ALIGNMENT       │
+│  ════════════           ═════════════          ═══════════        │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐    │
+│  │ Title: BOLD  │      │ ■ Same font  │      │ │ Left  │     │    │
+│  │ subtitle:    │      │   everywhere │      │ │ align │     │    │
+│  │  regular     │      │ ■ Same color │      │ │ text  │     │    │
+│  │ **KEY: bold**│      │   palette    │      │ │ here  │     │    │
+│  └──────────────┘      │ ■ Same style │      └──────────────┘    │
+│                         │   icons      │                          │
+│  ✅ Buat HIERARKI       │ ■ Bullet     │  ✅ Buat jalur MATA      │
+│     dengan ukuran,      │   points     │     yang JELAS           │
+│     warna, tebal        │   konsisten  │     mengalir dari        │
+│                         └──────────────┘     satu ke lainnya      │
+│                                                                     │
+│  🎯 PROXIMITY                                                       │
+│  ════════════                                                       │
+│  ┌──────────────────────────────────────────┐                     │
+│  │ Judul Grup                                │                     │
+│  │ ┌─────┐ ┌─────┐ ┌─────┐                 │                     │
+│  │ │Item1│ │Item2│ │Item3│  ← Dekat        │                     │
+│  │ └─────┘ └─────┘ └─────┘    = Related!   │                     │
+│  │                                           │                     │
+│  │                                            │                     │
+│  │ ┌─────┐ ┌─────┐ ┌─────┐                 │                     │
+│  │ │Item4│ │Item5│ │Item6│  ← Dekat        │                     │
+│  │ └─────┘ └─────┘ └─────┘    = Related!   │                     │
+│  └──────────────────────────────────────────┘                     │
+│                                                                     │
+│  ✅ Kelompokkan elemen yang related!                               │
+│     Jarak = informasi tentang relationship                        │
+│                                                                     │
+│  💡 Terapkan 4 prinsip ini = desain presentasi yang profesional!  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ### Menggunakan Canva AI
 
 **Langkah-langkah Canva AI untuk Presentasi:**
@@ -240,6 +346,39 @@ Gaya: clean, modern, mudah dipahami dalam 10 detik
 ---
 
 ## 7. Pitch Deck
+
+### 🚀 Pitch Deck Flow: 10 Slides
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              PITCH DECK FLOW — 10 SLIDES                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1️⃣         2️⃣         3️⃣         4️⃣         5️⃣               │
+│  ┌────┐    ┌────┐     ┌────┐     ┌────┐     ┌────┐              │
+│  │Cover│───▶│Pro-│────▶│Sol-│────▶│Mar-│────▶│Pro-│              │
+│  │ 🔥 │    │blem│     │usi │     │ket │     │duk │              │
+│  └────┘    └────┘     └────┘     └────┘     └────┘              │
+│    │         │          │          │          │                    │
+│    ▼         ▼          ▼          ▼          ▼                    │
+│  15 detik  1 menit    1 menit    1 menit    2 menit              │
+│                                                                     │
+│  6️⃣         7️⃣         8️⃣         9️⃣         🔟               │
+│  ┌────┐    ┌────┐     ┌────┐     ┌────┐     ┌────┐              │
+│  │Bus-│───▶│Trac-│────▶│Com-│────▶│Team│────▶│ Ask │              │
+│  │iness│   │tion │     │pete│     │ 👥│     │ 💰 │              │
+│  └────┘    └────┘     └────┘     └────┘     └────┘              │
+│    │         │          │          │          │                    │
+│    ▼         ▼          ▼          ▼          ▼                    │
+│  1 menit   1 menit    1 menit   30 detik   30 detik              │
+│                                                                     │
+│  ═══════════════════════════════════════════════════════════════   │
+│  ⏱️ Total Durasi: 10 menit                                        │
+│  🎯 Goal: Buat investor TERSEDIH untuk berikan uang!              │
+│  💡 Practice: Latihan minimal 5 kali sebelum presentasi!          │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Struktur Pitch Deck yang Efektif
 

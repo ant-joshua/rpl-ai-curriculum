@@ -28,7 +28,60 @@ Data Science adalah salah satu bidang yang **paling terdampak** oleh AI. Sebelum
 
 > 💡 **Insight**: ChatGPT Code Interpreter (Advanced Data Analysis) bisa menganalisis file CSV/Excel langsung tanpa coding!
 
+### 🔄 Data Science Workflow
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│              DATA SCIENCE PIPELINE                            │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  📥 COLLECT ──→ 🧹 CLEAN ──→ 📊 ANALYZE ──→ 📈 VISUALIZE    │
+│       │                                            │          │
+│       │            ┌───────────────────┐           │          │
+│       │            │   📝 REPORT        │←──────────┘          │
+│       │            └───────────────────┘                      │
+│       │                    │                                  │
+│       │                    ↓                                  │
+│       │            ┌───────────────────┐                      │
+│       │            │ 🤖 AI ASSISTED?   │                      │
+│       │            │  Ya! 80% faster   │                      │
+│       │            └───────────────────┘                      │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+> ⚡ **Setiap langkah bisa dipermudah dengan AI** — dari mengumpulkan data hingga membuat laporan!
+
 ## 🔧 Tools yang Digunakan
+
+### 🐍 Python Data Stack
+
+```
+┌───────────────────────────────────────────────────────────┐
+│              🐍 PYTHON DATA SCIENCE STACK                 │
+├───────────────────────────────────────────────────────────┤
+│                                                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │  📦 pandas   │  │  🔢 numpy    │  │ 📊 matplotlib│     │
+│  │  Data Frame  │  │  Angka &    │  │  Chart &    │      │
+│  │  Manipulation│  │  Komputasi  │  │  Grafik     │      │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘      │
+│         │                │                │               │
+│         └────────────────┼────────────────┘               │
+│                          │                                │
+│                    ┌─────┴─────┐                          │
+│                    │  🌊 seaborn│                          │
+│                    │  Statistical│                         │
+│                    │  Visualization│                       │
+│                    └─────┬─────┘                          │
+│                          │                                │
+│                    ┌─────┴─────┐                          │
+│                    │ 🤖 scikit-learn│                     │
+│                    │  Machine Learning│                    │
+│                    └───────────┘                          │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
+```
 
 | Tool | Fungsi | Gratis? |
 |---|---|---|
@@ -276,9 +329,37 @@ Tolong jelaskan dalam bahasa sederhana:
 
 ## 📖 Bagian 5: Machine Learning Basics dengan AI
 
+### 🤖 ML Pipeline
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                 MACHINE LEARNING PIPELINE                     │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  📥 DATA ──→ 🔧 FEATURE ──→ 🏋️ TRAIN ──→ 📏 EVALUATE        │
+│     │        ENGINEERING      MODEL        MODEL             │
+│     │            │               │             │             │
+│     ↓            ↓               ↓             ↓             │
+│  ┌──────┐   ┌──────┐       ┌──────┐      ┌──────┐          │
+│  │ CSV/ │   │Scale/│       │Random│      │Acc:  │          │
+│  │ Excel│   │Encode│       │Forest│      │ 92%  │          │
+│  │ Data │   │Select│       │ XGB  │      │  ✅  │          │
+│  └──────┘   └──────┘       └──────┘      └──┬───┘          │
+│                                              │               │
+│                                        ┌─────┴─────┐        │
+│                                        │ 🚀 DEPLOY  │        │
+│                                        │  Prediksi  │        │
+│                                        └───────────┘        │
+│                                                               │
+│  💡 AI bisa membantu di SETIAP langkah pipeline ini!          │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
 ### 5.1 Prediksi dengan AI
 
-**Prompt untuk AI:**
+> 🎯 **AI mempermudah ML** — Anda cukup jelaskan masalah, AI akan buatkan kode pipeline-nya!
+
 ```
 Buatkan kode machine learning sederhana untuk:
 - Target: prediksi apakah pelanggan akan beli lagi (churn prediction)
@@ -336,6 +417,44 @@ print(f"\nFeature Importance:\n{importance.sort_values(ascending=False)}")
 | **Time Series** | Prediksi waktu | Forecast penjualan | "Forecast penjualan 3 bulan ke depan" |
 
 ## 📖 Bagian 6: Dashboard Creation
+
+### 📊 Dashboard Layout Wireframe
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                   📊 DASHBOARD LAYOUT                         │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐                    │
+│  │ 📈 KPI │ │ 📉 KPI │ │ 📊 KPI │ │ 🎯 KPI │                   │
+│  │Total  │ │Growth │ │Target │ │Score  │                    │
+│  │Row 1  │ │Row 2  │ │Row 3  │ │Row 4  │                    │
+│  └───────┘ └───────┘ └───────┘ └───────┘                    │
+│  ───────────────────────────────────────────────────────────  │
+│                                                               │
+│  ┌─────────────────────┐ ┌─────────────────────┐            │
+│  │                     │ │                     │            │
+│  │   📊 BAR CHART      │ │   📈 LINE CHART      │            │
+│  │   Top Products     │ │   Tren Bulanan       │            │
+│  │                     │ │                     │            │
+│  └─────────────────────┘ └─────────────────────┘            │
+│  ───────────────────────────────────────────────────────────  │
+│                                                               │
+│  ┌─────────────────────┐ ┌─────────────────────┐            │
+│  │                     │ │                     │            │
+│  │   🍩 PIE CHART      │ │   🔥 HEATMAP         │            │
+│  │   Kategori         │ │   Korelasi           │            │
+│  │                     │ │                     │            │
+│  └─────────────────────┘ └─────────────────────┘            │
+│                                                               │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │                   📋 RAW DATA TABLE                      │ │
+│  └─────────────────────────────────────────────────────────┘ │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+> 🎨 **Desain dashboard**: KPI cards di atas → Chart utama di tengah → Detail data di bawah
 
 ### 6.1 Dashboard dengan Streamlit
 

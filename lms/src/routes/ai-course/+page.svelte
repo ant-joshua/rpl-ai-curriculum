@@ -97,6 +97,25 @@
 		</section>
 	{/each}
 
+	<!-- Final Project -->
+	<section class="final-project-section">
+		<a href="/ai-course/20-final-project" class="final-project-card">
+			<div class="fp-icon">🏆</div>
+			<div class="fp-content">
+				<h2>Final Project</h2>
+				<p>Demonstrasikan pemahaman AI kamu dengan project nyata. Pilih 1 dari 5 project:</p>
+				<div class="fp-options">
+					<span>🤖 Study Assistant</span>
+					<span>📝 Content Creator</span>
+					<span>📊 Research Report</span>
+					<span>⚡ Automation</span>
+					<span>⚖️ Ethics Case Study</span>
+				</div>
+			</div>
+			<span class="fp-arrow">→</span>
+		</a>
+	</section>
+
 	<!-- Bottom CTA -->
 	<div class="bottom-cta">
 		{#if totalDone === totalModules}
@@ -186,8 +205,31 @@
 	.check-btn:hover { transform: scale(1.2); }
 	.check-btn.done { opacity: 0.7; }
 
+	/* Final Project */
+	.final-project-section { margin: 48px 0 24px; }
+	.final-project-card {
+		display: flex; align-items: center; gap: 20px;
+		background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+		border: 2px solid #2563eb20;
+		border-radius: 16px; padding: 28px;
+		text-decoration: none; color: inherit;
+		transition: border-color 0.2s, box-shadow 0.2s;
+	}
+	.final-project-card:hover { border-color: #2563eb40; box-shadow: 0 4px 20px rgba(37,99,235,0.1); }
+	.fp-icon { font-size: 40px; flex-shrink: 0; }
+	.fp-content { flex: 1; }
+	.fp-content h2 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px; }
+	.fp-content p { font-size: 14px; color: #666; margin: 0 0 12px; }
+	.fp-options { display: flex; flex-wrap: wrap; gap: 8px; }
+	.fp-options span {
+		background: #fff; border: 1px solid #e5e7eb;
+		padding: 4px 10px; border-radius: 100px;
+		font-size: 12px; font-weight: 500; color: #555;
+	}
+	.fp-arrow { font-size: 24px; color: #2563eb; font-weight: 700; }
+
 	/* Bottom CTA */
-	.bottom-cta { text-align: center; margin-top: 48px; }
+	.bottom-cta { text-align: center; margin-top: 32px; }
 	.congrats {
 		background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 		border-radius: 16px; padding: 32px;

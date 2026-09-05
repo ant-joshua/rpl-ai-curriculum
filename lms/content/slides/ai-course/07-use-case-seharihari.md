@@ -22,6 +22,38 @@ Setelah modul ini, kamu akan bisa:
 
 ## 🍳 1. Makan & Masak
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🗂️ 10 Kategori Use Case AI Sehari-hari
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│          🗂️ 10 KATEGORI AI UNTUK KEHIDUPAN SEHARI-HARI        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │ 🍳 1.    │  │ 💰 2.    │  │ 📅 3.    │  │ 📧 4.    │      │
+│  │ Makan &  │  │ Keuangan │  │ Jadwal & │  │ Komuni-  │      │
+│  │ Masak    │  │ & Budget │  │ Perencana│  │ kasi     │      │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘      │
+│                                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │ 💡 5.    │  │ 🪞 6.    │  │ 📚 7.    │  │ 🎮 8.    │      │
+│  │ Brain-   │  │ Self-    │  │ Belajar  │  │ Hiburan  │      │
+│  │ storming │  │ Reflecti │  │ Baru     │  │          │      │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘      │
+│                                                                 │
+│  ┌──────────┐  ┌──────────┐                                    │
+│  │ ✈️ 9.    │  │ 💪 10.   │                                    │
+│  │ Travel   │  │ Health   │                                    │
+│  │ Planning │  │ Tips     │                                    │
+│  └──────────┘  └──────────┘                                    │
+│                                                                 │
+│  📌 Setiap kategori punya 3-5 prompt SIAP PAKAI!               │
+│  📌 Total: 35+ prompt yang bisa langsung kamu gunakan hari ini │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### Prompt 1: Resep dari Bahan yang Ada
 
 ```
@@ -631,6 +663,42 @@ Buatkan toolkit anti-stres praktis:
 
 ## 📋 Tips Menggunakan AI untuk Kehidupan Sehari-hari
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🌅 Diagram: Rutinitas Harian yang Terbantu AI
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│         🌅 RUTINITAS HARIAN DENGAN AI                          │
+│                                                                 │
+│  ☀️ PAGI (06:00-08:00)                                         │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  06:00 │ ⏰ Bangun ─→ 🤖 "Rencana hari ini apa saja?" │   │
+│  │  06:30 │ 🤖 Rekomendasi outfit / cuaca / berita ringkas│   │
+│  │  07:00 │ 📝 Review jadwal & prioritize                  │   │
+│  │  07:30 │ 🏃 Olahraga (AI reminder + motivasi)          │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                          │                                      │
+│                          ▼                                      │
+│  🏢 SIANG (12:00-13:00)                                        │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  12:00 │ 🍽️ Brainstorm menu makan siang                │   │
+│  │  12:30 │ 💡 Review progress harian dengan AI            │   │
+│  │  13:00 │ 📊 Revisi rencana jika ada perubahan          │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                          │                                      │
+│                          ▼                                      │
+│  🌙 MALAM (21:00-22:00)                                        │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  21:00 │ 🪞 Refleksi harian dengan AI                   │   │
+│  │  21:30 │ 📋 Rencana untuk besok                         │   │
+│  │  22:00 │ 🙏 Jurnal gratitude + siap tidur               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  💡 AI bukan menggantikan rutinitasmu — AI MEMPERKAYA!         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### Rutinitas Harian dengan AI
 
 ```
@@ -651,6 +719,52 @@ Buatkan toolkit anti-stres praktis:
 ```
 
 ### Tips Memaksimalkan AI Harian
+
+```
+🧠 ════════════════════════════════════════════════════════════════
+
+### 📋 CHEAT SHEET: AI Tool untuk Setiap Kebutuhan
+
+┌──────────────────────┬─────────────────────┬───────────────────────┐
+│  KEBUTUHAN           │  AI TOOL TERBAIK    │  PROMPT TEMPLATE      │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 🍳 Masak/Cari Resep  │ ChatGPT, Gemini     │ "Saya punya [bahan].  │
+│                      │                     │  Buatkan resep..."    │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 💰 Budget/Keuangan   │ ChatGPT, Claude     │ "Saya punya gaji      │
+│                      │                     │  Rp X. Buatkan..."   │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 📅 Jadwal            │ Gemini, ChatGPT     │ "Buatkan jadwal       │
+│                      │                     │  harian untuk..."     │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 📧 Email Profesional │ Claude, ChatGPT     │ "Tulis email untuk     │
+│                      │                     │  [tujuan]. Nada:..."  │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 💡 Brainstorming     │ GPT-4o, Claude      │ "Beri 10 ide untuk    │
+│                      │                     │  [topik]. Setiap..."  │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 📚 Belajar           │ Claude, ChatGPT     │ "Jelaskan [topik]     │
+│                      │                     │  seperti saya anak.." │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 🎮 Hiburan/Rekomend. │ Gemini, ChatGPT     │ "Rekomendasikan       │
+│                      │                     │  [genre] untuk..."    │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ ✈️ Travel Planning   │ Gemini, ChatGPT     │ "Rencanakan liburan   │
+│                      │                     │  [durasi] ke..."      │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 💪 Health/Olahraga   │ Claude, ChatGPT     │ "Buatkan program      │
+│                      │                     │  olahraga untuk..."   │
+├──────────────────────┼─────────────────────┼───────────────────────┤
+│ 🪞 Self-Reflection   │ Claude, Gemini      │ "Bantu saya refleksi  │
+│                      │                     │  minggu ini..."       │
+└──────────────────────┴─────────────────────┴───────────────────────┘
+
+  💡 Pro Tips:
+  • ChatGPT → Paling serbaguna, ekosistem luas
+  • Claude → Analisis mendalam, writing terbaik
+  • Gemini → Integrasi Google, pencarian real-time
+  • DeepSeek → Gratis & performa tinggi
+```
 
 | Tips | Penjelasan |
 |------|-----------|

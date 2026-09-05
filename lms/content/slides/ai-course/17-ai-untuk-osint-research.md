@@ -79,6 +79,43 @@ yang diterbitkan tahun 2024-2025? Berikan ringkasan masing-masing.
 
 ## 📖 Bagian 2: Fact-Checking Techniques
 
+### 🛡️ SIFT Method Visual
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│              🛡️ SIFT FACT-CHECKING METHOD                     │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌───────────────────────────────────────────────────────┐   │
+│  │  🛑 S — STOP                                           │   │
+│  │     "Apakah klaim ini butuh verifikasi?"               │   │
+│  └───────────────────────────┬───────────────────────────┘   │
+│                              │                               │
+│                              ↓                               │
+│  ┌───────────────────────────────────────────────────────┐   │
+│  │  🔍 I — INVESTIGATE THE SOURCE                        │   │
+│  │     "Siapa penulis/situs ini? Kredibelkah?"            │   │
+│  └───────────────────────────┬───────────────────────────┘   │
+│                              │                               │
+│                              ↓                               │
+│  ┌───────────────────────────────────────────────────────┐   │
+│  │  📚 F — FIND BETTER COVERAGE                          │   │
+│  │     "Apakah sumber lain melaporkan hal yang sama?"     │   │
+│  └───────────────────────────┬───────────────────────────┘   │
+│                              │                               │
+│                              ↓                               │
+│  ┌───────────────────────────────────────────────────────┐   │
+│  │  🔗 T — TRACE CLAIMS TO ORIGINAL                      │   │
+│  │     "Dari mana klaim ini pertama kali muncul?"         │   │
+│  └───────────────────────────────────────────────────────┘   │
+│                                                               │
+│  ✅ VERIFIED  |  ⚠️ UNVERIFIED  |  ❌ FALSE  |  🔄 MISLEADING │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+> 🎯 **SIFT = Stop sebelum share!** Kembangkan kebiasaan ini untuk melawan misinformasi.
+
 ### 2.1 Framework SIFT untuk Fact-Checking
 
 | Langkah | Arti | Contoh Prompt AI |
@@ -125,6 +162,35 @@ Bantu saya verifikasi:
 
 ## 📖 Bagian 3: Source Verification
 
+### 📊 Source Evaluation Matrix
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│              📊 SOURCE EVALUATION MATRIX                      │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│              RELEVANCE                                       │
+│              ↑                                                │
+│   HIGH       │  ⚠️ USE WITH      │  ✅ BEST SOURCE           │
+│              │     CAUTION       │     (Use directly)        │
+│              │  Credible but     │  Credible & relevant      │
+│              │  not directly     │  to your topic            │
+│              │  related          │                           │
+│  ───────────┼───────────────────┼──────────────────────────  │
+│   LOW        │  ❌ AVOID          │  ⚠️ CONTEXT ONLY          │
+│              │     (Don't use)  │     (Background only)     │
+│              │  Not credible     │  Relevant but not         │
+│              │  and not relevant │  from trusted source      │
+│              │                   │                           │
+│              └───────────────────┼──────────────────────────→│
+│                                  LOW              HIGH       │
+│                                  CREDIBILITY                 │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+> 🎯 **Selalu cari sumber di kuadran kanan atas** — kredibel DAN relevan!
+
 ### 3.1 Checklist Verifikasi Sumber
 
 **Prompt untuk AI:**
@@ -158,6 +224,38 @@ Beri skor 1-10 untuk masing-masing kategori.
 ## 📖 Bagian 4: Literature Review dengan AI
 
 ### 4.1 Workflow Literature Review
+
+### 🔬 Research Workflow Overview
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│              🔬 RESEARCH WORKFLOW                              │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ❓ QUESTION ──→ 🔍 SEARCH ──→ ✅ VERIFY ──→ 🧩 SYNTHESIZE    │
+│       │              │             │              │           │
+│       │              │             │              ↓           │
+│       │              │             │         📝 WRITE         │
+│       │              │             │              │           │
+│       │              │             │              ↓           │
+│  Define          Find            Cross-       Organize      │
+│  research        papers &       reference     themes &      │
+│  question        sources        with AI       key findings  │
+│  clearly         w/ Perplexity                                │
+│                                                               │
+│  ┌───────────────────────────────────────────────────────┐   │
+│  │ 💡 AI ASSISTED AT EVERY STEP:                         │   │
+│  │   Q: ChatGPT helps refine question                    │   │
+│  │   S: Perplexity + Google Scholar for discovery        │   │
+│  │   V: AI cross-checks and evaluates sources            │   │
+│  │   T: AI identifies patterns across papers             │   │
+│  │   W: ChatGPT helps structure and draft writing        │   │
+│  └───────────────────────────────────────────────────────┘   │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+> 🔄 **Workflow ini berulang** — seringkali Anda kembali ke pertanyaan awal setelah menggali lebih dalam!
 
 ```
 Langkah Literature Review dengan AI:

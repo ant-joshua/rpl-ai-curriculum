@@ -62,6 +62,52 @@ Agent:
 
 ### Siklus Dasar: Plan → Execute → Verify
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🏗️ Arsitektur AI Agent: Dari User ke Dunia Nyata
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              🏗️ ARSITEKTUR AI AGENT                            │
+│                                                                 │
+│  ┌──────────┐                                                   │
+│  │ 👤 USER  │  "Buatkan website toko online"                   │
+│  └────┬─────┘                                                   │
+│       │  Input: perintah/tugas                                  │
+│       ▼                                                         │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                    🤖 AI AGENT                           │   │
+│  │                                                          │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
+│  │  │ 🧠 LLM   │  │ 💾 MEMORY│  │ 🔧 TOOLS │              │   │
+│  │  │ Brain    │  │          │  │          │              │   │
+│  │  │ (GPT,    │  │ Working  │  │ Terminal │              │   │
+│  │  │  Claude) │  │ Episodic │  │ Browser  │              │   │
+│  │  │          │  │ Semantic │  │ Files    │              │   │
+│  │  │          │  │ Proced.  │  │ API Call │              │   │
+│  │  └────┬─────┘  └────┬─────┘  └────┬─────┘              │   │
+│  │       └──────────────┴──────────────┘                    │   │
+│  │                     │                                    │   │
+│  │              ┌──────▼──────┐                             │   │
+│  │              │ ⚡ EXECUTOR │  Plan → Execute → Verify    │   │
+│  │              └──────┬──────┘                             │   │
+│  └─────────────────────┼────────────────────────────────────┘   │
+│                        │                                        │
+│       ┌────────────────┼────────────────┐                       │
+│       ▼                ▼                ▼                       │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐                  │
+│  │ 🖥️ CODING│    │ 🌐 WEB   │    │ 📁 FILES │                  │
+│  │ Terminal │    │ Browser  │    │ Read/Write│                  │
+│  │ Editor   │    │ Search   │    │ Create    │                  │
+│  └──────────┘    └──────────┘    └──────────┘                  │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              🌍 DUNIA NYATA (Environment)                 │   │
+│  │  Hasil: Website deployed, file dibuat, email terkirim    │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ```
 ┌─────────────────────────────────────────┐
 │            AI AGENT LIFECYCLE            │
@@ -92,6 +138,47 @@ Agent:
 ```
 
 ### Contoh Siklus Agent dalam Praktik
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🔄 Agent Loop: Perceive → Plan → Act → Observe
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              🔄 SIKLUS AGENT: PERCEIVE → PLAN → ACT → OBSERVE │
+│                                                                 │
+│     ┌──────────────┐                                           │
+│     │  📋 PERCEIVE │  Terima input dari user atau environment  │
+│     │  (Amati)     │  "Apa yang perlu saya lakukan?"          │
+│     └──────┬───────┘                                           │
+│            ▼                                                   │
+│     ┌──────────────┐                                           │
+│     │  🧠 PLAN     │  Buat rencana langkah-langkah            │
+│     │  (Rencana)   │  "Bagaimana cara menyelesaikannya?"      │
+│     └──────┬───────┘                                           │
+│            ▼                                                   │
+│     ┌──────────────┐                                           │
+│     │  ⚡ ACT      │  Eksekusi satu langkah menggunakan tools  │
+│     │  (Tindakan)  │  "Sekarang saya akan melakukannya"       │
+│     └──────┬───────┘                                           │
+│            ▼                                                   │
+│     ┌──────────────┐                                           │
+│     │  👁️ OBSERVE  │  Periksa hasil, bandingkan dengan goal   │
+│     │  (Amati      │  "Apakah hasilnya sesuai harapan?"       │
+│     │   Hasil)     │                                           │
+│     └──────┬───────┘                                           │
+│            │                                                   │
+│       ┌────┴─────┐                                             │
+│       ▼          ▼                                             │
+│  ┌──────────┐ ┌──────────┐                                    │
+│  │✅ SELESAI│ │🔄 ULANG  │                                    │
+│  │ Goal     │ │ Perlu    │                                    │
+│  │ tercapai │ │ perbaikan│                                    │
+│  └──────────┘ └──────────┘                                    │
+│                                                                 │
+│  ⚡ SIKLUS INI BERULANG sampai tugas selesai atau ada limit!   │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```python
 # Simulasi siklus agent untuk membuat API endpoint
@@ -270,6 +357,41 @@ Fitur utama:
 ## 🔄 Multi-Agent Systems
 
 ### Apa itu Multi-Agent?
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🕸️ Visual: Multi-Agent System — Tim AI yang Bekerja Sama
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│           🕸️ MULTI-AGENT SYSTEM                                │
+│                                                                 │
+│  ┌──────────┐                                                   │
+│  │ 👤 USER  │  "Bangun website e-commerce lengkap!"            │
+│  └────┬─────┘                                                   │
+│       │                                                         │
+│  ┌────▼─────────────────────────────────────────────────────┐   │
+│  │          🎯 COORDINATOR AGENT                            │   │
+│  │          (Mengatur & mengoordinasi semua agent)          │   │
+│  │                                                          │   │
+│  │    ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  │   │
+│  │    │📋PLAN│  │💻CODE│  │🔍REVIEW│  │🧪TEST│  │🚀DEPLOY│  │   │
+│  │    │Agent │→│ Agent│→│ Agent │→│ Agent│→│Agent │  │   │
+│  │    │      │  │      │  │      │  │      │  │      │  │   │
+│  │    │Merenc│  │Menulis│  │Review │  │Jalankan│  │Push  │  │   │
+│  │    │anakan │  │kode   │  │ kode  │  │ test  │  │ke    │  │   │
+│  │    └──────┘  └──────┘  └──────┘  └──────┘  │Prod  │  │   │
+│  │                                             └──────┘  │   │
+│  │    ─────────────────────────────────────────────────   │   │
+│  │    Hasil dikumpulkan → Ringkasan → User                │   │
+│  └───────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  📌 Perbedaan:                                                 │
+│  • Single Agent: User → 1 Agent → Output                      │
+│  • Multi Agent: User → Coordinator → Banyak Agent → Output    │
+│  • Keunggulan: Lebih cepat, lebih akurat, lebih scalable      │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```
 SINGLE AGENT:

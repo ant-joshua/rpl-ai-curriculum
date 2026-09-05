@@ -22,6 +22,40 @@ Setelah modul ini, kamu akan bisa:
 
 ## 📊 Klasifikasi AI Berdasarkan Moditas Input
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🏗️ Hierarki AI: Dari Luas ke Spesifik
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   🤖 ARTIFICIAL INTELLIGENCE                │
+│              (Kecerdasan Buatan — istilah luas)             │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              🧠 MACHINE LEARNING                      │  │
+│  │      (AI yang belajar dari data tanpa diprogram)      │  │
+│  │  ┌─────────────────────────────────────────────────┐  │  │
+│  │  │          🔬 DEEP LEARNING                       │  │  │
+│  │  │  (Machine Learning dengan jaringan syaraf)      │  │  │
+│  │  │  ┌───────────────────────────────────────────┐  │  │  │
+│  │  │  │     🕸️ NEURAL NETWORKS                    │  │  │  │
+│  │  │  │  (Arsitektur: CNN, RNN, Transformer)      │  │  │  │
+│  │  │  │  ┌─────────────────────────────────────┐  │  │  │  │
+│  │  │  │  │  💡 LARGE LANGUAGE MODELS (LLM)     │  │  │  │  │
+│  │  │  │  │  GPT, Claude, Gemini, DeepSeek      │  │  │  │  │
+│  │  │  │  │  ┌───────────────────────────────┐  │  │  │  │  │
+│  │  │  │  │  │  🤖 AI AGENTS                  │  │  │  │  │  │
+│  │  │  │  │  │  Autonomous + Tools + Memory   │  │  │  │  │  │
+│  │  │  │  │  └───────────────────────────────┘  │  │  │  │  │
+│  │  │  │  └─────────────────────────────────────┘  │  │  │  │
+│  │  │  └───────────────────────────────────────────┘  │  │  │
+│  │  └─────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+
+  📌 Setiap layer adalah SUBSET dari layer di atasnya
+  📌 Transformer = arsitektur di balik hampir semua LLM modern
+```
+
 ### 1. 📝 Text-Based AI (AI Berbasis Teks)
 
 AI yang memproses dan menghasilkan **teks** sebagai input/output utama.
@@ -139,6 +173,41 @@ Use case: Background music untuk belajar
 
 AI yang bisa memproses **lebih dari satu jenis input** secara bersamaan.
 
+🧠 ════════════════════════════════════════════════════════════════
+
+### 📥 Tipe Input AI: Dari Tunggal ke Multimodal
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    📥 TIPE INPUT AI                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  📝 TEKS          🖼️ GAMBAR        🔊 AUDIO                 │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐              │
+│  │ ChatGPT  │    │ DALL-E   │    │ Whisper  │              │
+│  │ Claude   │    │ Midjrn   │    │ Suno     │              │
+│  │ Gemini   │    │ Stable   │    │ ElevenLbs│              │
+│  │ DeepSeek │    │ Diffusion│    │ AudioGen │              │
+│  └────┬─────┘    └────┬─────┘    └────┬─────┘              │
+│       │               │               │                     │
+│       └───────┬───────┴───────┬───────┘                     │
+│               │               │                             │
+│       ┌───────▼───────────────▼───────┐                     │
+│       │     🎭 MULTIMODAL AI          │                     │
+│       │  Teks + Gambar + Audio +      │                     │
+│       │  Video + Kode — SEMUANYA!     │                     │
+│       │                               │                     │
+│       │  GPT-4o  → Teks+Gambar+Audio  │                     │
+│       │  Gemini  → Semua (termasuk     │                     │
+│       │            video!)              │                     │
+│       │  Claude  → Teks+Gambar         │                     │
+│       └───────────────────────────────┘                     │
+│                                                             │
+│  📌 Multimodal = AI yang bisa "melihat + mendengar +        │
+│     membaca" sekaligus — seperti manusia!                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
 **Kemampuan multimodal:**
 - Teks + Gambar → Analisis visual
 - Teks + Audio → Pemahaman percakapan
@@ -208,6 +277,33 @@ INI yang membuat multimodal AI sangat powerful!
 ---
 
 ## 📊 Klasifikasi Berdasarkan Metode Pelatihan
+
+🧠 ════════════════════════════════════════════════════════════════
+
+### 🔄 Alur Training AI: Dari Data mentah hingga AI Terpakai
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  ⚙️ PROSES TRAINING AI                         │
+│                                                                 │
+│  📂 DATA     🏷️ LABEL    ⚙️ TRAIN     📊 EVALUATE  🚀 DEPLOY  │
+│  ┌──────┐   ┌──────┐   ┌──────┐    ┌──────┐    ┌──────┐     │
+│  │Kumpul│──→│Beri  │──→│Latih │───→│Uji & │───→│Siap  │     │
+│  │Data  │   │Label │   │Model │    │Review│    │Pakai │     │
+│  │Mentah│   │& Cek │   │      │    │      │    │      │     │
+│  └──────┘   └──────┘   └──────┘    └──────┘    └──────┘     │
+│     │           │           │            │           │         │
+│     ▼           ▼           ▼            ▼           ▼         │
+│  📋 Gather   ✏️ Annotate  🔄 Iterate   ✅ Pass?   🌍 Prod    │
+│  🌐 Scrape   👁️ Verify   📉 Loss ↓    ❌ Fix!   📈 Monitor  │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  ⏱️ Timeline: Minggu → Bulan → Tahun                      │  │
+│  │  💰 Biaya: $10K → $100M+ tergantung model               │  │
+│  │  👥 Tim: Data Engineers + ML Engineers + Reviewers        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### 1. 🏷️ Supervised Learning (Terbimbing)
 
