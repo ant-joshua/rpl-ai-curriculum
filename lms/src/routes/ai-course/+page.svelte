@@ -159,7 +159,7 @@
 	.progress-section { max-width: 480px; margin: 0 auto; }
 	.progress-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
 	.progress-bar { height: 8px; background: var(--border); border-radius: 100px; overflow: hidden; }
-	.progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), var(--success)); border-radius: 100px; transition: width 0.4s ease; }
+	.progress-fill { height: 100%; background: var(--success); border-radius: 100px; transition: width 0.4s ease; }
 
 	/* Level Section */
 	.level-section { margin-bottom: 40px; }
@@ -209,7 +209,7 @@
 	.final-project-section { margin: 48px 0 24px; }
 	.final-project-card {
 		display: flex; align-items: center; gap: 20px;
-		background: linear-gradient(135deg, var(--accent-light), var(--success-light));
+		background: var(--surface-alt);
 		border: 2px solid var(--accent)20;
 		border-radius: 16px; padding: 28px;
 		text-decoration: none; color: inherit;
@@ -232,7 +232,7 @@
 	/* Bottom CTA */
 	.bottom-cta { text-align: center; margin-top: 32px; }
 	.congrats {
-		background: linear-gradient(135deg, var(--success-light), #dcfce7);
+		background: var(--success-light);
 		border-radius: 16px; padding: 32px;
 	}
 	.congrats h2 { font-size: 24px; margin: 0 0 8px; }

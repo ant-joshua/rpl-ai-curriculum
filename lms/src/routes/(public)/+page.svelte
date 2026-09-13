@@ -220,7 +220,7 @@
 
 	<div class="course-grid">
 		<a href="/catalog" class="course-card">
-			<div class="course-thumb" style="background:linear-gradient(135deg,#4F46E5,#818CF8)">
+			<div class="course-thumb" style="background:var(--accent)">
 				<span class="course-level">Beginner</span>
 				<span class="course-icon">🌐</span>
 			</div>
@@ -236,7 +236,7 @@
 		</a>
 
 		<a href="/catalog" class="course-card">
-			<div class="course-thumb" style="background:linear-gradient(135deg,#16A34A,#4ADE80)">
+			<div class="course-thumb" style="background:var(--success)">
 				<span class="course-level">Beginner</span>
 				<span class="course-icon">🤖</span>
 			</div>
@@ -252,7 +252,7 @@
 		</a>
 
 		<a href="/catalog" class="course-card">
-			<div class="course-thumb" style="background:linear-gradient(135deg,#EA580C,#FBBF24)">
+			<div class="course-thumb" style="background:var(--warning)">
 				<span class="course-level">Intermediate</span>
 				<span class="course-icon">⚡</span>
 			</div>
@@ -268,7 +268,7 @@
 		</a>
 
 		<a href="/catalog" class="course-card">
-			<div class="course-thumb" style="background:linear-gradient(135deg,#7C3AED,#C084FC)">
+			<div class="course-thumb" style="background:#6B21A8">
 				<span class="course-level">Advanced</span>
 				<span class="course-icon">🧠</span>
 			</div>
@@ -482,15 +482,15 @@
 		position: relative;
 		padding: 72px 0 88px;
 		overflow: hidden;
-		background: linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 55%, #F4F7FA 100%);
+		background: var(--bg);
 	}
 
 	.hero-mesh {
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(600px 300px at 85% 10%, rgba(99, 102, 241, 0.12), transparent 70%),
-			radial-gradient(500px 250px at 10% 90%, rgba(16, 185, 129, 0.08), transparent 70%);
+			
+			none;
 		pointer-events: none;
 	}
 
@@ -586,7 +586,7 @@
 	}
 
 	.hero-title .grad {
-		background: linear-gradient(90deg, #4F46E5, #7C3AED, #2563EB);
+		background: var(--accent);
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -611,7 +611,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: linear-gradient(135deg, #4F46E5, #4338CA);
+		background: var(--accent);
 		color: #fff;
 		font-weight: 700;
 		font-size: 16px;
@@ -743,7 +743,7 @@
 	.mock-logo {
 		width: 26px; height: 26px;
 		border-radius: 8px;
-		background: linear-gradient(135deg, #4F46E5, #818CF8);
+		background: var(--accent);
 		margin-bottom: 8px;
 	}
 
@@ -796,9 +796,9 @@
 		margin-bottom: 8px;
 	}
 
-	.mock-thumb.t1 { background: linear-gradient(135deg, #4F46E5, #818CF8); }
-	.mock-thumb.t2 { background: linear-gradient(135deg, #16A34A, #4ADE80); }
-	.mock-thumb.t3 { background: linear-gradient(135deg, #EA580C, #FBBF24); }
+	.mock-thumb.t1 { background: var(--accent); }
+	.mock-thumb.t2 { background: var(--success); }
+	.mock-thumb.t3 { background: var(--warning); }
 
 	.mock-line {
 		height: 6px;
@@ -826,7 +826,7 @@
 		display: block;
 		height: 100%;
 		border-radius: 3px;
-		background: linear-gradient(90deg, #4F46E5, #818CF8);
+		background: var(--accent);
 	}
 
 	/* Floating cards */
@@ -1192,7 +1192,7 @@
 	.why-icon {
 		width: 60px; height: 60px;
 		border-radius: 16px;
-		background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+		background: var(--surface-alt);
 		color: #4F46E5;
 		display: flex;
 		align-items: center;
@@ -1282,7 +1282,7 @@
 	}
 
 	.cta-card {
-		background: linear-gradient(135deg, #4F46E5, #7C3AED);
+		background: var(--accent);
 		border-radius: 20px;
 		padding: 52px 40px;
 		text-align: center;
