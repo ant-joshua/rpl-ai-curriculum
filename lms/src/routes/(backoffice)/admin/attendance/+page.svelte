@@ -237,10 +237,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 				<a href="/admin/attendance/sessions" class="btn-link">{t('admin.lihat_semua')}</a>
 			</div>
 			{#if (stats?.recent_sessions ?? []).length === 0}
-				<div class="empty-state">
-					<Icon name="calendar" size={40} />
-					<p>{t('admin.belum_ada_sesi')}</p>
-				</div>
+				<EmptyState icon="📅" title="Belum ada sesi presensi" description="Buat sesi presensi baru untuk mulai mencatat kehadiran siswa." />
 			{:else}
 				<DataTable columns={sessionColumns} data={stats?.recent_sessions ?? []} pageSize={20} showSearch={false} showPagination={false} emptyMessage="Belum ada sesi presensi" emptyIcon="📅" />
 			{/if}
@@ -270,7 +267,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	}
 	.btn-primary:hover { background: var(--accent-hover); }
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state, .error-state {
 		display: flex; flex-direction: column; align-items: center; justify-content: center;
 		padding: 60px 20px; text-align: center; gap: 12px; color: var(--text-secondary);
 	}

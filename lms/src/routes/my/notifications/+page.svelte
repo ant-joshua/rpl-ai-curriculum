@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
+	import EmptyState from '$lib/components/ui/EmptyState.svelte';
 
 	const TYPE_LABELS: Record<string, string> = {
 		assessment: 'Penilaian',
@@ -225,12 +226,7 @@
 		<div class="loading">Memuat notifikasi...</div>
 	<!-- Empty -->
 	{:else if notifications.length === 0}
-		<div class="empty-state">
-			<p>Tidak ada notifikasi</p>
-			{#if typeFilter}
-				<button class="btn-outline" onclick={() => { typeFilter = ''; loadNotifications(); }}>Tampilkan Semua</button>
-			{/if}
-		</div>
+		<EmptyState icon="🔔" title="Belum ada notifikasi" description="Notifikasi baru akan muncul di sini." />
 	<!-- List -->
 	{:else}
 		<div class="notif-list">
@@ -317,8 +313,7 @@
 	.error-state { text-align: center; padding: 40px; }
 	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
-	.empty-state { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
-	.empty-state p { margin-bottom: 16px; font-size: 15px; }
+
 
 	/* Notification list */
 	.notif-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }

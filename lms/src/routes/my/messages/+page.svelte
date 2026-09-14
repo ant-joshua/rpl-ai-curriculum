@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import EmptyState from '$lib/components/ui/EmptyState.svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
@@ -105,10 +106,11 @@
 	{#if loading}
 		<div class="loading">Memuat...</div>
 	{:else if conversations.length === 0}
-		<div class="empty">
-			<p>Belum ada percakapan.</p>
-			<p class="hint">Klik "+ Pesan Baru" untuk mulai chat dengan guru atau teman.</p>
-		</div>
+		<EmptyState
+			icon="💬"
+			title="Belum ada percakapan"
+			description="Klik '+ Pesan Baru' untuk mulai chat dengan guru atau teman."
+		/>
 	{:else}
 		<div class="conv-list">
 			{#each conversations as c (c.partner_id)}
@@ -147,8 +149,7 @@
 	.search-name { font-size: 14px; font-weight: 500; color: var(--text); display: block; }
 	.search-role { font-size: 11px; color: var(--text-secondary); }
 	.search-empty { padding: 12px; text-align: center; color: var(--text-secondary); font-size: 13px; }
-	.loading, .empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
-	.empty .hint { font-size: 13px; margin-top: 6px; }
+	.loading { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
 	.conv-list { display: flex; flex-direction: column; gap: 8px; }
 	.conv-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; }
 	.conv-item:hover { border-color: var(--accent); }
