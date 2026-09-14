@@ -262,7 +262,7 @@
 	}
 	.today-date {
 		font-size: 13px;
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		margin: 4px 0 0;
 	}
 
@@ -274,7 +274,7 @@
 	}
 	.stat-card {
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #e5e7eb);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 8px;
 		padding: 20px;
 		display: flex;
@@ -292,18 +292,18 @@
 	.stat-value {
 		font-size: 22px;
 		font-weight: 600;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		line-height: 1.2;
 	}
 	.stat-label {
 		font-size: 12px;
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		margin-top: 2px;
 	}
 
 	.section {
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #e5e7eb);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 8px;
 		padding: 20px;
 		margin-bottom: 16px;
@@ -311,12 +311,12 @@
 	.section-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		margin: 0 0 14px;
 	}
 
 	.empty-text {
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		font-size: 13px;
 		margin: 0;
 	}
@@ -332,14 +332,14 @@
 		align-items: center;
 		gap: 12px;
 		padding: 10px 12px;
-		border: 1px solid var(--border, #e5e7eb);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 6px;
 		text-decoration: none !important;
 		color: inherit;
 		transition: background 0.15s;
 	}
 	.course-row:hover {
-		background: var(--bg, #f8fafc);
+		background: var(--bg, var(--bg));
 	}
 	.course-icon {
 		font-size: 20px;
@@ -353,7 +353,7 @@
 		display: block;
 		font-size: 13.5px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -361,7 +361,7 @@
 	.course-meta {
 		display: block;
 		font-size: 12px;
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		margin-top: 1px;
 	}
 	.progress-wrap {
@@ -374,20 +374,20 @@
 	.progress-bar {
 		flex: 1;
 		height: 6px;
-		background: var(--border, #e5e7eb);
+		background: var(--border, var(--border));
 		border-radius: 3px;
 		overflow: hidden;
 	}
 	.progress-fill {
 		height: 100%;
-		background: var(--accent, #4F46E5);
+		background: var(--accent, var(--accent));
 		border-radius: 3px;
 		transition: width 0.3s ease;
 	}
 	.progress-pct {
 		font-size: 12px;
 		font-weight: 500;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		min-width: 32px;
 		text-align: right;
 	}
@@ -410,7 +410,7 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		padding: 8px 0;
-		border-bottom: 1px solid var(--border, #e5e7eb);
+		border-bottom: 1px solid var(--border, var(--border));
 		gap: 12px;
 	}
 	.deadline-row:last-child { border-bottom: none; }
@@ -419,7 +419,7 @@
 		display: block;
 		font-size: 13px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -427,7 +427,7 @@
 	.deadline-course {
 		display: block;
 		font-size: 11.5px;
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		margin-top: 1px;
 	}
 	.deadline-right {
@@ -438,13 +438,13 @@
 		display: block;
 		font-size: 10.5px;
 		font-weight: 500;
-		color: var(--accent, #4F46E5);
+		color: var(--accent, var(--accent));
 		text-transform: capitalize;
 	}
 	.deadline-date {
 		display: block;
 		font-size: 12px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		margin-top: 1px;
 	}
 
@@ -459,7 +459,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 8px 0;
-		border-bottom: 1px solid var(--border, #e5e7eb);
+		border-bottom: 1px solid var(--border, var(--border));
 		gap: 12px;
 	}
 	.grade-row:last-child { border-bottom: none; }
@@ -468,7 +468,7 @@
 		display: block;
 		font-size: 13px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -476,13 +476,13 @@
 	.grade-course {
 		display: block;
 		font-size: 11.5px;
-		color: var(--text-muted, #94a3b8);
+		color: var(--text-muted, var(--text-muted));
 		margin-top: 1px;
 	}
 	.grade-score {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--success, #16a34a);
+		color: var(--success, var(--success));
 		flex-shrink: 0;
 	}
 
@@ -499,16 +499,16 @@
 		gap: 6px;
 		padding: 12px 16px;
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #e5e7eb);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 8px;
 		font-size: 13.5px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		text-decoration: none !important;
 		transition: background 0.15s;
 	}
 	.action-btn:hover {
-		background: var(--bg, #f8fafc);
+		background: var(--bg, var(--bg));
 	}
 
 	/* Responsive */

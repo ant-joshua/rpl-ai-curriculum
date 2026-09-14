@@ -486,17 +486,17 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-small { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 11px; cursor: pointer; }
 	.btn-small:hover { background: var(--surface-hover); }
-	.btn-danger { color: #ef4444; border-color: rgba(239,68,68,0.3); }
+	.btn-danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
 	.btn-text { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; }
 	.btn-text:hover { text-decoration: underline; }
 	.btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; line-height: 1; }
 	.btn-icon:disabled { opacity: 0.3; cursor: not-allowed; }
-	.btn-icon-danger:hover { border-color: #ef4444; }
+	.btn-icon-danger:hover { border-color: var(--danger); }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
 
@@ -586,14 +586,14 @@
 	.q-text { font-size: 13px; font-weight: 500; }
 	.q-type-badge {
 		padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;
-		background: rgba(98,102,109,0.15); color: #64748b; text-transform: uppercase;
+		background: rgba(98,102,109,0.15); color: var(--text-secondary); text-transform: uppercase;
 	}
-	.q-required { color: #ef4444; font-weight: 700; }
+	.q-required { color: var(--danger); font-weight: 700; }
 	.q-actions { display: flex; gap: 4px; }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 20px; margin-bottom: 16px; }
-	.error-msg { color: #ef4444; margin-bottom: 8px; font-size: 13px; }
+	.error-msg { color: var(--danger); margin-bottom: 8px; font-size: 13px; }
 	.empty-state { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.empty-state.small { padding: 20px; }
 	.empty-state p { margin-bottom: 12px; }

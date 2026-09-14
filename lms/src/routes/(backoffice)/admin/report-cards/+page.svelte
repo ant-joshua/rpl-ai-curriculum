@@ -222,7 +222,7 @@
 	}
 	.progress-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #4F46E5, #4F46E5);
+		background: var(--accent);
 		border-radius: 3px;
 		transition: width 0.3s ease;
 	}

@@ -597,7 +597,7 @@
 
 	.back-link:hover {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.profile-main {
@@ -630,7 +630,7 @@
 
 	.edit-avatar-btn:hover:not(:disabled) {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.edit-avatar-btn:disabled {
@@ -847,7 +847,7 @@
 		border: 1px solid rgba(34, 197, 94, 0.2);
 		border-radius: 10px;
 		font-size: 14px;
-		color: #16a34a;
+		color: var(--success);
 		font-weight: 500;
 	}
 
@@ -923,7 +923,7 @@
 
 	.fa-copy-btn:hover {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.fa-verify-row {
@@ -950,12 +950,12 @@
 
 	.fa-code-input:focus {
 		border-color: var(--accent);
-		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+		box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
 	}
 
 	.fa-error {
 		font-size: 13px;
-		color: #ef4444;
+		color: var(--danger);
 		margin: 4px 0 0;
 	}
 
@@ -967,7 +967,7 @@
 	.fa-success-text {
 		font-size: 16px;
 		font-weight: 600;
-		color: #22c55e;
+		color: var(--success);
 	}
 
 	.fa-active {
@@ -979,7 +979,7 @@
 	.fa-active-badge {
 		font-size: 15px;
 		font-weight: 600;
-		color: #22c55e;
+		color: var(--success);
 		margin: 0;
 	}
 
@@ -1017,7 +1017,7 @@
 
 	.fa-password-input:focus {
 		border-color: var(--accent);
-		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+		box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
 	}
 
 	/* Recovery Codes */
@@ -1033,7 +1033,7 @@
 
 	.fa-recovery-warning {
 		font-size: 12px;
-		color: #ef4444;
+		color: var(--danger);
 		margin: 0;
 		font-weight: 500;
 	}

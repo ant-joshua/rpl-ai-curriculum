@@ -7,9 +7,9 @@
   let { data } = $props();
 
   function getLevelColor(level: string): string {
-    if (level.includes('Beginner')) return 'var(--success, #22c55e)';
-    if (level.includes('Intermediate')) return 'var(--accent, #f59e0b)';
-    return '#ef4444';
+    if (level.includes('Beginner')) return 'var(--success, var(--success))';
+    if (level.includes('Intermediate')) return 'var(--accent, var(--warning))';
+    return 'var(--danger)';
   }
 </script>
 

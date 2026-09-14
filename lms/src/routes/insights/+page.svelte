@@ -283,9 +283,9 @@
     padding: 20px 0;
   }
   .error-card {
-    color: #ef4444;
+    color: var(--danger);
     background: var(--surface);
-    border: 1px solid #ef4444;
+    border: 1px solid var(--danger);
     border-radius: 10px;
   }
 
@@ -337,7 +337,7 @@
   .bar-fill {
     width: 100%;
     max-width: 16px;
-    background: linear-gradient(180deg, var(--accent), var(--accent-secondary));
+    background: var(--accent);
     border-radius: 3px 3px 0 0;
     min-height: 2px;
     transition: height 0.3s ease;
@@ -375,7 +375,7 @@
   .weak-pct {
     font-size: 12px;
     font-weight: 600;
-    color: #f59e0b;
+    color: var(--warning);
   }
   .weak-hint {
     font-size: 11px;
@@ -407,7 +407,7 @@
   }
   .pred-btn {
     background: var(--accent);
-    color: #fff;
+    color: white;
     border: none;
     padding: 4px 14px;
     border-radius: 6px;

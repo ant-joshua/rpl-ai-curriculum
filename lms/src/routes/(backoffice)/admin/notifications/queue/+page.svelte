@@ -56,14 +56,14 @@
 
 	function statusBadgeHtml(s: string): string {
 		const colors: Record<string, { bg: string; color: string }> = {
-			sent: { bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
-			delivered: { bg: 'rgba(16,185,129,0.1)', color: '#10b981' },
-			failed: { bg: 'rgba(239,68,68,0.1)', color: '#ef4444' },
-			pending: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
-			queued: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
-			processing: { bg: 'rgba(59,130,246,0.1)', color: '#3b82f6' },
+			sent: { bg: 'rgba(59,130,246,0.1)', color: 'var(--accent)' },
+			delivered: { bg: 'rgba(16,185,129,0.1)', color: 'var(--success)' },
+			failed: { bg: 'rgba(239,68,68,0.1)', color: 'var(--danger)' },
+			pending: { bg: 'rgba(245,158,11,0.1)', color: 'var(--warning)' },
+			queued: { bg: 'rgba(245,158,11,0.1)', color: 'var(--warning)' },
+			processing: { bg: 'rgba(59,130,246,0.1)', color: 'var(--accent)' },
 		};
-		const c = colors[s] || { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' };
+		const c = colors[s] || { bg: 'rgba(245,158,11,0.1)', color: 'var(--warning)' };
 		return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;background:${c.bg};color:${c.color}">${s}</span>`;
 	}
 
@@ -86,7 +86,7 @@
 			accessorKey: 'channel',
 			cell: ({ getValue }) => {
 				const ch = getValue() as string;
-				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;background:rgba(98,102,109,0.15);color:#64748b">${ch}</span>`;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;background:rgba(98,102,109,0.15);color:var(--text-secondary)">${ch}</span>`;
 			}
 		},
 		{
@@ -205,7 +205,7 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-outline { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
 	.btn-outline:hover:not(:disabled) { background: var(--hover); }
@@ -222,7 +222,7 @@
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 20px; }
-	.error-msg { color: #ef4444; margin-bottom: 8px; }
+	.error-msg { color: var(--danger); margin-bottom: 8px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 

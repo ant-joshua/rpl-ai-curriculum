@@ -318,12 +318,12 @@
 		font-size: 13px;
 		font-weight: 500;
 		background: var(--accent-dim, rgba(59, 130, 246, 0.1));
-		color: var(--accent, #3b82f6);
+		color: var(--accent, var(--accent));
 		border: 1px solid var(--accent-dim, rgba(59, 130, 246, 0.2));
 	}
 	.save-bar--error {
 		background: rgba(239, 68, 68, 0.1);
-		color: var(--danger, #ef4444);
+		color: var(--danger, var(--danger));
 		border-color: rgba(239, 68, 68, 0.2);
 	}
 	.save-error-detail {
@@ -363,14 +363,14 @@
 		border-style: dashed;
 	}
 	.lesson-drag-item.drag-over {
-		border-color: var(--accent, #3b82f6);
+		border-color: var(--accent, var(--accent));
 		background: var(--accent-dim, rgba(59, 130, 246, 0.06));
 		box-shadow: 0 0 0 2px var(--accent-dim, rgba(59, 130, 246, 0.2));
 	}
 
 	.drag-handle {
 		flex-shrink: 0;
-		color: var(--text-tertiary, #9ca3af);
+		color: var(--text-tertiary, var(--text-muted));
 		font-size: 18px;
 		line-height: 1;
 		padding: 2px;
@@ -412,7 +412,7 @@
 	}
 	.meta-duration {
 		font-size: 12px;
-		color: var(--text-tertiary, #9ca3af);
+		color: var(--text-tertiary, var(--text-muted));
 	}
 
 	.lesson-move-btns {

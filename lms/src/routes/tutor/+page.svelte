@@ -377,7 +377,7 @@
   }
   .message.user .msg-avatar {
     background: var(--accent);
-    color: #fff;
+    color: white;
   }
 
   .msg-content {
@@ -403,7 +403,7 @@
   }
   .message.user .msg-bubble {
     background: var(--accent);
-    color: #fff;
+    color: white;
     border-bottom-right-radius: 4px;
   }
   .message.assistant .msg-bubble {
@@ -597,7 +597,7 @@
     border-radius: 12px;
     border: none;
     background: var(--accent);
-    color: #fff;
+    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -624,7 +624,7 @@
     border-radius: 12px;
     border: none;
     background: var(--danger);
-    color: #fff;
+    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;

@@ -673,7 +673,7 @@
     margin-bottom: 2px;
     font-feature-settings: 'cv01', 'ss03';
     letter-spacing: -0.288px;
-    color: #1a1a2e;
+    color: var(--text);
   }
 
   .subtitle {
@@ -706,7 +706,7 @@
   }
   .tab.active {
     background: var(--accent);
-    color: #fff;
+    color: white;
   }
   .tab:hover:not(.active) {
     background: var(--hover);
@@ -792,7 +792,7 @@
   }
   .time-btn:hover {
     background: var(--accent);
-    color: #fff;
+    color: white;
   }
   .manual-log {
     display: flex;
@@ -897,10 +897,10 @@
     align-items: center;
     justify-content: space-between;
     font-size: 13px;
-    color: var(--danger, #ef4444);
+    color: var(--danger, var(--danger));
   }
 
-  .error-dismiss { background: none; border: none; color: var(--danger, #ef4444); cursor: pointer; font-size: 16px; }
+  .error-dismiss { background: none; border: none; color: var(--danger, var(--danger)); cursor: pointer; font-size: 16px; }
 
   .loading-state {
     display: flex;
@@ -937,7 +937,7 @@
     border-radius: 8px; cursor: pointer; font-family: inherit;
     transition: all 0.15s ease;
   }
-  .toggle-btn:hover { background: var(--accent); color: #fff; }
+  .toggle-btn:hover { background: var(--accent); color: white; }
 
   /* Overview cards */
   .overview-section { margin-bottom: 16px; }

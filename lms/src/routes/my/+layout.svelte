@@ -325,8 +325,8 @@
 	}
 
 	.nav-badge {
-		background: var(--accent, #4F46E5);
-		color: #fff;
+		background: var(--accent, var(--accent));
+		color: white;
 		font-size: 10px;
 		font-weight: 700;
 		min-width: 18px;
@@ -389,8 +389,8 @@
 		line-height: 1;
 	}
 	.search-toggle-btn:hover {
-		background: rgba(79,70,229,0.06);
-		border-color: rgba(79,70,229,0.15);
+		background: rgba(var(--accent-rgb), 0.06);
+		border-color: rgba(var(--accent-rgb), 0.15);
 	}
 
 	/* Responsive */
@@ -406,7 +406,7 @@
 			height: calc(100vh - 64px);
 			transform: translateX(-100%);
 			z-index: 60;
-			box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+			box-shadow: none;
 		}
 
 		.sidebar.open {

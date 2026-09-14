@@ -345,12 +345,12 @@
 
 	.badge-success {
 		background: rgba(34, 197, 94, 0.15);
-		color: #22c55e;
+		color: var(--success);
 	}
 
 	.badge-warning {
 		background: rgba(234, 179, 8, 0.15);
-		color: #eab308;
+		color: var(--warning);
 	}
 
 	.invoice-amount {
@@ -446,7 +446,7 @@
 
 	.btn-primary {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.btn-primary:hover:not(:disabled) {

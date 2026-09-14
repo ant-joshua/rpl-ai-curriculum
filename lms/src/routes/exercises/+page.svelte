@@ -67,9 +67,9 @@
 	});
 
 	const difficultyColors: Record<string, string> = {
-		Beginner: 'var(--difficulty-beginner, #10b981)',
-		Intermediate: 'var(--difficulty-intermediate, #f59e0b)',
-		Advanced: 'var(--difficulty-advanced, #ef4444)',
+		Beginner: 'var(--difficulty-beginner, var(--success))',
+		Intermediate: 'var(--difficulty-intermediate, var(--warning))',
+		Advanced: 'var(--difficulty-advanced, var(--danger))',
 	};
 
 	const typeLabels: Record<string, string> = {

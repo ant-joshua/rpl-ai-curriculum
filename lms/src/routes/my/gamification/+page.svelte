@@ -173,7 +173,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				}
 				html += `<span style="font-weight:600">${e.displayName || e.userId?.slice(0, 8)}</span>`;
 				if (e.isCurrentUser) {
-					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">Anda</span>`;
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:var(--accent)">Anda</span>`;
 				}
 				html += '</div>';
 				return html;
@@ -394,13 +394,13 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.boost-banner {
 		display: flex; align-items: center; gap: 12px;
 		margin-bottom: 14px; padding: 12px 16px;
-		background: linear-gradient(135deg, #fef3c7, #fde68a);
-		border: 1px solid #fcd34d; border-radius: 12px;
+		background: var(--warning-light);
+		border: 1px solid var(--warning); border-radius: 12px;
 	}
 	.boost-banner-icon { font-size: 22px; }
 	.boost-banner-text { display: flex; flex-direction: column; gap: 2px; }
-	.boost-banner-text strong { font-size: 14px; color: #92400e; }
-	.boost-banner-text span { font-size: 12px; color: #b45309; }
+	.boost-banner-text strong { font-size: 14px; color: var(--warning); }
+	.boost-banner-text span { font-size: 12px; color: var(--warning); }
 	.activity-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 	.lb-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 	.lb-header h2 { margin: 0; }
@@ -426,7 +426,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		align-items: center;
 		gap: 14px;
 		padding: 14px 18px;
-		background: linear-gradient(135deg, rgba(79,70,229,0.15), rgba(113,112,255,0.1));
+		background: rgba(var(--accent-rgb), 0.12);
 		border: 1px solid rgba(79,70,229,0.3);
 		border-radius: 12px;
 		margin-bottom: 16px;
@@ -528,7 +528,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	}
 	.badge-card.earned {
 		border-color: var(--accent);
-		background: rgba(79,70,229,0.06);
+		background: rgba(var(--accent-rgb), 0.06);
 	}
 	.badge-card.locked {
 		opacity: 0.6;

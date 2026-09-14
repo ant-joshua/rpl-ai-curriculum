@@ -202,7 +202,7 @@
 	.result-text { font-size: 13px; margin: 2px 0; }
 	.result-text code { font-size: 11px; background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 3px; }
 	.table-detail { font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
-	.error-detail { color: #f87171; font-size: 11px; }
+	.error-detail { color: var(--danger); font-size: 11px; }
 
 	@media (max-width: 768px) {
 		.offering-item { flex-direction: column; align-items: flex-start; gap: 8px; }

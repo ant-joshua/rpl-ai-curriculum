@@ -86,7 +86,7 @@
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 15px;
     font-weight: 600;
-    color: #fff;
+    color: white;
     background: var(--accent);
     padding: 14px 32px;
     border-radius: 8px;
@@ -222,6 +222,41 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 32px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+    .hero-subtitle {
+      font-size: 0.95rem;
+    }
+    .cta-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 14px 24px;
+      box-sizing: border-box;
+    }
+    .stats-row {
+      gap: 20px;
+      padding: 32px 16px;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+    }
+    .features-section {
+      padding: 48px 16px;
+    }
+    .features-section h2 {
+      font-size: 1.4rem;
+    }
+    .cta-section {
+      padding: 48px 16px;
+    }
+    .cta-section h2 {
+      font-size: 1.4rem;
     }
   }
 </style>

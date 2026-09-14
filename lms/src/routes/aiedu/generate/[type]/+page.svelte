@@ -289,7 +289,7 @@
 	.md-preview :global(table) { border-collapse: collapse; width: 100%; margin: 12px 0; }
 	.md-preview :global(th), .md-preview :global(td) { border: 1px solid var(--border); padding: 8px 10px; font-size: 13px; }
 	.md-preview :global(th) { background: var(--surface); }
-	.md-preview :global(pre) { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow-x: auto; }
+	.md-preview :global(pre) { background: var(--text); color: var(--border); padding: 14px; border-radius: 8px; overflow-x: auto; }
 	.md-preview :global(code) { font-family: monospace; font-size: 13px; }
 	.placeholder { text-align: center; color: var(--text-muted); font-size: 14px; padding: 50px 20px; line-height: 1.8; }
 

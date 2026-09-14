@@ -202,7 +202,7 @@
 		padding: 10px 24px;
 		border-radius: 8px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-weight: 600;
 		text-decoration: none;
 	}
@@ -225,8 +225,8 @@
 		padding: 14px 32px;
 		border-radius: 10px;
 		border: none;
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary, #7c3aed));
-		color: #fff;
+		background: var(--accent);
+		color: white;
 		font-size: 16px;
 		font-weight: 600;
 		cursor: pointer;
@@ -272,7 +272,7 @@
 	.verify-text {
 		font-size: 12px;
 		font-weight: 600;
-		color: #22c55e;
+		color: var(--success);
 	}
 
 	/* ===== Certificate design ===== */
@@ -281,7 +281,7 @@
 	}
 
 	.cert-border-outer {
-		background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+		background: var(--warning);
 		border-radius: 20px;
 		padding: 4px;
 		box-shadow:
@@ -290,7 +290,7 @@
 	}
 
 	.cert-border-inner {
-		background: linear-gradient(160deg, rgba(0,0,0,0.02), rgba(0,0,0,0.04), rgba(0,0,0,0.02));
+		background: rgba(0,0,0,0.03);
 		border-radius: 17px;
 		padding: 48px 40px 40px;
 		position: relative;
@@ -302,7 +302,7 @@
 		position: absolute;
 		width: 40px;
 		height: 40px;
-		border-color: #f59e0b;
+		border-color: var(--warning);
 		border-style: solid;
 		opacity: 0.6;
 	}
@@ -342,7 +342,7 @@
 	}
 
 	.star {
-		color: #f59e0b;
+		color: var(--warning);
 		margin: 0 4px;
 		display: inline-block;
 		animation: twinkle 2s ease-in-out infinite;
@@ -368,7 +368,7 @@
 		font-size: 14px;
 		font-weight: 590;
 		letter-spacing: 0.25em;
-		color: #f59e0b;
+		color: var(--warning);
 		text-transform: uppercase;
 		margin-bottom: 12px;
 		font-family: inherit;
@@ -387,11 +387,11 @@
 		display: block;
 		width: 80px;
 		height: 1px;
-		background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+		background: var(--warning);
 	}
 
 	.divider-diamond {
-		color: #f59e0b;
+		color: var(--warning);
 		font-size: 10px;
 	}
 
@@ -405,7 +405,7 @@
 	.cert-name {
 		font-size: 36px;
 		font-weight: 590;
-		background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+		background: var(--warning);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -424,7 +424,7 @@
 	}
 
 	.cert-body strong {
-		color: #f59e0b;
+		color: var(--warning);
 	}
 
 	.cert-desc {
@@ -489,7 +489,7 @@
 
 	.footer-value {
 		font-size: 14px;
-		color: #f59e0b;
+		color: var(--warning);
 		font-weight: 600;
 	}
 
@@ -502,7 +502,7 @@
 	.signature-line {
 		width: 140px;
 		height: 2px;
-		background: #f59e0b;
+		background: var(--warning);
 		margin: 6px 0 4px;
 		border-radius: 1px;
 	}
@@ -517,7 +517,7 @@
 	.cert-bar {
 		margin-top: 28px;
 		height: 3px;
-		background: linear-gradient(90deg, transparent, #f59e0b, #fbbf24, #f59e0b, transparent);
+		background: var(--warning);
 		border-radius: 2px;
 	}
 

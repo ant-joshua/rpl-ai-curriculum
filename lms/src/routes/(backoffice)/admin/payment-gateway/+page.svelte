@@ -113,11 +113,11 @@
 		</div>
 	{:else if stats}
 		<div class="pg-stats-grid">
-			<StatCard icon="💰" value={formatCurrency(stats.totalRevenue)} label="Total Pendapatan" color="#10b981" />
-			<StatCard icon="⏳" value={formatCurrency(stats.totalPending)} label="Menunggu Verifikasi" color="#f59e0b" />
-			<StatCard icon="⚠️" value={formatCurrency(stats.totalOverdue)} label="Total Jatuh Tempo" color="#ef4444" />
-			<StatCard icon="📄" value={stats.invoiceCount} label="Total Invoice" color="#4F46E5" />
-			<StatCard icon="✅" value={stats.paidCount} label="Invoice Lunas" color="#3b82f6" />
+			<StatCard icon="💰" value={formatCurrency(stats.totalRevenue)} label="Total Pendapatan" color="var(--success)" />
+			<StatCard icon="⏳" value={formatCurrency(stats.totalPending)} label="Menunggu Verifikasi" color="var(--warning)" />
+			<StatCard icon="⚠️" value={formatCurrency(stats.totalOverdue)} label="Total Jatuh Tempo" color="var(--danger)" />
+			<StatCard icon="📄" value={stats.invoiceCount} label="Total Invoice" color="var(--accent)" />
+			<StatCard icon="✅" value={stats.paidCount} label="Invoice Lunas" color="var(--accent)" />
 		</div>
 
 		<div class="pg-section">
@@ -154,14 +154,14 @@
 		align-items: center;
 		gap: 12px;
 		padding: 60px 20px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 	}
 
 	.pg-spinner {
 		width: 32px;
 		height: 32px;
 		border: 3px solid var(--border-color, rgba(0,0,0,0.06));
-		border-top-color: var(--accent, #4F46E5);
+		border-top-color: var(--accent, var(--accent));
 		border-radius: 50%;
 		animation: pg-spin 0.7s linear infinite;
 	}
@@ -177,7 +177,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 40px;
-		color: #ef4444;
+		color: var(--danger);
 		text-align: center;
 		background: rgba(239, 68, 68, 0.05);
 		border: 1px solid rgba(239, 68, 68, 0.15);
@@ -193,7 +193,7 @@
 
 	/* Section */
 	.pg-section {
-		background: var(--bg-secondary, #1a1b1e);
+		background: var(--bg-secondary, var(--text));
 		border: 1px solid var(--border-color, rgba(0,0,0,0.06));
 		border-radius: 10px;
 		overflow: hidden;
@@ -210,7 +210,7 @@
 	.pg-section-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: var(--text-primary, #1a1a2e);
+		color: var(--text-primary, var(--text));
 		margin: 0;
 	}
 
@@ -230,7 +230,7 @@
 		padding: 10px 20px;
 		font-size: 11px;
 		font-weight: 600;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		background: rgba(0,0,0,0.02);
@@ -240,7 +240,7 @@
 
 	.pg-table td {
 		padding: 12px 20px;
-		color: var(--text-primary, #d0d6e0);
+		color: var(--text-primary, var(--border));
 		border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04));
 		white-space: nowrap;
 	}
@@ -256,7 +256,7 @@
 
 	.pg-amount {
 		font-weight: 600;
-		color: var(--text-primary, #1a1a2e);
+		color: var(--text-primary, var(--text));
 	}
 
 	/* Badge */
@@ -269,11 +269,11 @@
 		text-transform: capitalize;
 	}
 
-	.badge-unpaid { background: rgba(249, 115, 22, 0.12); color: #f97316; }
-	.badge-partial { background: rgba(234, 179, 8, 0.12); color: #eab308; }
-	.badge-paid { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-	.badge-overdue { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
-	.badge-cancelled { background: rgba(156, 163, 175, 0.12); color: #9ca3af; }
+	.badge-unpaid { background: rgba(249, 115, 22, 0.12); color: var(--warning); }
+	.badge-partial { background: rgba(234, 179, 8, 0.12); color: var(--warning); }
+	.badge-paid { background: rgba(34, 197, 94, 0.12); color: var(--success); }
+	.badge-overdue { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+	.badge-cancelled { background: rgba(156, 163, 175, 0.12); color: var(--text-muted); }
 
 	/* Empty */
 	.pg-empty {
@@ -282,7 +282,7 @@
 		align-items: center;
 		gap: 10px;
 		padding: 40px 20px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 	}
 
 	/* Buttons */
@@ -302,7 +302,7 @@
 
 	.pg-btn-ghost {
 		background: transparent;
-		color: var(--accent, #4F46E5);
+		color: var(--accent, var(--accent));
 		border: 1px solid var(--border-color, rgba(255,255,255,0.1));
 	}
 

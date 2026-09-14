@@ -687,7 +687,7 @@
 		background: rgba(0,0,0,0.08); font-size: 14px; font-weight: 700;
 		flex-shrink: 0;
 	}
-	.option-btn.selected .opt-letter { background: var(--accent); color: #fff; }
+	.option-btn.selected .opt-letter { background: var(--accent); color: white; }
 	.opt-text { flex: 1; }
 	.opt-check { color: var(--accent); font-weight: 700; flex-shrink: 0; }
 
@@ -788,7 +788,7 @@
 	}
 	.modal {
 		background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-		padding: 28px; width: 400px; max-width: 90vw; box-shadow: var(--shadow-dialog);
+		padding: 28px; width: 400px; max-width: 90vw; box-shadow: 0 0 0 1px var(--border);
 	}
 	.modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
 	.modal-stats p { font-size: 14px; color: var(--text-secondary); margin-bottom: 4px; }

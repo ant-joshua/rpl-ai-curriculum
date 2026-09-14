@@ -293,7 +293,7 @@
 						<span class="grade-label">Nilai:</span>
 						<span class="grade-score">{submission.score} / {submission.max_score}</span>
 						{#if submission.max_score > 0}
-							<span class="grade-pct" style="color: {submission.score / submission.max_score >= 0.8 ? '#22c55e' : submission.score / submission.max_score >= 0.6 ? '#f1c40f' : '#ef4444'}">
+							<span class="grade-pct" style="color: {submission.score / submission.max_score >= 0.8 ? 'var(--success)' : submission.score / submission.max_score >= 0.6 ? 'var(--warning)' : 'var(--danger)'}">
 								({Math.round(submission.score / submission.max_score * 100)}%)
 							</span>
 						{/if}
@@ -458,7 +458,7 @@
 		text-align: center;
 		color: var(--text-secondary);
 	}
-	.error { color: #ef4444; }
+	.error { color: var(--danger); }
 
 	.header {
 		display: flex;
@@ -480,8 +480,8 @@
 	.late-warning {
 		margin-top: 6px;
 		padding: 6px 12px;
-		background: #ef444422;
-		color: #ef4444;
+		background: var(--danger)22;
+		color: var(--danger);
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 600;
@@ -624,7 +624,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 14px;
 		padding: 2px 6px;
 		border-radius: 4px;
@@ -663,8 +663,8 @@
 
 	.submit-error {
 		padding: 10px 14px;
-		background: #ef444422;
-		color: #ef4444;
+		background: var(--danger)22;
+		color: var(--danger);
 		border-radius: 8px;
 		font-size: 13px;
 		margin-bottom: 12px;
@@ -691,11 +691,11 @@
 
 	/* Code execution */
 	.code-actions { margin-top: 12px; }
-	.run-error { margin-top: 8px; padding: 10px 14px; background: #ef444422; color: #ef4444; border-radius: 8px; font-size: 13px; }
+	.run-error { margin-top: 8px; padding: 10px 14px; background: var(--danger)22; color: var(--danger); border-radius: 8px; font-size: 13px; }
 	.run-output { margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 	.run-output-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 13px; }
 	.run-stdout, .run-stderr { padding: 12px; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; background: var(--bg); }
-	.run-stderr { background: #ef444408; }
-	.run-stderr-label { padding: 8px 12px 0; font-size: 12px; font-weight: 600; color: #ef4444; }
+	.run-stderr { background: var(--danger)08; }
+	.run-stderr-label { padding: 8px 12px 0; font-size: 12px; font-weight: 600; color: var(--danger); }
 	.run-meta { padding: 6px 12px; font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--border); background: var(--surface); }
 </style>

@@ -31,8 +31,8 @@
 	}
 
 	function getStatusColor(status: string): string {
-		if (status === 'finalized') return '#10b981';
-		if (status === 'printed') return '#3b82f6';
+		if (status === 'finalized') return 'var(--success)';
+		if (status === 'printed') return 'var(--accent)';
 		return 'var(--text-quaternary)';
 	}
 

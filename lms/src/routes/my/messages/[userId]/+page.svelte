@@ -138,7 +138,7 @@
 	.back-link { color: var(--text-secondary); text-decoration: none; font-size: 13px; }
 	.back-link:hover { color: var(--accent); }
 	.partner-info { display: flex; align-items: center; gap: 10px; }
-	.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+	.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 	.partner-name { font-size: 14px; font-weight: 600; color: var(--text); display: block; }
 	.partner-role { font-size: 11px; color: var(--text-secondary); }
 	.msg-area { flex: 1; overflow: hidden; display: flex; flex-direction: column; margin: 12px 0; }
@@ -147,7 +147,7 @@
 	.msg-row.mine { justify-content: flex-end; }
 	.msg-row.theirs { justify-content: flex-start; }
 	.bubble { max-width: 75%; padding: 9px 13px; border-radius: 14px; font-size: 14px; line-height: 1.45; }
-	.mine .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+	.mine .bubble { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
 	.theirs .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--text); }
 	.msg-time { display: block; font-size: 10px; opacity: 0.75; margin-top: 3px; text-align: right; }
 	.loading, .empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
@@ -155,6 +155,6 @@
 	.input-area { display: flex; gap: 8px; }
 	.msg-input { flex: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; font-family: inherit; }
 	.msg-input:focus { outline: none; border-color: var(--accent); }
-	.send-btn { padding: 11px 20px; border-radius: 10px; border: none; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
+	.send-btn { padding: 11px 20px; border-radius: 10px; border: none; background: var(--accent); color: white; font-weight: 600; font-size: 13px; cursor: pointer; }
 	.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

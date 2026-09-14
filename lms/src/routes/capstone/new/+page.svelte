@@ -187,14 +187,14 @@
 		background: rgba(231, 76, 60, 0.1);
 		border: 1px solid rgba(231, 76, 60, 0.3);
 		border-radius: 8px;
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 13px;
 	}
 
 	.btn-primary {
 		padding: 12px 24px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border: none;
 		border-radius: 10px;
 		font-size: 15px;

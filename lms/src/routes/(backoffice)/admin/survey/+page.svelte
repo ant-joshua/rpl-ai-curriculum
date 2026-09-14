@@ -107,10 +107,10 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-row">
-			<StatCard icon="📄" value={loading ? '—' : stats.totalTemplates} label="Templates" color="#8b5cf6" />
-			<StatCard icon="✅" value={loading ? '—' : stats.activeInstances} label="Active" color="#10b981" />
-			<StatCard icon="🔒" value={loading ? '—' : stats.closedInstances} label="Closed" color="#f59e0b" />
-			<StatCard icon="💬" value={loading ? '—' : stats.totalResponses} label="Responses" color="#3b82f6" />
+			<StatCard icon="📄" value={loading ? '—' : stats.totalTemplates} label="Templates" color="var(--accent)" />
+			<StatCard icon="✅" value={loading ? '—' : stats.activeInstances} label="Active" color="var(--success)" />
+			<StatCard icon="🔒" value={loading ? '—' : stats.closedInstances} label="Closed" color="var(--warning)" />
+			<StatCard icon="💬" value={loading ? '—' : stats.totalResponses} label="Responses" color="var(--accent)" />
 		</div>
 
 		<!-- Quick Actions -->
@@ -178,7 +178,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; text-decoration: none; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
@@ -191,10 +191,10 @@ const instanceColumns: ColumnDef<any, any>[] = [
 		padding: 20px;
 		text-align: center;
 	}
-	.stat-card--templates { border-top: 3px solid #8b5cf6; }
-	.stat-card--active { border-top: 3px solid #10b981; }
-	.stat-card--closed { border-top: 3px solid #f59e0b; }
-	.stat-card--responses { border-top: 3px solid #3b82f6; }
+	.stat-card--templates { border-top: 3px solid var(--accent); }
+	.stat-card--active { border-top: 3px solid var(--success); }
+	.stat-card--closed { border-top: 3px solid var(--warning); }
+	.stat-card--responses { border-top: 3px solid var(--accent); }
 	.stat-number { display: block; font-size: 28px; font-weight: 700; color: var(--text); }
 	.stat-label { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
 
@@ -222,7 +222,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 
 	.loading { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
 	.empty-state.small { padding: 30px; }
 	.empty-state p { margin: 0; }
@@ -242,7 +242,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 	.template-name { display: block; font-size: 13px; font-weight: 500; color: var(--text); }
 	.template-meta { display: block; font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 	.template-active { font-size: 11px; color: var(--text-secondary); }
-	.template-active.active { color: #10b981; }
+	.template-active.active { color: var(--success); }
 
 	/* Table */
 	.table-container { overflow-x: auto; }
@@ -260,10 +260,10 @@ const instanceColumns: ColumnDef<any, any>[] = [
 		font-weight: 600;
 		text-transform: capitalize;
 	}
-	.status-active { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-closed { background: rgba(245,158,11,0.1); color: #f59e0b; }
-	.status-draft { background: rgba(98,102,109,0.15); color: #64748b; }
-	.status-archived { background: rgba(239,68,68,0.1); color: #ef4444; }
+	.status-active { background: rgba(16,185,129,0.1); color: var(--success); }
+	.status-closed { background: rgba(245,158,11,0.1); color: var(--warning); }
+	.status-draft { background: rgba(98,102,109,0.15); color: var(--text-secondary); }
+	.status-archived { background: rgba(239,68,68,0.1); color: var(--danger); }
 
 	@media (max-width: 768px) {
 		.stats-row { grid-template-columns: repeat(2, 1fr); }

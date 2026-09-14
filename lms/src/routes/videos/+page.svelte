@@ -317,7 +317,7 @@
 
 	.video-card:hover {
 		border-color: var(--accent);
-		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		box-shadow: none;
 	}
 
 	.thumbnail {
@@ -390,17 +390,17 @@
 
 	.level-beginner {
 		background: rgba(59, 130, 246, 0.12);
-		color: #3b82f6;
+		color: var(--accent);
 	}
 
 	.level-intermediate {
 		background: rgba(234, 179, 8, 0.12);
-		color: #eab308;
+		color: var(--warning);
 	}
 
 	.level-advanced {
 		background: rgba(168, 85, 247, 0.12);
-		color: #a855f7;
+		color: var(--accent);
 	}
 
 	.duration {

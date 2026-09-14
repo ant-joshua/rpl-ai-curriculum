@@ -216,7 +216,7 @@
 		transition: border-color 0.2s, box-shadow 0.2s;
 	}
 	.final-project-card { transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
-	.final-project-card:hover { border-color: var(--accent); box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.12); transform: translateY(-2px); }
+	.final-project-card:hover { border-color: var(--accent); box-shadow: none; transform: translateY(-2px); }
 	.fp-icon { font-size: 40px; flex-shrink: 0; }
 	.fp-content { flex: 1; }
 	.fp-content h2 { font-size: 20px; font-weight: 700; color: var(--text); margin: 0 0 6px; }

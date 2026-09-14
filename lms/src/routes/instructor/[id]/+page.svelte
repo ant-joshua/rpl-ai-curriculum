@@ -111,8 +111,8 @@
 	.website { display: inline-block; font-size: 13px; color: var(--accent); text-decoration: none; margin-bottom: 8px; }
 	.social-links { display: flex; gap: 8px; flex-wrap: wrap; }
 	.social-chip {
-		padding: 3px 10px; border-radius: 999px; background: #f1f5f9;
-		color: #334155; font-size: 12px; font-weight: 600; text-decoration: none;
+		padding: 3px 10px; border-radius: 999px; background: var(--surface-alt);
+		color: var(--text-secondary); font-size: 12px; font-weight: 600; text-decoration: none;
 	}
 	.bio-section { margin-bottom: 28px; }
 	.bio-section h2, .courses-section h2 { font-size: 18px; margin-bottom: 12px; }
@@ -134,6 +134,6 @@
 		display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 	}
 	.course-meta { display: flex; gap: 10px; font-size: 12px; color: var(--text-muted); }
-	.rating { color: #f59e0b; font-weight: 600; }
-	.level { text-transform: capitalize; background: #f1f5f9; padding: 1px 8px; border-radius: 4px; }
+	.rating { color: var(--warning); font-weight: 600; }
+	.level { text-transform: capitalize; background: var(--surface-alt); padding: 1px 8px; border-radius: 4px; }
 </style>

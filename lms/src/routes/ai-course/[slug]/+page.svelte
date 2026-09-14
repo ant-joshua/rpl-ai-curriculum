@@ -338,7 +338,7 @@
 	.sidebar-toggle {
 		display: none;
 		position: fixed; bottom: 20px; right: 20px; z-index: 100;
-		background: var(--accent); color: #fff; border: none; border-radius: 100px;
+		background: var(--accent); color: white; border: none; border-radius: 100px;
 		padding: 10px 20px; font-size: 14px; font-weight: 600;
 		box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer;
 	}
@@ -390,11 +390,11 @@
 	.markdown-body :global(ul), .markdown-body :global(ol) { margin: 0 0 16px; padding-left: 24px; }
 	.markdown-body :global(li) { margin-bottom: 6px; }
 	.markdown-body :global(code) { background: var(--surface-alt); padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: 'JetBrains Mono', monospace; }
-	.markdown-body :global(pre) { background: #1a1a2e; color: #e2e8f0; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 0 0 20px; }
+	.markdown-body :global(pre) { background: var(--text); color: var(--border); padding: 20px; border-radius: 10px; overflow-x: auto; margin: 0 0 20px; }
 	.markdown-body :global(pre code) { background: none; padding: 0; color: inherit; font-size: 13px; }
 	.markdown-body :global(table) { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
 	.markdown-body :global(th), .markdown-body :global(td) { padding: 10px 12px; border: 1px solid var(--border); text-align: left; }
-	.markdown-body :global(th) { background: #f9fafb; font-weight: 600; }
+	.markdown-body :global(th) { background: var(--surface-alt); font-weight: 600; }
 	.markdown-body :global(blockquote) { border-left: 4px solid var(--accent); padding: 12px 20px; margin: 0 0 20px; background: var(--accent-light); border-radius: 0 8px 8px 0; }
 	.markdown-body :global(a) { color: var(--accent); }
 	.markdown-body :global(strong) { font-weight: 700; }
@@ -410,7 +410,7 @@
 		border-top: 1px solid var(--border);
 	}
 	.nav-btn {
-		background: #f9fafb;
+		background: var(--surface-alt);
 		border: 1px solid var(--border);
 		border-radius: 10px;
 		padding: 16px;
@@ -422,7 +422,7 @@
 	.nav-dir { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 	.nav-title { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
 	.nav-check {
-		background: #f9fafb; border: 1px solid var(--border); border-radius: 10px;
+		background: var(--surface-alt); border: 1px solid var(--border); border-radius: 10px;
 		padding: 16px 20px; font-size: 14px; cursor: pointer;
 		transition: border-color 0.2s;
 	}
@@ -467,12 +467,12 @@
 	/* Fullscreen toggle */
 	.fs-toggle {
 		position: fixed; top: 14px; left: 14px; z-index: 90;
-		background: var(--surface, #fff); border: 1px solid var(--border, #e2e8f0);
+		background: var(--surface, #fff); border: 1px solid var(--border, var(--border));
 		border-radius: 6px; padding: 8px 10px; cursor: pointer;
 		color: var(--text-secondary, #666); font-size: 16px;
 		transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 	}
-	.fs-toggle:hover { background: var(--surface-alt, #f4f4f5); color: var(--text, #1a1a1a); }
+	.fs-toggle:hover { background: var(--surface-alt, var(--surface-alt)); color: var(--text, var(--text)); }
 
 	/* Fullscreen mode — hide course sidebar, content w-full */
 	.module-layout.fullscreen .module-sidebar { display: none; }
@@ -497,9 +497,9 @@
 
 	/* Keyboard shortcuts */
 	.shortcuts-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-	.shortcuts-panel { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-lg); max-width: 360px; width: 90%; }
+	.shortcuts-panel { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: none; max-width: 360px; width: 90%; }
 	.shortcuts-panel h3 { margin: 0 0 20px; font-size: 18px; color: var(--text); }
 	.sc-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; color: var(--text-secondary); }
 	kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 28px; padding: 0 8px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', monospace; font-size: 12px; font-weight: 600; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-	.sc-close { margin-top: 20px; width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+	.sc-close { margin-top: 20px; width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
 </style>

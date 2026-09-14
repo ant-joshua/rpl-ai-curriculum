@@ -139,9 +139,9 @@
 	);
 
 	function pctColor(pct: number): string {
-		if (pct >= 80) return 'var(--green, #22c55e)';
-		if (pct >= 60) return 'var(--amber, #f59e0b)';
-		return 'var(--red, #ef4444)';
+		if (pct >= 80) return 'var(--green, var(--success))';
+		if (pct >= 60) return 'var(--amber, var(--warning))';
+		return 'var(--red, var(--danger))';
 	}
 </script>
 
@@ -150,7 +150,7 @@
 	{#if loading}
 		<div class="empty-chart">Memuat data...</div>
 	{:else if apiError}
-		<div class="empty-chart" style="color: var(--red, #ef4444)">{apiError}</div>
+		<div class="empty-chart" style="color: var(--red, var(--danger))">{apiError}</div>
 	{:else}
 	<!-- AI Insights Banner -->
 	<div class="insights-banner">
@@ -220,8 +220,8 @@
 					<!-- Grid lines -->
 					{#each [0, 1, 2, 3, 4] as grid}
 						{@const y = CHART_PAD.top + CHART_INNER_H - (grid / 4) * CHART_INNER_H}
-						<line x1={CHART_PAD.left} y1={y} x2={CHART_W - CHART_PAD.right} y2={y} stroke="#E2E8F0" stroke-width="1" />
-						<text x={CHART_PAD.left - 8} y={y + 4} text-anchor="end" fill="#94a3b8" font-size="10">
+						<line x1={CHART_PAD.left} y1={y} x2={CHART_W - CHART_PAD.right} y2={y} stroke="var(--border)" stroke-width="1" />
+						<text x={CHART_PAD.left - 8} y={y + 4} text-anchor="end" fill="var(--text-muted)" font-size="10">
 							{Math.round((grid / 4) * maxXp)}
 						</text>
 					{/each}
@@ -243,7 +243,7 @@
 					<!-- X axis labels (every 5th) -->
 					{#each xpData as _, i}
 						{#if i % 5 === 0}
-							<text x={CHART_PAD.left + i * (CHART_INNER_W / Math.max(xpData.length - 1, 1))} y={CHART_H - 4} text-anchor="middle" fill="#94a3b8" font-size="9">{formatDateLabel(i)}</text>
+							<text x={CHART_PAD.left + i * (CHART_INNER_W / Math.max(xpData.length - 1, 1))} y={CHART_H - 4} text-anchor="middle" fill="var(--text-muted)" font-size="9">{formatDateLabel(i)}</text>
 						{/if}
 					{/each}
 				</svg>
@@ -269,8 +269,8 @@
 							class="heatmap-cell"
 							data-count={cell.count}
 							title="{cell.date}: {cell.count} XP"
-							style="background: {cell.count === 0 ? '#F1F5F9' :
-								cell.count <= 20 ? '#C7D2FE' :
+							style="background: {cell.count === 0 ? 'var(--surface-alt)' :
+								cell.count <= 20 ? 'var(--accent-light)' :
 								cell.count <= 50 ? 'var(--accent)' :
 								cell.count <= 100 ? 'var(--accent)' :
 								'var(--accent-hover)'}"
@@ -347,17 +347,17 @@
 
 	/* AI Insights Banner */
 	.insights-banner {
-		background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
-		border: 1px solid #c7d2fe;
+		background: var(--accent-light);
+		border: 1px solid var(--accent-light);
 		border-radius: var(--radius, 12px);
 		padding: 16px 20px;
 		margin-bottom: 16px;
 	}
 	.insights-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 	.insights-icon { font-size: 18px; }
-	.insights-title { font-weight: 700; font-size: 14px; color: #3730a3; }
+	.insights-title { font-weight: 700; font-size: 14px; color: var(--accent); }
 	.insights-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
-	.insight-item { font-size: 13px; color: #4338ca; line-height: 1.5; }
+	.insight-item { font-size: 13px; color: var(--accent); line-height: 1.5; }
 
 	/* Stats row */
 	.stats-row {
@@ -368,13 +368,13 @@
 	}
 	.stat-card {
 		background: var(--surface, #FFF);
-		border: 1px solid var(--border, #E2E8F0);
+		border: 1px solid var(--border, var(--border));
 		border-radius: var(--radius, 12px);
 		padding: 14px 16px;
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+		box-shadow: none;
 		transition: all 0.15s ease;
 		animation: fadeSlideIn 0.3s ease both;
 		opacity: 0;
@@ -389,29 +389,29 @@
 	.stat-value {
 		font-size: 18px;
 		font-weight: 700;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		line-height: 1.2;
 	}
 	.stat-label {
 		font-size: 11px;
 		font-weight: 400;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 	}
 
 	/* Chart cards */
 	.chart-card {
 		background: var(--surface, #FFF);
-		border: 1px solid var(--border, #E2E8F0);
+		border: 1px solid var(--border, var(--border));
 		border-radius: var(--radius, 12px);
 		padding: 20px;
 		margin-bottom: 14px;
-		box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+		box-shadow: none;
 		animation: fadeSlideIn 0.4s ease both;
 	}
 	.chart-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		margin: 0 0 14px;
 	}
 
@@ -452,7 +452,7 @@
 		justify-content: space-between;
 		padding: 1px 0;
 		font-size: 9px;
-		color: #94a3b8;
+		color: var(--text-muted);
 		min-width: 18px;
 	}
 	.heatmap-grid {
@@ -490,35 +490,35 @@
 	.module-name {
 		font-size: 12px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 	}
 	.module-count {
 		font-size: 11px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 	}
 	.module-bar-track {
 		height: 6px;
-		background: var(--border, #E2E8F0);
+		background: var(--border, var(--border));
 		border-radius: 9999px;
 		overflow: hidden;
 	}
 	.module-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), #6366F1);
+		background: var(--accent);
 		border-radius: 9999px;
 		transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	/* Quiz */
 	.quiz-overview { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-	.quiz-avg { font-size: 13px; color: var(--text-secondary, #64748b); }
+	.quiz-avg { font-size: 13px; color: var(--text-secondary, var(--text-secondary)); }
 	.quiz-avg.big { font-size: 15px; }
 	.quiz-pass-badge {
-		background: #dcfce7; color: #166534; padding: 3px 10px;
+		background: var(--success-light); color: var(--success); padding: 3px 10px;
 		border-radius: 999px; font-size: 12px; font-weight: 600;
 	}
 	.quiz-fail-badge {
-		background: #fee2e2; color: #991b1b; padding: 3px 10px;
+		background: var(--danger-light); color: var(--danger); padding: 3px 10px;
 		border-radius: 999px; font-size: 12px; font-weight: 600;
 	}
 	.quiz-grid {
@@ -530,14 +530,14 @@
 	.quiz-name {
 		font-size: 12px;
 		font-weight: 500;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		margin-bottom: 4px;
 		display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 	}
-	.quiz-offering { font-size: 10px; color: var(--text-secondary, #64748b); font-weight: 400; }
+	.quiz-offering { font-size: 10px; color: var(--text-secondary, var(--text-secondary)); font-weight: 400; }
 	.quiz-bar-track {
 		height: 8px;
-		background: var(--border, #E2E8F0);
+		background: var(--border, var(--border));
 		border-radius: 9999px;
 		overflow: hidden;
 	}
@@ -546,14 +546,14 @@
 		border-radius: 9999px;
 		transition: width 0.5s ease;
 	}
-	.quiz-meta { display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px; color: var(--text-secondary, #64748b); }
+	.quiz-meta { display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px; color: var(--text-secondary, var(--text-secondary)); }
 	.quiz-pct { font-weight: 700; }
 	.quiz-date { }
 
 	.empty-chart {
 		padding: 24px;
 		text-align: center;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		font-size: 13px;
 	}
 

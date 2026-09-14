@@ -129,10 +129,10 @@
 			cell: ({ getValue }) => {
 				const status = (getValue() as string) || '—';
 				const colors: Record<string, string> = {
-					active: 'background:rgba(16,185,129,0.1);color:#10b981',
+					active: 'background:rgba(16,185,129,0.1);color:var(--success)',
 					draft: 'background:rgba(98,102,109,0.1);color:var(--text-quaternary)',
 				};
-				const style = colors[status] || 'background:rgba(245,158,11,0.1);color:#f59e0b';
+				const style = colors[status] || 'background:rgba(245,158,11,0.1);color:var(--warning)';
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;${style}">${status}</span>`;
 			}
 		},
@@ -195,5 +195,5 @@
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
 	.error-state { text-align: center; padding: 20px; }
-	.error-text { color: #ef4444; margin-bottom: 12px; font-size: 14px; }
+	.error-text { color: var(--danger); margin-bottom: 12px; font-size: 14px; }
 </style>

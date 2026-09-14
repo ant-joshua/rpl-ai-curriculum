@@ -185,8 +185,8 @@
 	.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
 	.bundle-table { width: 100%; border-collapse: collapse; }
 	.bundle-table th, .bundle-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
-	.st-active { color: #16a34a; font-weight: 600; }
-	.st-inactive { color: #dc2626; font-weight: 600; }
+	.st-active { color: var(--success); font-weight: 600; }
+	.st-inactive { color: var(--danger); font-weight: 600; }
 	.offering-picker { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
 	.pick-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; cursor: pointer; }
 </style>

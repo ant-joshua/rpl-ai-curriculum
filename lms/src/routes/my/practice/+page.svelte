@@ -421,7 +421,7 @@
 	.feedback-points {
 		font-size: 13px;
 		font-weight: 510;
-		color: #22c55e;
+		color: var(--success);
 	}
 	.feedback-explain {
 		font-size: 14px;

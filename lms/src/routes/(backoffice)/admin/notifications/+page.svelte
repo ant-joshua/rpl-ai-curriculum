@@ -119,10 +119,10 @@ const queueColumns: ColumnDef<any, any>[] = [
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-row">
-			<StatCard icon="📨" value={loading ? '—' : (stats['queued'] ?? 0)} label="Queued" color="#f59e0b" />
-			<StatCard icon="⚙️" value={loading ? '—' : (stats['processing'] ?? 0)} label="Processing" color="#3b82f6" />
-			<StatCard icon="✅" value={loading ? '—' : (stats['sent'] ?? 0)} label="Sent" color="#10b981" />
-			<StatCard icon="❌" value={loading ? '—' : (stats['failed'] ?? 0)} label="Failed" color="#ef4444" />
+			<StatCard icon="📨" value={loading ? '—' : (stats['queued'] ?? 0)} label="Queued" color="var(--warning)" />
+			<StatCard icon="⚙️" value={loading ? '—' : (stats['processing'] ?? 0)} label="Processing" color="var(--accent)" />
+			<StatCard icon="✅" value={loading ? '—' : (stats['sent'] ?? 0)} label="Sent" color="var(--success)" />
+			<StatCard icon="❌" value={loading ? '—' : (stats['failed'] ?? 0)} label="Failed" color="var(--danger)" />
 		</div>
 
 		<div class="grid-2col">
@@ -222,7 +222,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 <style>
 	.page { max-width: 1100px; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
@@ -236,7 +236,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	.link-btn { font-size: 13px; color: var(--accent); text-decoration: none !important; }
 	.loading { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
 	.empty-state.small { padding: 30px; }
 	.empty-state p { margin: 0; }
@@ -249,12 +249,12 @@ const queueColumns: ColumnDef<any, any>[] = [
 	tr:last-child td { border-bottom: none; }
 
 	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
-	.status-blue { background: rgba(59,130,246,0.1); color: #3b82f6; }
-	.status-green { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-red { background: rgba(239,68,68,0.1); color: #ef4444; }
-	.status-yellow { background: rgba(245,158,11,0.1); color: #f59e0b; }
+	.status-blue { background: rgba(59,130,246,0.1); color: var(--accent); }
+	.status-green { background: rgba(16,185,129,0.1); color: var(--success); }
+	.status-red { background: rgba(239,68,68,0.1); color: var(--danger); }
+	.status-yellow { background: rgba(245,158,11,0.1); color: var(--warning); }
 
-	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(98,102,109,0.15); color: #64748b; }
+	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(98,102,109,0.15); color: var(--text-secondary); }
 
 	/* Quick Links */
 	.quick-links { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
@@ -281,7 +281,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	.form-input, .form-textarea { width: 100%; padding: 10px 12px; font-size: 13px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text); outline: none; font-family: inherit; }
 	.form-input:focus, .form-textarea:focus { border-color: var(--accent); }
 	textarea.form-textarea { resize: vertical; }
-	.result-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); color: #10b981; border-radius: 8px; font-size: 13px; }
+	.result-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); color: var(--success); border-radius: 8px; font-size: 13px; }
 
 	@media (max-width: 768px) {
 		.stats-row { grid-template-columns: repeat(2, 1fr); }

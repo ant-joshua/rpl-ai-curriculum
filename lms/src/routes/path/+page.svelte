@@ -9,9 +9,9 @@
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 
 	const LEVEL_META: Record<Level, { icon: string; color: string; bg: string; gradient: string }> = {
-		Beginner: { icon: '🌱', color: '#22C55E', bg: 'rgba(34,197,94,0.08)', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
-		Intermediate: { icon: '📐', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-		Advanced: { icon: '🚀', color: '#EF4444', bg: 'rgba(239,68,68,0.08)', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+		Beginner: { icon: '🌱', color: 'var(--success)', bg: 'rgba(34,197,94,0.08)', gradient: 'var(--success)' },
+		Intermediate: { icon: '📐', color: 'var(--warning)', bg: 'rgba(245,158,11,0.08)', gradient: 'var(--warning)' },
+		Advanced: { icon: '🚀', color: 'var(--danger)', bg: 'rgba(239,68,68,0.08)', gradient: 'var(--danger)' },
 	};
 
 	let isCompleted = $derived((modSlug: string, sessionId: string) =>
@@ -366,7 +366,7 @@
 	}
 
 	.level-completed-badge.all-done {
-		color: #22C55E;
+		color: var(--success);
 		background: rgba(34, 197, 94, 0.1);
 	}
 
@@ -426,7 +426,7 @@
 
 	.tab-btn.active {
 		background: var(--accent-dim, rgba(79, 70, 229, 0.1));
-		color: var(--accent, #4F46E5);
+		color: var(--accent, var(--accent));
 	}
 
 	/* ─── Section title ─── */
@@ -557,7 +557,7 @@
 	.timeline-index {
 		font-size: 11px;
 		font-weight: 700;
-		color: #fff;
+		color: white;
 	}
 
 	.timeline-card {
@@ -674,7 +674,7 @@
 
 	.path-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+		box-shadow: none;
 		border-color: var(--path-color);
 	}
 
@@ -741,7 +741,7 @@
 	.path-card-prereq {
 		font-size: 10px;
 		font-weight: 600;
-		color: #F59E0B;
+		color: var(--warning);
 		background: rgba(245, 158, 11, 0.08);
 		padding: 2px 8px;
 		border-radius: 6px;

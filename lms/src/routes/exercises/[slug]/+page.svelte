@@ -14,9 +14,9 @@
 	type DifficultyColor = 'Beginner' | 'Intermediate' | 'Advanced';
 
 	const difficultyColors: Record<string, string> = {
-		Beginner: '#10b981',
-		Intermediate: '#f59e0b',
-		Advanced: '#ef4444',
+		Beginner: 'var(--success)',
+		Intermediate: 'var(--warning)',
+		Advanced: 'var(--danger)',
 	};
 
 	const typeLabels: Record<string, string> = {
@@ -295,7 +295,7 @@
 
 	.btn-primary {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.btn-secondary {

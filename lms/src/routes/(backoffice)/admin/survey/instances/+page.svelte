@@ -280,9 +280,9 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-primary-small { padding: 4px 10px; background: var(--accent); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; }
+	.btn-primary-small { padding: 4px 10px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-small { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 11px; cursor: pointer; text-decoration: none; display: inline-block; }
 	.btn-small:hover { background: var(--surface-hover); }
@@ -354,14 +354,14 @@
 		font-weight: 600;
 		text-transform: capitalize;
 	}
-	.status-active { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-closed { background: rgba(245,158,11,0.1); color: #f59e0b; }
-	.status-draft { background: rgba(98,102,109,0.15); color: #64748b; }
-	.status-archived { background: rgba(239,68,68,0.1); color: #ef4444; }
+	.status-active { background: rgba(16,185,129,0.1); color: var(--success); }
+	.status-closed { background: rgba(245,158,11,0.1); color: var(--warning); }
+	.status-draft { background: rgba(98,102,109,0.15); color: var(--text-secondary); }
+	.status-archived { background: rgba(239,68,68,0.1); color: var(--danger); }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 20px; margin-bottom: 16px; }
-	.error-msg { color: #ef4444; margin-bottom: 8px; font-size: 13px; }
+	.error-msg { color: var(--danger); margin-bottom: 8px; font-size: 13px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 </style>

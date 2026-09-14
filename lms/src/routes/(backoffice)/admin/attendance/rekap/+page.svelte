@@ -172,12 +172,12 @@ const recapColumns: ColumnDef<any, any>[] = [
 	{
 		header: 'Dispensasi',
 		accessorKey: 'dispensasi',
-		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:#8b5cf6;display:block">${getValue()}</span>`
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:var(--accent);display:block">${getValue()}</span>`
 	},
 	{
 		header: 'Telat',
 		accessorKey: 'terlambat',
-		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:#f97316;display:block">${getValue()}</span>`
+		cell: ({ getValue }) => `<span style="text-align:center;font-weight:600;color:var(--warning);display:block">${getValue()}</span>`
 	},
 	{
 		header: '%',
@@ -243,8 +243,8 @@ const recapColumns: ColumnDef<any, any>[] = [
 				<span class="summary-item">S: <strong style="color:var(--warning)">{totalAll.sakit}</strong></span>
 				<span class="summary-item">I: <strong style="color:var(--info)">{totalAll.izin}</strong></span>
 				<span class="summary-item">A: <strong style="color:var(--danger)">{totalAll.alpha}</strong></span>
-				<span class="summary-item">D: <strong style="color:#8b5cf6">{totalAll.dispensasi}</strong></span>
-				<span class="summary-item">T: <strong style="color:#f97316">{totalAll.terlambat}</strong></span>
+				<span class="summary-item">D: <strong style="color:var(--accent)">{totalAll.dispensasi}</strong></span>
+				<span class="summary-item">T: <strong style="color:var(--warning)">{totalAll.terlambat}</strong></span>
 			</div>
 
 			<DataTable columns={recapColumns} data={filteredStudents} pageSize={20} showSearch={true} searchPlaceholder="Cari nama siswa..." emptyMessage="Belum ada data absensi" emptyIcon="📋" />
@@ -298,15 +298,15 @@ const recapColumns: ColumnDef<any, any>[] = [
 	.cell-sakit { color: var(--warning); }
 	.cell-izin { color: var(--info); }
 	.cell-alpha { color: var(--danger); font-weight: 700; }
-	.cell-dispensasi { color: #8b5cf6; }
-	.cell-terlambat { color: #f97316; }
+	.cell-dispensasi { color: var(--accent); }
+	.cell-terlambat { color: var(--warning); }
 
 	.pct-badge {
 		display: inline-block; padding: 2px 8px; border-radius: 6px;
 		font-size: 12px; font-weight: 700; border: 1px solid;
 	}
 
-	.btn-secondary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+	.btn-secondary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-outline { padding: 8px 14px; background: transparent; color: var(--accent); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
 	.btn-outline:hover { border-color: var(--accent); background: var(--accent-dim); }

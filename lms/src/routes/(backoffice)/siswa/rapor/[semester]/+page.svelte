@@ -14,10 +14,10 @@ import { t } from '$lib/stores/i18n';
 	let error = $state('');
 
 	const predikatColors: Record<string, string> = {
-		A: '#22c55e', 'A-': '#27ae60', 'B+': '#5dade2',
-		B: '#3b82f6', 'B-': '#85c1e9', 'C+': '#f59e0b',
-		C: '#f59e0b', 'C-': '#d35400', 'D+': '#ef4444',
-		D: '#c0392b', E: '#922b21',
+		A: 'var(--success)', 'A-': 'var(--success)', 'B+': 'var(--accent)',
+		B: 'var(--accent)', 'B-': 'var(--accent)', 'C+': 'var(--warning)',
+		C: 'var(--warning)', 'C-': 'var(--warning)', 'D+': 'var(--danger)',
+		D: 'var(--danger)', E: 'var(--danger)',
 	};
 
 	$effect(() => {
@@ -387,12 +387,12 @@ import { t } from '$lib/stores/i18n';
 		.print-title h2 { margin: 0; font-size: 16px; color: #111; }
 		.print-title p { margin: 4px 0 0; font-size: 12px; color: #555; }
 
-		.identity-section { background: #fafafa; border-color: #ccc; border-radius: 4px; }
+		.identity-section { background: var(--surface); border-color: #ccc; border-radius: 4px; }
 		.identity-label { color: #555; }
 		.identity-value { color: #111; }
 		.section-title { border-bottom-color: #555; }
-		.absensi-grid { background: #fafafa; border-color: #ccc; border-radius: 4px; }
-		.notes-display { background: #fafafa; border-color: #ccc; border-radius: 4px; }
+		.absensi-grid { background: var(--surface); border-color: #ccc; border-radius: 4px; }
+		.notes-display { background: var(--surface); border-color: #ccc; border-radius: 4px; }
 
 		.signature-area {
 			display: flex !important;

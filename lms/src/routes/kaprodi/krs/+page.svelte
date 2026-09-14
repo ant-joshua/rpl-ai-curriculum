@@ -120,8 +120,8 @@
 				let bg = 'rgba(98,102,109,0.1)';
 				let color = 'var(--text-quaternary)';
 				let label = status;
-				if (approved) { bg = 'rgba(16,185,129,0.1)'; color = '#10b981'; label = t('kaprodi.status_approved'); }
-				else if (rejected) { bg = 'rgba(239,68,68,0.1)'; color = '#ef4444'; label = t('kaprodi.status_rejected'); }
+				if (approved) { bg = 'rgba(16,185,129,0.1)'; color = 'var(--success)'; label = t('kaprodi.status_approved'); }
+				else if (rejected) { bg = 'rgba(239,68,68,0.1)'; color = 'var(--danger)'; label = t('kaprodi.status_rejected'); }
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
 		},
@@ -232,19 +232,19 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-secondary:hover { background: var(--surface-hover); }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
-	.btn-approve { padding: 6px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10b981; border-radius: 6px; font-size: 12px; cursor: pointer; }
+	.btn-approve { padding: 6px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); border-radius: 6px; font-size: 12px; cursor: pointer; }
 	.btn-approve:hover { background: rgba(16,185,129,0.2); }
-	.btn-reject { padding: 6px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 6px; font-size: 12px; cursor: pointer; }
+	.btn-reject { padding: 6px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); border-radius: 6px; font-size: 12px; cursor: pointer; }
 	.btn-reject:hover { background: rgba(239,68,68,0.2); }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 	.empty-subtle { text-align: center; padding: 30px; color: var(--text-tertiary); font-size: 13px; }

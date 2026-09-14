@@ -266,7 +266,7 @@
 	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none !important; display: inline-block; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none !important; display: inline-block; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
 
@@ -335,7 +335,7 @@
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 
@@ -348,11 +348,11 @@
 		font-weight: 600;
 		text-transform: capitalize;
 	}
-	.status-draft { background: rgba(98,102,109,0.15); color: #64748b; }
-	.status-published { background: rgba(16,185,129,0.1); color: #10b981; }
-	.status-ongoing { background: rgba(59,130,246,0.1); color: #3b82f6; }
-	.status-completed { background: rgba(139,92,246,0.1); color: #8b5cf6; }
-	.status-cancelled { background: rgba(239,68,68,0.1); color: #ef4444; }
+	.status-draft { background: rgba(98,102,109,0.15); color: var(--text-secondary); }
+	.status-published { background: rgba(16,185,129,0.1); color: var(--success); }
+	.status-ongoing { background: rgba(59,130,246,0.1); color: var(--accent); }
+	.status-completed { background: rgba(139,92,246,0.1); color: var(--accent); }
+	.status-cancelled { background: rgba(239,68,68,0.1); color: var(--danger); }
 
 	@media (max-width: 768px) {
 		.stats-row { grid-template-columns: 1fr; }

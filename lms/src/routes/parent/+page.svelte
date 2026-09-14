@@ -145,7 +145,7 @@
 <style>
 	.parent-page { max-width: 980px; margin: 0 auto; padding: 24px 20px; }
 	.center { display: flex; justify-content: center; padding: 60px; }
-	.error-text { color: #dc2626; }
+	.error-text { color: var(--danger); }
 
 	.not-parent { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 	.np-icon { font-size: 48px; }
@@ -168,23 +168,23 @@
 	.enroll-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 	.enroll-chip {
 		display: flex; align-items: center; gap: 8px;
-		padding: 6px 12px; background: #f8fafc; border: 1px solid var(--border);
+		padding: 6px 12px; background: var(--bg); border: 1px solid var(--border);
 		border-radius: 8px; font-size: 13px;
 	}
 	.enroll-name { font-weight: 500; }
 
 	.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 	@media (max-width: 700px) { .panel-grid { grid-template-columns: 1fr; } }
-	.panel { background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+	.panel { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
 	.panel h3 { font-size: 14px; margin: 0 0 10px; }
 
 	.grade-list, .deadline-list { display: flex; flex-direction: column; gap: 6px; }
 	.grade-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 	.grade-title { font-weight: 500; }
 	.grade-pct { font-weight: 700; padding: 2px 8px; border-radius: 5px; }
-	.grade-pct.good { background: #dcfce7; color: #166534; }
-	.grade-pct.mid { background: #fef9c3; color: #854d0e; }
-	.grade-pct.bad { background: #fee2e2; color: #991b1b; }
+	.grade-pct.good { background: var(--success-light); color: var(--success); }
+	.grade-pct.mid { background: var(--warning-light); color: var(--warning); }
+	.grade-pct.bad { background: var(--danger-light); color: var(--danger); }
 	.deadline-item { display: flex; justify-content: space-between; font-size: 13px; }
 	.deadline-title { font-weight: 500; }
 	.deadline-date { color: var(--accent); font-weight: 600; }

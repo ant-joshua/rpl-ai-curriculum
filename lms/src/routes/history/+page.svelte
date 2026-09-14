@@ -160,7 +160,7 @@
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		background: var(--surface);
-		color: var(--danger, #ef4444);
+		color: var(--danger, var(--danger));
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
@@ -169,7 +169,7 @@
 
 	.clear-btn:hover {
 		background: rgba(239, 68, 68, 0.08);
-		border-color: var(--danger, #ef4444);
+		border-color: var(--danger, var(--danger));
 	}
 
 	.filter-tabs {
@@ -295,7 +295,7 @@
 		border-radius: 12px;
 		padding: 24px;
 		z-index: 501;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 0 0 1px var(--border);
 		min-width: 300px;
 		text-align: center;
 	}
@@ -334,9 +334,9 @@
 	}
 
 	.confirm-yes {
-		background: var(--danger, #ef4444);
-		color: #fff;
-		border-color: var(--danger, #ef4444);
+		background: var(--danger, var(--danger));
+		color: white;
+		border-color: var(--danger, var(--danger));
 	}
 
 	.confirm-yes:hover {

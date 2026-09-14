@@ -331,7 +331,7 @@
 	}
 	.stat { font-size: 13px; color: var(--text-secondary); }
 	.stat .stat-num { font-weight: 600; color: var(--text); }
-	.stat.failed .stat-num { color: #ef4444; }
+	.stat.failed .stat-num { color: var(--danger); }
 
 	.batch-progress-bar {
 		display: flex;
@@ -347,7 +347,7 @@
 	}
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #4F46E5, #4F46E5);
+		background: var(--accent);
 		border-radius: 4px;
 		transition: width 0.3s ease;
 	}
@@ -356,7 +356,7 @@
 	.field-group { display: flex; flex-direction: column; gap: 6px; }
 	.field-label {
 		font-size: 12px;
-		color: #64748b;
+		color: var(--text-secondary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;
@@ -380,6 +380,6 @@
 		padding: 4px 0;
 		cursor: pointer;
 	}
-	.class-checkbox input { accent-color: #4F46E5; }
-	.no-classes { font-size: 13px; color: #94a3b8; text-align: center; padding: 16px; }
+	.class-checkbox input { accent-color: var(--accent); }
+	.no-classes { font-size: 13px; color: var(--text-muted); text-align: center; padding: 16px; }
 </style>

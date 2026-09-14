@@ -291,7 +291,7 @@
 		border-radius: 8px;
 		border: none;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
@@ -360,8 +360,8 @@
 	.admin-badge {
 		font-size: 11px;
 		font-weight: 600;
-		color: #b45309;
-		background: #fef3c7;
+		color: var(--warning);
+		background: var(--warning-light);
 		padding: 2px 8px;
 		border-radius: 20px;
 	}
@@ -387,8 +387,8 @@
 		border-color: var(--accent);
 	}
 	.mini-btn.danger:hover {
-		border-color: #ef4444;
-		background: #fef2f2;
+		border-color: var(--danger);
+		background: var(--danger-light);
 	}
 	.group-actions {
 		display: flex;
@@ -414,10 +414,10 @@
 		border-color: var(--text-secondary);
 	}
 	.action-btn.delete {
-		color: #ef4444;
+		color: var(--danger);
 	}
 	.action-btn.delete:hover {
-		background: #fef2f2;
-		border-color: #fecaca;
+		background: var(--danger-light);
+		border-color: var(--danger);
 	}
 </style>

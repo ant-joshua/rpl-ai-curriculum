@@ -20,8 +20,8 @@
 		{ value: 'sakit', label: 'Sakit', color: 'var(--warning)' },
 		{ value: 'izin', label: 'Izin', color: 'var(--info)' },
 		{ value: 'alpha', label: 'Alpha', color: 'var(--danger)' },
-		{ value: 'dispensasi', label: 'Dispensasi', color: '#8b5cf6' },
-		{ value: 'terlambat', label: 'Terlambat', color: '#f97316' },
+		{ value: 'dispensasi', label: 'Dispensasi', color: 'var(--accent)' },
+		{ value: 'terlambat', label: 'Terlambat', color: 'var(--warning)' },
 	] as const;
 
 	let classes: any[] = $state([]);
@@ -289,8 +289,8 @@
 			<span class="summary-item">S: <strong style="color: var(--warning)">{students.filter(s => s.status === 'sakit').length}</strong></span>
 			<span class="summary-item">I: <strong style="color: var(--info)">{students.filter(s => s.status === 'izin').length}</strong></span>
 			<span class="summary-item">A: <strong style="color: var(--danger)">{students.filter(s => s.status === 'alpha').length}</strong></span>
-			<span class="summary-item">D: <strong style="color: #8b5cf6">{students.filter(s => s.status === 'dispensasi').length}</strong></span>
-			<span class="summary-item">T: <strong style="color: #f97316">{students.filter(s => s.status === 'terlambat').length}</strong></span>
+			<span class="summary-item">D: <strong style="color: var(--accent)">{students.filter(s => s.status === 'dispensasi').length}</strong></span>
+			<span class="summary-item">T: <strong style="color: var(--warning)">{students.filter(s => s.status === 'terlambat').length}</strong></span>
 		</div>
 
 		{#if saveError}
@@ -371,11 +371,11 @@
 	.summary-item { font-size: 13px; color: var(--text-secondary); }
 	.summary-item strong { font-size: 15px; }
 
-	.form-error { padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
-	.form-success { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+	.form-error { padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+	.form-success { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--success); border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
 
 	.actions { display: flex; gap: 8px; align-items: center; }
-	.btn-secondary { padding: 8px 20px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
+	.btn-secondary { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
 	.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-secondary:hover:not(:disabled) { background: var(--accent-hover); }
 	.btn-ghost { padding: 8px 16px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; }

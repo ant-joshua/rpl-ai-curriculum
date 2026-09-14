@@ -165,13 +165,13 @@
 		align-items: center;
 		justify-content: center;
 		padding: 24px;
-		background: var(--bg, #F4F7FA);
+		background: var(--bg, var(--bg));
 	}
 
 	.register-card {
 		width: 100%;
 		max-width: 480px;
-		background: var(--surface, #FFFFFF);
+		background: var(--surface, var(--surface));
 		border: 1px solid var(--border, rgba(0,0,0,0.06));
 		border-radius: 16px;
 		padding: 36px 32px;
@@ -181,19 +181,19 @@
 		font-size: 24px;
 		font-weight: 700;
 		margin: 0 0 4px;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 	}
 
 	.subtitle {
 		font-size: 14px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		margin: 0 0 24px;
 	}
 
 	.form-error {
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.2);
-		color: #ef4444;
+		color: var(--danger);
 		padding: 10px 14px;
 		border-radius: 8px;
 		font-size: 13px;
@@ -208,7 +208,7 @@
 		display: block;
 		font-size: 12px;
 		font-weight: 500;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		margin-bottom: 6px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
@@ -223,15 +223,15 @@
 		background: rgba(0,0,0,0.02);
 		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 8px;
-		color: var(--text, #1a1a2e);
+		color: var(--text, var(--text));
 		outline: none;
 		transition: border-color 0.15s;
 	}
 
 	.form-group input:focus,
 	.form-group textarea:focus {
-		border-color: #4F46E5;
-		box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
 	}
 
 	.form-group textarea {
@@ -255,8 +255,8 @@
 		font-family: inherit;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #4F46E5, #4F46E5);
-		color: #fff;
+		background: var(--accent);
+		color: white;
 	}
 	.btn-primary:hover:not(:disabled) { opacity: 0.85; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -268,10 +268,10 @@
 		text-align: center;
 		margin-top: 16px;
 		font-size: 13px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 	}
 	.login-link a {
-		color: #4F46E5;
+		color: var(--accent);
 		text-decoration: none;
 	}
 	.login-link a:hover { text-decoration: underline; }

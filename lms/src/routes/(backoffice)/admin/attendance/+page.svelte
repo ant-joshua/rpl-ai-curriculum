@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { Button, DataTable, StatCard } from '$lib/components/ui';
+	import { Button, DataTable, EmptyState, StatCard } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type AttendanceStats = {
@@ -185,10 +185,10 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	{:else}
 		<!-- Stats Cards -->
 		<div class="stats-grid">
-			<StatCard icon="📅" value={stats?.total_sessions ?? 0} label="Total Sesi" color="#4F46E5" />
-			<StatCard icon="✅" value={stats?.active_sessions ?? 0} label="Sesi Aktif" color="#22c55e" />
-			<StatCard icon="👥" value={stats?.total_records ?? 0} label="Total Presensi" color="#f59e0b" />
-			<StatCard icon="📈" value={(stats?.average_rate ?? 0) + '%'} label="Rata-rata Kehadiran" color="#8b5cf6" />
+			<StatCard icon="📅" value={stats?.total_sessions ?? 0} label="Total Sesi" color="var(--accent)" />
+			<StatCard icon="✅" value={stats?.active_sessions ?? 0} label="Sesi Aktif" color="var(--success)" />
+			<StatCard icon="👥" value={stats?.total_records ?? 0} label="Total Presensi" color="var(--warning)" />
+			<StatCard icon="📈" value={(stats?.average_rate ?? 0) + '%'} label="Rata-rata Kehadiran" color="var(--accent)" />
 		</div>
 
 		<!-- Attendance Overview -->
@@ -264,7 +264,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 
 	.btn-primary {
 		display: inline-flex; align-items: center; gap: 6px;
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer;
 		font-size: 13px; font-weight: 500; text-decoration: none;
 	}
@@ -297,9 +297,9 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		display: flex; align-items: center; justify-content: center;
 	}
 	.stat-card--primary .stat-icon { background: rgba(79,70,229,0.12); color: var(--accent); }
-	.stat-card--success .stat-icon { background: rgba(34,197,94,0.12); color: #22c55e; }
-	.stat-card--warning .stat-icon { background: rgba(245,158,11,0.12); color: #f59e0b; }
-	.stat-card--accent .stat-icon { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+	.stat-card--success .stat-icon { background: rgba(34,197,94,0.12); color: var(--success); }
+	.stat-card--warning .stat-icon { background: rgba(245,158,11,0.12); color: var(--warning); }
+	.stat-card--accent .stat-icon { background: rgba(139,92,246,0.12); color: var(--accent); }
 	.stat-value { font-size: 22px; font-weight: 700; color: var(--text); }
 	.stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
@@ -323,10 +323,10 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		position: absolute; top: 0; left: 0; height: 100%; border-radius: 8px;
 		opacity: 0.06; transition: width 0.6s ease;
 	}
-	.overview-present .overview-bar { background: #22c55e; }
-	.overview-late .overview-bar { background: #f59e0b; }
-	.overview-absent .overview-bar { background: #ef4444; }
-	.overview-excused .overview-bar { background: #8b5cf6; }
+	.overview-present .overview-bar { background: var(--success); }
+	.overview-late .overview-bar { background: var(--warning); }
+	.overview-absent .overview-bar { background: var(--danger); }
+	.overview-excused .overview-bar { background: var(--accent); }
 
 	.overview-info {
 		display: flex; align-items: center; gap: 12px; position: relative; z-index: 1;
@@ -353,8 +353,8 @@ const sessionColumns: ColumnDef<any, any>[] = [
 		display: inline-block; padding: 2px 8px; border-radius: 6px;
 		font-size: 11px; font-weight: 600;
 	}
-	.badge-active { background: rgba(34,197,94,0.12); color: #22c55e; }
-	.badge-closed { background: rgba(156,163,175,0.12); color: #9ca3af; }
+	.badge-active { background: rgba(34,197,94,0.12); color: var(--success); }
+	.badge-closed { background: rgba(156,163,175,0.12); color: var(--text-muted); }
 
 	.btn-sm {
 		padding: 4px 10px; background: var(--bg-secondary); color: var(--text);
@@ -364,7 +364,7 @@ const sessionColumns: ColumnDef<any, any>[] = [
 	.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
 
 	.btn-secondary {
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
 	}
 	.btn-secondary:hover { background: var(--accent-hover); }

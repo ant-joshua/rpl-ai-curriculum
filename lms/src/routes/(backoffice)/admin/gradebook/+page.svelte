@@ -84,7 +84,7 @@
 	.error {
 		padding: 40px 20px;
 		text-align: center;
-		color: var(--color-red, #ef4444);
+		color: var(--color-red, var(--danger));
 	}
 
 	.offering-list {

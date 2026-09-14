@@ -884,7 +884,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.banner-overlay {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 100%);
+		background: rgba(0,0,0,0.5);
 		display: flex;
 		align-items: flex-end;
 		padding: 32px;
@@ -910,7 +910,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.banner-title {
 		font-size: 32px;
 		font-weight: 700;
-		color: #fff;
+		color: white;
 		margin: 0 0 6px 0;
 		line-height: 1.2;
 	}
@@ -1025,7 +1025,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 	.pdf-download-btn:hover {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.module-layout { display: flex; gap: 24px; align-items: flex-start; }
@@ -1058,7 +1058,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.session-item.active { background: var(--accent-dim); color: var(--accent); }
 
 	.session-check { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
-	.session-check.done { color: var(--success, #22c55e); }
+	.session-check.done { color: var(--success, var(--success)); }
 	.session-name { line-height: 1.3; }
 
 	.word-count {
@@ -1125,8 +1125,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		transition: all 0.15s ease;
 	}
 
-	.quiz-toggle-btn:hover { border-color: #f59e0b; color: #f59e0b; }
-	.quiz-toggle-btn.active { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; color: #f59e0b; }
+	.quiz-toggle-btn:hover { border-color: var(--warning); color: var(--warning); }
+	.quiz-toggle-btn.active { background: rgba(245, 158, 11, 0.1); border-color: var(--warning); color: var(--warning); }
 
 	.exercise-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
@@ -1135,8 +1135,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		transition: all 0.15s ease;
 	}
 
-	.exercise-toggle-btn:hover { border-color: #22c55e; color: #22c55e; }
-	.exercise-toggle-btn.active { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; }
+	.exercise-toggle-btn:hover { border-color: var(--success); color: var(--success); }
+	.exercise-toggle-btn.active { background: rgba(34, 197, 94, 0.1); border-color: var(--success); color: var(--success); }
 
 	.quiz-section {
 		margin-top: 24px;
@@ -1154,7 +1154,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 
 	.complete-btn:hover { border-color: var(--accent); color: var(--accent); }
-	.complete-btn.done { background: var(--success, #22c55e); color: #fff; border-color: var(--success, #22c55e); }
+	.complete-btn.done { background: var(--success, var(--success)); color: white; border-color: var(--success, var(--success)); }
 
 	/* Celebration animation on complete button */
 	.complete-btn.celebrate {
@@ -1162,8 +1162,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 
 	@keyframes celebrate-pulse {
-		0% { transform: scale(1); background: var(--success, #22c55e); }
-		50% { transform: scale(1.15); background: #22c55e; }
+		0% { transform: scale(1); background: var(--success, var(--success)); }
+		50% { transform: scale(1.15); background: var(--success); }
 		100% { transform: scale(1); }
 	}
 
@@ -1246,8 +1246,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
 		transition: all 0.15s ease;
 	}
-	.video-toggle-btn:hover { border-color: #ef4444; color: #ef4444; }
-	.video-toggle-btn.active { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444; }
+	.video-toggle-btn:hover { border-color: var(--danger); color: var(--danger); }
+	.video-toggle-btn.active { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: var(--danger); }
 
 	/* Videos section */
 	.videos-section {
@@ -1323,11 +1323,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 	.video-status.published {
 		background: rgba(34, 197, 94, 0.12);
-		color: #22c55e;
+		color: var(--success);
 	}
 	.video-status.planned {
 		background: rgba(245, 158, 11, 0.12);
-		color: #f59e0b;
+		color: var(--warning);
 	}
 	.video-play-btn {
 		padding: 4px 12px;
@@ -1474,7 +1474,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		left: 0;
 		height: 3px;
 		z-index: 1000;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: var(--accent);
 		transition: none;
 		pointer-events: none;
 	}
@@ -1482,7 +1482,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	/* Module complete banner */
 	.module-complete-banner {
 		margin-bottom: 20px;
-		background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.05));
+		background: rgba(var(--success-rgb, 45,122,79), 0.08);
 		border: 1px solid rgba(34, 197, 94, 0.3);
 		border-radius: 12px;
 		padding: 16px 20px;
@@ -1519,7 +1519,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.banner-link {
 		padding: 8px 16px;
 		border-radius: 8px;
-		background: #22c55e;
+		background: var(--success);
 		color: #fff !important;
 		font-size: 13px;
 		font-weight: 600;
@@ -1539,8 +1539,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
 		transition: all 0.15s ease;
 	}
-	.discuss-toggle-btn:hover { border-color: #3b82f6; color: #3b82f6; }
-	.discuss-toggle-btn.active { background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; color: #3b82f6; }
+	.discuss-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+	.discuss-toggle-btn.active { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); color: var(--accent); }
 
 	.discussions-section {
 		margin-top: 24px;
@@ -1588,8 +1588,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		height: 32px;
 		min-width: 32px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-		color: #fff;
+		background: var(--accent);
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1644,7 +1644,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		transition: all 0.15s ease;
 	}
 	.reply-btn:hover { color: var(--accent); background: var(--accent-dim); }
-	.delete-btn:hover { color: var(--danger, #ef4444); background: rgba(239, 68, 68, 0.1); }
+	.delete-btn:hover { color: var(--danger, var(--danger)); background: rgba(239, 68, 68, 0.1); }
 
 	.reply-input {
 		display: flex;
@@ -1677,7 +1677,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		white-space: nowrap;
 		transition: all 0.15s ease;
 	}
-	.send-reply-btn:hover { background: var(--accent); color: #fff; }
+	.send-reply-btn:hover { background: var(--accent); color: white; }
 	.send-reply-btn:disabled { opacity: 0.4; cursor: default; }
 
 	.discussion-input-area {
@@ -1766,9 +1766,9 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		border-radius: 12px;
 		text-transform: uppercase;
 	}
-	.ex-meta .badge.beginner { background: #10b98122; color: #10b981; }
-	.ex-meta .badge.intermediate { background: #f59e0b22; color: #f59e0b; }
-	.ex-meta .badge.advanced { background: #ef444422; color: #ef4444; }
+	.ex-meta .badge.beginner { background: var(--success)22; color: var(--success); }
+	.ex-meta .badge.intermediate { background: var(--warning)22; color: var(--warning); }
+	.ex-meta .badge.advanced { background: var(--danger)22; color: var(--danger); }
 	.ex-type {
 		font-size: 11px;
 		color: var(--text-secondary);

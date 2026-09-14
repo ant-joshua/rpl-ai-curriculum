@@ -304,7 +304,7 @@
 		font-size: 12px;
 		line-height: 1.5;
 		overflow-x: auto;
-		color: #64748b;
+		color: var(--text-secondary);
 		font-family: 'SF Mono', 'Fira Code', monospace;
 		max-height: 120px;
 		overflow-y: auto;
@@ -316,7 +316,7 @@
 		padding: 0.75rem;
 		font-size: 13px;
 		line-height: 1.5;
-		color: #1a1a2e;
+		color: var(--text);
 		background: rgba(0,0,0,0.4);
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 6px;
@@ -326,18 +326,18 @@
 	}
 	.html-editor:focus {
 		outline: none;
-		border-color: #4F46E5;
-		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
 	}
 	.field-group { display: flex; flex-direction: column; gap: 6px; }
 	.field-label {
 		font-size: 12px;
-		color: #64748b;
+		color: var(--text-secondary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;
 	}
-	.field-hint { font-size: 11px; color: #94a3b8; margin: 0; }
+	.field-hint { font-size: 11px; color: var(--text-muted); margin: 0; }
 
 	.checkbox-field {
 		display: flex;
@@ -346,5 +346,5 @@
 		font-size: 14px;
 		cursor: pointer;
 	}
-	.checkbox-field input { accent-color: #4F46E5; }
+	.checkbox-field input { accent-color: var(--accent); }
 </style>

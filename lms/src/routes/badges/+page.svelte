@@ -236,7 +236,7 @@
 
 	.xp-bar {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		background: var(--accent);
 		border-radius: 5px;
 		transition: width 0.3s ease;
 	}
@@ -313,12 +313,7 @@
 	/* Earned state — gold shimmer */
 	.badge-card.earned {
 		border-color: rgba(234, 179, 8, 0.25);
-		background: linear-gradient(
-			135deg,
-			var(--surface) 0%,
-			rgba(234, 179, 8, 0.04) 50%,
-			var(--surface) 100%
-		);
+		background: var(--surface);
 		position: relative;
 		overflow: hidden;
 	}
@@ -327,16 +322,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			105deg,
-			transparent 30%,
-			rgba(234, 179, 8, 0.06) 45%,
-			rgba(255, 215, 0, 0.1) 50%,
-			rgba(234, 179, 8, 0.06) 55%,
-			transparent 70%
-		);
-		background-size: 300% 100%;
-		animation: shimmer 3s ease-in-out infinite;
+		background: rgba(234, 179, 8, 0.04);
 		pointer-events: none;
 		border-radius: inherit;
 	}
@@ -374,7 +360,7 @@
 		position: absolute;
 		top: 8px;
 		right: 8px;
-		background: linear-gradient(135deg, #eab308, #fbbf24);
+		background: var(--warning);
 		color: #000;
 		font-size: 10px;
 		font-weight: 700;

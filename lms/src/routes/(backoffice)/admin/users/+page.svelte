@@ -22,12 +22,12 @@
 	const VALID_ROLES = ['superadmin', 'admin', 'instructor', 'ta', 'student', 'parent'];
 
 	const roleColors: Record<string, string> = {
-		superadmin: 'var(--color-red, #ef4444)',
-		admin: 'var(--color-purple, #4F46E5)',
-		instructor: 'var(--color-blue, #3b82f6)',
-		ta: 'var(--color-green, #22c55e)',
-		student: 'var(--color-gray, #64748b)',
-		parent: 'var(--color-orange, #f97316)',
+		superadmin: 'var(--color-red, var(--danger))',
+		admin: 'var(--color-purple, var(--accent))',
+		instructor: 'var(--color-blue, var(--accent))',
+		ta: 'var(--color-green, var(--success))',
+		student: 'var(--color-gray, var(--text-secondary))',
+		parent: 'var(--color-orange, var(--warning))',
 	};
 
 	onMount(() => {
@@ -386,9 +386,9 @@
 
 	.status-dot {
 		display: inline-block; width: 10px; height: 10px; border-radius: 50%;
-		background: var(--color-gray, #64748b);
+		background: var(--color-gray, var(--text-secondary));
 	}
-	.status-dot.active { background: var(--color-green, #22c55e); box-shadow: 0 0 6px var(--color-green, #22c55e); }
+	.status-dot.active { background: var(--color-green, var(--success)); box-shadow: 0 0 6px var(--color-green, var(--success)); }
 
 	.action-btns { display: flex; gap: 4px; }
 	.icon-btn {
@@ -439,16 +439,16 @@
 	}
 	.password-section h3 { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
 	.password-hint { font-size: 12px; color: var(--text-secondary); margin: 0 0 10px; }
-	.password-warn { font-size: 12px; color: var(--color-orange, #f97316); margin-top: 4px; }
+	.password-warn { font-size: 12px; color: var(--color-orange, var(--warning)); margin-top: 4px; }
 
 	.save-error {
 		padding: 8px 12px; background: rgba(239, 68, 68, 0.08);
-		border: 1px solid rgba(239, 68, 68, 0.19); color: var(--color-red, #ef4444);
+		border: 1px solid rgba(239, 68, 68, 0.19); color: var(--color-red, var(--danger));
 		border-radius: 8px; font-size: 13px;
 	}
 	.save-success {
 		padding: 8px 12px; background: rgba(34, 197, 94, 0.08);
-		border: 1px solid rgba(34, 197, 94, 0.19); color: var(--color-green, #22c55e);
+		border: 1px solid rgba(34, 197, 94, 0.19); color: var(--color-green, var(--success));
 		border-radius: 8px; font-size: 13px;
 	}
 
@@ -456,7 +456,7 @@
 	.footer-left { }
 	.footer-right { display: flex; gap: 8px; }
 	.danger-link {
-		background: none; border: none; color: var(--color-red, #ef4444);
+		background: none; border: none; color: var(--color-red, var(--danger));
 		font-size: 13px; font-weight: 500; cursor: pointer; padding: 0;
 	}
 	.danger-link:hover { text-decoration: underline; }

@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<meta name="theme-color" content="#F4F7FA" />
+	<meta name="theme-color" content="var(--bg)" />
 </svelte:head>
 
 <div class="auth-layout">
@@ -31,22 +31,18 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--bg, #F4F7FA);
-		background-image:
-			radial-gradient(ellipse at 50% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
-			radial-gradient(ellipse at 80% 80%, rgba(79, 70, 229, 0.04) 0%, transparent 50%);
-		padding: 1rem;
+		background: var(--bg, var(--bg));
 		position: relative;
 		overflow: hidden;
 		/* Force light theme on auth pages */
-		--bg: #F4F7FA !important;
-		--surface: #FFFFFF !important;
-		--text: #1a1a2e !important;
-		--text-secondary: #64748b !important;
-		--text-muted: #94a3b8 !important;
-		--border: #E2E8F0 !important;
-		--accent: #4F46E5 !important;
-		--accent-hover: #4338CA !important;
+		--bg: var(--bg) !important;
+		--surface: var(--surface) !important;
+		--text: var(--text) !important;
+		--text-secondary: var(--text-secondary) !important;
+		--text-muted: var(--text-muted) !important;
+		--border: var(--border) !important;
+		--accent: var(--accent) !important;
+		--accent-hover: var(--accent-hover) !important;
 	}
 
 	.auth-container {
@@ -61,7 +57,7 @@
 	.auth-container :global(.login-card),
 	.auth-container :global(.register-card),
 	.auth-container :global(.reset-card) {
-		box-shadow: 0 0 24px rgba(79, 70, 229, 0.08), 0 0 60px rgba(79, 70, 229, 0.04);
+		box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.08), 0 0 60px rgba(79, 70, 229, 0.04);
 	}
 
 	/* Animated background blobs */
@@ -76,7 +72,7 @@
 	.blob-1 {
 		width: 400px;
 		height: 400px;
-		background: #4F46E5;
+		background: var(--accent);
 		top: -10%;
 		left: -10%;
 		animation: blob-float-1 18s ease-in-out infinite;
@@ -85,7 +81,7 @@
 	.blob-2 {
 		width: 350px;
 		height: 350px;
-		background: #3B82F6;
+		background: var(--accent);
 		bottom: -15%;
 		right: -10%;
 		animation: blob-float-2 20s ease-in-out infinite;
@@ -94,7 +90,7 @@
 	.blob-3 {
 		width: 300px;
 		height: 300px;
-		background: #8B5CF6;
+		background: var(--accent);
 		top: 50%;
 		right: -5%;
 		animation: blob-float-3 22s ease-in-out infinite;
@@ -140,8 +136,8 @@
 		border-radius: 8px;
 		background: rgba(255,255,255,0.9);
 		backdrop-filter: blur(8px);
-		border: 1px solid #E2E8F0;
-		color: #64748b;
+		border: 1px solid var(--border);
+		color: var(--text-secondary);
 		font-size: 13px;
 		font-weight: 500;
 		text-decoration: none !important;
@@ -149,9 +145,9 @@
 		transition: all 0.15s;
 	}
 	.back-home:hover {
-		background: #FFFFFF;
-		border-color: #4F46E5;
-		color: #4F46E5;
+		background: var(--surface);
+		border-color: var(--accent);
+		color: var(--accent);
 		box-shadow: 0 2px 8px rgba(79,70,229,0.12);
 	}
 	.back-home svg {

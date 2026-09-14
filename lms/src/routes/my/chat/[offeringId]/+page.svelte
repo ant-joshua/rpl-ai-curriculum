@@ -359,7 +359,7 @@
 	.chat-error {
 		padding: 8px 16px;
 		background: rgba(239,68,68,0.08);
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 12px;
 		border-top: 1px solid var(--border);
 	}
@@ -391,7 +391,7 @@
 	.send-btn {
 		padding: 10px 20px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border: none;
 		border-radius: 8px;
 		font-size: 13px;

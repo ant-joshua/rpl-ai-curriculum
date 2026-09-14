@@ -168,10 +168,10 @@
 		padding: 16px; text-decoration: none; color: inherit;
 		transition: box-shadow 0.2s, transform 0.2s;
 	}
-	.course-card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); transform: translateY(-2px); }
+	.course-card:hover { box-shadow: none; transform: translateY(-2px); }
 	.course-card h3 { margin: 0 0 4px; font-size: 15px; }
 	.course-code { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; }
 	.course-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-secondary); }
-	.class-tag { padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 600; }
+	.class-tag { padding: 2px 8px; border-radius: 999px; background: var(--accent-light); color: var(--accent); font-size: 11px; font-weight: 600; }
 	.course-card-side { flex-shrink: 0; }
 </style>

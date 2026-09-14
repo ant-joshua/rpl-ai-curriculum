@@ -137,7 +137,7 @@
 	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
 	.page-header h1 { font-size: 22px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 13px; margin: 4px 0 0; }
-	.new-btn { padding: 8px 14px; border-radius: 8px; border: none; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
+	.new-btn { padding: 8px 14px; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: 600; font-size: 13px; cursor: pointer; }
 	.search-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
 	.search-box input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; box-sizing: border-box; }
 	.searching { font-size: 12px; color: var(--text-secondary); padding: 6px 2px; }
@@ -152,7 +152,7 @@
 	.conv-list { display: flex; flex-direction: column; gap: 8px; }
 	.conv-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; }
 	.conv-item:hover { border-color: var(--accent); }
-	.avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+	.avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
 	.conv-main { flex: 1; min-width: 0; }
 	.conv-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 	.conv-name { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -160,5 +160,5 @@
 	.conv-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 2px; }
 	.conv-preview { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 	.conv-preview.unread { color: var(--text); font-weight: 600; }
-	.unread-badge { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; border-radius: 20px; padding: 2px 8px; flex-shrink: 0; }
+	.unread-badge { background: var(--accent); color: white; font-size: 11px; font-weight: 700; border-radius: 20px; padding: 2px 8px; flex-shrink: 0; }
 </style>

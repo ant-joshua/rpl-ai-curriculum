@@ -150,12 +150,12 @@
 		display: flex; align-items: center; justify-content: center;
 		font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
 	}
-	.step-number.done { background: #1b4332; color: #27ae60; }
+	.step-number.done { background: var(--success); color: var(--success); }
 	.step-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
 	.step-info p { font-size: 0.85rem; color: var(--muted); }
 	.action-bar { text-align: center; padding: 1.5rem 0; }
 	.start-btn {
-		background: var(--accent); color: #fff; border: none;
+		background: var(--accent); color: white; border: none;
 		border-radius: 10px; padding: 1rem 2.5rem;
 		font-size: 1.1rem; font-weight: 600; cursor: pointer;
 		transition: opacity 0.2s;

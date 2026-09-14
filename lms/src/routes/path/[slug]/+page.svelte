@@ -283,7 +283,7 @@
 
 	.start-btn {
 		background: var(--start-color, var(--accent));
-		color: #fff;
+		color: white;
 	}
 	.start-btn:hover {
 		opacity: 0.9;
@@ -292,7 +292,7 @@
 
 	.continue-btn {
 		background: var(--start-color, var(--accent));
-		color: #fff;
+		color: white;
 	}
 	.continue-btn:hover {
 		opacity: 0.9;
@@ -302,7 +302,7 @@
 	.completed-badge {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--success, #22c55e);
+		color: var(--success, var(--success));
 		padding: 8px 16px;
 		background: rgba(34, 197, 94, 0.1);
 		border-radius: 10px;
@@ -470,7 +470,7 @@
 	.continue-tag {
 		font-size: 11px;
 		font-weight: 600;
-		color: #fff;
+		color: white;
 		padding: 3px 10px;
 		border-radius: 8px;
 		white-space: nowrap;

@@ -50,11 +50,11 @@ import { t } from '$lib/stores/i18n';
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 85) return '#22c55e';
-		if (pct >= 70) return '#27ae60';
-		if (pct >= 55) return '#f1c40f';
-		if (pct >= 45) return '#f59e0b';
-		return '#ef4444';
+		if (pct >= 85) return 'var(--success)';
+		if (pct >= 70) return 'var(--success)';
+		if (pct >= 55) return 'var(--warning)';
+		if (pct >= 45) return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	function formatPct(val: number | null): string {
@@ -97,7 +97,7 @@ import { t } from '$lib/stores/i18n';
 			accessorKey: 'predikat_pengetahuan',
 			cell: ({ getValue }) => {
 				const v = getValue() as string;
-				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:#4F46E5">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:var(--accent)">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
 			}
 		},
 		{
@@ -110,7 +110,7 @@ import { t } from '$lib/stores/i18n';
 			accessorKey: 'predikat_keterampilan',
 			cell: ({ getValue }) => {
 				const v = getValue() as string;
-				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:#4F46E5">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
+				return v ? `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(79,70,229,0.1);color:var(--accent)">${v}</span>` : '<span style="color:var(--text-quaternary)">-</span>';
 			}
 		},
 	];

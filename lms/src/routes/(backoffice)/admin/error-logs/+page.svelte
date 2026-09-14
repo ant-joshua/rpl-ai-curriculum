@@ -44,11 +44,11 @@
 
 	function levelBadge(level: string) {
 		const colors: Record<string, string> = {
-			error: 'background:#ef4444;color:#fff',
-			warning: 'background:#eab308;color:#fff',
-			critical: 'background:#b91c1c;color:#fff',
+			error: 'background:var(--danger);color:#fff',
+			warning: 'background:var(--warning);color:#fff',
+			critical: 'background:var(--danger);color:#fff',
 		};
-		return colors[level] || 'background:#6b7280;color:#fff';
+		return colors[level] || 'background:var(--text-muted);color:#fff';
 	}
 
 	function copyText(text: string) {

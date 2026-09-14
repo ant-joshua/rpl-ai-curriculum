@@ -92,9 +92,9 @@
 	input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-alpha); }
 	.slug-preview { display: flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); font-size: 0.9rem; }
 	.slug-preview input { flex: 1; }
-	.form-error { padding: 0.75rem; background: #fef2f2; color: #ef4444; border-radius: 8px; font-size: 0.85rem; }
+	.form-error { padding: 0.75rem; background: var(--danger-light); color: var(--danger); border-radius: 8px; font-size: 0.85rem; }
 	.actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem; }
-	.btn-primary { padding: 0.6rem 1.2rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+	.btn-primary { padding: 0.6rem 1.2rem; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-cancel { padding: 0.6rem 1.2rem; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-size: 0.9rem; }
 	.btn-cancel:hover { background: var(--bg-code); }

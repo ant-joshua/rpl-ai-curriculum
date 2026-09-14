@@ -148,7 +148,7 @@ const parentColumns: ColumnDef<any, any>[] = [
 		accessorKey: 'isPrimary',
 		cell: ({ getValue }) => {
 			const v = getValue() as number;
-			return v === 1 ? '<span style="color:#10b981;font-weight:600">'+t('common.yes')+'</span>' : '<span style="color:var(--text-secondary)">Tidak</span>';
+			return v === 1 ? '<span style="color:var(--success);font-weight:600">'+t('common.yes')+'</span>' : '<span style="color:var(--text-secondary)">Tidak</span>';
 		}
 	},
 	{
@@ -288,53 +288,53 @@ const parentColumns: ColumnDef<any, any>[] = [
 <style>
 	.pp-page { display: flex; flex-direction: column; gap: 20px; }
 	.pp-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-	.pp-title { font-size: 24px; font-weight: 600; color: var(--text-primary, #1a1a2e); margin: 0; letter-spacing: -0.3px; }
-	.pp-subtitle { font-size: 13px; color: var(--text-secondary, #64748b); margin: 4px 0 0; }
+	.pp-title { font-size: 24px; font-weight: 600; color: var(--text-primary, var(--text)); margin: 0; letter-spacing: -0.3px; }
+	.pp-subtitle { font-size: 13px; color: var(--text-secondary, var(--text-secondary)); margin: 4px 0 0; }
 
-	.pp-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 20px; color: var(--text-secondary, #64748b); }
-	.pp-spinner { width: 32px; height: 32px; border: 3px solid var(--border-color, rgba(0,0,0,0.06)); border-top-color: var(--accent, #4F46E5); border-radius: 50%; animation: pp-spin 0.7s linear infinite; }
+	.pp-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 20px; color: var(--text-secondary, var(--text-secondary)); }
+	.pp-spinner { width: 32px; height: 32px; border: 3px solid var(--border-color, rgba(0,0,0,0.06)); border-top-color: var(--accent, var(--accent)); border-radius: 50%; animation: pp-spin 0.7s linear infinite; }
 	@keyframes pp-spin { to { transform: rotate(360deg); } }
 
-	.pp-error { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; color: #ef4444; text-align: center; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; }
+	.pp-error { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; color: var(--danger); text-align: center; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; }
 
-	.pp-table-wrap { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; overflow: hidden; }
+	.pp-table-wrap { background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; overflow: hidden; }
 	.pp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	.pp-table th { text-align: left; padding: 10px 20px; font-size: 11px; font-weight: 600; color: var(--text-secondary, #64748b); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); white-space: nowrap; }
-	.pp-table td { padding: 12px 20px; color: var(--text-primary, #d0d6e0); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04)); }
+	.pp-table th { text-align: left; padding: 10px 20px; font-size: 11px; font-weight: 600; color: var(--text-secondary, var(--text-secondary)); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); white-space: nowrap; }
+	.pp-table td { padding: 12px 20px; color: var(--text-primary, var(--border)); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04)); }
 	.pp-table tbody tr:hover { background: rgba(0,0,0,0.02); }
 	.pp-name-cell { font-weight: 500; }
-	.pp-link { color: var(--accent, #4F46E5); text-decoration: none; }
+	.pp-link { color: var(--accent, var(--accent)); text-decoration: none; }
 	.pp-link:hover { text-decoration: underline; }
 	.pp-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
 
-	.pp-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 60px 20px; color: var(--text-secondary, #64748b); background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; }
+	.pp-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 60px 20px; color: var(--text-secondary, var(--text-secondary)); background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; }
 
 	/* Buttons */
 	.pp-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; text-decoration: none; }
-	.pp-btn-primary { background: var(--accent, #4F46E5); color: #fff; }
-	.pp-btn-primary:hover { background: #5f5ee6; }
+	.pp-btn-primary { background: var(--accent, var(--accent)); color: white; }
+	.pp-btn-primary:hover { background: var(--accent); }
 	.pp-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.pp-btn-ghost { background: transparent; color: var(--accent, #4F46E5); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); }
+	.pp-btn-ghost { background: transparent; color: var(--accent, var(--accent)); border: 1px solid var(--border-color, rgba(255,255,255,0.1)); }
 	.pp-btn-ghost:hover { background: rgba(0,0,0,0.04); }
 	.pp-btn-sm { padding: 5px 12px; font-size: 12px; }
 
 	/* Modal */
 	.pp-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-	.pp-modal { background: var(--bg-secondary, #1a1b1e); border: 1px solid var(--border-color, rgba(255,255,255,0.12)); border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+	.pp-modal { background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(255,255,255,0.12)); border-radius: 12px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
 	.pp-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 0; }
-	.pp-modal-header h3 { font-size: 17px; font-weight: 600; color: var(--text-primary, #1a1a2e); margin: 0; }
-	.pp-btn-close { background: none; border: none; color: var(--text-secondary, #64748b); font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
-	.pp-btn-close:hover { color: var(--text-primary, #1a1a2e); }
+	.pp-modal-header h3 { font-size: 17px; font-weight: 600; color: var(--text-primary, var(--text)); margin: 0; }
+	.pp-btn-close { background: none; border: none; color: var(--text-secondary, var(--text-secondary)); font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
+	.pp-btn-close:hover { color: var(--text-primary, var(--text)); }
 
 	.pp-form { display: flex; flex-direction: column; gap: 16px; padding: 20px 24px 24px; }
 	.pp-field { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-	.pp-label { font-size: 12px; font-weight: 500; color: var(--text-secondary, #64748b); }
-	.pp-input { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, rgba(255,255,255,0.1)); background: var(--bg-primary, #141517); color: var(--text-primary, #1a1a2e); font-size: 13px; outline: none; transition: border-color 0.15s; }
-	.pp-input:focus { border-color: var(--accent, #4F46E5); }
-	.pp-input::placeholder { color: var(--text-secondary, #64748b); }
+	.pp-label { font-size: 12px; font-weight: 500; color: var(--text-secondary, var(--text-secondary)); }
+	.pp-input { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color, rgba(255,255,255,0.1)); background: var(--bg-primary, var(--text)); color: var(--text-primary, var(--text)); font-size: 13px; outline: none; transition: border-color 0.15s; }
+	.pp-input:focus { border-color: var(--accent, var(--accent)); }
+	.pp-input::placeholder { color: var(--text-secondary, var(--text-secondary)); }
 	.pp-row { display: flex; gap: 12px; }
-	.pp-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-primary, #d0d6e0); cursor: pointer; margin-top: 16px; }
-	.pp-checkbox input { width: 16px; height: 16px; accent-color: var(--accent, #4F46E5); }
+	.pp-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-primary, var(--border)); cursor: pointer; margin-top: 16px; }
+	.pp-checkbox input { width: 16px; height: 16px; accent-color: var(--accent, var(--accent)); }
 
 	.pp-modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 8px; }
 

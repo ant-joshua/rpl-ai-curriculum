@@ -256,9 +256,9 @@
 
 	// Result screen helpers
 	function scoreColor(pct: number): string {
-		if (pct >= 80) return 'var(--color-green, #22c55e)';
-		if (pct >= 60) return 'var(--color-yellow, #f1c40f)';
-		return 'var(--color-red, #ef4444)';
+		if (pct >= 80) return 'var(--color-green, var(--success))';
+		if (pct >= 60) return 'var(--color-yellow, var(--warning))';
+		return 'var(--color-red, var(--danger))';
 	}
 </script>
 
@@ -576,7 +576,7 @@
 
 	.error-state p {
 		margin-bottom: 16px;
-		color: var(--color-red, #ef4444);
+		color: var(--color-red, var(--danger));
 	}
 
 	/* Header */
@@ -611,9 +611,9 @@
 		color: var(--accent);
 	}
 
-	.badge--midterm, .badge--final { background: #ef444433; color: #ef4444; }
-	.badge--practice { background: #22c55e33; color: #22c55e; }
-	.badge--exercise { background: #f59e0b33; color: #f59e0b; }
+	.badge--midterm, .badge--final { background: var(--danger)33; color: var(--danger); }
+	.badge--practice { background: var(--success)33; color: var(--success); }
+	.badge--exercise { background: var(--warning)33; color: var(--warning); }
 
 	/* Timer */
 	.quiz-timer {
@@ -632,15 +632,15 @@
 	.timer-icon { font-size: 18px; }
 
 	.timer-warning {
-		border-color: #f59e0b;
-		color: #f59e0b;
-		background: #f59e0b15;
+		border-color: var(--warning);
+		color: var(--warning);
+		background: var(--warning)15;
 	}
 
 	.timer-critical {
-		border-color: #ef4444;
-		color: #ef4444;
-		background: #ef444415;
+		border-color: var(--danger);
+		color: var(--danger);
+		background: var(--danger)15;
 		animation: pulse 1s ease-in-out infinite;
 	}
 
@@ -653,22 +653,22 @@
 	.xp-earned {
 		display: flex; align-items: center; gap: 8px;
 		margin-top: 12px; padding: 10px 16px;
-		background: linear-gradient(135deg, #fef3c7, #fde68a);
-		border: 1px solid #f59e0b; border-radius: 10px;
-		font-size: 16px; font-weight: 700; color: #92400e;
+		background: var(--warning-light);
+		border: 1px solid var(--warning); border-radius: 10px;
+		font-size: 16px; font-weight: 700; color: var(--warning);
 	}
 	.new-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px; }
 	.badge-earned {
-		padding: 3px 10px; background: white; border: 1px solid #f59e0b;
-		border-radius: 6px; font-size: 12px; font-weight: 600; color: #92400e;
+		padding: 3px 10px; background: white; border: 1px solid var(--warning);
+		border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--warning);
 	}
 
 	/* Practice Badge */
 	.practice-badge {
 		display: inline-block; padding: 4px 12px;
-		background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-		border: 1px solid #3b82f6; border-radius: 6px;
-		font-size: 12px; font-weight: 600; color: #1e40af;
+		background: var(--accent-light);
+		border: 1px solid var(--accent); border-radius: 6px;
+		font-size: 12px; font-weight: 600; color: var(--accent);
 	}
 
 	/* Body */
@@ -679,9 +679,9 @@
 
 	/* Error banner */
 	.submit-error-banner {
-		background: #ef444415;
-		border: 1px solid #ef4444;
-		color: #ef4444;
+		background: var(--danger)15;
+		border: 1px solid var(--danger);
+		color: var(--danger);
 		padding: 10px 16px;
 		border-radius: 8px;
 		margin-bottom: 12px;
@@ -759,23 +759,23 @@
 	}
 
 	.nav-q-btn.answered {
-		background: #22c55e15;
-		border-color: #22c55e;
-		color: #22c55e;
+		background: var(--success)15;
+		border-color: var(--success);
+		color: var(--success);
 	}
 
 	.nav-q-btn.flagged {
-		background: #f59e0b15;
-		border-color: #f59e0b;
-		color: #f59e0b;
+		background: var(--warning)15;
+		border-color: var(--warning);
+		color: var(--warning);
 	}
 
 	.nav-q-btn.answered.active {
-		background: #22c55e25;
+		background: var(--success)25;
 	}
 
 	.nav-q-btn.flagged.active {
-		background: #f59e0b25;
+		background: var(--warning)25;
 	}
 
 	/* Question Display */
@@ -926,7 +926,7 @@
 	}
 
 	.flagged-btn {
-		color: #f59e0b !important;
+		color: var(--warning) !important;
 	}
 
 	/* Question Nav Buttons */
@@ -966,12 +966,12 @@
 	}
 
 	.btn-success {
-		background: #22c55e;
+		background: var(--success);
 		color: white;
 	}
 
 	.btn-success:hover:not(:disabled) {
-		background: #27ae60;
+		background: var(--success);
 	}
 
 	.btn-outline {
@@ -1027,7 +1027,7 @@
 	}
 
 	.modal-stats .warning {
-		color: #f59e0b;
+		color: var(--warning);
 		margin-top: 10px;
 	}
 
@@ -1041,10 +1041,10 @@
 	.time-expired-notice {
 		margin-top: 12px;
 		padding: 8px 16px;
-		background: #ef444415;
-		border: 1px solid #ef4444;
+		background: var(--danger)15;
+		border: 1px solid var(--danger);
 		border-radius: 8px;
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 14px;
 		font-weight: 600;
 		display: inline-block;
@@ -1099,8 +1099,8 @@
 		letter-spacing: 1px;
 	}
 
-	.score-status.passed { color: #22c55e; }
-	.score-status.failed { color: #ef4444; }
+	.score-status.passed { color: var(--success); }
+	.score-status.failed { color: var(--danger); }
 
 	.passing-info {
 		display: block;
@@ -1130,11 +1130,11 @@
 	}
 
 	.result-item.correct {
-		border-left: 3px solid #22c55e;
+		border-left: 3px solid var(--success);
 	}
 
 	.result-item.wrong {
-		border-left: 3px solid #ef4444;
+		border-left: 3px solid var(--danger);
 	}
 
 	.result-q-header {
@@ -1155,8 +1155,8 @@
 		font-weight: 600;
 	}
 
-	.result-item.correct .result-q-status { color: #22c55e; }
-	.result-item.wrong .result-q-status { color: #ef4444; }
+	.result-item.correct .result-q-status { color: var(--success); }
+	.result-item.wrong .result-q-status { color: var(--danger); }
 
 	.result-q-points {
 		margin-left: auto;
@@ -1190,8 +1190,8 @@
 		flex-shrink: 0;
 	}
 
-	.value.wrong { color: #ef4444; }
-	.value.correct { color: #22c55e; }
+	.value.wrong { color: var(--danger); }
+	.value.correct { color: var(--success); }
 
 	.result-explanation {
 		margin-top: 8px;
@@ -1209,11 +1209,11 @@
 	.result-essay-feedback {
 		margin-top: 8px;
 		padding: 10px 12px;
-		background: #f0fdf4;
-		border: 1px solid #86efac;
+		background: var(--success-light);
+		border: 1px solid var(--success);
 		border-radius: 8px;
 		font-size: 13px;
-		color: #14532d;
+		color: var(--success);
 	}
 
 	.result-essay-feedback p {

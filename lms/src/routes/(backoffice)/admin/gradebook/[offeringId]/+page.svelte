@@ -110,9 +110,9 @@
 	}
 
 	function weightColor(pct: number): string {
-		if (pct >= 80) return '#22c55e';
-		if (pct >= 60) return '#f1c40f';
-		return '#ef4444';
+		if (pct >= 80) return 'var(--success)';
+		if (pct >= 60) return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	async function saveWeightConfig() {
@@ -184,20 +184,20 @@
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 85) return '#22c55e';
-		if (pct >= 70) return '#27ae60';
-		if (pct >= 55) return '#f1c40f';
-		if (pct >= 45) return '#f59e0b';
-		return '#ef4444';
+		if (pct >= 85) return 'var(--success)';
+		if (pct >= 70) return 'var(--success)';
+		if (pct >= 55) return 'var(--warning)';
+		if (pct >= 45) return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	function letterGradeColor(letter: string | null): string {
 		if (!letter) return 'var(--text-secondary)';
-		if (letter === 'A' || letter === 'AB') return '#22c55e';
-		if (letter === 'B' || letter === 'BC') return '#27ae60';
-		if (letter === 'C') return '#f1c40f';
-		if (letter === 'D') return '#f59e0b';
-		return '#ef4444';
+		if (letter === 'A' || letter === 'AB') return 'var(--success)';
+		if (letter === 'B' || letter === 'BC') return 'var(--success)';
+		if (letter === 'C') return 'var(--warning)';
+		if (letter === 'D') return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	function filteredEnrollments(): any[] {
@@ -668,7 +668,7 @@
 		max-width: 1200px;
 	}
 
-	.error { color: #ef4444; }
+	.error { color: var(--danger); }
 
 	.page-header {
 		display: flex;
@@ -805,15 +805,15 @@
 		gap: 12px;
 	}
 	.weight-warning {
-		color: #f59e0b;
+		color: var(--warning);
 		font-size: 12px;
 	}
 
 	/* ── Recalculate Result ── */
 	.recalc-result {
-		background: #22c55e33;
-		border: 1px solid #22c55e;
-		color: #22c55e;
+		background: var(--success)33;
+		border: 1px solid var(--success);
+		color: var(--success);
 		padding: 10px 16px;
 		border-radius: 8px;
 		margin-bottom: 16px;
@@ -1099,8 +1099,8 @@
 		position: fixed;
 		bottom: 24px;
 		right: 24px;
-		background: #ef4444;
-		color: #fff;
+		background: var(--danger);
+		color: white;
 		padding: 12px 20px;
 		border-radius: 8px;
 		font-size: 14px;

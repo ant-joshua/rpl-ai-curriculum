@@ -49,7 +49,7 @@ import { t } from '$lib/stores/i18n';
 			header: 'Status', accessorKey: 'status',
 			cell: ({ getValue }) => {
 				const s = getValue() as string;
-				const colors: Record<string, string> = { active: '#10b981', paused: '#f59e0b', completed: '#4F46E5' };
+				const colors: Record<string, string> = { active: 'var(--success)', paused: 'var(--warning)', completed: 'var(--accent)' };
 				const labels: Record<string, string> = { active: 'Aktif', paused: 'Jeda', completed: 'Selesai' };
 				const c = colors[s] || '#888';
 				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;background:${c}20;color:${c}">${labels[s] || s}</span>`;
@@ -100,7 +100,7 @@ import { t } from '$lib/stores/i18n';
 	.toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
 
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: #fff; }
+	.btn-secondary { background: var(--accent); color: white; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-sm { padding: 6px 12px; font-size: 12px; }
 </style>

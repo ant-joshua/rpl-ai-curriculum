@@ -246,7 +246,7 @@
 	.bundle-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 	.bundle-icon { font-size: 36px; }
 	.discount-badge {
-		background: #dc2626; color: white; font-size: 12px; font-weight: 700;
+		background: var(--danger); color: white; font-size: 12px; font-weight: 700;
 		padding: 3px 10px; border-radius: 999px;
 	}
 	.bundle-title { font-size: 18px; margin: 0 0 4px; }
@@ -254,15 +254,15 @@
 	.bundle-items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 	.bundle-item {
 		display: flex; align-items: center; gap: 8px; padding: 6px 10px;
-		background: #f8fafc; border-radius: 8px; font-size: 13px;
+		background: var(--bg); border-radius: 8px; font-size: 13px;
 	}
 	.item-icon { font-size: 16px; }
 	.item-name { flex: 1; }
-	.item-enrolled { color: #16a34a; font-weight: 700; }
+	.item-enrolled { color: var(--success); font-weight: 700; }
 	.bundle-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
 	.price-original { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
 	.price-now { font-size: 22px; font-weight: 800; color: var(--text); }
-	.coupon-applied { font-size: 13px; color: #16a34a; font-weight: 700; }
+	.coupon-applied { font-size: 13px; color: var(--success); font-weight: 700; }
 	.coupon-input-row { display: flex; gap: 6px; margin-bottom: 6px; }
 	.coupon-input {
 		flex: 1; padding: 8px 10px; border: 1px solid var(--border);
@@ -271,10 +271,10 @@
 	}
 	.coupon-badge {
 		display: flex; align-items: center; justify-content: space-between;
-		padding: 6px 12px; margin-bottom: 10px; background: #f0fdf4;
-		border: 1px solid #bbf7d0; border-radius: 8px; font-size: 13px;
-		color: #16a34a; font-weight: 600;
+		padding: 6px 12px; margin-bottom: 10px; background: var(--success-light);
+		border: 1px solid var(--success); border-radius: 8px; font-size: 13px;
+		color: var(--success); font-weight: 600;
 	}
-	.coupon-remove { background: none; border: none; cursor: pointer; color: #16a34a; font-size: 14px; }
-	.coupon-error { font-size: 12px; color: #dc2626; margin: 0 0 8px; }
+	.coupon-remove { background: none; border: none; cursor: pointer; color: var(--success); font-size: 14px; }
+	.coupon-error { font-size: 12px; color: var(--danger); margin: 0 0 8px; }
 </style>

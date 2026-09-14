@@ -141,7 +141,7 @@
 		padding: 18px; text-decoration: none; color: inherit;
 		transition: box-shadow 0.2s, transform 0.2s;
 	}
-	.gen-card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); transform: translateY(-2px); }
+	.gen-card:hover { box-shadow: none; transform: translateY(-2px); }
 	.gen-icon { font-size: 26px; margin-bottom: 6px; }
 	.gen-title { font-size: 14px; font-weight: 700; }
 	.gen-desc { font-size: 12px; color: var(--text-muted); }
@@ -152,19 +152,19 @@
 		padding: 7px 14px; border: 1px solid var(--border); border-radius: 999px;
 		background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text);
 	}
-	.bank-chip.active { background: #2563eb; color: white; border-color: #2563eb; }
+	.bank-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
 	.bank-chip-link { text-decoration: none; color: inherit; }
 	.bank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 	.bank-card {
 		background: white; border: 1px solid var(--border); border-radius: 12px;
 		padding: 16px; text-decoration: none; color: inherit; transition: box-shadow 0.2s;
 	}
-	.bank-card:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); }
+	.bank-card:hover { box-shadow: none; }
 	.bank-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-	.bank-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #2563eb; }
+	.bank-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); }
 	.bank-source { font-size: 11px; color: var(--text-muted); background: var(--surface); padding: 2px 8px; border-radius: 999px; }
 	.bank-title { font-size: 14px; font-weight: 600; margin: 0 0 4px; }
 	.bank-subject { font-size: 12px; color: var(--text-muted); margin: 0; }
 	.bank-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px; margin: 0; }
-	.bank-error { color: var(--danger, #dc2626); }
+	.bank-error { color: var(--danger, var(--danger)); }
 </style>

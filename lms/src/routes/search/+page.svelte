@@ -440,7 +440,7 @@
 	}
 	.filter-chip.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 
@@ -532,43 +532,43 @@
 	}
 
 	.badge-course {
-		background: #e8f5e9;
-		color: #2e7d32;
+		background: var(--success-light);
+		color: var(--success);
 	}
 
 	:global(.dark) .badge-course {
 		background: rgba(46, 125, 50, 0.2);
-		color: #81c784;
+		color: var(--success);
 	}
 
 	.badge-offering {
-		background: #fff3e0;
-		color: #e65100;
+		background: var(--warning-light);
+		color: var(--warning);
 	}
 
 	:global(.dark) .badge-offering {
 		background: rgba(230, 81, 0, 0.2);
-		color: #ffb74d;
+		color: var(--warning);
 	}
 
 	.badge-exercise {
 		background: rgba(139, 92, 246, 0.15);
-		color: #8b5cf6;
+		color: var(--accent);
 	}
 
 	.badge-video {
 		background: rgba(59, 130, 246, 0.15);
-		color: #3b82f6;
+		color: var(--accent);
 	}
 
 	.badge-flashcard {
 		background: rgba(236, 72, 153, 0.15);
-		color: #ec4899;
+		color: var(--accent);
 	}
 
 	.badge-project {
 		background: rgba(34, 197, 94, 0.15);
-		color: #16a34a;
+		color: var(--success);
 	}
 
 	@keyframes stagger-in {

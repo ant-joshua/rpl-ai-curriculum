@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { api } from '$lib/utils/api';
-	import { DataTable } from '$lib/components/ui';
+	import { DataTable, EmptyState } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let offerings: any[] = $state([]);
@@ -31,9 +31,9 @@
 
 	function gradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 80) return '#22c55e';
-		if (pct >= 60) return '#f59e0b';
-		return '#ef4444';
+		if (pct >= 80) return 'var(--success)';
+		if (pct >= 60) return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	function statusLabel(status: string): string {
@@ -111,9 +111,9 @@
 					const label = statusLabel(status);
 					let bg = 'var(--bg-secondary)';
 					let color = 'var(--text-secondary)';
-					if (status === 'graded') { bg = '#22c55e33'; color = '#22c55e'; }
-					else if (status === 'submitted') { bg = '#3b82f633'; color = '#3b82f6'; }
-					else if (status === 'returned') { bg = '#f59e0b33'; color = '#f59e0b'; }
+					if (status === 'graded') { bg = 'var(--success)33'; color = 'var(--success)'; }
+					else if (status === 'submitted') { bg = 'var(--accent)33'; color = 'var(--accent)'; }
+					else if (status === 'returned') { bg = 'var(--warning)33'; color = 'var(--warning)'; }
 					return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:510;background:${bg};color:${color}">${esc(label)}</span>`;
 				}
 			},
@@ -186,9 +186,9 @@
 					const label = statusLabel(status);
 					let bg = 'var(--bg-secondary)';
 					let color = 'var(--text-secondary)';
-					if (status === 'graded') { bg = '#22c55e33'; color = '#22c55e'; }
-					else if (status === 'submitted') { bg = '#3b82f633'; color = '#3b82f6'; }
-					else if (status === 'returned') { bg = '#f59e0b33'; color = '#f59e0b'; }
+					if (status === 'graded') { bg = 'var(--success)33'; color = 'var(--success)'; }
+					else if (status === 'submitted') { bg = 'var(--accent)33'; color = 'var(--accent)'; }
+					else if (status === 'returned') { bg = 'var(--warning)33'; color = 'var(--warning)'; }
 					return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:510;background:${bg};color:${color}">${esc(label)}</span>`;
 				}
 			},
@@ -241,7 +241,7 @@
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else if offerings.length === 0}
-		<div class="empty">No grades found. You are not enrolled in any courses.</div>
+		<EmptyState icon="📊" title="Belum ada nilai" description="Kamu belum terdaftar di kursus apapun. Ikuti kursus untuk melihat nilai." />
 	{:else}
 		{#each offerings as offering}
 			<div class="offering-card">
@@ -290,7 +290,7 @@
 				{/if}
 
 				{#if offering.assessments.length === 0 && offering.assignments.length === 0}
-					<div class="no-items">No assessments or assignments yet.</div>
+					<EmptyState icon="📝" title="Belum ada penilaian" description="Assessment dan assignment akan muncul di sini setelah guru membuatnya." />
 				{/if}
 			</div>
 		{/each}
@@ -334,16 +334,16 @@
 
 	.back-link:hover {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
-	.loading, .error, .empty {
+	.loading, .error {
 		padding: 40px 20px;
 		text-align: center;
 		color: var(--text-secondary);
 	}
 
-	.error { color: var(--color-red, #ef4444); }
+	.error { color: var(--color-red, var(--danger)); }
 
 	.offering-card {
 		background: var(--surface);
@@ -393,13 +393,6 @@
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		margin: 16px 0 8px;
-	}
-
-	.no-items {
-		padding: 16px;
-		text-align: center;
-		color: var(--text-secondary);
-		font-size: 14px;
 	}
 
 	@media (max-width: 768px) {

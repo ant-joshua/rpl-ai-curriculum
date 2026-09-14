@@ -23,11 +23,11 @@
 	];
 
 	const TYPE_COLORS: Record<string, string> = {
-		semester: '#4F46E5',
-		holiday: '#10B981',
-		exam: '#F59E0B',
-		event: '#EC4899',
-		deadline: '#EF4444',
+		semester: 'var(--accent)',
+		holiday: 'var(--success)',
+		exam: 'var(--warning)',
+		event: 'var(--accent)',
+		deadline: 'var(--danger)',
 	};
 
 	let events = $state<CalEvent[]>([]);
@@ -40,7 +40,7 @@
 	let formStart = $state('');
 	let formEnd = $state('');
 	let formDesc = $state('');
-	let formColor = $state('#4F46E5');
+	let formColor = $state('var(--accent)');
 	let saving = $state(false);
 
 	async function loadEvents() {
@@ -217,7 +217,7 @@
 				<h3 class="month-title">{monthLabel(monthKey)}</h3>
 				<div class="event-list">
 					{#each monthEvents as ev}
-						<div class="event-row" style={`border-left-color: ${ev.color || '#4F46E5'}`}>
+						<div class="event-row" style={`border-left-color: ${ev.color || 'var(--accent)'}`}>
 							<div class="event-date">
 								<span class="event-day">{new Date(ev.start_date + 'T00:00:00').getDate()}</span>
 								<span class="event-date-label">{new Date(ev.start_date + 'T00:00:00').toLocaleDateString('id-ID', { month: 'short' })}</span>
@@ -225,7 +225,7 @@
 							<div class="event-info">
 								<div class="event-title-row">
 									<span class="event-title">{ev.title}</span>
-									<span class="event-type-badge" style={`background: ${ev.color || '#4F46E5'}18; color: ${ev.color || '#4F46E5'};`}>
+									<span class="event-type-badge" style={`background: ${ev.color || 'var(--accent)'}18; color: ${ev.color || 'var(--accent)'};`}>
 										{TYPE_OPTIONS.find((o) => o.value === ev.event_type)?.label || ev.event_type}
 									</span>
 								</div>
@@ -251,7 +251,7 @@
 	.subtitle { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
 	.btn-primary {
 		padding: 9px 16px; border-radius: 8px; border: none;
-		background: var(--accent, #4F46E5); color: #fff; font-weight: 600;
+		background: var(--accent, var(--accent)); color: white; font-weight: 600;
 		cursor: pointer; font-family: inherit; font-size: 14px;
 	}
 	.btn-secondary {
@@ -259,7 +259,7 @@
 		background: var(--surface); color: var(--text); font-weight: 600;
 		cursor: pointer; font-family: inherit; font-size: 14px;
 	}
-	.error-state { padding: 24px; border-radius: 10px; background: #fee2e2; color: #b91c1c; margin-bottom: 16px; }
+	.error-state { padding: 24px; border-radius: 10px; background: var(--danger-light); color: var(--danger); margin-bottom: 16px; }
 	.loading { padding: 40px; text-align: center; color: var(--text-secondary); }
 
 	.form-card {
@@ -283,7 +283,7 @@
 	.event-row {
 		display: flex; align-items: center; gap: 14px;
 		background: var(--surface); border: 1px solid var(--border);
-		border-left: 4px solid #4F46E5; border-radius: 10px; padding: 12px 14px;
+		border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 14px;
 	}
 	.event-date { display: flex; flex-direction: column; align-items: center; min-width: 44px; }
 	.event-day { font-size: 22px; font-weight: 700; line-height: 1.1; }

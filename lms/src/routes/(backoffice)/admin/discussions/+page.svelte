@@ -290,7 +290,7 @@
 	}
 
 	.discussion-item.resolved {
-		border-left: 3px solid var(--success, #22c55e);
+		border-left: 3px solid var(--success, var(--success));
 	}
 
 	.discussion-item.pinned {

@@ -164,11 +164,11 @@
 	};
 	const statusColors: Record<string, string> = {
 		draft: 'var(--text-quaternary)',
-		pending: '#f59e0b',
-		disetujui: '#10b981',
-		approved: '#10b981',
-		ditolak: '#ef4444',
-		rejected: '#ef4444',
+		pending: 'var(--warning)',
+		disetujui: 'var(--success)',
+		approved: 'var(--success)',
+		ditolak: 'var(--danger)',
+		rejected: 'var(--danger)',
 	};
 </script>
 
@@ -253,7 +253,7 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-secondary:hover { background: var(--surface-hover); }
@@ -268,12 +268,12 @@
 	.summary-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 4px; }
 	.summary-value { font-size: 28px; font-weight: 700; color: var(--accent); }
 
-	.success-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
-	.error-msg { padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+	.success-msg { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--success); border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+	.error-msg { padding: 10px 14px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }

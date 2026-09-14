@@ -279,7 +279,7 @@
 
 	.filter-chip.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 
@@ -309,7 +309,7 @@
 		display: flex;
 		gap: 24px;
 		align-items: center;
-		background: linear-gradient(135deg, var(--surface) 0%, color-mix(in srgb, var(--accent) 6%, var(--surface)) 100%);
+		background: var(--surface);
 		border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
 		border-radius: 20px;
 		padding: 28px;
@@ -396,7 +396,7 @@
 
 	.course-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+		box-shadow: none;
 	}
 
 	.card-icon-wrap {

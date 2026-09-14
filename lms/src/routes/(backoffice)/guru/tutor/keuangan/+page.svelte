@@ -71,7 +71,7 @@ import { t } from '$lib/stores/i18n';
 			header: 'Status', accessorKey: 'status',
 			cell: ({ getValue }) => {
 				const s = getValue() as string;
-				const colors: Record<string, string> = { paid: '#10b981', unpaid: '#f59e0b', overdue: '#ef4444' };
+				const colors: Record<string, string> = { paid: 'var(--success)', unpaid: 'var(--warning)', overdue: 'var(--danger)' };
 				const labels: Record<string, string> = { paid: 'Lunas', unpaid: 'Belum Dibayar', overdue: 'Jatuh Tempo' };
 				const c = colors[s] || '#888';
 				return `<span style="display:inline-block;padding:2px 10px;border-radius:6px;font-size:12px;font-weight:600;background:${c}20;color:${c}">${labels[s] || s}</span>`;
@@ -165,7 +165,7 @@ import { t } from '$lib/stores/i18n';
 	.filter-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
 
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: #fff; }
+	.btn-secondary { background: var(--accent); color: white; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-sm { padding: 6px 12px; font-size: 12px; }
 </style>

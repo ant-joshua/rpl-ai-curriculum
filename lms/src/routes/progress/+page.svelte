@@ -702,17 +702,17 @@
 
 	.level-badge.beginner {
 		background: rgba(76, 175, 80, 0.15);
-		color: #4caf50;
+		color: var(--success);
 	}
 
 	.level-badge.intermediate {
 		background: rgba(33, 150, 243, 0.15);
-		color: #2196f3;
+		color: var(--accent);
 	}
 
 	.level-badge.advanced {
 		background: rgba(156, 39, 176, 0.15);
-		color: #9c27b0;
+		color: var(--accent);
 	}
 
 	.module-row-sessions {

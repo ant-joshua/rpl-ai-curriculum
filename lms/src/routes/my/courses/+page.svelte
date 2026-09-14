@@ -60,12 +60,12 @@
   .page-header h1 {
     font-size: 24px;
     font-weight: 590;
-    color: #1a1a2e;
+    color: var(--text);
     margin: 0 0 4px;
   }
   .page-subtitle {
     font-size: 14px;
-    color: #64748b;
+    color: var(--text-secondary);
     margin: 0;
   }
   .course-list {
@@ -78,25 +78,25 @@
     align-items: center;
     gap: 14px;
     padding: 16px;
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 10px;
     text-decoration: none;
     transition: all 0.15s ease;
   }
   .course-item:hover {
-    border-color: #C8CCD0;
+    border-color: var(--border);
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
   .course-icon {
     width: 40px;
     height: 40px;
     border-radius: 8px;
-    background: #F1F5F9;
+    background: var(--surface-alt);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #4F46E5;
+    color: var(--accent);
     flex-shrink: 0;
   }
   .course-info {
@@ -106,7 +106,7 @@
   .course-title {
     font-size: 14px;
     font-weight: 600;
-    color: #1a1a2e;
+    color: var(--text);
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -114,7 +114,7 @@
   }
   .course-meta {
     font-size: 12px;
-    color: #64748b;
+    color: var(--text-secondary);
   }
   .course-progress {
     width: 80px;
@@ -122,18 +122,18 @@
   }
   .progress-track {
     height: 4px;
-    background: #E2E8F0;
+    background: var(--border);
     border-radius: 2px;
     overflow: hidden;
   }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #22C55E, #16A34A);
+    background: var(--success);
     border-radius: 2px;
     transition: width 0.3s ease;
   }
   .course-arrow {
-    color: #94a3b8;
+    color: var(--text-muted);
     flex-shrink: 0;
   }
 </style>

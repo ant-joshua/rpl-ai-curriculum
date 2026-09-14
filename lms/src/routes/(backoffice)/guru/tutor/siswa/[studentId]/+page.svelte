@@ -86,9 +86,9 @@ import { t } from '$lib/stores/i18n';
 
 	function getSessionBadge(status: string) {
 		switch (status) {
-			case 'done': return '#10b981';
-			case 'cancelled': return '#ef4444';
-			case 'in_progress': return '#4F46E5';
+			case 'done': return 'var(--success)';
+			case 'cancelled': return 'var(--danger)';
+			case 'in_progress': return 'var(--accent)';
 			default: return '#888';
 		}
 	}

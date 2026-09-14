@@ -224,7 +224,7 @@
 			height: calc(100vh - 64px);
 			transform: translateX(-100%);
 			z-index: 60;
-			box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+			box-shadow: none;
 		}
 		.sidebar.open { transform: translateX(0); }
 		.sidebar-overlay {

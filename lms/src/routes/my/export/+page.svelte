@@ -87,22 +87,22 @@
 <style>
 	.export-page { max-width: 640px; margin: 0 auto; padding: 8px 12px 40px; }
 	.page-title { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-	.page-desc { color: #64748b; font-size: 14px; margin: 0 0 24px; }
+	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0 0 24px; }
 	.export-card {
 		background: #fff;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border);
 		border-radius: 14px;
 		padding: 24px;
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+		box-shadow: none;
 	}
 	.field-group { display: flex; flex-direction: column; gap: 8px; }
-	.field-label { font-size: 13px; font-weight: 600; color: #334155; }
+	.field-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 	.field-select {
 		padding: 10px 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border);
 		border-radius: 10px;
 		font-size: 14px;
 		background: #fff;
@@ -113,7 +113,7 @@
 		flex-direction: column;
 		gap: 2px;
 		padding: 14px;
-		border: 2px solid #e2e8f0;
+		border: 2px solid var(--border);
 		border-radius: 12px;
 		cursor: pointer;
 		font-size: 14px;
@@ -121,14 +121,14 @@
 		transition: border-color 0.15s, background 0.15s;
 	}
 	.format-option:has(input:checked) {
-		border-color: #4f46e5;
+		border-color: var(--accent);
 		background: rgba(79, 70, 229, 0.05);
 	}
-	.format-option small { font-weight: 400; color: #94a3b8; font-size: 11px; }
+	.format-option small { font-weight: 400; color: var(--text-muted); font-size: 11px; }
 	.export-btn {
 		padding: 12px 18px;
-		background: #4f46e5;
-		color: #fff;
+		background: var(--accent);
+		color: white;
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;
@@ -142,10 +142,10 @@
 		margin-top: 16px;
 		padding: 14px;
 		background: rgba(79, 70, 229, 0.06);
-		border: 1px solid rgba(79, 70, 229, 0.15);
+		border: 1px solid rgba(var(--accent-rgb), 0.15);
 		border-radius: 10px;
 		font-size: 13px;
-		color: #4f46e5;
+		color: var(--accent);
 	}
 	@media (max-width: 520px) {
 		.format-row { grid-template-columns: 1fr; }

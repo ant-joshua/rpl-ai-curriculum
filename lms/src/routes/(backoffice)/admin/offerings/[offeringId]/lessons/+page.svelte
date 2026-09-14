@@ -294,8 +294,8 @@
 
 <style>
 	.lessons-page { max-width: 1100px; }
-	.breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 16px; }
-	.breadcrumb a { color: #4F46E5; text-decoration: none; }
+	.breadcrumb { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+	.breadcrumb a { color: var(--accent); text-decoration: none; }
 	.breadcrumb a:hover { text-decoration: underline; }
 	.page-header {
 		display: flex;
@@ -305,8 +305,8 @@
 		gap: 16px;
 	}
 	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-	.page-desc { color: #64748b; font-size: 14px; margin: 0; }
-	.error-state { text-align: center; padding: 40px; color: #ef4444; }
+	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
+	.error-state { text-align: center; padding: 40px; color: var(--danger); }
 
 	.lesson-list { display: flex; flex-direction: column; gap: 6px; }
 	.lesson-card {
@@ -331,20 +331,20 @@
 		background: none;
 		border: 1px solid rgba(0,0,0,0.08);
 		border-radius: 4px;
-		color: #64748b;
+		color: var(--text-secondary);
 		cursor: pointer;
 		font-size: 12px;
 		padding: 2px 6px;
 		line-height: 1;
 		transition: all 0.12s;
 	}
-	.move-btn:hover:not(:disabled) { color: #1a1a2e; background: rgba(0,0,0,0.04); }
+	.move-btn:hover:not(:disabled) { color: var(--text); background: rgba(0,0,0,0.04); }
 	.move-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-	.order-num { font-size: 13px; font-weight: 600; color: #94a3b8; min-width: 16px; text-align: center; }
+	.order-num { font-size: 13px; font-weight: 600; color: var(--text-muted); min-width: 16px; text-align: center; }
 	.lesson-info { flex: 1; min-width: 0; }
-	.lesson-title { font-size: 15px; font-weight: 600; margin: 0 0 4px; color: #1a1a2e; }
+	.lesson-title { font-size: 15px; font-weight: 600; margin: 0 0 4px; color: var(--text); }
 	.lesson-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-	.lesson-slug { font-size: 12px; color: #94a3b8; }
-	.lesson-duration { font-size: 12px; color: #64748b; }
+	.lesson-slug { font-size: 12px; color: var(--text-muted); }
+	.lesson-duration { font-size: 12px; color: var(--text-secondary); }
 	.lesson-actions { display: flex; gap: 4px; flex-shrink: 0; }
 </style>

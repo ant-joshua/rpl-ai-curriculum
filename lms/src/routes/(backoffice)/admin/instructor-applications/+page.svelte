@@ -290,7 +290,7 @@
 	}
 
 	.error-text {
-		color: #ef4444;
+		color: var(--danger);
 		margin-bottom: 12px;
 		font-size: 14px;
 	}

@@ -145,10 +145,10 @@
 	}
 
 	const statusColorMap: Record<string, string> = {
-		present: 'background: rgba(34,197,94,0.12); color: #22c55e',
-		late: 'background: rgba(245,158,11,0.12); color: #f59e0b',
-		absent: 'background: rgba(239,68,68,0.12); color: #ef4444',
-		excused: 'background: rgba(139,92,246,0.12); color: #8b5cf6',
+		present: 'background: rgba(34,197,94,0.12); color: var(--success)',
+		late: 'background: rgba(245,158,11,0.12); color: var(--warning)',
+		absent: 'background: rgba(239,68,68,0.12); color: var(--danger)',
+		excused: 'background: rgba(139,92,246,0.12); color: var(--accent)',
 	};
 
 	const recordColumns: ColumnDef<any, any>[] = [
@@ -279,10 +279,10 @@
 
 		<!-- Stats -->
 		<div class="record-stats">
-			<StatCard icon="✅" value={statusCounts().present} label="Hadir" color="#22c55e" />
-			<StatCard icon="🕐" value={statusCounts().late} label="Terlambat" color="#f59e0b" />
-			<StatCard icon="❌" value={statusCounts().absent} label="Absen" color="#ef4444" />
-			<StatCard icon="📝" value={statusCounts().excused} label="Izin/Sakit" color="#8b5cf6" />
+			<StatCard icon="✅" value={statusCounts().present} label="Hadir" color="var(--success)" />
+			<StatCard icon="🕐" value={statusCounts().late} label="Terlambat" color="var(--warning)" />
+			<StatCard icon="❌" value={statusCounts().absent} label="Absen" color="var(--danger)" />
+			<StatCard icon="📝" value={statusCounts().excused} label="Izin/Sakit" color="var(--accent)" />
 			<StatCard icon="📊" value={statusCounts().total} label="Total Check-in" />
 		</div>
 
@@ -350,7 +350,7 @@
 
 	.btn-danger {
 		display: inline-flex; align-items: center; gap: 6px;
-		padding: 8px 16px; background: rgba(239,68,68,0.12); color: #ef4444;
+		padding: 8px 16px; background: rgba(239,68,68,0.12); color: var(--danger);
 		border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; cursor: pointer;
 		font-size: 13px; font-weight: 500;
 	}
@@ -370,7 +370,7 @@
 	.error-state { color: var(--danger); }
 
 	.btn-secondary {
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
 	}
 
@@ -390,8 +390,8 @@
 		display: inline-block; padding: 3px 8px; border-radius: 6px;
 		font-size: 11px; font-weight: 600;
 	}
-	.badge-active { background: rgba(34,197,94,0.12); color: #22c55e; }
-	.badge-closed { background: rgba(156,163,175,0.12); color: #9ca3af; }
+	.badge-active { background: rgba(34,197,94,0.12); color: var(--success); }
+	.badge-closed { background: rgba(156,163,175,0.12); color: var(--text-muted); }
 
 	.qr-section { margin-bottom: 24px; }
 	.section-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 12px; }
@@ -443,7 +443,7 @@
 
 	.btn-primary {
 		display: inline-flex; align-items: center; gap: 6px;
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer;
 		font-size: 13px; font-weight: 500;
 	}
@@ -453,6 +453,6 @@
 	.checkin-result {
 		margin-top: 8px; padding: 8px 12px; border-radius: 6px; font-size: 13px;
 	}
-	.result-success { background: rgba(34,197,94,0.1); color: #22c55e; }
-	.result-error { background: rgba(239,68,68,0.1); color: #ef4444; }
+	.result-success { background: rgba(34,197,94,0.1); color: var(--success); }
+	.result-error { background: rgba(239,68,68,0.1); color: var(--danger); }
 </style>

@@ -185,20 +185,20 @@
 	.meta { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); }
 	code { background: var(--bg-code); padding: 0.2rem 0.5rem; border-radius: 4px; }
 	.badge { padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-	.badge-lms { background: #4F46E5; color: #fff; }
-	.badge-academic_k13 { background: #10b981; color: #fff; }
+	.badge-lms { background: var(--accent); color: white; }
+	.badge-academic_k13 { background: var(--success); color: white; }
 	.status { display: inline-flex; align-items: center; gap: 0.35rem; }
-	.status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
-	.status.active::before { background: #10b981; }
+	.status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); }
+	.status.active::before { background: var(--success); }
 	.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
 	.card h2 { margin: 0 0 1rem; font-size: 1rem; color: var(--text-primary); }
 	.config-json { width: 100%; background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; color: var(--text-primary); resize: vertical; }
 	.actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
-	.btn-primary { padding: 0.5rem 1rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+	.btn-primary { padding: 0.5rem 1rem; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; }
 	.btn-small { padding: 0.4rem 0.8rem; background: var(--bg-code); color: var(--text-primary); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-	.btn-danger { color: #ef4444; border-color: #ef4444; }
-	.saved { color: #10b981; font-size: 0.85rem; }
-	.error { color: #ef4444; }
+	.btn-danger { color: var(--danger); border-color: var(--danger); }
+	.saved { color: var(--success); font-size: 0.85rem; }
+	.error { color: var(--danger); }
 	.header-actions { display: flex; gap: 0.5rem; }
 	.feature-hint { font-size: 0.85rem; color: var(--text-secondary); margin: -0.5rem 0 1rem; }
 	.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }

@@ -293,7 +293,7 @@
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-outline { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -301,7 +301,7 @@
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-icon { padding: 4px 8px; border: none; border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 14px; }
 	.btn-icon:hover { background: var(--hover); }
-	.btn-icon-danger:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+	.btn-icon-danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
 
 	/* Filter bar */
 	.filter-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -315,7 +315,7 @@
 
 	/* Error/loading/empty */
 	.error-state { text-align: center; padding: 40px; }
-	.error-msg { color: #ef4444; margin-bottom: 12px; }
+	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
 	.empty-state { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; font-size: 15px; }
@@ -345,7 +345,7 @@
 	.notif-title { font-size: 14px; font-weight: 600; color: var(--text); }
 	.notif-type-label {
 		font-size: 10px; padding: 2px 6px; border-radius: 4px;
-		background: rgba(98,102,109,0.15); color: #64748b;
+		background: rgba(98,102,109,0.15); color: var(--text-secondary);
 		font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
 	}
 	.notif-body { margin: 4px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.4; }

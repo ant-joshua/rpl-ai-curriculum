@@ -389,7 +389,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			accessorKey: 'action_type',
 			cell: ({ getValue }) => {
 				const t = getValue() as string;
-				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:rgba(113,112,255,0.12);color:#4F46E5">${XP_TYPE_LABELS[t] || t}</span>`;
+				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:rgba(113,112,255,0.12);color:var(--accent)">${XP_TYPE_LABELS[t] || t}</span>`;
 			}
 		},
 		{
@@ -408,7 +408,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			cell: ({ getValue }) => {
 				const active = getValue() === 1 || getValue() === true;
 				const bg = active ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)';
-				const color = active ? '#22c55e' : '#ef4444';
+				const color = active ? 'var(--success)' : 'var(--danger)';
 				const label = active ? 'Aktif' : 'Nonaktif';
 				return `<span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
@@ -450,7 +450,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				}
 				html += `<span style="font-weight:600;color:var(--text)">${e.displayName || e.userId?.slice(0, 12)}</span>`;
 				if (e.isCurrentUser) {
-					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">Anda</span>`;
+					html += `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(113,112,255,0.12);color:var(--accent)">Anda</span>`;
 				}
 				html += '</div>';
 				return html;
@@ -972,7 +972,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			/* Quests admin */
 	.quest-date-picker { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
 	.quest-config-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
-	.quest-saved { color: #10b981; font-size: 13px; font-weight: 600; }
+	.quest-saved { color: var(--success); font-size: 13px; font-weight: 600; }
 	.quest-config-input {
 		width: 80px; padding: 6px 8px; border: 1px solid var(--border);
 		border-radius: 8px; background: var(--surface); font-size: 14px;
@@ -985,10 +985,10 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.boost-hint { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px; }
 	.boost-table { width: 100%; border-collapse: collapse; }
 	.boost-table th, .boost-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
-	.boost-mult { font-weight: 700; color: #d97706; }
+	.boost-mult { font-weight: 700; color: var(--warning); }
 	.boost-period { font-size: 12px; color: var(--text-secondary); }
-	.boost-active { color: #16a34a; font-weight: 600; }
-	.boost-inactive { color: #dc2626; font-weight: 600; }
+	.boost-active { color: var(--success); font-weight: 600; }
+	.boost-inactive { color: var(--danger); font-weight: 600; }
 	.boost-form { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; }
 	.boost-form label { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 6px; }
 	.boost-actions { display: flex; gap: 8px; margin-top: 16px; }
@@ -1017,9 +1017,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.quest-user { font-weight: 600; color: var(--text); }
 	.quest-user-email { font-size: 12px; color: var(--text-secondary); }
 	.quest-status { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-	.quest-status.claimed { background: rgba(34,197,94,0.12); color: #16a34a; }
+	.quest-status.claimed { background: rgba(34,197,94,0.12); color: var(--success); }
 	.quest-status.ready { background: rgba(79,70,229,0.12); color: var(--accent); }
-	.quest-status.pending { background: rgba(100,116,139,0.12); color: #64748b; }
+	.quest-status.pending { background: rgba(100,116,139,0.12); color: var(--text-secondary); }
 	.quest-empty { text-align: center; color: var(--text-secondary); padding: 32px; }
 
 	.gamification-page { max-width: 1100px; }
@@ -1197,7 +1197,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	}
 	.level-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-light));
+		background: var(--accent);
 		border-radius: 3px;
 		transition: width 0.3s;
 	}

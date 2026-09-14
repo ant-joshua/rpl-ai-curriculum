@@ -250,12 +250,12 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 
-	.btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
+	.btn-primary { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-cancel { display: inline-flex; align-items: center; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; text-decoration: none; }
 	.btn-small { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 12px; }
 
-	.error-banner { padding: 12px 16px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; border-radius: 10px; font-size: 14px; margin-bottom: 16px; }
+	.error-banner { padding: 12px 16px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); border-radius: 10px; font-size: 14px; margin-bottom: 16px; }
 
 	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.upload-card { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
@@ -301,10 +301,10 @@
 	.result-stats { display: flex; gap: 32px; margin: 8px 0; }
 	.rstat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 	.rstat-value { font-size: 32px; font-weight: 700; color: var(--accent); }
-	.rstat-value.rstat-error { color: #ef4444; }
+	.rstat-value.rstat-error { color: var(--danger); }
 	.rstat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
 
 	.error-details { text-align: left; width: 100%; max-width: 500px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15); border-radius: 8px; padding: 14px; }
-	.error-details h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; color: #ef4444; }
+	.error-details h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; color: var(--danger); }
 	.error-details ul { margin: 0; padding-left: 20px; font-size: 12px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
 </style>

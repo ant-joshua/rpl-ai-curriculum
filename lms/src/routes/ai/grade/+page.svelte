@@ -304,7 +304,7 @@
 		border: none;
 		border-radius: 8px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
@@ -323,17 +323,17 @@
 
 	.score-display { text-align: center; margin-bottom: 16px; }
 	.score-value { font-size: 48px; font-weight: 800; }
-	.score-value.good { color: var(--success, #22c55e); }
-	.score-value.medium { color: var(--warning, #f59e0b); }
-	.score-value.low { color: var(--danger, #ef4444); }
+	.score-value.good { color: var(--success, var(--success)); }
+	.score-value.medium { color: var(--warning, var(--warning)); }
+	.score-value.low { color: var(--danger, var(--danger)); }
 	.score-max { font-size: 20px; color: var(--text-secondary); }
 	.feedback-section h3 { font-size: 14px; margin: 0 0 8px; }
 	.feedback-section p { font-size: 14px; line-height: 1.6; }
 	.strengths { margin-top: 12px; }
-	.strengths h4 { font-size: 13px; color: var(--success, #22c55e); margin: 0 0 4px; }
+	.strengths h4 { font-size: 13px; color: var(--success, var(--success)); margin: 0 0 4px; }
 	.strengths ul { margin: 0; padding-left: 20px; font-size: 13px; }
 	.weaknesses { margin-top: 12px; }
-	.weaknesses h4 { font-size: 13px; color: var(--warning, #f59e0b); margin: 0 0 4px; }
+	.weaknesses h4 { font-size: 13px; color: var(--warning, var(--warning)); margin: 0 0 4px; }
 	.weaknesses ul { margin: 0; padding-left: 20px; font-size: 13px; }
 	.ai-warning { margin-top: 12px; font-size: 13px; color: var(--warning); padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; }
 

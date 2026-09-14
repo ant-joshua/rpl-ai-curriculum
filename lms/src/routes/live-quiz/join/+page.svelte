@@ -63,7 +63,7 @@
 	h1 { margin: 0; font-size: 24px; }
 	.sub { margin: 0; color: var(--text-secondary); font-size: 14px; }
 	.pin-input { font-size: 32px; letter-spacing: 8px; text-align: center; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; width: 100%; font-variant-numeric: tabular-nums; }
-	.pin-input:focus { border-color: #4f46e5; outline: none; }
+	.pin-input:focus { border-color: var(--accent); outline: none; }
 	.join-btn { width: 100%; margin-top: 4px; }
 	.back { margin-top: 8px; font-size: 13px; color: var(--text-secondary); text-decoration: none; }
 	.back:hover { color: var(--text-primary); }

@@ -71,8 +71,8 @@
 	};
 	const statusColors: Record<string, string> = {
 		pending: 'var(--accent)',
-		accepted: '#22c55e',
-		rejected: '#ef4444',
+		accepted: 'var(--success)',
+		rejected: 'var(--danger)',
 	};
 </script>
 
@@ -262,7 +262,7 @@
 		padding: 20px;
 	}
 	.form-error {
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 12px;
 		margin-bottom: 8px;
 	}

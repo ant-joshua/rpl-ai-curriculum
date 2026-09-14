@@ -237,7 +237,7 @@
 
 	.tab.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 
@@ -284,7 +284,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: #1e2240;
+		background: var(--text);
 		position: relative;
 		overflow: hidden;
 	}
@@ -294,7 +294,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(90deg, transparent 0%, #2a2f52 25%, transparent 50%);
+		background: var(--text);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s ease-in-out infinite;
 	}
@@ -309,7 +309,7 @@
 	.skeleton-line {
 		height: 14px;
 		border-radius: 6px;
-		background: #1e2240;
+		background: var(--text);
 		position: relative;
 		overflow: hidden;
 	}
@@ -371,50 +371,50 @@
 
 	/* Gold — center, tallest */
 	.podium-card.gold {
-		border-color: #f59e0b;
+		border-color: var(--warning);
 		box-shadow: 0 0 24px rgba(245, 158, 11, 0.18);
-		background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--surface) 100%);
+		background: rgba(var(--warning-rgb, 184,134,11), 0.08);
 	}
 	.podium-card.gold .podium-avatar {
-		background: linear-gradient(135deg, #f59e0b, #fbbf24);
+		background: var(--warning);
 		box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
 		width: 56px;
 		height: 56px;
 		font-size: 22px;
 	}
 	.podium-card.gold .podium-xp {
-		color: #f59e0b;
+		color: var(--warning);
 		text-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
 		font-weight: 800;
 	}
 
 	/* Silver — left, medium */
 	.podium-card.silver {
-		border-color: #94a3b8;
+		border-color: var(--text-muted);
 		box-shadow: 0 0 18px rgba(148, 163, 184, 0.13);
-		background: linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--surface) 100%);
+		background: rgba(var(--text-muted-rgb, 148,163,184), 0.06);
 	}
 	.podium-card.silver .podium-avatar {
-		background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+		background: var(--text-muted);
 		box-shadow: 0 0 14px rgba(148, 163, 184, 0.35);
 	}
 	.podium-card.silver .podium-xp {
-		color: #94a3b8;
+		color: var(--text-muted);
 		text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
 	}
 
 	/* Bronze — right, shortest */
 	.podium-card.bronze {
-		border-color: #cd7f32;
+		border-color: var(--warning);
 		box-shadow: 0 0 16px rgba(205, 127, 50, 0.13);
-		background: linear-gradient(180deg, rgba(205, 127, 50, 0.06) 0%, var(--surface) 100%);
+		background: rgba(var(--warning-rgb, 205,127,50), 0.06);
 	}
 	.podium-card.bronze .podium-avatar {
-		background: linear-gradient(135deg, #cd7f32, #d99f5b);
+		background: var(--warning);
 		box-shadow: 0 0 12px rgba(205, 127, 50, 0.3);
 	}
 	.podium-card.bronze .podium-xp {
-		color: #cd7f32;
+		color: var(--warning);
 		text-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
 	}
 
@@ -432,7 +432,7 @@
 		width: 50px;
 		height: 50px;
 		border-radius: 50%;
-		color: #fff;
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -515,8 +515,8 @@
 		height: 36px;
 		min-width: 36px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-		color: #fff;
+		background: var(--accent);
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -547,7 +547,7 @@
 		font-size: 10px;
 		font-weight: 600;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		padding: 1px 6px;
 		border-radius: 4px;
 		margin-left: 6px;
@@ -573,7 +573,7 @@
 	.xp-bar-fill {
 		height: 100%;
 		border-radius: 3px;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		background: var(--accent);
 		transition: width 0.6s ease;
 	}
 

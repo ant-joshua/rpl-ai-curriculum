@@ -228,8 +228,8 @@
 		height: 64px;
 		min-width: 64px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-		color: #fff;
+		background: var(--accent);
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -313,7 +313,7 @@
 	}
 	.completion-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		background: var(--accent);
 		border-radius: 6px;
 		transition: width 0.4s ease;
 	}
@@ -380,7 +380,7 @@
 		border-radius: 50%;
 		margin-top: 5px;
 	}
-	.timeline-dot.complete { background: #22c55e; }
+	.timeline-dot.complete { background: var(--success); }
 	.timeline-dot.view { background: var(--accent); }
 	.timeline-content {
 		flex: 1;
@@ -401,7 +401,7 @@
 	}
 
 	.motivation-card {
-		background: linear-gradient(135deg, var(--accent-dim), var(--bg-secondary));
+		background: var(--accent-dim);
 		border: 1px solid var(--accent);
 		border-radius: 12px;
 		padding: 16px 20px;

@@ -203,7 +203,7 @@
 				const status = getValue() as string;
 				const isActive = status === 'active';
 				const bg = isActive ? 'rgba(34,197,94,0.12)' : 'rgba(156,163,175,0.12)';
-				const color = isActive ? '#22c55e' : '#9ca3af';
+				const color = isActive ? 'var(--success)' : 'var(--text-muted)';
 				const label = isActive ? '🟢 Aktif' : '⚫ Selesai';
 				return `<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
@@ -215,7 +215,7 @@
 				const s = row.original;
 				let html = `<a href="/admin/attendance/sessions/${s.id}" style="padding:4px 10px;background:var(--bg-secondary);color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:12px;text-decoration:none">Detail</a>`;
 				if (s.status === 'active') {
-					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">$'+t('common.close')+'</button>`;
+					html += ` <button onclick="window.__closeSession('${s.id}')" style="padding:4px 10px;background:transparent;color:var(--danger);border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:12px;cursor:pointer;margin-left:4px">$'+t('common.close')+'</button>`;
 				}
 				return html;
 			}
@@ -403,7 +403,7 @@
 
 	.btn-primary {
 		display: inline-flex; align-items: center; gap: 6px;
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer;
 		font-size: 13px; font-weight: 500; text-decoration: none;
 	}
@@ -439,7 +439,7 @@
 	.error-state { color: var(--danger); }
 
 	.btn-secondary {
-		padding: 8px 16px; background: var(--accent); color: #fff;
+		padding: 8px 16px; background: var(--accent); color: white;
 		border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
 	}
 

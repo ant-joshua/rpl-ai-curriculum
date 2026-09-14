@@ -21,7 +21,7 @@
 		align-items: center;
 		justify-content: center;
 		min-height: 200px;
-		color: var(--text-secondary, #64748b);
+		color: var(--text-secondary, var(--text-secondary));
 		font-size: 14px;
 	}
 </style>

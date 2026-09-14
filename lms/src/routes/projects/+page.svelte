@@ -184,7 +184,7 @@
 	}
 	.filter-btn.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 	.project-grid {
@@ -273,9 +273,9 @@
 		color: var(--muted);
 		align-items: center;
 	}
-	.difficulty.beginner { color: #27ae60; }
-	.difficulty.intermediate { color: #f59e0b; }
-	.difficulty.advanced { color: #ef4444; }
+	.difficulty.beginner { color: var(--success); }
+	.difficulty.intermediate { color: var(--warning); }
+	.difficulty.advanced { color: var(--danger); }
 
 	/* Mobile */
 	@media (max-width: 767px) {

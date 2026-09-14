@@ -245,7 +245,7 @@
 	}
 	.tab-btn.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 	.back-btn {
@@ -314,7 +314,7 @@
 		color: var(--accent);
 	}
 	.form-error {
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 12px;
 		margin-bottom: 8px;
 	}
@@ -323,7 +323,7 @@
 		border-radius: 8px;
 		border: none;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
@@ -371,7 +371,7 @@
 		font-weight: 600;
 	}
 	.req-status.open { color: var(--accent); }
-	.req-status.closed { color: #22c55e; }
+	.req-status.closed { color: var(--success); }
 	.req-count {
 		font-size: 11px;
 		color: var(--text-secondary);

@@ -295,7 +295,7 @@
 	.chat-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 	.msg { display: flex; gap: 10px; max-width: 85%; }
 	.msg.user { align-self: flex-end; flex-direction: row-reverse; }
-	.msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2, #f0f2f5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+	.msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2, var(--surface-alt)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
 	.msg-body { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.55; }
 	.msg-actions { margin-top: 6px; }
 	.save-bank { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-muted); padding: 0; }
@@ -306,7 +306,7 @@
 	.md { overflow-wrap: break-word; }
 	.md :global(p) { margin: 0 0 8px; }
 	.md :global(p:last-child) { margin-bottom: 0; }
-	.md :global(pre) { background: #0f1115; color: #e6e6e6; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+	.md :global(pre) { background: var(--text); color: var(--border); padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
 	.md :global(code) { font-family: ui-monospace, monospace; font-size: 12px; }
 	.md :global(ul), .md :global(ol) { padding-left: 18px; margin: 6px 0; }
 	.md :global(table) { border-collapse: collapse; margin: 8px 0; font-size: 12px; }
@@ -325,8 +325,8 @@
 	}
 	.mic-btn:hover { border-color: var(--primary); }
 	.mic-btn.recording {
-		background: #fee2e2;
-		border-color: #ef4444;
+		background: var(--danger-light);
+		border-color: var(--danger);
 		animation: pulse 1s infinite;
 	}
 	@keyframes pulse {

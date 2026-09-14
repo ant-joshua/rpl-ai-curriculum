@@ -414,7 +414,7 @@
 		text-align: center;
 		color: var(--text-secondary);
 	}
-	.error { color: #ef4444; }
+	.error { color: var(--danger); }
 
 	.page-header {
 		display: flex;
@@ -445,10 +445,10 @@
 		gap: 10px;
 		align-items: center;
 	}
-	.status--active { background: #22c55e33; color: #22c55e; }
+	.status--active { background: var(--success)33; color: var(--success); }
 	.status--draft { background: var(--bg-secondary); color: var(--text-secondary); }
-	.status--archived { background: #64748b33; color: #64748b; }
-	.status--completed { background: #3b82f633; color: #3b82f6; }
+	.status--archived { background: var(--text-secondary)33; color: var(--text-secondary); }
+	.status--completed { background: var(--accent)33; color: var(--accent); }
 
 	.header-actions { flex-shrink: 0; }
 	.search-input {
@@ -569,9 +569,9 @@
 		font-size: 11px;
 		font-weight: 600;
 	}
-	.bg--graded { background: #22c55e33; color: #22c55e; }
-	.bg--submitted { background: #3b82f633; color: #3b82f6; }
-	.bg--returned { background: #f59e0b33; color: #f59e0b; }
+	.bg--graded { background: var(--success)33; color: var(--success); }
+	.bg--submitted { background: var(--accent)33; color: var(--accent); }
+	.bg--returned { background: var(--warning)33; color: var(--warning); }
 	.bg--draft { background: var(--bg-secondary); color: var(--text-secondary); }
 
 	.late-badge {
@@ -581,8 +581,8 @@
 		border-radius: 4px;
 		font-size: 10px;
 		font-weight: 600;
-		background: #ef444422;
-		color: #ef4444;
+		background: var(--danger)22;
+		color: var(--danger);
 	}
 
 	.submission-info { font-size: 12px; color: var(--text-secondary); }
@@ -625,13 +625,13 @@
 		gap: 2px;
 	}
 	.btn:hover { background: var(--hover); }
-	.btn--grade { background: var(--accent); color: #fff; border-color: var(--accent); }
+	.btn--grade { background: var(--accent); color: white; border-color: var(--accent); }
 	.btn--grade:hover { opacity: 0.9; }
-	.btn--return { color: #f59e0b; border-color: #f59e0b33; }
-	.btn--return:hover { background: #f59e0b22; }
+	.btn--return { color: var(--warning); border-color: var(--warning)33; }
+	.btn--return:hover { background: var(--warning)22; }
 	.btn--view { color: var(--text-secondary); border-color: transparent; }
 	.btn--view:hover { background: var(--hover); }
-	.btn--save { background: #22c55e; color: #fff; border-color: #22c55e; }
+	.btn--save { background: var(--success); color: white; border-color: var(--success); }
 	.btn--save:hover { opacity: 0.9; }
 	.btn--cancel { color: var(--text-secondary); }
 	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -754,8 +754,8 @@
 
 	.grade-error {
 		padding: 8px 12px;
-		background: #ef444422;
-		color: #ef4444;
+		background: var(--danger)22;
+		color: var(--danger);
 		border-radius: 6px;
 		font-size: 13px;
 	}

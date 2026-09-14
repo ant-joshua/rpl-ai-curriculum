@@ -170,8 +170,8 @@
 	.health-item { display: flex; flex-direction: column; gap: 2px; padding: 10px; background: var(--bg-secondary); border-radius: 8px; }
 	.health-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 	.health-item span:last-child { font-size: 14px; font-weight: 600; }
-	.status-ok { color: #22c55e; }
-	.status-err { color: #ef4444; }
+	.status-ok { color: var(--success); }
+	.status-err { color: var(--danger); }
 
 	/* DB Stats */
 	.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }

@@ -38,10 +38,10 @@
 			cell: ({ getValue }) => {
 				const s = (getValue() as string) || 'active';
 				const styles: Record<string, string> = {
-					active: 'background:rgba(16,185,129,0.1);color:#10b981',
-					inactive: 'background:rgba(239,68,68,0.1);color:#ef4444',
-					alumni: 'background:rgba(79,70,229,0.1);color:#4F46E5',
-					mutasi: 'background:rgba(245,158,11,0.1);color:#f59e0b',
+					active: 'background:rgba(16,185,129,0.1);color:var(--success)',
+					inactive: 'background:rgba(239,68,68,0.1);color:var(--danger)',
+					alumni: 'background:rgba(79,70,229,0.1);color:var(--accent)',
+					mutasi: 'background:rgba(245,158,11,0.1);color:var(--warning)',
 				};
 				const label = s === 'active' ? 'Aktif' : s;
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;${styles[s] || 'background:var(--bg-secondary);color:var(--text-secondary)'}">${label}</span>`;
@@ -137,14 +137,14 @@
 
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 60px; }
-	.error-msg { color: #ef4444; margin-bottom: 16px; }
-	.btn-primary { display: inline-block; padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; }
+	.error-msg { color: var(--danger); margin-bottom: 16px; }
+	.btn-primary { display: inline-block; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; }
 
 	.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 24px; }
 	.info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
 	.info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); font-weight: 600; }
 	.info-value { font-size: 16px; font-weight: 600; color: var(--text); }
-	.info-value.active { color: #10b981; }
+	.info-value.active { color: var(--success); }
 	.group-link { text-decoration: none; transition: border-color 0.15s; }
 	.group-link:hover { border-color: var(--accent); }
 

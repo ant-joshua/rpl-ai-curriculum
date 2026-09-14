@@ -200,7 +200,7 @@
 	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-ghost { background: transparent; color: var(--text-secondary); }
 	.btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text); }
-	.btn-secondary { background: var(--accent); color: #fff; }
+	.btn-secondary { background: var(--accent); color: white; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-sm { padding: 6px 12px; font-size: 12px; }

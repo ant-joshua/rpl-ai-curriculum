@@ -124,8 +124,8 @@
 			case 'sakit': return 'var(--warning)';
 			case 'izin': return 'var(--info)';
 			case 'alpha': return 'var(--danger)';
-			case 'dispensasi': return '#8b5cf6';
-			case 'terlambat': return '#f97316';
+			case 'dispensasi': return 'var(--accent)';
+			case 'terlambat': return 'var(--warning)';
 			default: return 'transparent';
 		}
 	}
@@ -134,7 +134,7 @@
 		switch (status) {
 			case 'hadir': return 'rgba(16,185,129,0.06)';
 			case 'sakit': return 'rgba(245,158,11,0.06)';
-			case 'izin': return 'rgba(79,70,229,0.06)';
+			case 'izin': return 'rgba(var(--accent-rgb), 0.06)';
 			case 'alpha': return 'rgba(239,68,68,0.06)';
 			case 'dispensasi': return 'rgba(139,92,246,0.06)';
 			case 'terlambat': return 'rgba(249,115,22,0.06)';
@@ -238,8 +238,8 @@
 			<span class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span> {t('absensi.sakit_s')}</span>
 			<span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span> {t('absensi.izin_i')}</span>
 			<span class="legend-item"><span class="legend-dot" style="background:var(--danger)"></span> {t('absensi.alpha_a')}</span>
-			<span class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> {t('absensi.dispensasi_d')}</span>
-			<span class="legend-item"><span class="legend-dot" style="background:#f97316"></span> {t('absensi.terlambat_t')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> {t('absensi.dispensasi_d')}</span>
+			<span class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span> {t('absensi.terlambat_t')}</span>
 		</div>
 
 		<DataTable
@@ -279,6 +279,6 @@
 	.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
 	.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
-	.btn-secondary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+	.btn-secondary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 </style>

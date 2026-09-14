@@ -90,7 +90,7 @@
 <style>
 	.lb-page { max-width: 760px; margin: 0 auto; padding: 24px 20px; }
 	.center { display: flex; justify-content: center; padding: 60px; }
-	.error-text { color: #dc2626; }
+	.error-text { color: var(--danger); }
 
 	.lb-controls { display: flex; gap: 8px; margin-bottom: 16px; }
 	.period-btn {
@@ -106,14 +106,14 @@
 		padding: 12px 16px; background: var(--surface);
 		border: 1px solid var(--border); border-radius: 10px;
 	}
-	.lb-row.top { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: #fcd34d; }
-	.lb-row.me { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,70,229,0.15); }
+	.lb-row.top { background: var(--warning-light); border-color: var(--warning); }
+	.lb-row.me { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15); }
 	.lb-rank { width: 36px; font-size: 18px; font-weight: 700; text-align: center; }
 	.lb-avatar { font-size: 20px; }
 	.lb-name { flex: 1; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
 	.lb-me-tag { font-size: 10px; background: var(--accent); color: white; padding: 2px 8px; border-radius: 999px; }
-	.lb-xp { font-weight: 700; color: #b45309; font-size: 14px; }
-	.lb-level { font-size: 12px; color: var(--text-secondary); background: #f1f5f9; padding: 2px 8px; border-radius: 999px; }
+	.lb-xp { font-weight: 700; color: var(--warning); font-size: 14px; }
+	.lb-level { font-size: 12px; color: var(--text-secondary); background: var(--surface-alt); padding: 2px 8px; border-radius: 999px; }
 
 	@media (max-width: 600px) {
 		.lb-level { display: none; }

@@ -677,7 +677,7 @@
 	.tag {
 		font-size: 11px;
 		background: rgba(79, 70, 229, 0.12);
-		color: #4F46E5;
+		color: var(--accent);
 		padding: 2px 8px;
 		border-radius: 10px;
 	}
@@ -697,7 +697,7 @@
 
 	.form-label {
 		font-size: 12px;
-		color: #64748b;
+		color: var(--text-secondary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		font-weight: 500;

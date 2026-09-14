@@ -101,9 +101,9 @@
 
 	function levelColor(level: string): string {
 		const map: Record<string, string> = {
-			'Beginner': '#22c55e',
-			'Intermediate': '#f59e0b',
-			'Advanced': '#ef4444',
+			'Beginner': 'var(--success)',
+			'Intermediate': 'var(--warning)',
+			'Advanced': 'var(--danger)',
 		};
 		return map[level] || 'var(--text-secondary)';
 	}
@@ -404,17 +404,17 @@
 
 	.level-beginner {
 		background: rgba(34, 197, 94, 0.12);
-		color: #22c55e;
+		color: var(--success);
 	}
 
 	.level-intermediate {
 		background: rgba(245, 158, 11, 0.12);
-		color: #f59e0b;
+		color: var(--warning);
 	}
 
 	.level-advanced {
 		background: rgba(239, 68, 68, 0.12);
-		color: #ef4444;
+		color: var(--danger);
 	}
 
 	/* Download button */
@@ -438,7 +438,7 @@
 	.pdf-dl-btn:hover {
 		background: var(--accent);
 		border-color: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.dl-icon {

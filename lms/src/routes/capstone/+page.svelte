@@ -147,7 +147,7 @@
 		gap: 6px;
 		padding: 10px 20px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;

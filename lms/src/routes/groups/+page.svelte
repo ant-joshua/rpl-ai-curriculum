@@ -153,7 +153,7 @@
 		margin-bottom: 16px;
 	}
 	.form-error {
-		color: #ef4444;
+		color: var(--danger);
 		font-size: 12px;
 		margin-bottom: 8px;
 	}
@@ -210,7 +210,7 @@
 	}
 	.join-btn {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 	.join-btn:hover {
 		opacity: 0.9;
@@ -234,13 +234,13 @@
 	}
 	.delete-btn {
 		background: transparent;
-		color: #ef4444;
+		color: var(--danger);
 		padding: 6px 10px;
 		border: 1px solid transparent;
 	}
 	.delete-btn:hover {
-		background: #fef2f2;
-		border-color: #fecaca;
+		background: var(--danger-light);
+		border-color: var(--danger);
 	}
 	.empty-state {
 		text-align: center;

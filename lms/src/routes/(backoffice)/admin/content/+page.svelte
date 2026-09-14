@@ -593,7 +593,7 @@
 	.session-table th { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.5px; }
 	.sess-id { font-size: 10px; opacity: 0.6; }
 	.cb-link { font-family: monospace; font-size: 11px; display: block; }
-	.linked-badge { font-size: 11px; color: #22c55e; }
+	.linked-badge { font-size: 11px; color: var(--success); }
 	.unlinked-badge { font-size: 11px; color: var(--text-secondary); }
 	.no-cb { color: var(--text-secondary); font-size: 12px; }
 
@@ -620,16 +620,16 @@
 		text-transform: uppercase;
 		white-space: nowrap;
 	}
-	.card-badge.beginner { background: #dbeafe; color: #1d4ed8; }
-	.card-badge.intermediate { background: #fef3c7; color: #b45309; }
-	.card-badge.advanced { background: #fce7f3; color: #be185d; }
+	.card-badge.beginner { background: var(--accent-light); color: var(--accent); }
+	.card-badge.intermediate { background: var(--warning-light); color: var(--warning); }
+	.card-badge.advanced { background: var(--accent-light); color: var(--accent); }
 
 	.linked-lesson { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 	.lesson-name { font-weight: 500; }
 	.lesson-status { font-size: 10px; padding: 1px 6px; border-radius: 6px; }
-	.lesson-status.published { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-	.lesson-status.draft { background: rgba(234, 179, 8, 0.1); color: #ca8a04; }
-	.lesson-status.archived { background: rgba(107, 114, 128, 0.1); color: #64748b; }
+	.lesson-status.published { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+	.lesson-status.draft { background: rgba(234, 179, 8, 0.1); color: var(--warning); }
+	.lesson-status.archived { background: rgba(107, 114, 128, 0.1); color: var(--text-secondary); }
 
 	.cell-actions { display: flex; gap: 4px; white-space: nowrap; }
 

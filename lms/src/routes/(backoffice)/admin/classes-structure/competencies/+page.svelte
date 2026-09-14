@@ -204,8 +204,8 @@
 	.table-wrap { padding: 0 24px; }
 	code { font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
 	.tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-	.tag-pengetahuan { background: rgba(108, 92, 231, 0.15); color: #a29bfe; }
-	.tag-keterampilan { background: rgba(0, 184, 148, 0.15); color: #00b894; }
+	.tag-pengetahuan { background: rgba(108, 92, 231, 0.15); color: var(--accent); }
+	.tag-keterampilan { background: rgba(0, 184, 148, 0.15); color: var(--success); }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; }
 	.modal { background: var(--bg-primary); border-radius: 16px; padding: 24px; width: 90%; max-width: 560px; max-height: 85vh; overflow-y: auto; }
 	.modal h3 { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: var(--text-primary); }
@@ -216,7 +216,7 @@
 	input, select, textarea { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px; font-family: inherit; }
 	textarea { resize: vertical; }
 	.modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); }
-	.error-banner { background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); color: #ff4757; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+	.error-banner { background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
 	.btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 	.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
 	.btn:disabled { opacity: 0.5; cursor: not-allowed; }

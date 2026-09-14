@@ -434,7 +434,7 @@
 
 	.deck-item.active .deck-count {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.sidebar-stats {
@@ -629,7 +629,7 @@
 
 	.difficulty-tag {
 		background: rgba(245, 158, 11, 0.15);
-		color: #d97706;
+		color: var(--warning);
 	}
 
 	/* Rating buttons */
@@ -656,7 +656,7 @@
 
 	.rating-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		box-shadow: none;
 	}
 
 	.rating-emoji {
@@ -670,22 +670,22 @@
 	}
 
 	.btn-again:hover {
-		border-color: #ef4444;
+		border-color: var(--danger);
 		background: rgba(239, 68, 68, 0.08);
 	}
 
 	.btn-hard:hover {
-		border-color: #f59e0b;
+		border-color: var(--warning);
 		background: rgba(245, 158, 11, 0.08);
 	}
 
 	.btn-good:hover {
-		border-color: #3b82f6;
+		border-color: var(--accent);
 		background: rgba(59, 130, 246, 0.08);
 	}
 
 	.btn-easy:hover {
-		border-color: #10b981;
+		border-color: var(--success);
 		background: rgba(16, 185, 129, 0.08);
 	}
 

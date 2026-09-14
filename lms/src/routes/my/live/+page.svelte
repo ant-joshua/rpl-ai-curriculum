@@ -109,10 +109,10 @@
 	.live-badge {
 		display: inline-block; padding: 2px 10px; border-radius: 999px;
 		font-size: 11px; font-weight: 700; text-transform: uppercase;
-		background: #e2e8f0; color: #475569; margin-bottom: 6px;
+		background: var(--border); color: var(--text-secondary); margin-bottom: 6px;
 	}
-	.live-badge.live-now { background: #fee2e2; color: #dc2626; animation: pulse 1.5s infinite; }
-	.live-badge.live-scheduled { background: #dbeafe; color: #2563eb; }
+	.live-badge.live-now { background: var(--danger-light); color: var(--danger); animation: pulse 1.5s infinite; }
+	.live-badge.live-scheduled { background: var(--accent-light); color: var(--accent); }
 	@keyframes pulse { 50% { opacity: 0.6; } }
 	.live-title { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
 	.live-desc { font-size: 13px; color: var(--text-muted); margin: 0 0 8px; }
@@ -120,10 +120,10 @@
 	.live-right { flex-shrink: 0; }
 	.live-btn {
 		display: inline-block; padding: 8px 16px; border-radius: 8px;
-		background: #f1f5f9; color: #334155; font-size: 13px; font-weight: 600;
-		text-decoration: none; border: 1px solid #e2e8f0;
+		background: var(--surface-alt); color: var(--text-secondary); font-size: 13px; font-weight: 600;
+		text-decoration: none; border: 1px solid var(--border);
 	}
-	.live-btn.primary { background: #2563eb; color: white; border-color: #2563eb; }
-	.live-btn.primary:hover { background: #1d4ed8; }
+	.live-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+	.live-btn.primary:hover { background: var(--accent); }
 	.live-soon { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 </style>

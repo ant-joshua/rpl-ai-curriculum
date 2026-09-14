@@ -41,7 +41,7 @@
 	}
 
 	function dispatchConfetti() {
-		const colors = ['#4F46E5', '#22C55E', '#F59E0B', '#EF4444', '#EC4899'];
+		const colors = ['var(--accent)', 'var(--success)', 'var(--warning)', 'var(--danger)', 'var(--accent)'];
 		const pieces = [];
 		for (let i = 0; i < 60; i++) {
 			pieces.push({
@@ -326,23 +326,23 @@
 		box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
 	}
 	.btn-primary {
-		background: var(--accent, #4F46E5);
-		color: #fff;
+		background: var(--accent, var(--accent));
+		color: white;
 	}
 	.btn-primary:hover:not(:disabled) {
-		background: #4338CA;
+		background: var(--accent-hover);
 		transform: translateY(-1px);
 		box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
 	}
 	.btn-primary:disabled {
-		background: #C7D2FE;
+		background: var(--accent-light);
 		cursor: not-allowed;
 		box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
 	}
 	.btn-check { width: 100%; }
 	.btn-continue { width: 100%; }
 	.btn-big { font-size: 18px; padding: 16px 48px; }
-	.btn-link { color: #fff; }
+	.btn-link { color: white; }
 
 	/* ---------- Progress ---------- */
 	.progress-container {
@@ -354,7 +354,7 @@
 	.progress-text {
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--text-secondary, #94A3B8);
+		color: var(--text-secondary, var(--text-muted));
 	}
 	.progress-bar {
 		height: 12px;
@@ -364,7 +364,7 @@
 	}
 	.progress-fill {
 		height: 100%;
-		background: var(--accent, #4F46E5);
+		background: var(--accent, var(--accent));
 		border-radius: 6px;
 		transition: width 0.3s ease;
 	}
@@ -372,12 +372,12 @@
 	/* ---------- Question card ---------- */
 	.question-card {
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #E2E8F0);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 16px;
 		padding: 28px 24px;
 		margin-bottom: 20px;
 		text-align: center;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+		box-shadow: none;
 	}
 	.card-top {
 		display: flex;
@@ -388,7 +388,7 @@
 	}
 	.badge-wrong {
 		background: rgba(239, 68, 68, 0.1);
-		color: var(--error, #EF4444);
+		color: var(--error, var(--danger));
 		font-size: 12px;
 		font-weight: 600;
 		padding: 3px 10px;
@@ -396,7 +396,7 @@
 	}
 	.badge-ref {
 		background: var(--accent-dim, rgba(79, 70, 229, 0.1));
-		color: var(--accent, #4F46E5);
+		color: var(--accent, var(--accent));
 		font-size: 12px;
 		font-weight: 600;
 		padding: 3px 10px;
@@ -405,7 +405,7 @@
 	.question-text {
 		font-size: 19px;
 		font-weight: 600;
-		color: var(--text, #0F172A);
+		color: var(--text, var(--text));
 		margin: 0;
 		line-height: 1.55;
 		text-align: center;
@@ -417,9 +417,9 @@
 		padding: 16px 18px;
 		font-size: 17px;
 		font-family: inherit;
-		color: var(--text, #0F172A);
+		color: var(--text, var(--text));
 		background: var(--surface, #fff);
-		border: 2px solid var(--border, #E2E8F0);
+		border: 2px solid var(--border, var(--border));
 		border-radius: 14px;
 		margin-bottom: 20px;
 		box-sizing: border-box;
@@ -427,8 +427,8 @@
 	}
 	.answer-input:focus {
 		outline: none;
-		border-color: var(--accent, #4F46E5);
-		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+		border-color: var(--accent, var(--accent));
+		box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
 	}
 
 	/* ---------- Result feedback ---------- */
@@ -445,26 +445,26 @@
 	}
 	.correct-icon {
 		background: rgba(34, 197, 94, 0.12);
-		color: var(--success, #22C55E);
+		color: var(--success, var(--success));
 	}
 	.wrong-icon {
 		background: rgba(239, 68, 68, 0.12);
-		color: var(--error, #EF4444);
+		color: var(--error, var(--danger));
 	}
 	.result-text {
 		font-size: 22px;
 		font-weight: 800;
-		color: var(--text, #0F172A);
+		color: var(--text, var(--text));
 		margin: 0 0 8px;
 	}
 	.result-sub {
 		font-size: 15px;
-		color: var(--text-secondary, #64748B);
+		color: var(--text-secondary, var(--text-secondary));
 		margin: 0 0 4px;
 	}
 	.result-hint {
 		font-size: 13px;
-		color: var(--text-secondary, #94A3B8);
+		color: var(--text-secondary, var(--text-muted));
 		margin: 12px 0 0;
 		font-style: italic;
 	}
@@ -492,7 +492,7 @@
 	/* ---------- State cards (empty / error / complete) ---------- */
 	.state-card {
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #E2E8F0);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 20px;
 		padding: 48px 32px;
 		text-align: center;
@@ -508,12 +508,12 @@
 	.state-card h2 {
 		font-size: 24px;
 		font-weight: 800;
-		color: var(--text, #0F172A);
+		color: var(--text, var(--text));
 		margin: 0 0 10px;
 	}
 	.state-desc {
 		font-size: 15px;
-		color: var(--text-secondary, #64748B);
+		color: var(--text-secondary, var(--text-secondary));
 		margin: 0 0 24px;
 		line-height: 1.6;
 	}
@@ -522,10 +522,10 @@
 		margin-top: 16px;
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--text-secondary, #64748B);
+		color: var(--text-secondary, var(--text-secondary));
 		text-decoration: none;
 	}
-	.back-link:hover { color: var(--accent, #4F46E5); }
+	.back-link:hover { color: var(--accent, var(--accent)); }
 
 	/* ---------- Completion ---------- */
 	.complete-screen { overflow: hidden; }
@@ -552,13 +552,13 @@
 	.stat-value {
 		font-size: 32px;
 		font-weight: 800;
-		color: var(--text, #0F172A);
+		color: var(--text, var(--text));
 	}
-	.success-text { color: var(--success, #22C55E); }
+	.success-text { color: var(--success, var(--success)); }
 	.stat-label {
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--text-secondary, #94A3B8);
+		color: var(--text-secondary, var(--text-muted));
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -590,7 +590,7 @@
 		gap: 20px;
 	}
 	.skeleton {
-		background: linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.09) 50%, rgba(0,0,0,0.05) 75%);
+		background: rgba(0,0,0,0.07);
 		background-size: 200% 100%;
 		animation: shimmer 1.4s infinite;
 		border-radius: 8px;
@@ -598,7 +598,7 @@
 	.skeleton-bar { height: 12px; }
 	.skeleton-card {
 		background: var(--surface, #fff);
-		border: 1px solid var(--border, #E2E8F0);
+		border: 1px solid var(--border, var(--border));
 		border-radius: 16px;
 		padding: 28px 24px;
 		display: flex;

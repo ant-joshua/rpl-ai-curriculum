@@ -236,7 +236,7 @@
 	.restore-result { margin-top: 8px; }
 	.result-text { font-size: 13px; margin: 2px 0; }
 	.table-detail { font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
-	.error-detail { color: #f87171; font-size: 11px; }
+	.error-detail { color: var(--danger); font-size: 11px; }
 
 	@media (max-width: 768px) {
 		.backup-item { flex-direction: column; align-items: flex-start; gap: 8px; }

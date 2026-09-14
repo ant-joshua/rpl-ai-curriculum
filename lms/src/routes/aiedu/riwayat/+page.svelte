@@ -132,5 +132,5 @@
 	.md :global(p) { margin: 0 0 8px; }
 	.md :global(table) { border-collapse: collapse; margin: 8px 0; font-size: 12px; width: 100%; }
 	.md :global(th), .md :global(td) { border: 1px solid var(--border); padding: 5px 8px; }
-	.md :global(pre) { background: #0f1115; color: #e6e6e6; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+	.md :global(pre) { background: var(--text); color: var(--border); padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
 </style>

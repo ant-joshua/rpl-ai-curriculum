@@ -17,11 +17,11 @@
 
 	function finalGradeColor(pct: number | null): string {
 		if (pct === null) return 'var(--text-secondary)';
-		if (pct >= 85) return '#22c55e';
-		if (pct >= 70) return '#27ae60';
-		if (pct >= 55) return '#f1c40f';
-		if (pct >= 45) return '#f59e0b';
-		return '#ef4444';
+		if (pct >= 85) return 'var(--success)';
+		if (pct >= 70) return 'var(--success)';
+		if (pct >= 55) return 'var(--warning)';
+		if (pct >= 45) return 'var(--warning)';
+		return 'var(--danger)';
 	}
 
 	function letterGrade(pct: number | null): string {
@@ -294,7 +294,7 @@
 		}
 
 		.rapor-table th {
-			background: #f5f5f5 !important;
+			background: var(--surface-alt) !important;
 			color: #333 !important;
 			border-bottom-color: #999 !important;
 			-webkit-print-color-adjust: exact;

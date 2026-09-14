@@ -248,7 +248,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 	.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
 	.tabs { display: flex; gap: 4px; background: var(--bg-secondary); border-radius: 8px; padding: 3px; }
 	.tab { padding: 7px 14px; border: none; border-radius: 6px; background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; }
-	.tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+	.tab.active { background: var(--surface); color: var(--text); box-shadow: none; }
 
 	.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
 	.project-card {
@@ -258,14 +258,14 @@ import { addToast } from '$lib/stores/toast.svelte';
 	.card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 	.card-title { font-weight: 600; font-size: 14px; }
 	.card-status { font-size: 10px; padding: 2px 10px; border-radius: 10px; font-weight: 600; text-transform: uppercase; }
-	.card-status.published { background: #d1fae5; color: #065f46; }
-	.card-status.draft { background: #f3f4f6; color: #64748b; }
+	.card-status.published { background: var(--success-light); color: var(--success); }
+	.card-status.draft { background: var(--surface-alt); color: var(--text-secondary); }
 	.card-desc { font-size: 12px; color: var(--text-secondary); }
 	.card-meta { display: flex; gap: 10px; font-size: 12px; align-items: center; }
 	.card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; text-transform: capitalize; }
-	.card-badge.beginner { background: #dbeafe; color: #1d4ed8; }
-	.card-badge.intermediate { background: #fef3c7; color: #b45309; }
-	.card-badge.advanced { background: #fce7f3; color: #be185d; }
+	.card-badge.beginner { background: var(--accent-light); color: var(--accent); }
+	.card-badge.intermediate { background: var(--warning-light); color: var(--warning); }
+	.card-badge.advanced { background: var(--accent-light); color: var(--accent); }
 	.card-techs { display: flex; flex-wrap: wrap; gap: 4px; }
 	:global(.tech-tag) { font-size: 10px; padding: 2px 8px; background: var(--bg-secondary); border-radius: 6px; color: var(--text-secondary); }
 	.card-actions { display: flex; gap: 6px; margin-top: 4px; }
@@ -299,8 +299,8 @@ import { addToast } from '$lib/stores/toast.svelte';
 
 	.btn { display: inline-block; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; }
 	.btn-sm { padding: 5px 10px; font-size: 12px; }
-	.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-	.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+	.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+	.btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
 	.btn:hover { opacity: 0.85; }
 
 	@media (max-width: 768px) {

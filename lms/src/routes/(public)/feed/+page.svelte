@@ -152,7 +152,7 @@
 
 	.feed-copy-btn {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border: none;
 		padding: 6px 12px;
 		border-radius: 6px;

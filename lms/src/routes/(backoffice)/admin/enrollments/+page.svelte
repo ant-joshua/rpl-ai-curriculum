@@ -159,12 +159,12 @@
 
 	function statusBadgeHtml(s: string): string {
 		const colors: Record<string, { bg: string; color: string }> = {
-			active: { bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
-			completed: { bg: 'rgba(59,130,246,0.12)', color: '#3b82f6' },
-			dropped: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444' },
-			pending: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
+			active: { bg: 'rgba(16,185,129,0.12)', color: 'var(--success)' },
+			completed: { bg: 'rgba(59,130,246,0.12)', color: 'var(--accent)' },
+			dropped: { bg: 'rgba(239,68,68,0.12)', color: 'var(--danger)' },
+			pending: { bg: 'rgba(245,158,11,0.12)', color: 'var(--warning)' },
 		};
-		const c = colors[s] || { bg: 'rgba(156,163,175,0.12)', color: '#9ca3af' };
+		const c = colors[s] || { bg: 'rgba(156,163,175,0.12)', color: 'var(--text-muted)' };
 		return `<span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${c.bg};color:${c.color}">${statusLabel(s)}</span>`;
 	}
 
@@ -228,7 +228,7 @@
 			cell: ({ row }) => {
 				const e = row.original;
 				if (confirmDelete === e.id) {
-					return `<span style="display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:12px;color:#ef4444;font-weight:600">Hapus?</span><button onclick="window.__deleteEnrollment('${e.id}')" style="padding:4px 10px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">${deleting ? '...' : 'Ya'}</button><button onclick="window.__cancelDelete()" style="padding:4px 10px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Batal</button></span>`;
+					return `<span style="display:flex;align-items:center;gap:6px;white-space:nowrap"><span style="font-size:12px;color:var(--danger);font-weight:600">Hapus?</span><button onclick="window.__deleteEnrollment('${e.id}')" style="padding:4px 10px;background:var(--danger);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">${deleting ? '...' : 'Ya'}</button><button onclick="window.__cancelDelete()" style="padding:4px 10px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Batal</button></span>`;
 				}
 				return `<button onclick="window.__confirmDeleteEnrollment('${e.id}')" style="padding:4px 10px;background:transparent;border:none;font-size:14px;cursor:pointer">🗑️</button>`;
 			}
@@ -381,5 +381,5 @@
 	.form-group { margin-bottom: 16px; }
 	.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 	.form-group .select-input { width: 100%; padding: 8px 12px; }
-	.submit-error { padding: 8px 12px; background: var(--danger-bg, rgba(231,76,60,0.1)); color: #ef4444; border-radius: 8px; font-size: 13px; }
+	.submit-error { padding: 8px 12px; background: var(--danger-bg, rgba(231,76,60,0.1)); color: var(--danger); border-radius: 8px; font-size: 13px; }
 </style>

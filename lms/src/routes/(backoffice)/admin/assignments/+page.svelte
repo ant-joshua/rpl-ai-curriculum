@@ -214,7 +214,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		{
 			header: 'Tipe',
 			accessorKey: 'submission_type',
-			cell: ({ getValue }) => `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(113,112,255,0.12);color:#4F46E5">${typeLabel[getValue() as string] || getValue()}</span>`
+			cell: ({ getValue }) => `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(113,112,255,0.12);color:var(--accent)">${typeLabel[getValue() as string] || getValue()}</span>`
 		},
 		{
 			header: 'Nilai Maks',
@@ -232,11 +232,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			cell: ({ getValue }) => {
 				const s = getValue() as string;
 				const colors: Record<string, string> = {
-					published: 'background:rgba(34,197,94,0.12);color:#22c55e',
-					draft: 'background:rgba(245,158,11,0.12);color:#f59e0b',
-					archived: 'background:rgba(156,163,175,0.12);color:#9ca3af',
+					published: 'background:rgba(34,197,94,0.12);color:var(--success)',
+					draft: 'background:rgba(245,158,11,0.12);color:var(--warning)',
+					archived: 'background:rgba(156,163,175,0.12);color:var(--text-muted)',
 				};
-				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;${colors[s] || 'background:rgba(156,163,175,0.12);color:#9ca3af'}">${s}</span>`;
+				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;text-transform:capitalize;${colors[s] || 'background:rgba(156,163,175,0.12);color:var(--text-muted)'}">${s}</span>`;
 			}
 		},
 		{
@@ -249,7 +249,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				html += `<button onclick="window.__toggleSubmissions('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Submissions">📥 (${a.submission_count ?? '-'})</button>`;
 				html += `<button onclick="window.__editAssignment('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Edit">✏️</button>`;
 				if (confirmDelete === a.id) {
-					html += `<button onclick="window.__deleteAssignment('${a.id}')" style="padding:4px 8px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">Hapus</button>`;
+					html += `<button onclick="window.__deleteAssignment('${a.id}')" style="padding:4px 8px;background:var(--danger);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">Hapus</button>`;
 					html += `<button onclick="window.__cancelDeleteAssignment()" style="padding:4px 8px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Batal</button>`;
 				} else {
 					html += `<button onclick="window.__confirmDeleteAssignment('${a.id}')" style="padding:4px 8px;background:transparent;border:none;font-size:13px;cursor:pointer" title="Hapus">🗑️</button>`;
@@ -527,5 +527,5 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.form-row { display: flex; gap: 12px; }
 	.form-row .form-group { flex: 1; }
 	.checkbox-group label { display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer; }
-	.submit-error { padding: 8px 12px; background: rgba(231,76,60,0.1); color: #ef4444; border-radius: 8px; font-size: 13px; }
+	.submit-error { padding: 8px 12px; background: rgba(231,76,60,0.1); color: var(--danger); border-radius: 8px; font-size: 13px; }
 </style>

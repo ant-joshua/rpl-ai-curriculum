@@ -296,7 +296,7 @@
 										<div
 											class="comp-bar-fill"
 											style="width: {pct}%"
-											style:background={item.completion_rate >= 0.7 ? 'var(--accent)' : item.completion_rate >= 0.4 ? '#f59e0b' : '#ef4444'}
+											style:background={item.completion_rate >= 0.7 ? 'var(--accent)' : item.completion_rate >= 0.4 ? 'var(--warning)' : 'var(--danger)'}
 										></div>
 									</div>
 									<span class="comp-pct">{pctDisplay}%</span>
@@ -389,7 +389,7 @@
 						<div class="comp-row">
 							<span class="comp-name" style="min-width:30px;font-weight:700">{g}</span>
 							<div class="comp-bar-track">
-								<div class="comp-bar-fill" style="width: {pctG}%;background:{g === 'A' ? 'var(--accent)' : g === 'B' ? '#22c55e' : g === 'C' ? '#f59e0b' : g === 'D' ? '#f97316' : '#ef4444'}"></div>
+								<div class="comp-bar-fill" style="width: {pctG}%;background:{g === 'A' ? 'var(--accent)' : g === 'B' ? 'var(--success)' : g === 'C' ? 'var(--warning)' : g === 'D' ? 'var(--warning)' : 'var(--danger)'}"></div>
 							</div>
 							<span class="comp-pct">{val}</span>
 						</div>
@@ -431,7 +431,7 @@
 										x={x} y={y}
 										width={bW} height={h}
 										rx="3" ry="3"
-										fill={d.count > maxCount * 0.66 ? '#ef4444' : d.count > maxCount * 0.33 ? '#f59e0b' : '#22c55e'}
+										fill={d.count > maxCount * 0.66 ? 'var(--danger)' : d.count > maxCount * 0.33 ? 'var(--warning)' : 'var(--success)'}
 									>
 										<title>{d.range}: {d.count} siswa</title>
 									</rect>
@@ -479,7 +479,7 @@
 										<title>Enrollments: {course.totalEnrollments}</title>
 									</rect>
 									<!-- Completed bar (overlay) -->
-									<rect x="110" y={y} width={Math.max(compW, 0)} height={barH} rx="3" ry="3" fill="#22c55e" opacity="0.9">
+									<rect x="110" y={y} width={Math.max(compW, 0)} height={barH} rx="3" ry="3" fill="var(--success)" opacity="0.9">
 										<title>Completed: {course.completedEnrollments}</title>
 									</rect>
 									<text x={110 + Math.max(enrollW, compW) + 6} y={y + barH / 2 + 4} font-size="10" fill="var(--text-secondary)">
@@ -490,7 +490,7 @@
 						</div>
 						<div class="legend" style="display:flex; gap:16px; margin-top:8px; font-size:12px; color:var(--text-secondary)">
 							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--accent);opacity:0.6;vertical-align:middle;margin-right:4px"></span> Enrollment</span>
-							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#22c55e;vertical-align:middle;margin-right:4px"></span>{t('admin.completed')}</span>
+							<span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--success);vertical-align:middle;margin-right:4px"></span>{t('admin.completed')}</span>
 						</div>
 					{:else}
 						<p class="empty">Belum ada data kursus</p>

@@ -223,14 +223,14 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
 	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-text { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; }
 	.btn-text:hover { text-decoration: underline; }
-	.btn-text-danger { color: #ef4444; }
-	.btn-text-danger:hover { color: #dc2626; }
+	.btn-text-danger { color: var(--danger); }
+	.btn-text-danger:hover { color: var(--danger); }
 
 	.filter-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
 	.filter-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-secondary); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-transform: capitalize; }
@@ -266,19 +266,19 @@
 	.template-actions { display: flex; justify-content: flex-end; gap: 12px; }
 
 	.type-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
-	.cat-general { background: rgba(98,102,109,0.15); color: #64748b; }
-	.cat-academic { background: rgba(59,130,246,0.1); color: #3b82f6; }
-	.cat-attendance { background: rgba(139,92,246,0.1); color: #8b5cf6; }
-	.cat-payment { background: rgba(16,185,129,0.1); color: #10b981; }
-	.cat-grade { background: rgba(245,158,11,0.1); color: #f59e0b; }
-	.cat-announcement { background: rgba(239,68,68,0.1); color: #ef4444; }
-	.cat-system { background: rgba(98,102,109,0.15); color: #64748b; }
+	.cat-general { background: rgba(98,102,109,0.15); color: var(--text-secondary); }
+	.cat-academic { background: rgba(59,130,246,0.1); color: var(--accent); }
+	.cat-attendance { background: rgba(139,92,246,0.1); color: var(--accent); }
+	.cat-payment { background: rgba(16,185,129,0.1); color: var(--success); }
+	.cat-grade { background: rgba(245,158,11,0.1); color: var(--warning); }
+	.cat-announcement { background: rgba(239,68,68,0.1); color: var(--danger); }
+	.cat-system { background: rgba(98,102,109,0.15); color: var(--text-secondary); }
 
-	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(59,130,246,0.1); color: #3b82f6; }
+	.channel-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; background: rgba(59,130,246,0.1); color: var(--accent); }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
 	.error-state { text-align: center; padding: 20px; margin-bottom: 16px; }
-	.error-msg { color: #ef4444; margin-bottom: 8px; font-size: 13px; }
+	.error-msg { color: var(--danger); margin-bottom: 8px; font-size: 13px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
 </style>

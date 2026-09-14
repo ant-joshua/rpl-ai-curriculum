@@ -91,9 +91,9 @@
 			cell: ({ getValue }) => {
 				const v = getValue() as string;
 				const colors: Record<string, string> = {
-					scheduled: '#2563eb', live: '#dc2626', ended: '#6b7280', cancelled: '#9ca3af'
+					scheduled: 'var(--accent)', live: 'var(--danger)', ended: 'var(--text-muted)', cancelled: 'var(--text-muted)'
 				};
-				return `<span style="color:${colors[v] || '#6b7280'};font-weight:600">${v}</span>`;
+				return `<span style="color:${colors[v] || 'var(--text-muted)'};font-weight:600">${v}</span>`;
 			}
 		},
 	];
@@ -209,9 +209,9 @@
 	.table-wrap { overflow-x: auto; }
 	.live-table { width: 100%; border-collapse: collapse; }
 	.live-table th, .live-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
-	.status-pill { padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #e2e8f0; color: #475569; }
-	.status-pill.st-live { background: #fee2e2; color: #dc2626; }
-	.status-pill.st-scheduled { background: #dbeafe; color: #2563eb; }
+	.status-pill { padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: var(--border); color: var(--text-secondary); }
+	.status-pill.st-live { background: var(--danger-light); color: var(--danger); }
+	.status-pill.st-scheduled { background: var(--accent-light); color: var(--accent); }
 	.row-actions { display: flex; gap: 6px; align-items: center; }
-	.join-link { font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 600; }
+	.join-link { font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 600; }
 </style>

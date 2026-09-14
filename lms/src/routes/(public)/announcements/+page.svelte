@@ -188,7 +188,7 @@
   .ann-title-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   .ann-title-row h2 { font-size: 1.05rem; margin: 0; }
   .priority-badge { font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 12px; white-space: nowrap; }
-  .badge-high { background: #fef2f2; color: #dc2626; }
+  .badge-high { background: var(--danger-light); color: var(--danger); }
   .badge-normal { background: var(--accent-dim); color: var(--accent); }
   .badge-low { background: var(--surface-hover); color: var(--text-secondary); }
   .delete-btn { background: none; border: none; font-size: 1rem; cursor: pointer; padding: 0.25rem; opacity: 0.6; }

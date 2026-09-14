@@ -173,7 +173,7 @@
 <style>
 	.tabs { display: flex; gap: 8px; margin-bottom: 18px; }
 	.tab { padding: 8px 16px; border: 1px solid var(--border); border-radius: 10px; background: white; font-size: 13px; font-weight: 600; cursor: pointer; }
-	.tab.active { background: #2563eb; color: white; border-color: #2563eb; }
+	.tab.active { background: var(--accent); color: white; border-color: var(--accent); }
 	.center { display: flex; justify-content: center; padding: 40px; }
 	.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
 	.stat { display: flex; flex-direction: column; gap: 2px; }
@@ -184,7 +184,7 @@
 	.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 	.bar-label { font-size: 12px; font-weight: 600; width: 110px; }
 	.bar-track { flex: 1; height: 8px; background: var(--surface); border-radius: 99px; overflow: hidden; }
-	.bar-fill { height: 100%; background: #2563eb; border-radius: 99px; }
+	.bar-fill { height: 100%; background: var(--accent); border-radius: 99px; }
 	.bar-num { font-size: 12px; font-weight: 700; width: 30px; text-align: right; }
 	.user-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 	.user-row:last-child { border-bottom: none; }

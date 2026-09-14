@@ -221,7 +221,7 @@
 		width: 100%;
 		padding: 12px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border: none;
 		border-radius: 10px;
 		font-size: 15px;

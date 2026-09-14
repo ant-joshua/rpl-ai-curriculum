@@ -153,10 +153,10 @@
 				.meta { color: #666; margin-bottom: 16px; }
 				table { width: 100%; border-collapse: collapse; margin: 16px 0; }
 				th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #ddd; }
-				th { background: #f5f5f5; }
-				.done { color: #22c55e; }
-				.todo { color: #eab308; }
-				.footer { margin-top: 32px; font-size: 12px; color: #64748b; }
+				th { background: var(--surface-alt); }
+				.done { color: var(--success); }
+				.todo { color: var(--warning); }
+				.footer { margin-top: 32px; font-size: 12px; color: var(--text-secondary); }
 				@media print { body { padding: 20px; } }
 			</style>
 			</head>
@@ -433,7 +433,7 @@
 		border: none;
 		border-radius: 10px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 16px;
 		font-weight: 600;
 		cursor: pointer;
@@ -492,10 +492,10 @@
 
 	.btn-danger {
 		padding: 8px 16px;
-		border: 1px solid var(--danger, #ef4444);
+		border: 1px solid var(--danger, var(--danger));
 		border-radius: 8px;
 		background: transparent;
-		color: var(--danger, #ef4444);
+		color: var(--danger, var(--danger));
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
@@ -503,8 +503,8 @@
 	}
 
 	.btn-danger:hover {
-		background: var(--danger, #ef4444);
-		color: #fff;
+		background: var(--danger, var(--danger));
+		color: white;
 	}
 
 	.timeline-section {
@@ -523,7 +523,7 @@
 
 	.timeline-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+		background: var(--accent);
 		border-radius: 8px;
 		transition: width 0.3s ease;
 	}
@@ -675,7 +675,7 @@
 
 	.btn-session:hover {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 
 	.btn-session.done {

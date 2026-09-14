@@ -229,7 +229,7 @@
 						cx="100" cy="100" r="90"
 						stroke-dasharray={circumference}
 						stroke-dashoffset={dashOffset}
-						style="stroke: {timerMode === 'focus' ? '#ef4444' : '#22c55e'}"
+						style="stroke: {timerMode === 'focus' ? 'var(--danger)' : 'var(--success)'}"
 					/>
 				</svg>
 				<div class="pomodoro-time">
@@ -529,7 +529,7 @@
 	.preset-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 	.preset-btn.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 	.preset-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -621,7 +621,7 @@
 	}
 	.pomodoro-btn.primary {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 	.pomodoro-btn.primary:hover {
@@ -717,7 +717,7 @@
 	}
 	.ql-badge.has-items {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 	}
 	.ql-arrow { font-size: 18px; color: var(--accent); }
 
@@ -743,7 +743,7 @@
 
 	.dgp-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #f59e0b, #ef4444);
+		background: var(--warning);
 		border-radius: 7px;
 		transition: width 0.4s ease;
 	}
@@ -802,7 +802,7 @@
 		border-radius: 8px;
 		border: none;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
@@ -843,7 +843,7 @@
 		margin-top: 12px;
 		padding: 8px 16px;
 		background: rgba(34, 197, 94, 0.1);
-		color: #22c55e;
+		color: var(--success);
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 600;
@@ -1029,7 +1029,7 @@
 
 	.day-btn.active {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-color: var(--accent);
 	}
 
@@ -1045,7 +1045,7 @@
 		border-radius: 8px;
 		border: none;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
@@ -1091,7 +1091,7 @@
 		padding: 10px 20px;
 		border-radius: 8px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;

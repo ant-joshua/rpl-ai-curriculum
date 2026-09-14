@@ -83,8 +83,8 @@ import { t } from '$lib/stores/i18n';
 			case 'sakit': return 'var(--warning)';
 			case 'izin': return 'var(--info)';
 			case 'alpha': return 'var(--danger)';
-			case 'dispensasi': return '#8b5cf6';
-			case 'terlambat': return '#f97316';
+			case 'dispensasi': return 'var(--accent)';
+			case 'terlambat': return 'var(--warning)';
 			default: return 'var(--text-tertiary)';
 		}
 	}
@@ -249,12 +249,12 @@ async function doCheckIn() {
 		<div class="month-label">{monthName}</div>
 
 		<div class="stats-cards">
-			<StatCard value={stats.hadir} label="Hadir" color="#22c55e" />
-			<StatCard value={stats.sakit} label="Sakit" color="#f59e0b" />
-			<StatCard value={stats.izin} label="Izin" color="#3b82f6" />
-			<StatCard value={stats.alpha} label="Alpha" color="#ef4444" />
-			<StatCard value={stats.dispensasi} label="Dispensasi" color="#8b5cf6" />
-			<StatCard value={stats.terlambat} label="Terlambat" color="#f97316" />
+			<StatCard value={stats.hadir} label="Hadir" color="var(--success)" />
+			<StatCard value={stats.sakit} label="Sakit" color="var(--warning)" />
+			<StatCard value={stats.izin} label="Izin" color="var(--accent)" />
+			<StatCard value={stats.alpha} label="Alpha" color="var(--danger)" />
+			<StatCard value={stats.dispensasi} label="Dispensasi" color="var(--accent)" />
+			<StatCard value={stats.terlambat} label="Terlambat" color="var(--warning)" />
 		</div>
 
 		<div class="percent-cards">
@@ -285,9 +285,9 @@ async function doCheckIn() {
 
 	.checkin-card {
 		display: flex; flex-direction: column; gap: 10px;
-		background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+		background: var(--accent);
 		border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;
-		color: #fff;
+		color: white;
 	}
 	.checkin-info { display: flex; gap: 12px; align-items: center; }
 	.checkin-icon { font-size: 26px; }
@@ -298,18 +298,18 @@ async function doCheckIn() {
 		flex: 1; min-width: 200px;
 		padding: 10px 14px; border: none; border-radius: 8px;
 		font-size: 15px; font-family: inherit; letter-spacing: 1px;
-		background: rgba(255,255,255,0.95); color: #1a1a2e;
+		background: rgba(255,255,255,0.95); color: var(--text);
 	}
 	.checkin-input:focus { outline: 2px solid rgba(255,255,255,0.5); }
 	.checkin-btn {
 		padding: 10px 18px; border: none; border-radius: 8px;
-		background: #fff; color: #4f46e5; font-size: 14px; font-weight: 700;
+		background: #fff; color: var(--accent); font-size: 14px; font-weight: 700;
 		cursor: pointer; font-family: inherit; transition: transform 0.12s;
 	}
 	.checkin-btn:hover { transform: translateY(-1px); }
 	.checkin-btn:disabled { opacity: 0.6; cursor: wait; }
-	.checkin-error { background: rgba(239,68,68,0.2); color: #fecaca; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
-	.checkin-msg { background: rgba(34,197,94,0.2); color: #bbf7d0; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
+	.checkin-error { background: rgba(239,68,68,0.2); color: var(--danger); padding: 8px 12px; border-radius: 6px; font-size: 13px; }
+	.checkin-msg { background: rgba(34,197,94,0.2); color: var(--success); padding: 8px 12px; border-radius: 6px; font-size: 13px; }
 
 	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
 	.filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 150px; }
@@ -333,6 +333,6 @@ async function doCheckIn() {
 	.percent-value { font-size: 32px; font-weight: 700; }
 	.percent-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
 
-	.btn-secondary { padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+	.btn-secondary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
 	.btn-secondary:hover { background: var(--accent-hover); }
 </style>

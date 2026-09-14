@@ -186,6 +186,6 @@
 	.coupon-table { width: 100%; border-collapse: collapse; }
 	.coupon-table th, .coupon-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
 	.sub { font-size: 11px; color: var(--text-muted); }
-	.st-active { color: #16a34a; font-weight: 600; }
-	.st-inactive { color: #dc2626; font-weight: 600; }
+	.st-active { color: var(--success); font-weight: 600; }
+	.st-inactive { color: var(--danger); font-weight: 600; }
 </style>

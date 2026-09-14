@@ -239,7 +239,7 @@
 
 	.status-done {
 		font-size: 13px;
-		color: #22c55e;
+		color: var(--success);
 		font-weight: 500;
 	}
 

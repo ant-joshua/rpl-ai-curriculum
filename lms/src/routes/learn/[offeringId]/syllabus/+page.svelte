@@ -285,7 +285,7 @@
 	.lesson-card:last-child { border-bottom: none; }
 	.lesson-card:hover:not(.locked) { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 	.lesson-card.locked { opacity: 0.5; cursor: not-allowed; }
-	.lesson-card.completed { background: color-mix(in srgb, #22c55e 5%, transparent); }
+	.lesson-card.completed { background: color-mix(in srgb, var(--success) 5%, transparent); }
 	.lesson-status {
 		width: 36px; height: 36px;
 		display: flex; align-items: center; justify-content: center;
@@ -295,7 +295,7 @@
 	.lock-icon { font-size: 16px; }
 	.index-num {
 		width: 28px; height: 28px; border-radius: 50%;
-		background: var(--accent); color: #fff;
+		background: var(--accent); color: white;
 		font-size: 12px; font-weight: 600;
 		display: flex; align-items: center; justify-content: center;
 	}
@@ -304,17 +304,17 @@
 	.lesson-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 	.type-badge, .duration-badge, .optional-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
 	.type-badge { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
-	.type-video { background: color-mix(in srgb, #a855f7 15%, transparent); color: #a855f7; }
-	.type-code { background: color-mix(in srgb, #f59e0b 15%, transparent); color: #f59e0b; }
-	.type-quiz { background: color-mix(in srgb, #ef4444 15%, transparent); color: #ef4444; }
+	.type-video { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+	.type-code { background: color-mix(in srgb, var(--warning) 15%, transparent); color: var(--warning); }
+	.type-quiz { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
 	.duration-badge { background: var(--bg-primary); color: var(--text-secondary); }
-	.optional-badge { background: color-mix(in srgb, #22c55e 15%, transparent); color: #22c55e; }
+	.optional-badge { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
 	.lock-reason { font-size: 11px; color: var(--text-secondary); margin: 2px 0 0; }
 	.lesson-arrow { color: var(--text-secondary); font-size: 16px; flex-shrink: 0; }
 	.cert-section { margin-top: 32px; }
 	.cert-card {
-		background: linear-gradient(135deg, var(--surface), color-mix(in srgb, #f59e0b 10%, var(--surface)));
-		border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+		background: var(--surface);
+		border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
 		text-align: center;
 	}
 	.cert-card :global(.card-content) {
@@ -325,7 +325,7 @@
 	:global(.cert-card) p { color: var(--text-secondary); margin: 0 0 20px; }
 	.cert-btn {
 		display: inline-block; padding: 12px 32px; border-radius: 99px;
-		background: var(--accent); color: #fff;
+		background: var(--accent); color: white;
 		font-weight: 600; font-size: 14px; text-decoration: none; transition: opacity 0.15s;
 	}
 	.cert-btn:hover { opacity: 0.9; }

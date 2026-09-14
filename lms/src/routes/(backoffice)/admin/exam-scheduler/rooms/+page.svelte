@@ -249,10 +249,10 @@ const roomColumns: ColumnDef<any, any>[] = [
 	.actions { display: flex; gap: 8px; }
 	code { font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; }
 	.badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-	.badge-active { background: rgba(16,185,129,0.15); color: #10b981; }
-	.badge-inactive { background: rgba(107,114,128,0.15); color: #64748b; }
+	.badge-active { background: rgba(16,185,129,0.15); color: var(--success); }
+	.badge-inactive { background: rgba(107,114,128,0.15); color: var(--text-secondary); }
 	.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-	.modal { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+	.modal { background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 0 0 1px var(--border); }
 	.modal h3 { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: var(--text-primary); }
 	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 	.form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -260,12 +260,12 @@ const roomColumns: ColumnDef<any, any>[] = [
 	input { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px; }
 	input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
 	.modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 12px; border-top: 1px solid var(--border-color); }
-	.error-banner { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); color: #ff4757; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+	.error-banner { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
 	.btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px; cursor: pointer; }
 	.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
 	.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; }
 	.btn-sm:hover { background: var(--bg-tertiary); }
-	.btn-danger { color: #ef4444; border-color: rgba(239,68,68,0.3); }
+	.btn-danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
 	.btn-danger:hover { background: rgba(239,68,68,0.1); }
 </style>

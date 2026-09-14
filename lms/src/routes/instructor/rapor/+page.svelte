@@ -54,7 +54,7 @@
 		const win = window.open('', '_blank');
 		if (!win) return;
 		const raporHtml = (s.rapor_text || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-		const avgColor = s.avg_pct >= 80 ? '#16a34a' : s.avg_pct >= 70 ? '#ca8a04' : '#dc2626';
+		const avgColor = s.avg_pct >= 80 ? 'var(--success)' : s.avg_pct >= 70 ? 'var(--warning)' : 'var(--danger)';
 		const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 		const schoolName = 'Sekolah Negeri Terbaik';
 		win.document.write(`<!DOCTYPE html>
@@ -62,16 +62,16 @@
 <style>
 @page { size: A4; margin: 20mm 18mm; }
 @media print { body { margin: 0; } .page-break { page-break-after: always; } }
-body { font-family: 'Times New Roman', serif; color: #1e293b; line-height: 1.5; }
-.header { text-align: center; padding-bottom: 18px; border-bottom: 2px solid #1e293b; margin-bottom: 22px; }
-.school { font-size: 18px; font-weight: bold; text-transform: uppercase; margin: 0; color: #0f172a; }
-.address { font-size: 11px; color: #475569; margin: 2px 0 10px; }
+body { font-family: 'Times New Roman', serif; color: var(--text); line-height: 1.5; }
+.header { text-align: center; padding-bottom: 18px; border-bottom: 2px solid var(--text); margin-bottom: 22px; }
+.school { font-size: 18px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--text); }
+.address { font-size: 11px; color: var(--text-secondary); margin: 2px 0 10px; }
 .meta { display: grid; grid-template-columns: 120px 1fr; gap: 4px 12px; font-size: 13px; }
-.section-title { font-size: 14px; font-weight: bold; border-bottom: 1px solid #94a3b8; margin: 20px 0 10px; padding-bottom: 4px; }
+.section-title { font-size: 14px; font-weight: bold; border-bottom: 1px solid var(--text-muted); margin: 20px 0 10px; padding-bottom: 4px; }
 .avg-box { display: inline-block; padding: 12px 24px; border-radius: 10px; background: ${avgColor}15; border: 2px solid ${avgColor}; font-size: 28px; font-weight: bold; color: ${avgColor}; margin: 10px 0; }
 .rapor-text { font-size: 13px; line-height: 1.7; white-space: pre-wrap; }
 .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; text-align: center; font-size: 13px; }
-.sig-label { font-size: 11px; color: #64748b; margin-bottom: 40px; }
+.sig-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 40px; }
 </style></head><body>
 <div class="header">
 	<h2 class="school">${schoolName}</h2>
@@ -198,6 +198,6 @@ ${raporHtml ? `<div class="section-title">Deskripsi Guru</div><div class="rapor-
 	.result-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 	.result-name { font-size: 13px; font-weight: 600; }
 	.result-avg { font-size: 11px; color: var(--text-muted); }
-	.result-error { font-size: 11px; color: #dc2626; }
+	.result-error { font-size: 11px; color: var(--danger); }
 	@media (max-width: 900px) { .rapor-layout { grid-template-columns: 1fr; } }
 </style>

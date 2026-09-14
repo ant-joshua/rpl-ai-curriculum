@@ -38,12 +38,12 @@
 
 	function actionBadge(action: string) {
 		const colors: Record<string, string> = {
-			read: 'background:#3b82f6;color:#fff', create: 'background:#22c55e;color:#fff',
-			update: 'background:#eab308;color:#fff', delete: 'background:#ef4444;color:#fff',
-			login: 'background:#6366f1;color:#fff', logout: 'background:#6b7280;color:#fff',
-			error: 'background:#b91c1c;color:#fff',
+			read: 'background:var(--accent);color:#fff', create: 'background:var(--success);color:#fff',
+			update: 'background:var(--warning);color:#fff', delete: 'background:var(--danger);color:#fff',
+			login: 'background:var(--accent);color:#fff', logout: 'background:var(--text-muted);color:#fff',
+			error: 'background:var(--danger);color:#fff',
 		};
-		return colors[action] || 'background:#6b7280;color:#fff';
+		return colors[action] || 'background:var(--text-muted);color:#fff';
 	}
 
 	function getEntityLabel(log: any): string {
@@ -88,7 +88,7 @@
 			accessorKey: 'status_code',
 			cell: ({ getValue }) => {
 				const code = getValue() as number;
-				const color = code && code >= 400 ? '#f87171' : '#4ade80';
+				const color = code && code >= 400 ? 'var(--danger)' : 'var(--success)';
 				return `<span style="font-family:monospace;font-size:12px;color:${color}">${code || '-'}</span>`;
 			}
 		},

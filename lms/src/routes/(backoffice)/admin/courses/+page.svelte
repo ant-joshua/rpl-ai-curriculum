@@ -295,9 +295,9 @@
 		flex-wrap: wrap;
 	}
 	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-	.page-desc { color: #64748b; font-size: 14px; margin: 0; }
+	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
 	.filter-bar { margin-bottom: 20px; }
-	.error-state { text-align: center; padding: 40px; color: #ef4444; }
+	.error-state { text-align: center; padding: 40px; color: var(--danger); }
 	.error-state p { margin-bottom: 12px; }
 
 	.course-list { display: flex; flex-direction: column; gap: 8px; }
@@ -319,13 +319,13 @@
 	.course-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: #1a1a2e;
+		color: var(--text);
 		text-decoration: none;
 	}
-	.course-title:hover { color: #4F46E5; }
+	.course-title:hover { color: var(--accent); }
 	.course-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
-	.course-slug { font-size: 12px; color: #94a3b8; }
-	.course-desc { font-size: 13px; color: #64748b; margin: 4px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px; }
+	.course-slug { font-size: 12px; color: var(--text-muted); }
+	.course-desc { font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px; }
 	.course-actions { display: flex; gap: 4px; flex-shrink: 0; }
 	.pagination {
 		display: flex;
@@ -334,5 +334,5 @@
 		gap: 16px;
 		margin-top: 24px;
 	}
-	.page-info { font-size: 13px; color: #64748b; }
+	.page-info { font-size: 13px; color: var(--text-secondary); }
 </style>

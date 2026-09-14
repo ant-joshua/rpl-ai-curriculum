@@ -255,8 +255,8 @@
 
 <style>
   .schedules-page { max-width: 900px; }
-  .breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 16px; }
-  .breadcrumb a { color: #4F46E5; text-decoration: none; }
+  .breadcrumb { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+  .breadcrumb a { color: var(--accent); text-decoration: none; }
   .breadcrumb a:hover { text-decoration: underline; }
   .page-header {
     display: flex;
@@ -288,14 +288,14 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  .schedule-date { font-size: 12px; color: #64748b; font-weight: 500; }
-  .schedule-clock { font-size: 13px; color: #1a1a2e; font-weight: 600; margin-top: 2px; }
+  .schedule-date { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+  .schedule-clock { font-size: 13px; color: var(--text); font-weight: 600; margin-top: 2px; }
   .schedule-body { flex: 1; min-width: 0; }
-  .schedule-title { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 0 0 4px; }
-  .schedule-desc { font-size: 13px; color: #64748b; margin: 0 0 8px; }
+  .schedule-title { font-size: 15px; font-weight: 600; color: var(--text); margin: 0 0 4px; }
+  .schedule-desc { font-size: 13px; color: var(--text-secondary); margin: 0 0 8px; }
   .schedule-meta { display: flex; gap: 10px; flex-wrap: wrap; }
-  .meta-item { font-size: 12px; color: #94a3b8; }
-  .meta-link { color: #4F46E5; text-decoration: none; }
+  .meta-item { font-size: 12px; color: var(--text-muted); }
+  .meta-link { color: var(--accent); text-decoration: none; }
   .meta-link:hover { text-decoration: underline; }
   .schedule-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: flex-start; }
 </style>

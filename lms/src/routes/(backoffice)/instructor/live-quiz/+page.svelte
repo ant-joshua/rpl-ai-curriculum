@@ -206,7 +206,7 @@
 	.q-picker { border: 1px solid var(--border); border-radius: 10px; padding: 12px; max-height: 280px; overflow-y: auto; }
 	.q-picker h4 { margin: 0 0 8px; font-size: 13px; }
 	.q-item { display: flex; gap: 10px; align-items: flex-start; padding: 8px; border-radius: 8px; cursor: pointer; }
-	.q-item:hover { background: var(--surface-hover, #f6f7f9); }
+	.q-item:hover { background: var(--surface-hover, var(--bg)); }
 	.q-item input { margin-top: 3px; }
 	.q-item small { display: block; color: var(--text-muted); margin-top: 2px; }
 	.q-item strong { font-size: 13px; font-weight: 500; }
@@ -217,6 +217,6 @@
 	.quiz-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 	.quiz-top h3 { margin: 0; font-size: 15px; }
 	.pin { margin: 8px 0 4px; font-size: 20px; color: var(--text-primary); }
-	.pin strong { font-size: 26px; letter-spacing: 2px; color: #4f46e5; }
+	.pin strong { font-size: 26px; letter-spacing: 2px; color: var(--accent); }
 	.quiz-actions { margin-top: 12px; }
 </style>

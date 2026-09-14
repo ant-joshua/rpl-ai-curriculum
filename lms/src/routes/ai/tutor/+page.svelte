@@ -277,7 +277,7 @@
 
 	.message.user .bubble {
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		border-bottom-right-radius: 4px;
 	}
 
@@ -439,7 +439,7 @@
 		border: none;
 		border-radius: 10px;
 		background: var(--accent);
-		color: #fff;
+		color: white;
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;

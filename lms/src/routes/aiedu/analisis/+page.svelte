@@ -316,7 +316,7 @@
 	.grid-row input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; width: 100%; box-sizing: border-box; }
 	.score-input { text-align: center; }
 	.del-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; }
-	.del-btn:hover { color: #dc2626; }
+	.del-btn:hover { color: var(--danger); }
 	.grid-tools { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
 	.form-actions { margin-top: 8px; }
 	.center { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 32px; color: var(--text-secondary); font-size: 13px; }
@@ -325,7 +325,7 @@
 	.md { font-size: 13px; line-height: 1.6; }
 	.md :global(h1), .md :global(h2), .md :global(h3) { margin: 14px 0 8px; }
 	.md :global(p) { margin: 0 0 8px; }
-	.md :global(pre) { background: #0f1115; color: #e6e6e6; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+	.md :global(pre) { background: var(--text); color: var(--border); padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
 	.md :global(table) { border-collapse: collapse; margin: 8px 0; font-size: 12px; width: 100%; }
 	.md :global(th), .md :global(td) { border: 1px solid var(--border); padding: 5px 8px; }
 	.md :global(th) { background: var(--surface); }

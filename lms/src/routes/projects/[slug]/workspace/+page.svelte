@@ -391,8 +391,8 @@
 		cursor: pointer; transition: all 0.15s;
 		display: flex; align-items: center; justify-content: center;
 	}
-	.step-dot.active { border-color: var(--accent); background: var(--accent); color: #fff; }
-	.step-dot.done { border-color: #27ae60; background: #1b4332; color: #27ae60; }
+	.step-dot.active { border-color: var(--accent); background: var(--accent); color: white; }
+	.step-dot.done { border-color: var(--success); background: var(--success); color: var(--success); }
 	.step-dot.future { opacity: 0.5; }
 	.step-dot:hover { opacity: 1; }
 	.header-right { display: flex; align-items: center; gap: 0.5rem; }
@@ -409,7 +409,7 @@
 	}
 	.loading-skeleton { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 0.75rem; }
 	.skeleton-block {
-		background: linear-gradient(90deg, var(--surface) 0%, var(--hover) 50%, var(--surface) 100%);
+		background: var(--surface);
 		background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: 6px;
 	}
 	@keyframes shimmer {
@@ -432,7 +432,7 @@
 	.workspace-error h2 { font-size: 1.3rem; }
 	.workspace-error p { color: var(--text-secondary); max-width: 400px; }
 	.workspace-error .action-btn {
-		background: var(--accent); color: #fff; border: none; border-radius: 8px;
+		background: var(--accent); color: white; border: none; border-radius: 8px;
 		padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
 		text-decoration: none; display: inline-block;
 	}
@@ -447,7 +447,7 @@
 	.completed-banner p { color: var(--text-secondary); }
 	.completed-actions { display: flex; gap: 1rem; margin-top: 1rem; }
 	.action-btn {
-		background: var(--accent); color: #fff; border: none; border-radius: 8px;
+		background: var(--accent); color: white; border: none; border-radius: 8px;
 		padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
 		text-decoration: none; display: inline-block;
 	}
@@ -469,7 +469,7 @@
 	.step-header h2 { font-size: 1.2rem; font-weight: 600; }
 	.instruction-content { font-size: 0.92rem; line-height: 1.7; color: var(--text-secondary); }
 	.hint-box {
-		background: #1b4332; border: 1px solid #27ae60; border-radius: 8px;
+		background: var(--success); border: 1px solid var(--success); border-radius: 8px;
 		padding: 1rem; margin: 1rem 0; font-size: 0.9rem;
 	}
 	.hint-btn {
@@ -498,8 +498,8 @@
 		padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem;
 		display: flex; align-items: center; gap: 0.4rem;
 	}
-	.verify-result.passed { background: #1b4332; color: #27ae60; }
-	.verify-result.failed { background: #4a1a1a; color: #ef4444; }
+	.verify-result.passed { background: var(--success); color: var(--success); }
+	.verify-result.failed { background: var(--text); color: var(--danger); }
 	.save-status { font-size: 0.8rem; color: var(--muted); }
 	.footer-actions { display: flex; gap: 0.5rem; }
 	.verify-btn, .next-btn {
@@ -508,7 +508,7 @@
 	}
 	.verify-btn { background: var(--accent-dim); color: var(--accent); }
 	.verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-	.next-btn { background: var(--accent); color: #fff; }
+	.next-btn { background: var(--accent); color: white; }
 	.next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 	.verify-btn:hover:not(:disabled), .next-btn:hover:not(:disabled) { opacity: 0.9; }
 

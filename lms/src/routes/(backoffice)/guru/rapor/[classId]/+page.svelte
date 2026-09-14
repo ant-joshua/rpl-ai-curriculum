@@ -120,7 +120,7 @@ import { t } from '$lib/stores/i18n';
 				const isFinalized = status === 'finalized';
 				const isPrinted = status === 'printed';
 				const bg = isFinalized ? 'rgba(16,185,129,0.1)' : isPrinted ? 'rgba(79,70,229,0.1)' : 'rgba(98,102,109,0.1)';
-				const color = isFinalized ? '#10b981' : isPrinted ? '#4F46E5' : 'var(--text-quaternary)';
+				const color = isFinalized ? 'var(--success)' : isPrinted ? 'var(--accent)' : 'var(--text-quaternary)';
 				const label = isFinalized ? 'Finalized' : isPrinted ? 'Printed' : 'Draft';
 				return `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:${bg};color:${color}">${label}</span>`;
 			}
@@ -132,12 +132,12 @@ import { t } from '$lib/stores/i18n';
 				const studentId = getValue() || row.original.user_id;
 				const isDraft = !row.original.rapor_status || row.original.rapor_status === 'draft';
 				const genBtn = isDraft
-					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid #E2E8F0;border-radius:6px;background:#FFFFFF;color:#64748b;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
+					? `<button onclick="window.__genRapor('${studentId}')" style="padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">Generate</button>`
 					: '';
 				const prevHref = `/guru/rapor/${classId}/${studentId}?semester=${selectedSemester}`;
 				const prevStyle = isDraft
-					? 'padding:4px 12px;border:1px solid #E2E8F0;border-radius:6px;background:#FFFFFF;color:#64748b;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
-					: 'padding:4px 12px;border:1px solid rgba(79,70,229,0.3);border-radius:6px;background:rgba(79,70,229,0.1);color:#4F46E5;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
+					? 'padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit'
+					: 'padding:4px 12px;border:1px solid rgba(79,70,229,0.3);border-radius:6px;background:rgba(79,70,229,0.1);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;font-family:inherit';
 				return `<div style="display:flex;gap:6px;justify-content:flex-end">${genBtn}<a href="${prevHref}" style="${prevStyle}">Preview</a></div>`;
 			}
 		}

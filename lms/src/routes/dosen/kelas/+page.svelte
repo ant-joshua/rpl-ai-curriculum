@@ -96,7 +96,7 @@
 	.btn-refresh:hover { background: var(--surface-hover); }
 
 	.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
-	.error-state { text-align: center; padding: 40px; color: #ef4444; }
+	.error-state { text-align: center; padding: 40px; color: var(--danger); }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 8px; }
 	.empty-hint { font-size: 13px; color: var(--text-tertiary); }
@@ -106,7 +106,7 @@
 	.class-card:hover { border-color: rgba(255,255,255,0.12); }
 	.card-top { display: flex; justify-content: space-between; align-items: center; }
 	.card-kode code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 11px; }
-	.card-semester-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: rgba(79,70,229,0.1); color: #4F46E5; }
+	.card-semester-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: rgba(79,70,229,0.1); color: var(--accent); }
 	.card-name { font-size: 15px; font-weight: 600; color: var(--text); }
 	.card-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
 	.card-schedule { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
