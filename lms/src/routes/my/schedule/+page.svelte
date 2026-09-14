@@ -185,7 +185,7 @@
           <div class="day-items">
             {#each items as item}
               {#if item.kind === 'calendarevent'}
-                <div class="schedule-item calendar-item" style={`border-left-color: ${item.eventColor || '#4F46E5'}`}>
+                <div class="schedule-item calendar-item" style={`border-left-color: ${item.eventColor || 'var(--accent)'}`}>
                   <div class="item-time">
                     <span class="item-clock">Acara</span>
                   </div>
@@ -274,14 +274,14 @@
     cursor: pointer;
     transition: all 0.15s;
   }
-  .filter-btn:hover { color: #4F46E5; border-color: #4F46E5; }
+  .filter-btn:hover { color: var(--accent); border-color: var(--accent); }
   .filter-btn.active {
-    background: rgba(79,70,229,0.12);
-    color: #4F46E5;
-    border-color: rgba(79,70,229,0.3);
+    background: rgba(var(--accent-rgb),0.12);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb),0.3);
   }
   .schedule-groups { display: flex; flex-direction: column; gap: 20px; }
-  .day-group.today .day-title { color: #4F46E5; }
+  .day-group.today .day-title { color: var(--accent); }
   .day-header {
     display: flex;
     align-items: center;
@@ -291,8 +291,8 @@
   .day-title { font-size: 16px; font-weight: 590; margin: 0; color: #1a1a2e; font-feature-settings: 'cv01', 'ss03'; }
   .today-badge {
     font-size: 11px;
-    background: rgba(79,70,229,0.12);
-    color: #4F46E5;
+    background: rgba(var(--accent-rgb),0.12);
+    color: var(--accent);
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 600;
@@ -317,9 +317,9 @@
     background: rgba(245, 158, 11, 0.03);
   }
   .schedule-item.assignment-item:hover { border-left-color: #f59e0b; }
-  .calendar-item { border-left: 3px solid #4F46E5; background: rgba(79,70,229,0.03); cursor: default; }
+  .calendar-item { border-left: 3px solid var(--accent); background: rgba(var(--accent-rgb),0.03); cursor: default; }
   .status-graded { background: #f0fdf4; color: #16a34a; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-  .status-submitted { background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .status-submitted { background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
   .item-time {
     min-width: 80px;
     text-align: right;
@@ -343,7 +343,7 @@
     font-size: 12px;
     font-weight: 600;
     padding: 8px 14px;
-    background: #4F46E5;
+    background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -354,7 +354,7 @@
   .export-cal-btn:hover { opacity: 0.9; }
   .item-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
   .meta-tag { font-size: 11px; color: #64748b; }
-  .meta-link { color: #4F46E5; }
+  .meta-link { color: var(--accent); }
   .empty-mini { text-align: center; padding: 20px; }
   .empty-text { color: #64748b; font-size: 14px; margin: 0; }
 </style>

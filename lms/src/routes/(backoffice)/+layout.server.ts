@@ -16,7 +16,7 @@ export async function load({ request, platform }: { request: Request; platform: 
 		.bind(session.user.id)
 		.first<any>();
 
-	if (!user || (user.role !== 'admin' && user.role !== 'superadmin' && user.role !== 'instructor' && user.role !== 'ta')) {
+	if (!user || (user.role !== 'admin' && user.role !== 'superadmin' && user.role !== 'instructor' && user.role !== 'ta' && user.role !== 'student')) {
 		throw redirect(302, '/dashboard');
 	}
 

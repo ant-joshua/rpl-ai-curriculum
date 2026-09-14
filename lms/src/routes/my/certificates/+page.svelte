@@ -74,30 +74,30 @@
 	.cert-card { position: relative; overflow: hidden; }
 	.cert-card::before {
 		content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-		background: linear-gradient(90deg, #f59e0b, #2563eb, #16a34a);
+		background: var(--accent);
 	}
 	.cert-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 	.cert-icon { font-size: 34px; }
-	.cert-valid { font-size: 11px; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 3px 8px; border-radius: 999px; }
+	.cert-valid { font-size: 11px; font-weight: 700; color: var(--success); background: var(--success-light); border: 1px solid var(--success); padding: 3px 8px; border-radius: 999px; }
 	.cert-title { font-size: 17px; margin: 0 0 10px; line-height: 1.3; }
 	.cert-name { font-size: 13px; color: var(--text-muted); margin: 0 0 8px; line-height: 1.5; }
 	.cert-name strong { color: var(--text); }
 	.cert-instructor, .cert-date { font-size: 12px; color: var(--text-muted); margin: 0 0 4px; }
-	.cert-number { font-size: 11px; color: #94a3b8; margin: 10px 0 0; font-family: monospace; }
+	.cert-number { font-size: 11px; color: var(--text-muted); margin: 10px 0 0; font-family: monospace; }
 	.cert-actions { margin-top: 12px; display: flex; gap: 14px; }
 	.cert-download-link, .cert-verify-link {
 		font-size: 12px; font-weight: 600; text-decoration: none;
 	}
 	.cert-download-link {
-		color: #16a34a;
-		background: #f0fdf4;
-		border: 1px solid #bbf7d0;
+		color: var(--success);
+		background: var(--success-light);
+		border: 1px solid var(--success);
 		padding: 6px 12px;
 		border-radius: 8px;
 	}
-	.cert-download-link:hover { background: #dcfce7; text-decoration: none; }
+	.cert-download-link:hover { background: var(--success-light); text-decoration: none; }
 	.cert-verify-link {
-		color: #2563eb; align-self: center;
+		color: var(--accent); align-self: center;
 	}
 	.cert-verify-link:hover { text-decoration: underline; }
 </style>

@@ -44,35 +44,32 @@
 		</div>
 
 		<div class="certificate-sheet">
-			<div class="cert-border-outer">
-				<div class="cert-border-inner">
-					<div class="cert-body">
-						<div class="cert-logo">🏆</div>
-						<p class="cert-org">RPL AI CURRICULUM</p>
-						<p class="cert-org-sub">Certificate of Completion</p>
+			<div class="cert-border">
+				<div class="cert-body">
+					<p class="cert-org">RPL AI CURRICULUM</p>
+					<p class="cert-org-sub">Certificate of Completion</p>
 
-						<p class="cert-line">Sertifikat ini diberikan kepada</p>
-						<h1 class="cert-name">{cert.userName}</h1>
-						<p class="cert-line">atas keberhasilan menyelesaikan kursus</p>
-						<h2 class="cert-course">{cert.courseIcon} {cert.courseTitle}</h2>
+					<p class="cert-line">Sertifikat ini diberikan kepada</p>
+					<h1 class="cert-name">{cert.userName}</h1>
+					<p class="cert-line">atas keberhasilan menyelesaikan kursus</p>
+					<h2 class="cert-course">{cert.courseIcon} {cert.courseTitle}</h2>
 
-						{#if cert.instructorName}
-							<p class="cert-line">dibimbing oleh <strong>{cert.instructorName}</strong></p>
-						{/if}
+					{#if cert.instructorName}
+						<p class="cert-line">dibimbing oleh <strong>{cert.instructorName}</strong></p>
+					{/if}
 
-						<div class="cert-footer">
-							<div class="cert-date-block">
-								<p class="cert-date-label">Diterbitkan</p>
-								<p class="cert-date-value">{formatDate(cert.issuedAt)}</p>
-							</div>
-							<div class="cert-sign-block">
-								<div class="sign-line"></div>
-								<p class="sign-role">Kepala Program RPL</p>
-							</div>
+					<div class="cert-footer">
+						<div class="cert-date-block">
+							<p class="cert-date-label">Diterbitkan</p>
+							<p class="cert-date-value">{formatDate(cert.issuedAt)}</p>
 						</div>
-
-						<p class="cert-number">No. {cert.certNumber}</p>
+						<div class="cert-sign-block">
+							<div class="sign-line"></div>
+							<p class="sign-role">Kepala Program RPL</p>
+						</div>
 					</div>
+
+					<p class="cert-number">No. {cert.certNumber}</p>
 				</div>
 			</div>
 		</div>
@@ -88,25 +85,14 @@
 	.certificate-sheet {
 		aspect-ratio: 1.414;
 		background: white;
-		border-radius: 12px;
-		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-		padding: 14px;
-	}
-	.cert-border-outer {
-		height: 100%;
-		border: 4px solid #2563eb;
+		border: 1px solid var(--border);
 		border-radius: 8px;
-		padding: 8px;
+		padding: 12px;
 	}
-	.cert-border-inner {
+	.cert-border {
 		height: 100%;
-		border: 2px solid #f59e0b;
-		border-radius: 5px;
-		background:
-			linear-gradient(135deg, rgba(37, 99, 235, 0.05) 25%, transparent 25%) -20px 0 / 40px 40px,
-			linear-gradient(225deg, rgba(37, 99, 235, 0.05) 25%, transparent 25%) -20px 0 / 40px 40px,
-			linear-gradient(315deg, rgba(37, 99, 235, 0.05) 25%, transparent 25%) 0 0 / 40px 40px,
-			linear-gradient(45deg, rgba(37, 99, 235, 0.05) 25%, transparent 25%) 0 0 / 40px 40px;
+		border: 3px solid var(--accent);
+		border-radius: 4px;
 	}
 	.cert-body {
 		height: 100%;
@@ -118,37 +104,40 @@
 		text-align: center;
 		position: relative;
 	}
-	.cert-logo { font-size: 44px; margin-bottom: 6px; }
 	.cert-org {
-		font-size: 20px; font-weight: 800; letter-spacing: 4px; color: #2563eb;
+		font-family: 'Inter', sans-serif;
+		font-size: 20px; font-weight: 800; letter-spacing: 4px; color: var(--accent);
 		margin: 0 0 2px;
 	}
 	.cert-org-sub {
-		font-size: 13px; font-weight: 600; letter-spacing: 3px; color: #f59e0b;
+		font-family: 'Inter', sans-serif;
+		font-size: 13px; font-weight: 600; letter-spacing: 3px; color: var(--text-muted);
 		text-transform: uppercase; margin: 0 0 18px;
 	}
-	.cert-line { font-size: 15px; color: #64748b; margin: 4px 0; }
+	.cert-line { font-size: 15px; color: var(--text-secondary); margin: 4px 0; }
 	.cert-name {
-		font-size: 40px; font-weight: 800; color: #0f172a;
-		margin: 6px 0 4px; letter-spacing: 1px;
+		font-family: 'Source Serif 4', Georgia, serif;
+		font-size: 40px; font-weight: 700; color: var(--text);
+		margin: 6px 0 4px; letter-spacing: 0.5px;
 	}
 	.cert-course {
-		font-size: 22px; font-weight: 700; color: #2563eb;
+		font-family: 'Source Serif 4', Georgia, serif;
+		font-size: 22px; font-weight: 600; color: var(--accent);
 		margin: 4px 0 12px; padding-bottom: 16px;
-		border-bottom: 2px solid #e2e8f0; max-width: 80%;
+		border-bottom: 1px solid var(--border); max-width: 80%;
 	}
 	.cert-footer {
 		width: 100%; display: flex; justify-content: space-between; align-items: flex-end;
 		margin-top: 26px; padding: 0 20px;
 	}
 	.cert-date-block { text-align: left; }
-	.cert-date-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-	.cert-date-value { font-size: 15px; color: #0f172a; font-weight: 600; margin: 2px 0 0; }
+	.cert-date-label { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+	.cert-date-value { font-family: 'Inter', sans-serif; font-size: 15px; color: var(--text); font-weight: 600; margin: 2px 0 0; }
 	.cert-sign-block { text-align: center; }
-	.sign-line { width: 180px; border-top: 2px solid #0f172a; margin-bottom: 6px; }
-	.sign-role { font-size: 12px; color: #64748b; margin: 0; }
+	.sign-line { width: 180px; border-top: 1px solid var(--text); margin-bottom: 6px; }
+	.sign-role { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-secondary); margin: 0; }
 	.cert-number {
 		position: absolute; bottom: 16px; right: 28px;
-		font-size: 11px; color: #94a3b8; font-family: monospace;
+		font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted);
 	}
 </style>

@@ -837,7 +837,7 @@
   }
   .time-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #4F46E5);
+    background: var(--accent);
     border-radius: 7px;
     transition: width 0.3s ease;
   }

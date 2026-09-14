@@ -92,6 +92,10 @@
 		{ path: '/admin/courses', icon: 'book-open', label: 'Kursus', roles: ['superadmin','admin'] },
 		{ path: '/admin/media', icon: 'image', label: 'Media', roles: ['superadmin','admin'] },
 		{ path: '/admin/instructor-applications', icon: 'user-plus', label: 'Pengajuan Instruktur', roles: ['superadmin','admin'] },
+		// Student nav
+		{ path: '/student', icon: 'home', label: 'Dashboard', roles: ['student'] },
+		{ path: '/admin/courses', icon: 'book-open', label: 'My Courses', roles: ['student'] },
+		{ path: '/ai-course', icon: 'sparkles', label: 'AI Course', roles: ['student'] },
 	];
 
 	const navItems = $derived(allNavItems.filter(item => item.roles.includes(userRole)));

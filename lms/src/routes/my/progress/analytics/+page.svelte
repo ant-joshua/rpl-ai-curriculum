@@ -227,17 +227,17 @@
 					{/each}
 
 					<!-- Fill area -->
-					<path d={xpFillPath} fill="rgba(79,70,229,0.08)" />
+					<path d={xpFillPath} fill="rgba(var(--accent-rgb),0.08)" />
 
 					<!-- Line -->
-					<path d={xpLinePath} fill="none" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="line-animate" />
+					<path d={xpLinePath} fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="line-animate" />
 
 					<!-- Dots -->
 					{#each xpData as v, i}
 						{@const stepX = CHART_INNER_W / Math.max(xpData.length - 1, 1)}
 						{@const x = CHART_PAD.left + i * stepX}
 						{@const y = CHART_PAD.top + CHART_INNER_H - (v / maxXp) * CHART_INNER_H}
-						<circle cx={x} cy={y} r="3" fill="#4F46E5" stroke="#fff" stroke-width="1.5" class="dot-animate" />
+						<circle cx={x} cy={y} r="3" fill="var(--accent)" stroke="#fff" stroke-width="1.5" class="dot-animate" />
 					{/each}
 
 					<!-- X axis labels (every 5th) -->
@@ -271,9 +271,9 @@
 							title="{cell.date}: {cell.count} XP"
 							style="background: {cell.count === 0 ? '#F1F5F9' :
 								cell.count <= 20 ? '#C7D2FE' :
-								cell.count <= 50 ? '#818CF8' :
-								cell.count <= 100 ? '#4F46E5' :
-								'#3730A3'}"
+								cell.count <= 50 ? 'var(--accent)' :
+								cell.count <= 100 ? 'var(--accent)' :
+								'var(--accent-hover)'}"
 						></div>
 					{/each}
 				</div>
@@ -504,7 +504,7 @@
 	}
 	.module-bar-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #4F46E5, #6366F1);
+		background: linear-gradient(90deg, var(--accent), #6366F1);
 		border-radius: 9999px;
 		transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 	}
