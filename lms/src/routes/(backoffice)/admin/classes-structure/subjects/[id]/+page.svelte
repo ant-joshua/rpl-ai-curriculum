@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
+	import { Badge, Button, Card, DataTable, Input, Select, Textarea } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let mapel: any = $state(null);
@@ -156,9 +156,9 @@
 				<h1>{mapel.name}</h1>
 				<div class="meta">
 					<code>{mapel.code || '—'}</code>
-					<span class="type-badge" style={typeColors[mapel.type] || typeColors['pengetahuan']}>
+					<Badge variant="primary">
 						{typeLabels[mapel.type] || mapel.type || '—'}
-					</span>
+					</Badge>
 					<span class="meta-item">Kelompok: {mapel.group_name || mapel.groupName || '—'}</span>
 					<span class="meta-item">JP/mgg: {mapel.min_hours_per_week ?? mapel.minHoursPerWeek ?? '—'}</span>
 				</div>
@@ -185,7 +185,7 @@
 		</div>
 
 		<!-- KD List -->
-		<div class="card">
+		<Card>
 			<div class="card-header">
 				<h2>🎯 Kompetensi Dasar (KD)</h2>
 				<div class="card-header-actions">
@@ -201,14 +201,14 @@
 			{:else}
 				<DataTable {columns} data={kdList} pageSize={20} showSearch={true} searchPlaceholder="Cari KD..." />
 			{/if}
-		</div>
+		</Card>
 
 		<!-- Mapel Description -->
 		{#if mapel.description}
-			<div class="card card-desc">
+			<Card class="card-desc">
 				<h2>{t('common.description')}</h2>
 				<p>{mapel.description}</p>
-			</div>
+			</Card>
 		{/if}
 	{/if}
 </div>

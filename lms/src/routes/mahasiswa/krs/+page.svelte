@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Button } from '$lib/components/ui';
+	import { DataTable, Button, Card } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 	import { t } from '$lib/stores/i18n';
 
@@ -226,11 +226,11 @@
 			<p>Tidak ada kelas kuliah tersedia untuk semester ini</p>
 		</div>
 	{:else}
-		<div class="card" onchange={handleTableChange}>
+		<Card class="overflow-hidden" onchange={handleTableChange}>
 			<div class="table-container">
 				<DataTable {columns} data={kelasTableData} pageSize={20} showSearch={true} searchPlaceholder="Cari mata kuliah..." />
 			</div>
-		</div>
+		</Card>
 	{/if}
 
 	<div class="actions">

@@ -55,7 +55,8 @@
 	{:else}
 		<div class="bookmarks-list">
 			{#each bookmarks as bookmark (bookmark.id)}
-				<a href={offeringLink(bookmark)} class="bookmark-card">
+				<Card class="bookmark-card" hover>
+			<a href={offeringLink(bookmark)}>
 					<div class="card-icon">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="var(--warning)" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
 					</div>
@@ -75,6 +76,7 @@
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
 					</div>
 				</a>
+			</Card>
 			{/each}
 		</div>
 	{/if}
@@ -118,17 +120,11 @@
 		display: flex;
 		align-items: center;
 		gap: 14px;
-		padding: 16px;
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.06);
-		border-radius: 8px;
 		text-decoration: none;
-		transition: all 0.15s ease;
+		padding: 0;
 	}
-
 	.bookmark-card:hover {
 		border-color: rgba(79,70,229,0.25);
-		background: rgba(0,0,0,0.04);
 	}
 
 	.bookmark-card:hover .card-arrow {

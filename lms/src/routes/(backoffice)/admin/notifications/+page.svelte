@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
+	import { Button, Card, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -127,7 +127,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 
 		<div class="grid-2col">
 			<!-- Recent Queue -->
-			<div class="card">
+			<Card>
 				<div class="card-header">
 					<h3>{t('admin.antrian_terbaru')}</h3>
 					<a href="/admin/notifications/queue" class="link-btn">{t('admin.lihat_semua')}</a>
@@ -152,10 +152,10 @@ const queueColumns: ColumnDef<any, any>[] = [
 						</table>
 					</div>
 				{/if}
-			</div>
+				</Card>
 
-			<!-- Quick links -->
-			<div class="card">
+				<!-- Quick links -->
+				<Card>
 				<div class="card-header"><h3>{t('admin.menu_cepat')}</h3></div>
 				<div class="quick-links">
 					<a href="/admin/notifications/templates" class="quick-link">
@@ -171,9 +171,9 @@ const queueColumns: ColumnDef<any, any>[] = [
 						<span class="ql-text">{t('admin.broadcast_baru')}</span>
 					</Button>
 				</div>
-			</div>
-		</div>
-	{/if}
+				</Card>
+				</div>
+				{/if}
 
 	<!-- Broadcast Modal -->
 	{#if showBroadcast}
@@ -214,12 +214,12 @@ const queueColumns: ColumnDef<any, any>[] = [
 						{broadcasting ? 'Mengirim...' : 'Kirim Broadcast'}
 					</Button>
 				</div>
-			</div>
-		</div>
-	{/if}
-</div>
+				</Card>
+				</div>
+				{/if}
+				</div>
 
-<style>
+				<style>
 	.page { max-width: 1100px; }
 	.header-actions { display: flex; gap: 8px; }
 	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }

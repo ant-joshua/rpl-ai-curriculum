@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules } from '$lib/stores/modules';
-	import { Button } from '$lib/components/ui';
+	import { Button, Card } from '$lib/components/ui';
 
 	let hasChatHistory = $state(false);
 
@@ -149,7 +149,7 @@
 <div class="export-page">
 	<h1>📤 Export Data</h1>
 
-	<div class="card">
+	<Card>
 		<h2>📊 Export Progress</h2>
 		<p class="card-desc">Download kemajuan belajarmu dalam format CSV (Excel) atau JSON.</p>
 		<div class="export-actions">
@@ -164,9 +164,9 @@
 				<small>.json — full data</small>
 			</Button>
 		</div>
-	</div>
+	</Card>
 
-	<div class="card">
+	<Card>
 		<h2>💬 Export Chat History</h2>
 		<p class="card-desc">Download riwayat chat dengan AI Tutor sebagai file JSON.</p>
 		{#if hasChatHistory}
@@ -182,9 +182,9 @@
 				<span class="empty-hint">Mulai chat dengan AI Tutor di halaman Tutor untuk mengumpulkan riwayat.</span>
 			</div>
 		{/if}
-	</div>
+	</Card>
 
-	<div class="card note-card">
+	<Card class="note-card">
 		<h2>ℹ️ Informasi</h2>
 		<ul>
 			<li>Data progress diambil dari penyimpanan lokal perangkatmu.</li>
@@ -192,7 +192,7 @@
 			<li>File JSON berisi seluruh data progress termasuk XP, badge, dan streak.</li>
 			<li>Data bersifat <strong>read-only</strong> — tidak ada data yang dikirim ke server.</li>
 		</ul>
-	</div>
+	</Card>
 </div>
 
 <style>

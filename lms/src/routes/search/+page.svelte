@@ -4,6 +4,7 @@
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
 	import { Button, Card, EmptyState, SearchInput, Skeleton } from '$lib/components/ui';
+import { Badge } from '$lib/components/ui';
 
 	type FilterType = 'all' | 'lesson' | 'course' | 'offering' | 'exercise' | 'video' | 'flashcard' | 'project';
 
@@ -312,7 +313,7 @@
 						<div class="result-header">
 							<span class="result-icon">{result.icon || typeIcon(result.type)}</span>
 							<span class="result-title">{result.title}</span>
-							<span class="badge {typeColor(result.type)}">{typeLabel(result.type)}</span>
+							<Badge variant={result.type === 'lesson' ? 'primary' : result.type === 'course' ? 'success' : result.type === 'exercise' ? 'warning' : 'outline'}>{typeLabel(result.type)}</Badge>
 						</div>
 						<p class="result-snippet">{result.snippet}</p>
 					</a>

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { Button, Textarea } from '$lib/components/ui';
+	import { Badge, Button, Textarea } from '$lib/components/ui';
 
 	let tenant: any = null;
 	let loading = true;
@@ -113,7 +113,7 @@
 				<h1>{tenant.name}</h1>
 				<div class="meta">
 					<code>/t/{tenant.slug}/</code>
-					<span class="badge badge-{tenant.type}">{tenant.type}</span>
+					<Badge variant={tenant.type === 'lms' ? 'primary' : 'success'}>{tenant.type}</Badge>
 					<span class="status" class:active={tenant.is_active}>{tenant.is_active ? 'Aktif' : 'Nonaktif'}</span>
 				</div>
 			</div>

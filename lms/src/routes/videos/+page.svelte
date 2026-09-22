@@ -160,7 +160,7 @@
 		<p class="result-count">Menampilkan {flatVideos.length} video</p>
 		<div class="video-grid">
 			{#each flatVideos as v (v.moduleSlug + v.id)}
-				<Button variant="ghost" class="video-card" onclick={() => openPlayer(v)}>
+				<Card class="video-card" hover onclick={() => openPlayer(v)}>
 					<div class="thumbnail">
 						<img
 							src="https://img.youtube.com/vi/{v.id}/mqdefault.jpg"
@@ -188,7 +188,7 @@
 							{/if}
 						</div>
 					</div>
-				</Button>
+				</Card>
 			{/each}
 		</div>
 	{/if}
@@ -299,13 +299,8 @@
 	}
 
 	.video-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
 		overflow: hidden;
-		text-align: left;
 		cursor: pointer;
-		transition: all 0.15s ease;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -313,7 +308,6 @@
 	}
 
 	.video-card:hover {
-		border-color: var(--accent);
 		box-shadow: none;
 	}
 

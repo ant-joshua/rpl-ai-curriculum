@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { Badge } from '$lib/components/ui';
 	import { submitCode } from '$lib/stores/submissions.svelte';
 
 	let { data } = $props();
@@ -107,15 +108,8 @@
 		<header class="exercise-header">
 			<h1>{exercise.title}</h1>
 			<div class="meta">
-				<span
-					class="badge difficulty"
-					style="background: {difficultyColors[exercise.difficulty] || '#888'}22; color: {difficultyColors[exercise.difficulty] || '#888'}; border-color: {difficultyColors[exercise.difficulty] || '#888'}44"
-				>
-					{exercise.difficulty}
-				</span>
-				<span class="badge type">
-					{typeLabels[exercise.type] || exercise.type}
-				</span>
+				<Badge variant="warning">{exercise.difficulty}</Badge>
+			<Badge variant="outline">{typeLabels[exercise.type] || exercise.type}</Badge>
 				{#if exercise.moduleSlug}
 					<a href="/module/{exercise.moduleSlug}" class="module-link">
 						📦 Modul Terkait

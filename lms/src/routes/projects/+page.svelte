@@ -4,7 +4,7 @@
 	import { projectsStore, type Project } from '$lib/stores/projects.svelte';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import { Button } from '$lib/components/ui';
+	import { Button, Card } from '$lib/components/ui';
 
 	let projects = $state<Project[]>([]);
 	let filterDifficulty = $state('all');
@@ -106,7 +106,8 @@
 		<div in:fade={{ duration: 200 }}>
 			<div class="project-grid">
 				{#each filteredProjects as project}
-					<a href="/projects/{project.slug}" class="project-card">
+					<Card class="project-card" hover>
+					<a href="/projects/{project.slug}" class="project-card-link">
 						<div class="card-header">
 							<span class="project-icon">{projectIcons[project.slug] || '📁'}</span>
 							{#if isCompleted(project.slug)}

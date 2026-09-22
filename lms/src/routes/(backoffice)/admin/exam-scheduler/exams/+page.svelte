@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Card } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let exams: any[] = $state([]);
@@ -271,11 +271,11 @@
 				{/if}
 			</div>
 		{:else}
-			<div class="card">
+			<Card>
 				<div class="table-container">
 					<DataTable {columns} data={filteredExams} pageSize={15} showSearch={false} />
 				</div>
-			</div>
+			</Card>
 		{/if}
 	{/if}
 </div>
@@ -360,7 +360,6 @@
 	.filter-select:focus { outline: none; border-color: var(--accent); }
 	.filter-count { font-size: 13px; color: var(--text-secondary); margin-left: auto; }
 
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
 	table { width: 100%; border-collapse: collapse; }
 	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }

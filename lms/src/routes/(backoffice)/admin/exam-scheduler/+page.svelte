@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, StatCard } from '$lib/components/ui';
+	import { Button, StatCard, Card } from '$lib/components/ui';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -143,7 +143,7 @@
 					<a href="/admin/exam-scheduler/exams" class="btn-primary">{t('admin.buat_ujian_pertama')}</a>
 				</div>
 			{:else}
-				<div class="card">
+				<Card>
 					<div class="card-header">
 						<h3>Jadwal Ujian Terbaru</h3>
 						<a href="/admin/exam-scheduler/exams" class="link-btn">{t('admin.lihat_semua')}</a>
@@ -170,11 +170,11 @@
 							</tbody>
 						</table>
 					</div>
-				</div>
-			{/if}
-		{/if}
+					</Card>
+					{/if}
+					{/if}
 
-		<!-- Rooms Tab -->
+					<!-- Rooms Tab -->
 		{#if activeTab === 'rooms'}
 			{#if loading}
 				<div class="loading">Memuat data ruangan...</div>
@@ -184,7 +184,7 @@
 					<a href="/admin/exam-scheduler/rooms" class="btn-primary">Tambah Ruangan Pertama</a>
 				</div>
 			{:else}
-				<div class="card">
+				<Card>
 					<div class="card-header">
 						<h3>Ruangan Tersedia</h3>
 						<a href="/admin/exam-scheduler/rooms" class="link-btn">{t('admin.lihat_semua')}</a>
@@ -217,11 +217,11 @@
 							</tbody>
 						</table>
 					</div>
-				</div>
-			{/if}
-		{/if}
+					</Card>
+					{/if}
+					{/if}
 
-		<!-- Types Tab -->
+					<!-- Types Tab -->
 		{#if activeTab === 'types'}
 			{#if loading}
 				<div class="loading">Memuat data tipe ujian...</div>
@@ -231,7 +231,7 @@
 					<Button variant="primary" onclick={() => window.location.href = '/admin/exam-scheduler/exams'}>Kelola Ujian</Button>
 				</div>
 			{:else}
-				<div class="card">
+				<Card>
 					<div class="card-header">
 						<h3>{t('admin.tipe_ujian')}</h3>
 					</div>
@@ -256,7 +256,7 @@
 						</table>
 					</div>
 				</div>
-			{/if}
+			</Card>
 		{/if}
 	{/if}
 </div>
@@ -309,12 +309,6 @@
 	.tab--active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 
 	/* Content */
-	.card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		overflow: hidden;
-	}
 	.card-header {
 		display: flex;
 		justify-content: space-between;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, PageHeader } from '$lib/components/ui';
+	import { Button, DataTable, Input, PageHeader, Card } from '$lib/components/ui';
 
 	let fakultasList: any[] = $state([]);
 	let loading = $state(true);
@@ -100,7 +100,7 @@
 			<Button variant="primary" onclick={openCreate}>{t('admin.buat_fakultas_pertama')}</Button>
 		</div>
 	{:else}
-		<div class="card">
+		<Card>
 			<div class="table-container">
 				<DataTable
 					columns={[
@@ -128,7 +128,7 @@
 					{/snippet}
 				</DataTable>
 			</div>
-		</div>
+		</Card>
 	{/if}
 </div>
 
@@ -208,7 +208,6 @@
 	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
 	table { width: 100%; border-collapse: collapse; }
 	th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }

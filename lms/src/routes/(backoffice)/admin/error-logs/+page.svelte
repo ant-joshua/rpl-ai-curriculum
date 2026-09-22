@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Card } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let logs: any[] = $state([]);
@@ -140,7 +140,7 @@
 	</div>
 
 	<!-- DataTable -->
-	<div class="card">
+	<Card>
 		{#if loading}
 			<div class="skeleton-list">
 				<div class="skeleton-row"></div>
@@ -160,7 +160,7 @@
 				emptyIcon=""
 			/>
 		{/if}
-	</div>
+	</Card>
 
 	<!-- Pagination -->
 	<div class="flex items-center justify-between mt-4 text-sm">
@@ -177,7 +177,6 @@
 </div>
 
 <style>
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.skeleton-list { display: flex; flex-direction: column; gap: 1rem; padding: 1rem; }
 	.skeleton-row { height: 3rem; background: var(--bg-secondary); border-radius: 8px; animation: pulse 1.5s ease-in-out infinite; }
 	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }

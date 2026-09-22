@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, Card, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let logs: any[] = $state([]);
@@ -130,7 +130,7 @@
 	</div>
 
 	<!-- DataTable -->
-	<div class="card">
+	<Card>
 		{#if loading}
 			<div class="skeleton-list">
 				<div class="skeleton-row"></div>
@@ -150,7 +150,7 @@
 				emptyIcon=""
 			/>
 		{/if}
-	</div>
+	</Card>
 
 	<!-- Pagination -->
 	<div class="flex items-center justify-between mt-4 text-sm">

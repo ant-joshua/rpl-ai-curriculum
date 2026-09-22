@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, Card, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let semesterList: any[] = $state([]);
@@ -163,7 +163,7 @@
 			<Button variant="primary" onclick={openCreate}>{t('admin.buat_semester_pertama')}</Button>
 		</div>
 	{:else}
-		<div class="card">
+		<Card>
 			<div class="table-container">
 				<DataTable
 					{columns}
@@ -173,7 +173,7 @@
 					emptyMessage="Belum ada semester"
 				/>
 			</div>
-		</div>
+		</Card>
 	{/if}
 </div>
 

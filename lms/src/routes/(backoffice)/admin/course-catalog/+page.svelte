@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea, Card } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let matkulList: any[] = $state([]);
@@ -187,7 +187,7 @@
 			<Button variant="primary" onclick={openCreate}>{t('admin.buat_matkul_pertama')}</Button>
 		</div>
 	{:else}
-		<div class="card">
+		<Card>
 			<div class="table-container">
 				<DataTable
 					{columns}
@@ -197,7 +197,7 @@
 					emptyMessage="Belum ada mata kuliah"
 				/>
 			</div>
-		</div>
+		</Card>
 	{/if}
 </div>
 
@@ -270,7 +270,6 @@
 	.error-msg { color: var(--danger); margin-bottom: 12px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 	.table-container { overflow-x: auto; }
 
 	.field-row { display: flex; gap: 12px; }

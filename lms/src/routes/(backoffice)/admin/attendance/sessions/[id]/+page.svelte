@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { Button, DataTable, Input, Select, StatCard } from '$lib/components/ui';
+	import { Badge, Button, DataTable, Input, Select, StatCard } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type SessionDetail = {
@@ -223,9 +223,9 @@
 			<div class="info-grid">
 				<div class="info-item">
 					<span class="info-label">{t('common.status')}</span>
-					<span class="badge {session.status === 'active' ? 'badge-active' : 'badge-closed'}">
+					<Badge variant={session.status === 'active' ? 'success' : 'outline'}>
 						{session.status === 'active' ? '🟢 Aktif' : '⚫ Selesai'}
-					</span>
+					</Badge>
 				</div>
 				<div class="info-item">
 					<span class="info-label">{t('admin.tanggal')}</span>

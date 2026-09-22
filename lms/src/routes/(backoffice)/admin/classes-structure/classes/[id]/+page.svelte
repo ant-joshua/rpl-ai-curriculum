@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { DataTable } from '$lib/components/ui';
+	import { Card, DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let kelas: any = $state(null);
@@ -107,7 +107,7 @@
 					{/if}
 				</div>
 
-		<div class="card">
+		<Card>
 			<div class="card-header">
 				<h2>👨‍🎓 Daftar Siswa</h2>
 				<span class="badge-count">{siswa.length} siswa</span>
@@ -121,7 +121,7 @@
 					<DataTable {columns} data={siswa} pageSize={20} showSearch={true} searchPlaceholder="Cari siswa..." />
 				</div>
 			{/if}
-		</div>
+		</Card>
 	{/if}
 </div>
 

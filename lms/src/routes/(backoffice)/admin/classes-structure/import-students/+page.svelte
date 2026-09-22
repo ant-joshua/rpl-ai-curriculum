@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, Card, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let file: File | null = $state(null);
@@ -134,7 +134,7 @@
 	{/if}
 
 	{#if step === 'upload'}
-		<div class="card upload-card">
+		<Card class="upload-card">
 			<div class="field">
 <Select label="Kelas Tujuan" bind:value={selectedKelas} options={kelasList.map((k) => ({ value: k.id, label: k.name }))} />
 			</div>
@@ -182,10 +182,10 @@
 					{uploading ? 'Membaca file...' : '📋 Pratinjau'}
 				</Button>
 			</div>
-		</div>
+		</Card>
 
-	{:else if step === 'preview'}
-		<div class="card">
+{:else if step === 'preview'}
+		<Card>
 			<div class="card-header">
 				<h2>Pratinjau Data ({previewData.length} baris)</h2>
 				<div class="card-header-actions">
@@ -203,10 +203,10 @@
 			{#if previewData.length > 50}
 				<div class="table-note">Menampilkan semua {previewData.length} baris</div>
 			{/if}
-		</div>
+		</Card>
 
-	{:else if step === 'result'}
-		<div class="card result-card">
+		{:else if step === 'result'}
+		<Card class="result-card">
 			<div class="result-icon">✅</div>
 			<h2>{t('admin.import_berhasil')}</h2>
 
@@ -240,7 +240,7 @@
 				<Button variant="primary" onclick={reset}>{t('admin.import_lagi')}</Button>
 				<a href="/admin/classes-structure/kelas/{selectedKelas}" class="btn-cancel">{t('admin.lihat_kelas')}</a>
 			</div>
-		</div>
+		</Card>
 	{/if}
 </div>
 

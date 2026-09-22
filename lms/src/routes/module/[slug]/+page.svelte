@@ -23,6 +23,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	import { fade } from 'svelte/transition';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { Button } from '$lib/components/ui';
+import { Badge } from '$lib/components/ui';
 
 	let { data } = $props();
 
@@ -798,9 +799,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 						<div class="ex-header">
 							<span class="ex-title">{ex.title}</span>
 							<div class="ex-meta">
-								<span class="badge" class:beginner={ex.difficulty === 'Beginner'} class:intermediate={ex.difficulty === 'Intermediate'} class:advanced={ex.difficulty === 'Advanced'}>
-									{ex.difficulty}
-								</span>
+								<Badge variant={ex.difficulty === 'Beginner' ? 'success' : ex.difficulty === 'Intermediate' ? 'warning' : 'danger'}>{ex.difficulty}</Badge>
 								<span class="ex-type">{ex.type}</span>
 							</div>
 						</div>

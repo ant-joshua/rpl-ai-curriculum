@@ -4,7 +4,8 @@
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { adaptive } from '$lib/stores/adaptive.svelte';
-	import { Skeleton, EmptyState } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Card } from '$lib/components/ui/index.js';
+	import { Badge } from '$lib/components/ui';
 
 	let exercisesData = $state<{ exercises: any[] } | null>(null);
 	let loading = $state(true);
@@ -135,21 +136,18 @@
 			</p>
 			<div class="grid">
 				{#each filtered.filter(e => e.difficulty?.toLowerCase() === adaptive.difficulty).slice(0, 3) as exercise}
-					<a href="/exercises/{exercise.slug}" class="card">
-						<div class="card-header">
-							<span class="badge rec-badge">{t('exercises.rec_badge')}</span>
-							<span
-								class="badge difficulty"
-								style="background: {difficultyColors[exercise.difficulty] || '#888'}22; color: {difficultyColors[exercise.difficulty] || '#888'}; border-color: {difficultyColors[exercise.difficulty] || '#888'}44"
-							>
-								{exercise.difficulty}
-							</span>
-						</div>
-						<h3 class="card-title">{exercise.title}</h3>
-						<p class="card-desc">{exercise.description || t('exercises.no_desc')}</p>
-						{#if exercise.moduleSlug}
-							<span class="module-context">📦 {exercise.moduleSlug}</span>
-						{/if}
+					<a href="/exercises/{exercise.slug}" class="card-link">
+						<Card hover>
+							<div class="card-header">
+								<Badge variant="primary">{t('exercises.rec_badge')}</Badge>
+								<Badge variant="warning">{exercise.difficulty}</Badge>
+							</div>
+							<h3 class="card-title">{exercise.title}</h3>
+							<p class="card-desc">{exercise.description || t('exercises.no_desc')}</p>
+							{#if exercise.moduleSlug}
+								<span class="module-context">📦 {exercise.moduleSlug}</span>
+							{/if}
+						</Card>
 					</a>
 				{/each}
 			</div>
@@ -165,23 +163,18 @@
 		{:else}
 			<div class="grid">
 				{#each filtered as exercise}
-					<a href="/exercises/{exercise.slug}" class="card">
-						<div class="card-header">
-							<span
-								class="badge difficulty"
-								style="background: {difficultyColors[exercise.difficulty] || '#888'}22; color: {difficultyColors[exercise.difficulty] || '#888'}; border-color: {difficultyColors[exercise.difficulty] || '#888'}44"
-							>
-								{exercise.difficulty}
-							</span>
-							<span class="badge type">
-								{typeLabels[exercise.type] || exercise.type}
-							</span>
-						</div>
-						<h3 class="card-title">{exercise.title}</h3>
-						<p class="card-desc">{exercise.description || 'Tidak ada deskripsi.'}</p>
-						{#if exercise.moduleSlug}
-							<span class="module-context">📦 {exercise.moduleSlug}</span>
-						{/if}
+					<a href="/exercises/{exercise.slug}" class="card-link">
+						<Card hover>
+							<div class="card-header">
+								<Badge variant="warning">{exercise.difficulty}</Badge>
+								<Badge variant="outline">{typeLabels[exercise.type] || exercise.type}</Badge>
+							</div>
+							<h3 class="card-title">{exercise.title}</h3>
+							<p class="card-desc">{exercise.description || 'Tidak ada deskripsi.'}</p>
+							{#if exercise.moduleSlug}
+								<span class="module-context">📦 {exercise.moduleSlug}</span>
+							{/if}
+						</Card>
 					</a>
 				{/each}
 			</div>
@@ -305,6 +298,12 @@
 		gap: 16px;
 	}
 
+	.card-link {
+		text-decoration: none !important;
+		color: inherit;
+		display: block;
+	}
+
 	.card {
 		display: flex;
 		flex-direction: column;
@@ -313,8 +312,6 @@
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: 12px;
-		text-decoration: none !important;
-		color: inherit;
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
 	}
 

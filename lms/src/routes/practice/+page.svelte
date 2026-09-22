@@ -5,6 +5,7 @@
 	import { pushXpGain } from '$lib/stores/xp-toast.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { Button } from '$lib/components/ui';
+import { Badge } from '$lib/components/ui';
 
 	interface QueueItem {
 		id: string;
@@ -192,11 +193,11 @@
 
 			<div class="question-card" transition:fade={{ duration: 200 }}>
 				<div class="card-top">
-					<span class="badge-wrong">Salah {currentItem.wrong_count}x</span>
-					{#if currentItem.question_ref}
-						<span class="badge-ref">Soal #{currentItem.question_ref}</span>
-					{/if}
-				</div>
+							<Badge variant="danger">Salah {currentItem.wrong_count}x</Badge>
+							{#if currentItem.question_ref}
+								<Badge variant="primary">Soal #{currentItem.question_ref}</Badge>
+							{/if}
+						</div>
 				<p class="question-text">{currentItem.prompt}</p>
 			</div>
 

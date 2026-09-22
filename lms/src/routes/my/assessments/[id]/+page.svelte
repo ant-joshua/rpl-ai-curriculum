@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
 	import { StatCard, Button } from '$lib/components/ui';
+import { Badge } from '$lib/components/ui';
  
 	// State
 	let loading = $state(true);
@@ -300,7 +301,7 @@
 							{#if resultData.newBadges?.length > 0}
 								<span class="new-badges">
 									{#each resultData.newBadges as badge}
-										<span class="badge-earned">🏅 {badge.name || 'Badge'}</span>
+										<Badge variant="warning">🏅 {badge.name || 'Badge'}</Badge>
 									{/each}
 								</span>
 							{/if}
@@ -391,9 +392,9 @@
 		<div class="quiz-header">
 			<div class="quiz-title-section">
 				<h1>{assessment.title}</h1>
-				<span class="quiz-type-badge badge--{assessment.type}">{assessment.type}</span>
+				<Badge variant={assessment.type === 'midterm' || assessment.type === 'final' ? 'danger' : assessment.type === 'practice' ? 'success' : 'warning'}>{assessment.type}</Badge>
 				{#if practiceMode}
-					<span class="practice-badge">🎯 Practice Mode</span>
+					<Badge variant="info">🎯 Practice Mode</Badge>
 				{/if}
 			</div>
 

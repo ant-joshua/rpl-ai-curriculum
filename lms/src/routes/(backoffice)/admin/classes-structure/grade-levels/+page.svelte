@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, Card, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let tingkatList: any[] = $state([]);
@@ -114,11 +114,11 @@
 			<Button variant="primary" onclick={openForm}>{t('admin.buat_tingkat_pertama')}</Button>
 		</div>
 	{:else}
-		<div class="card">
+		<Card>
 			<div class="table-container">
 				<DataTable {columns} data={tingkatList} pageSize={20} showSearch={true} searchPlaceholder="Cari tingkat..." emptyMessage="Belum ada tingkat" emptyIcon="🏫" />
 			</div>
-		</div>
+		</Card>
 	{/if}
 </div>
 
