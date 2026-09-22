@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
-	import { Avatar, Card, CardContent, Alert, Button } from '$lib/components/ui';
+	import { Avatar, Card, CardContent, Alert, Button, StatCard } from '$lib/components/ui';
 	import DailyQuests from '$lib/components/DailyQuests.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
@@ -178,14 +178,12 @@
 				<span class="freeze-chip" title="Streak Freeze — lindungi streak dari skip 1 hari">🧊 {streakFreezes}</span>
 			{/if}
 			{#if streakFreezes < 3}
-				<button class="freeze-buy" onclick={buyFreeze} disabled={buyingFreeze} title="Beli streak freeze (50 XP)">
-					🧊 +1
-				</button>
+				<Button variant="ghost" size="sm" onclick={buyFreeze} disabled={buyingFreeze}>🧊 +1</Button>
 			{/if}
 		</div>
 		<div class="header-actions">
-			<button class="export-btn" onclick={() => (location.href = '/api/my/progress/export?format=json')} title="Download progress JSON">📥 JSON</button>
-			<button class="export-btn" onclick={() => (location.href = '/api/my/progress/export?format=csv')} title="Download progress CSV">📊 CSV</button>
+			<Button variant="outline" size="sm" onclick={() => (location.href = '/api/my/progress/export?format=json')}>📥 JSON</Button>
+			<Button variant="outline" size="sm" onclick={() => (location.href = '/api/my/progress/export?format=csv')}>📊 CSV</Button>
 		</div>
 	</header>
 
@@ -215,72 +213,12 @@
 
 	<!-- Overview cards -->
 	<section class="overview-cards">
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">📚</span>
-					<div>
-						<span class="overview-value">{activeCourses.length}</span>
-						<span class="overview-label">Kursus aktif</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">📊</span>
-					<div>
-						<span class="overview-value">{averageProgress}%</span>
-						<span class="overview-label">Rata-rata progres</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">📖</span>
-					<div>
-						<span class="overview-value">{totalLessonsDone}</span>
-						<span class="overview-label">Pelajaran selesai</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">🎓</span>
-					<div>
-						<span class="overview-value">{completedCourseCount}</span>
-						<span class="overview-label">Kursus selesai</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">⭐</span>
-					<div>
-						<span class="overview-value">{totalXp}</span>
-						<span class="overview-label">Total XP</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
-		<Card variant="interactive">
-			<CardContent>
-				<div class="overview-item">
-					<span class="overview-icon">🔥</span>
-					<div>
-						<span class="overview-value">{currentStreak}</span>
-						<span class="overview-label">Streak belajar</span>
-					</div>
-				</div>
-			</CardContent>
-		</Card>
+		<StatCard icon="📚" value={activeCourses.length} label="Kursus aktif" color="var(--accent)" delay={0} />
+		<StatCard icon="📊" value="{averageProgress}%" label="Rata-rata progres" color="var(--success)" delay={0.05} />
+		<StatCard icon="📖" value={totalLessonsDone} label="Pelajaran selesai" color="var(--accent)" delay={0.1} />
+		<StatCard icon="🎓" value={completedCourseCount} label="Kursus selesai" color="var(--success)" delay={0.15} />
+		<StatCard icon="⭐" value={totalXp} label="Total XP" color="var(--warning)" delay={0.2} />
+		<StatCard icon="🔥" value={currentStreak} label="Streak belajar" color="var(--danger)" delay={0.25} />
 	</section>
 
 	<!-- Grid: Courses + Side panel -->
@@ -295,7 +233,7 @@
 					<path d="M18 2.0845
 						a 15.9155 15.9155 0 0 1 0 31.831
 						a 15.9155 15.9155 0 0 1 0 -31.831"
-						fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="3" />
+						fill="none" stroke="var(--border)" stroke-width="3" />
 					<path d="M18 2.0845
 						a 15.9155 15.9155 0 0 1 0 31.831
 						a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -585,12 +523,6 @@
 		gap: 12px;
 	}
 	.header-actions { display: flex; gap: 8px; }
-	.export-btn {
-		padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
-		background: white; font-size: 13px; font-weight: 600; cursor: pointer;
-		color: var(--text); transition: background 0.2s;
-	}
-	.export-btn:hover { background: var(--surface); }
 	.dashboard-header {
 		justify-content: space-between;
 		align-items: flex-start;
@@ -657,14 +589,6 @@
 		border-radius: 6px; padding: 1px 7px;
 		font-size: 12px; font-weight: 700;
 	}
-	.freeze-buy {
-		background: var(--accent-light); color: var(--accent);
-		border: 1px solid var(--accent-light); border-radius: 6px;
-		padding: 2px 8px; font-size: 12px; font-weight: 700;
-		cursor: pointer; transition: background 0.2s;
-	}
-	.freeze-buy:hover:not(:disabled) { background: var(--accent-light); }
-	.freeze-buy:disabled { opacity: 0.5; cursor: default; }
 	.freeze-buy-error {
 		margin-bottom: 12px; padding: 8px 14px;
 		background: var(--danger-light); color: var(--danger);
@@ -709,39 +633,7 @@
 		.overview-cards { grid-template-columns: repeat(2, 1fr); }
 	}
 
-	.overview-item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-
-	.overview-icon {
-		font-size: 22px;
-		opacity: 0.9;
-	}
-
-	.overview-item div {
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-	}
-
-	.overview-value {
-		font-size: 20px;
-		font-weight: 590;
-		color: var(--text);
-		font-feature-settings: 'cv01', 'ss03';
-		line-height: 1.2;
-	}
-
-	.overview-label {
-		font-size: 11px;
-		color: var(--text-secondary);
-		font-weight: 510;
-		font-feature-settings: 'cv01', 'ss03';
-	}
-
-	/* XP Ring widget */
+/* XP Ring widget */
 	.xp-ring-section {
 		margin-bottom: 24px;
 	}
@@ -891,8 +783,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 18px;
 		text-decoration: none !important;
@@ -902,8 +794,8 @@
 	}
 
 	.course-card:hover {
-		border-color: rgba(79,70,229,0.25);
-		background: rgba(0,0,0,0.04);
+		border-color: rgba(var(--accent-rgb), 0.25);
+		background: var(--surface-alt);
 	}
 
 	.course-card-header {
@@ -933,7 +825,7 @@
 	.course-progress-bar {
 		flex: 1;
 		height: 4px;
-		background: rgba(0,0,0,0.08);
+		background: var(--border);
 		border-radius: 2px;
 		overflow: hidden;
 	}
@@ -979,7 +871,7 @@
 	.course-action {
 		margin-top: auto;
 		padding-top: 8px;
-		border-top: 1px solid rgba(0,0,0,0.08);
+		border-top: 1px solid var(--border);
 	}
 
 	.lanjut-belajar {
@@ -1017,16 +909,16 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 12px;
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.08);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.15s ease;
 	}
 
 	.task-item:hover {
-		border-color: rgba(79,70,229,0.2);
-		background: rgba(0,0,0,0.04);
+		border-color: rgba(var(--accent-rgb), 0.2);
+		background: var(--surface-alt);
 	}
 
 	.task-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
@@ -1050,7 +942,7 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 8px 0;
-		border-bottom: 1px solid rgba(0,0,0,0.04);
+		border-bottom: 1px solid var(--surface-alt);
 	}
 
 	.activity-item:last-child { border-bottom: none; }
@@ -1093,71 +985,36 @@
 		.header-actions {
 			width: 100%;
 		}
-		.export-btn {
-			flex: 1;
-			text-align: center;
-			padding: 8px 10px;
-			font-size: 12px;
-		}
-		.xp-ring-card {
-			flex-direction: column;
-			align-items: center;
-			text-align: center;
-			padding: 16px;
-		}
-		.xp-ring-svg {
-			width: 80px;
-			height: 80px;
-		}
-		.course-grid {
-			grid-template-columns: 1fr;
-		}
-		.course-card {
-			padding: 14px;
-		}
-		.side-panel {
-			gap: 16px;
-		}
-		.task-item {
-			flex-direction: column;
-			gap: 6px;
-		}
-		.task-date {
-			text-align: left;
-		}
-	}
+}
 
-	@media (max-width: 480px) {
-		.dashboard-page {
-			padding: 12px 10px;
-		}
-		h1 {
-			font-size: 20px;
-		}
-		.subtitle {
-			font-size: 12px;
-		}
-		.overview-cards {
-			grid-template-columns: 1fr 1fr;
-			gap: 8px;
-		}
-		.overview-value {
-			font-size: 16px;
-		}
-		.streak-risk-banner {
-			flex-direction: column;
-			gap: 8px;
-			text-align: center;
-		}
-		.risk-cta {
-			width: 100%;
-			text-align: center;
-		}
-		.course-grid {
-			gap: 8px;
-		}
-		.section-header h2 {
-			font-size: 15px;
-		}
+@media (max-width: 480px) {
+	.dashboard-page {
+		padding: 12px 10px;
 	}
+	h1 {
+		font-size: 20px;
+	}
+	.subtitle {
+		font-size: 12px;
+	}
+	.overview-cards {
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+	}
+	.streak-risk-banner {
+		flex-direction: column;
+		gap: 8px;
+		text-align: center;
+	}
+	.risk-cta {
+		width: 100%;
+		text-align: center;
+	}
+	.course-grid {
+		gap: 8px;
+	}
+	.section-header h2 {
+		font-size: 15px;
+	}
+}
 </style>
