@@ -1,24 +1,29 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { cachedDbFirst } from '$lib/server/cache';
 
-export async function load({ request, platform, url }: {
+export async function load({ request, platform, locals }: {
 	request: Request;
 	platform: App.Platform;
-	url: URL;
+	locals: App.Locals;
 }) {
-	if (!platform) throw redirect(302, '/?error=no-platform');
+	const sessionUser = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token || !platform) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const token = getBearerToken(request) || url.searchParams.get('token');
-	if (!token) throw redirect(302, '/login?redirect=/instructor');
-
-	const session = await getSession(platform, token);
-	if (!session) throw redirect(302, '/login?redirect=/instructor');
+	if (!sessionUser) throw redirect(302, '/login?redirect=/instructor');
 
 	const db = getDB(platform);
-	const user = await db.prepare(
-		`SELECT id, display_name, avatar_url, role, email FROM users WHERE id = ?`
-	).bind(session.user.id).first<any>();
+	const user = await cachedDbFirst<any>(
+		db,
+		`SELECT id, display_name, avatar_url, role, email FROM users WHERE id = ?`,
+		[sessionUser.id],
+		60_000
+	);
 
 	if (!user || !['admin', 'superadmin', 'instructor', 'ta'].includes(user.role)) {
 		throw redirect(302, '/dashboard');
@@ -26,11 +31,10 @@ export async function load({ request, platform, url }: {
 
 	return {
 		user: {
-			id: session.user.id,
-			name: user?.display_name || session.user.name || 'Instruktur',
-			avatar_url: user?.avatar_url || '',
-			role: user?.role || 'instructor',
+			id: sessionUser.id,
+			name: user.display_name || sessionUser.name || 'Instruktur',
+			avatar_url: user.avatar_url || '',
+			role: user.role || 'instructor',
 		},
-		token,
 	};
 }

@@ -4,18 +4,19 @@ import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { cachedDbQuery } from '$lib/server/cache';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ request, platform, url }) => {
+export const load: PageServerLoad = async ({ request, platform, locals }) => {
 	if (!platform) {
 		throw redirect(302, '/?error=no-platform');
 	}
 
-	const token = getTokenFromRequest(request);
-
-	let userId: string | null = null;
-	if (token) {
-		const session = await getSession(platform, token);
-		if (session) {
-			userId = session.user.id;
+	let userId: string | null = locals.user?.id || null;
+	if (!userId) {
+		const token = getTokenFromRequest(request);
+		if (token) {
+			const session = await getSession(platform, token);
+			if (session) {
+				userId = session.user.id;
+			}
 		}
 	}
 

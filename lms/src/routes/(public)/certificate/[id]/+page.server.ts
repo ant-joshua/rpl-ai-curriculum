@@ -1,11 +1,13 @@
 import { getDB } from '$lib/server/d1';
+import { cachedDbFirst } from '$lib/server/cache';
 
 export async function load({ params, platform }: { params: Record<string, string>; platform: App.Platform }) {
 	const db = getDB(platform);
 	const { id } = params;
 
 	try {
-		const cert = await db.prepare(
+		const cert = await cachedDbFirst<any>(
+			db,
 			`SELECT c.id, c.certificate_number, c.issued_at, c.user_id, c.course_offering_id, c.metadata,
 			        co.name AS offering_name, co.code AS offering_code,
 			        cr.title AS course_title, cr.description AS course_description,
@@ -15,8 +17,10 @@ export async function load({ params, platform }: { params: Record<string, string
 			 JOIN course_offerings co ON co.id = c.course_offering_id
 			 JOIN courses cr ON cr.id = co.course_id
 			 JOIN users u ON u.id = c.user_id
-			 WHERE c.id = ?`
-		).bind(id).first<any>();
+			 WHERE c.id = ?`,
+			[id],
+			600_000 // 10 minutes cache
+		);
 
 		if (!cert) {
 			return { cert: null, error: 'Certificate not found' };

@@ -1,19 +1,20 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { cachedDbQuery } from '$lib/server/cache';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ request, platform, url }) => {
-	if (!platform) throw redirect(302, '/?error=no-platform');
+export const load: PageServerLoad = async ({ request, platform, locals }) => {
+	const user = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token || !platform) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const token = getBearerToken(request) || url.searchParams.get('token');
-	if (!token) throw redirect(302, '/login?redirect=/instructor');
+	if (!user) throw redirect(302, '/login?redirect=/instructor');
 
-	const session = await getSession(platform, token);
-	if (!session) throw redirect(302, '/login?redirect=/instructor');
-
-	const userId = session.user.id;
+	const userId = user.id;
 	const db = getDB(platform);
 
 	// --- Courses taught by this instructor ---
@@ -263,6 +264,5 @@ return {
 			studentName: a.student_name,
 			offeringName: a.offering_name,
 		})),
-		token,
 	};
 };
