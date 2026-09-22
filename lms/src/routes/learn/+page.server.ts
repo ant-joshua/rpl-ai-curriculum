@@ -1,21 +1,24 @@
 import { getDB } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { cachedDbQuery } from '$lib/server/cache';
 import { redirect } from '@sveltejs/kit';
 
-export async function load({ platform, request, url }: {
+export async function load({ platform, request, locals }: {
 	platform: App.Platform;
 	request: Request;
-	url: URL;
+	locals: App.Locals;
 }) {
-	const token = getBearerToken(request) || url.searchParams.get('token');
-	if (!token) throw redirect(302, '/login?redirect=/learn');
+	const user = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const session = await getSession(platform, token);
-	if (!session) throw redirect(302, '/login?redirect=/learn');
+	if (!user) throw redirect(302, '/login?redirect=/learn');
 
 	const db = getDB(platform);
-	const userId = session.user.id;
+	const userId = user.id;
 
 	// Get all active offerings + enrollment status + instructor + student count + featured
 	const { results: offerings } = await cachedDbQuery<any>(
@@ -32,7 +35,8 @@ export async function load({ platform, request, url }: {
 			LEFT JOIN enrollments e ON e.course_offering_id = co.id AND e.user_id = ?
 			LEFT JOIN users u ON u.id = co.instructor_id
 			ORDER BY c.featured DESC, co.start_date DESC`,
-		[userId]
+		[userId],
+		300_000
 	);
 
 	return {
@@ -54,8 +58,7 @@ export async function load({ platform, request, url }: {
 			instructorName: o.instructor_name || '—',
 			studentCount: o.student_count ?? 0
 		})),
-		userName: session.user.name || 'Student',
-		userId: session.user.id,
-		token
+		userName: user.name || (user as any).display_name || 'Student',
+		userId: user.id
 	};
 }

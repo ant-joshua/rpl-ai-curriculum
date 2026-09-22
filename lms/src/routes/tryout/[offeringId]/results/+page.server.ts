@@ -1,29 +1,34 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { cachedDbFirst } from '$lib/server/cache';
 import { redirect } from '@sveltejs/kit';
 
-export async function load({ params, request, platform, url }: {
+export async function load({ params, request, platform, locals }: {
 	params: Record<string, string>;
 	request: Request;
 	platform: App.Platform;
-	url: URL;
+	locals: App.Locals;
 }) {
-	if (!platform) throw redirect(302, '/?error=no-platform');
+	const user = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token || !platform) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const token = getBearerToken(request) || url.searchParams.get('token');
-	if (!token) throw redirect(302, `/login?redirect=/tryout/${params.offeringId}/results`);
-
-	const session = await getSession(platform, token);
-	if (!session) throw redirect(302, `/login?redirect=/tryout/${params.offeringId}/results`);
+	if (!user) throw redirect(302, `/login?redirect=/tryout/${params.offeringId}/results`);
 
 	const db = getDB(platform);
-	const userId = session.user.id;
+	const userId = user.id;
 	const offeringId = params.offeringId;
 
-	// Load offering
-	const offering = await db.prepare(
-		'SELECT co.*, c.title as course_title FROM course_offerings co LEFT JOIN courses c ON c.id = co.course_id WHERE co.id = ?'
-	).bind(offeringId).first<any>();
+	// Load offering (cached 60s)
+	const offering = await cachedDbFirst<any>(
+		db,
+		'SELECT co.*, c.title as course_title FROM course_offerings co LEFT JOIN courses c ON c.id = co.course_id WHERE co.id = ?',
+		[offeringId],
+		60_000
+	);
 	if (!offering) throw redirect(302, '/catalog');
 
 	// Find the most recent non-active session
@@ -94,6 +99,5 @@ export async function load({ params, request, platform, url }: {
 		results,
 		answersCount: lastSession.answers_count,
 		totalQuestions: lastSession.total_questions,
-		token,
 	};
 }

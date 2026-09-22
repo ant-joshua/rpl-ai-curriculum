@@ -1,27 +1,31 @@
 import { getDB } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { cachedDbFirst } from '$lib/server/cache';
 import { error, redirect } from '@sveltejs/kit';
 
-export async function load({ params, platform, request }: { params: { offeringId: string }; platform: App.Platform; request: Request }) {
-	const token = getBearerToken(request);
-	if (!token) throw redirect(307, '/login?redirect=/learn/' + params.offeringId + '/syllabus');
+export async function load({ params, platform, request, locals }: { params: { offeringId: string }; platform: App.Platform; request: Request; locals: App.Locals }) {
+	const user = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const session = await getSession(platform, token);
-	if (!session) throw redirect(307, '/login?redirect=/learn/' + params.offeringId + '/syllabus');
+	if (!user) throw redirect(307, '/login?redirect=/learn/' + params.offeringId + '/syllabus');
 
 	const db = getDB(platform);
 
 	// Fetch offering + course
-	const offering = await db
-		.prepare(
-			`SELECT co.*, c.title AS course_title, c.description AS course_description,
-			        c.icon AS course_icon, c.category, c.level
-			 FROM course_offerings co
-			 JOIN courses c ON c.id = co.course_id
-			 WHERE co.id = ?`
-		)
-		.bind(params.offeringId)
-		.first<any>();
+	const offering = await cachedDbFirst<any>(
+		db,
+		`SELECT co.*, c.title AS course_title, c.description AS course_description,
+		        c.icon AS course_icon, c.category, c.level
+		 FROM course_offerings co
+		 JOIN courses c ON c.id = co.course_id
+		 WHERE co.id = ?`,
+		[params.offeringId],
+		60_000
+	);
 
 	if (!offering) throw error(404, 'Course offering not found');
 
@@ -58,7 +62,7 @@ export async function load({ params, platform, request }: { params: { offeringId
 			 FROM progress
 			 WHERE user_id = ? AND module_slug = ? AND completed = 1`
 		)
-		.bind(session.user.id, params.offeringId)
+		.bind(user.id, params.offeringId)
 		.all<{ session_id: string; completed: number }>();
 
 	const completedSlugs = new Set((completed || []).map((c: any) => c.session_id));
@@ -177,8 +181,7 @@ export async function load({ params, platform, request }: { params: { offeringId
 		lessons,
 		weeklyLessons,
 		progress: { completed: completedCount, total: totalCount, percentage: progress },
-		userName: session.user.name || session.user.email?.split('@')[0] || 'Student',
-		userId: session.user.id,
-		token
+		userName: user.name || (user as any).email?.split('@')[0] || 'Student',
+		userId: user.id
 	};
 }
