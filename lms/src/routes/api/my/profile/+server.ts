@@ -1,23 +1,16 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError, parseJson } from '$lib/server/api';
 
 /**
  * GET /api/my/profile
  * Returns current user profile: id, displayName, email, avatarUrl, role, createdAt
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
-
-		const userId = session.user.id;
+		const userId = auth.user.id;
 		const db = getDB(platform);
 
 		// Get profile from users table (joins with oauth_users for email)
@@ -30,23 +23,20 @@ export async function GET({ request, platform }: { request: Request; platform: A
 		).bind(userId).first<any>();
 
 		if (!profile) {
-			return jsonResponse({ success: false, error: 'Profile not found' }, 404);
+			return apiError('Profile not found', 404);
 		}
 
-		return jsonResponse({
-			success: true,
-			data: {
-				id: profile.id,
-				displayName: profile.display_name || profile.oauth_name || '',
-				email: profile.email || '',
-				avatarUrl: profile.avatar_url || '',
-				role: profile.role || 'student',
-				createdAt: profile.created_at || '',
-			},
+		return apiOk({
+			id: profile.id,
+			displayName: profile.display_name || profile.oauth_name || '',
+			email: profile.email || '',
+			avatarUrl: profile.avatar_url || '',
+			role: profile.role || 'student',
+			createdAt: profile.created_at || '',
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -54,29 +44,17 @@ export async function GET({ request, platform }: { request: Request; platform: A
  * PUT /api/my/profile
  * Update display_name and avatar_url for current user.
  */
-export async function PUT({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function PUT({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const userId = auth.user.id;
+		const parsed = await parseJson<any>(request);
+		if (parsed.response) return parsed.response;
 
-		const userId = session.user.id;
+		const { displayName, avatarUrl, bio, headline, website, socialLinks } = parsed.data || {};
 		const db = getDB(platform);
-
-		let body: any;
-		try {
-			body = await request.json();
-		} catch {
-			return jsonResponse({ success: false, error: 'Invalid JSON body' }, 400);
-		}
-
-		const { displayName, avatarUrl, bio, headline, website, socialLinks } = body;
 
 		// Build dynamic UPDATE — only set provided fields
 		const updates: string[] = [];
@@ -108,12 +86,11 @@ export async function PUT({ request, platform }: { request: Request; platform: A
 		}
 
 		if (updates.length === 0) {
-			return jsonResponse({ success: false, error: 'No fields to update' }, 400);
+			return apiError('No fields to update', 400);
 		}
 
 		updates.push('updated_at = datetime(?)');
 		values.push(new Date().toISOString());
-
 		values.push(userId);
 
 		await db.prepare(
@@ -129,19 +106,16 @@ export async function PUT({ request, platform }: { request: Request; platform: A
 			 WHERE u.id = ?`
 		).bind(userId).first<any>();
 
-		return jsonResponse({
-			success: true,
-			data: {
-				id: profile.id,
-				displayName: profile.display_name || profile.oauth_name || '',
-				email: profile.email || '',
-				avatarUrl: profile.avatar_url || '',
-				role: profile.role || 'student',
-				createdAt: profile.created_at || '',
-			},
+		return apiOk({
+			id: profile.id,
+			displayName: profile.display_name || profile.oauth_name || '',
+			email: profile.email || '',
+			avatarUrl: profile.avatar_url || '',
+			role: profile.role || 'student',
+			createdAt: profile.created_at || '',
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

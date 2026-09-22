@@ -1,26 +1,21 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError, parseJson } from '$lib/server/api';
 
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
-		const db = getDB(platform);
+		const userId = auth.user.id;
+		const parsed = await parseJson<{ lessonSlug?: string; courseOfferingId?: string; completed?: boolean; timeSpent?: number }>(request);
+		if (parsed.response) return parsed.response;
 
-		const body: { lessonSlug?: string; courseOfferingId?: string; completed?: boolean; timeSpent?: number } = await request.json();
-
+		const body = parsed.data || {};
 		if (!body.lessonSlug || !body.courseOfferingId || body.completed === undefined) {
-			return jsonResponse({ success: false, error: 'lessonSlug, courseOfferingId, and completed are required' }, 400);
+			return apiError('lessonSlug, courseOfferingId, and completed are required', 400);
 		}
 
+		const db = getDB(platform);
 		const now = new Date().toISOString();
 		const completedInt = body.completed ? 1 : 0;
 		const timeSpent = body.timeSpent ?? 0;
@@ -50,31 +45,25 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			)
 			.run();
 
-		return jsonResponse({ success: true });
+		return apiOk({ updated: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
+		const userId = auth.user.id;
 		const db = getDB(platform);
 		const url = new URL(request.url);
 		const offeringId = url.searchParams.get('offeringId');
 
 		if (!offeringId) {
-			return jsonResponse({ success: false, error: 'offeringId query parameter required' }, 400);
+			return apiError('offeringId query parameter required', 400);
 		}
 
 		const { results } = await db
@@ -87,9 +76,9 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			.bind(userId, offeringId)
 			.all<{ session_id: string; completed: number; completed_at: string | null; time_spent: number }>();
 
-		return jsonResponse({ success: true, data: results || [] });
+		return apiOk(results || []);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

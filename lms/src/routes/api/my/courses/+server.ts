@@ -1,14 +1,12 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError } from '$lib/server/api';
 
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
   try {
-    const token = getBearerToken(request);
-    if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
-    const session = await getSession(platform, token);
-    if (!session) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+    const auth = await authenticateRequest(locals, request, platform);
+    if (auth.response) return auth.response;
 
-    const userId = session.user.id;
+    const userId = auth.user.id;
     const db = getDB(platform);
 
     // Enrolled courses with offering info
@@ -26,9 +24,9 @@ export async function GET({ request, platform }: { request: Request; platform: A
     ).bind(userId).all<any>();
 
     // Instructor info
-    const offeringIds = (enrollments || []).map(e => e.course_offering_id);
+    const offeringIds = (enrollments || []).map((e: any) => e.course_offering_id);
     if (offeringIds.length === 0) {
-      return jsonResponse({ success: true, data: [] });
+      return apiOk([]);
     }
 
     const placeholders = offeringIds.map(() => '?').join(',');
@@ -71,7 +69,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
       lessonCountMap.set(row.course_offering_id, row.total);
     }
 
-    const courses = (enrollments || []).map(e => {
+    const courses = (enrollments || []).map((e: any) => {
       const offId = e.course_offering_id;
       const completedSet = completedByOffering.get(offId) || new Set();
       const total = lessonCountMap.get(offId) || 0;
@@ -102,9 +100,9 @@ export async function GET({ request, platform }: { request: Request; platform: A
       };
     });
 
-    return jsonResponse({ success: true, data: courses });
+    return apiOk(courses);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
-    return jsonResponse({ success: false, error: msg }, 500);
+    return apiError(msg, 500);
   }
 }

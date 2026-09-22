@@ -1,5 +1,6 @@
 import { getSession, getBearerToken, getTokenFromRequest } from '$lib/server/auth';
 import { getDB, jsonResponse } from '$lib/server/d1';
+import { cachedDbFirst } from '$lib/server/cache';
 import { logActivity } from '$lib/server/analytics';
 import { rateLimit, getClientIp, rateLimitResponse } from '$lib/server/rate-limit';
 import { logError } from '$lib/server/error-logger';
@@ -52,7 +53,7 @@ export async function handle({ event, resolve }: {
 		const slug = tenantMatch[1];
 		try {
 			const db = getDB(event.platform);
-			const tenant = await db.prepare('SELECT * FROM tenants WHERE slug = ? AND is_active = 1').bind(slug).first<any>();
+			const tenant = await cachedDbFirst<any>(db, 'SELECT * FROM tenants WHERE slug = ? AND is_active = 1', [slug], 120_000);
 			if (!tenant) {
 				return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Tenant not found' }), {
 					status: 404,
@@ -88,16 +89,16 @@ export async function handle({ event, resolve }: {
 				const tenantId = tenantCookie.split('=')[1]?.trim();
 				if (tenantId) {
 					const db = getDB(event.platform);
-					const tenant = await db.prepare('SELECT * FROM tenants WHERE id = ? AND is_active = 1').bind(tenantId).first<any>();
+					const tenant = await cachedDbFirst<any>(db, 'SELECT * FROM tenants WHERE id = ? AND is_active = 1', [tenantId], 120_000);
 					if (tenant) {
 						event.locals = event.locals || {};
 						event.locals.tenant = tenant;
 					}
 				}
 			} else {
-				// Default tenant fallback
+				// Default tenant fallback (cached 2 mins)
 				const db = getDB(event.platform);
-				const defaultTenant = await db.prepare('SELECT * FROM tenants WHERE slug = ? AND is_active = 1').bind('default').first<any>();
+				const defaultTenant = await cachedDbFirst<any>(db, 'SELECT * FROM tenants WHERE slug = ? AND is_active = 1', ['default'], 120_000);
 				if (defaultTenant) {
 					event.locals = event.locals || {};
 					event.locals.tenant = defaultTenant;

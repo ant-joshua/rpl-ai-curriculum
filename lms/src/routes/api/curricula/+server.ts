@@ -1,48 +1,54 @@
-import { jsonResponse, getDB } from '$lib/server/d1';
-import { getSession, getTokenFromRequest } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { cachedDbQuery, invalidateCache } from '$lib/server/cache';
+import { apiOk, apiError, authenticateRequest, requireRole, parseJson } from '$lib/server/api';
 
 // GET /api/curricula — list curricula (public: active only; admin: all)
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
 		const db = getDB(platform);
 
 		// Check if admin (optional auth)
 		let isAdmin = false;
-		const token = getTokenFromRequest(request);
-		if (token) {
-			const session = await getSession(platform, token).catch(() => null);
-			if (session && (session.user.role === 'admin' || session.user.role === 'superadmin')) isAdmin = true;
+		if (locals?.user && ['admin', 'superadmin'].includes(locals.user.role)) {
+			isAdmin = true;
+		} else {
+			const auth = await authenticateRequest(locals, request, platform).catch(() => null);
+			if (auth?.user && ['admin', 'superadmin'].includes(auth.user.role)) {
+				isAdmin = true;
+			}
 		}
 
 		const sql = isAdmin
 			? 'SELECT * FROM curricula ORDER BY is_default DESC, created_at ASC'
 			: 'SELECT id, name, slug, type, description, authority, is_default FROM curricula WHERE is_active = 1 ORDER BY is_default DESC, name ASC';
 
-		const { results } = await db.prepare(sql).all<any>();
-		return jsonResponse({ success: true, data: results || [] });
+		const { results } = await cachedDbQuery<any>(db, sql, [], 60_000);
+		return apiOk(results || []);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
 // POST /api/curricula — create curriculum (admin only)
 // Body: { name, slug?, type, description?, authority?, is_default? }
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getTokenFromRequest(request);
-		if (!token) return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session invalid' }, 401);
-		if (session.user.role !== 'admin' && session.user.role !== 'superadmin') {
-			return jsonResponse({ success: false, error: 'Admin only' }, 403);
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
+
+		const roleCheck = requireRole(locals, ['admin', 'superadmin']);
+		if (roleCheck.response && !['admin', 'superadmin'].includes(auth.user.role)) {
+			return apiError('Admin only', 403);
 		}
 
-		const db = getDB(platform);
-		const body = await request.json();
-		const { name, slug, type, description, authority, is_default, metadata } = body;
-		if (!name?.trim()) return jsonResponse({ success: false, error: 'Name required' }, 400);
+		const parsed = await parseJson<any>(request);
+		if (parsed.response) return parsed.response;
 
+		const { name, slug, type, description, authority, is_default, metadata } = parsed.data || {};
+		if (!name?.trim()) return apiError('Name required', 400);
+
+		const db = getDB(platform);
 		const id = crypto.randomUUID();
 		const slugFinal = slug?.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -59,9 +65,12 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			is_default ? 1 : 0, JSON.stringify(metadata || {})
 		).run();
 
-		return jsonResponse({ success: true, data: { id } }, 201);
+		// Invalidate cached curricula
+		invalidateCache('SELECT');
+
+		return apiOk({ id }, { status: 201 });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
