@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/stores/i18n';
   import { flashcards } from '$lib/stores/flashcards.svelte';
-  import { StatCard } from '$lib/components/ui';
+  import { Button, StatCard } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { goto } from '$app/navigation';
@@ -171,13 +171,13 @@
 
       <div class="end-actions">
         {#if cards.length > 0}
-          <button class="btn secondary big" onclick={restartReview}>
+          <Button variant="secondary" class="big" onclick={restartReview}>
             🔄 Review Lagi
-          </button>
+          </Button>
         {/if}
-        <button class="btn primary big" onclick={goBack}>
+        <Button variant="primary" class="big" onclick={goBack}>
           ↩️ Kembali ke Dashboard
-        </button>
+        </Button>
       </div>
     </div>
   {:else if currentCard}
@@ -187,9 +187,9 @@
         <span class="deck-label">📂 {deckFilter}</span>
       {/if}
       <div class="header-actions">
-        <button class="mode-toggle" class:active={testMode} onclick={toggleTestMode} title="Mode Tes (pilih jawaban)">
+        <Button variant="outline" class="mode-toggle{testMode ? ' active' : ''}" onclick={toggleTestMode} title="Mode Tes (pilih jawaban)">
           📝 Mode Tes
-        </button>
+        </Button>
         <span class="streak-display">🔥 {streak}</span>
       </div>
     </div>
@@ -229,11 +229,9 @@
         <p class="mcq-label">Pilih jawaban yang benar:</p>
         <div class="mcq-options">
           {#each options as opt, i}
-            <button
-              class="mcq-option"
-              class:selected={selectedOption === opt}
-              class:correct={selectedOption !== null && opt === currentCard.back}
-              class:wrong={selectedOption === opt && opt !== currentCard.back}
+            <Button
+              variant="outline"
+              class="mcq-option{selectedOption === opt ? ' selected' : ''}{selectedOption !== null && opt === currentCard.back ? ' correct' : ''}{selectedOption === opt && opt !== currentCard.back ? ' wrong' : ''}"
               onclick={() => selectOption(opt)}
               disabled={selectedOption !== null}
             >
@@ -244,7 +242,7 @@
               {:else if selectedOption === opt && opt !== currentCard.back}
                 <span class="mcq-mark">❌</span>
               {/if}
-            </button>
+            </Button>
           {/each}
         </div>
         {#if selectedOption !== null}
@@ -260,26 +258,26 @@
       <div class="rating-section" transition:fade>
         <p class="rating-label">Seberapa mudah kartu ini?</p>
         <div class="rating-buttons">
-          <button class="rating-btn very-easy" onclick={() => rateCard(1)}>
+          <Button variant="outline" class="rating-btn very-easy" onclick={() => rateCard(1)}>
             <span class="r-icon">😊</span>
             <span class="r-text">Sangat Mudah</span>
             <span class="r-time">(1 hr)</span>
-          </button>
-          <button class="rating-btn easy" onclick={() => rateCard(2)}>
+          </Button>
+          <Button variant="outline" class="rating-btn easy" onclick={() => rateCard(2)}>
             <span class="r-icon">👍</span>
             <span class="r-text">Mudah</span>
             <span class="r-time">(1 hr)</span>
-          </button>
-          <button class="rating-btn medium" onclick={() => rateCard(3)}>
+          </Button>
+          <Button variant="outline" class="rating-btn medium" onclick={() => rateCard(3)}>
             <span class="r-icon">🤔</span>
             <span class="r-text">Sedang</span>
             <span class="r-time">(1 hr)</span>
-          </button>
-          <button class="rating-btn hard" onclick={() => rateCard(4)}>
+          </Button>
+          <Button variant="outline" class="rating-btn hard" onclick={() => rateCard(4)}>
             <span class="r-icon">😰</span>
             <span class="r-text">Sulit</span>
             <span class="r-time">(1 hr)</span>
-          </button>
+          </Button>
         </div>
       </div>
     {/if}
@@ -288,9 +286,9 @@
       <div class="empty-icon">📭</div>
       <h2>Tidak ada kartu</h2>
       <p>Buat flashcards dari modul terlebih dahulu.</p>
-      <button class="btn primary big" onclick={goBack}>
+      <Button variant="primary" class="big" onclick={goBack}>
         ↩️ Kembali
-      </button>
+      </Button>
     </div>
   {/if}
 </div>
@@ -349,7 +347,7 @@
     font-size: 12px;
     font-weight: 600;
     color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-shadow: 0 1px 3px color-mix(in srgb, var(--text) 50%, transparent);
   }
 
   /* Card Flip */
@@ -561,17 +559,17 @@
     font-family: inherit;
     transition: all 0.15s ease;
   }
-  .btn.primary {
+  .btn-primary {
     background: var(--accent);
     color: white;
     border-color: var(--accent);
   }
-  .btn.primary:hover { opacity: 0.9; }
-  .btn.secondary {
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary {
     border-color: var(--text-secondary);
     color: var(--text);
   }
-  .btn.secondary:hover { border-color: var(--accent); }
+  .btn-secondary:hover { border-color: var(--accent); }
   .btn.big { padding: 12px 24px; font-size: 15px; width: 100%; }
 
   /* Empty */

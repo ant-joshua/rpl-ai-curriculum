@@ -347,15 +347,10 @@
 							<div class="file-list">
 								{#each fileUrls as url, i}
 									<div class="file-chip file-chip--removable">
-										{fileIcon(fileNames[i] || unixStyleFilename(url))}
-										<span>{fileNames[i] || unixStyleFilename(url)}</span>
-										<button
-											class="file-remove"
-											onclick={() => removeFile(i)}
-											disabled={uploading}
-											aria-label="Remove file"
-										>✕</button>
-									</div>
+											{fileIcon(fileNames[i] || unixStyleFilename(url))}
+											<span>{fileNames[i] || unixStyleFilename(url)}</span>
+											<Button variant="ghost" size="sm" class="file-remove" onclick={() => removeFile(i)} disabled={uploading} aria-label="Remove file">✕</Button>
+										</div>
 								{/each}
 							</div>
 						</div>

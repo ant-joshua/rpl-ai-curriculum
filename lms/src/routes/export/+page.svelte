@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { modules } from '$lib/stores/modules';
+	import { Button } from '$lib/components/ui';
 
 	let hasChatHistory = $state(false);
 
@@ -152,16 +153,16 @@
 		<h2>📊 Export Progress</h2>
 		<p class="card-desc">Download kemajuan belajarmu dalam format CSV (Excel) atau JSON.</p>
 		<div class="export-actions">
-			<button class="export-btn csv" onclick={downloadCsv}>
+			<Button variant="outline" class="export-btn csv" onclick={downloadCsv}>
 				<span class="btn-icon">📊</span>
 				<span>Download Progress CSV</span>
 				<small>.csv — Excel compatible</small>
-			</button>
-			<button class="export-btn json" onclick={downloadJson}>
+			</Button>
+			<Button variant="outline" class="export-btn json" onclick={downloadJson}>
 				<span class="btn-icon">📄</span>
 				<span>Download Progress JSON</span>
 				<small>.json — full data</small>
-			</button>
+			</Button>
 		</div>
 	</div>
 
@@ -169,11 +170,11 @@
 		<h2>💬 Export Chat History</h2>
 		<p class="card-desc">Download riwayat chat dengan AI Tutor sebagai file JSON.</p>
 		{#if hasChatHistory}
-			<button class="export-btn chat" onclick={downloadChatHistory}>
+			<Button variant="outline" class="export-btn chat" onclick={downloadChatHistory}>
 				<span class="btn-icon">💬</span>
 				<span>Download Chat History</span>
 				<small>.json</small>
-			</button>
+			</Button>
 		{:else}
 			<div class="empty-state">
 				<span class="empty-icon">💭</span>

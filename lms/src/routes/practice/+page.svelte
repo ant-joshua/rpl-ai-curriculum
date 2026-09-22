@@ -4,6 +4,7 @@
 	import { user } from '$lib/stores/user.svelte';
 	import { pushXpGain } from '$lib/stores/xp-toast.svelte';
 	import { fade, fly } from 'svelte/transition';
+	import { Button } from '$lib/components/ui';
 
 	interface QueueItem {
 		id: string;
@@ -168,7 +169,7 @@
 			<div class="state-emoji">😵</div>
 			<h2>Ups, terjadi kesalahan</h2>
 			<p class="state-desc">{loadError}</p>
-			<button class="btn btn-primary" onclick={loadQueue}>Coba Lagi</button>
+			<Button variant="primary" onclick={loadQueue}>Coba Lagi</Button>
 			<a href="/learn" class="back-link">← Kembali ke Belajar</a>
 		</div>
 	{:else if items.length === 0}
@@ -209,13 +210,15 @@
 				autocapitalize="off"
 			/>
 
-			<button
-				class="btn btn-primary btn-check"
+			<Button
+				variant="primary"
+				class="btn-check"
 				onclick={checkAnswer}
 				disabled={!answer.trim() || checking}
+				loading={checking}
 			>
 				{checking ? 'Memeriksa...' : 'Cek Jawaban'}
-			</button>
+			</Button>
 		</div>
 	{:else if currentItem && result === 'correct'}
 		<!-- Correct feedback -->
@@ -250,7 +253,7 @@
 				<p class="result-hint">Soal ini akan muncul lagi sampai kamu benar.</p>
 			</div>
 
-			<button class="btn btn-primary btn-continue" onclick={next}>Lanjut</button>
+			<Button variant="primary" class="btn-continue" onclick={next}>Lanjut</Button>
 		</div>
 	{:else}
 		<!-- Completion screen -->
@@ -287,7 +290,7 @@
 					<span class="stat-label">XP</span>
 				</div>
 			</div>
-			<button class="btn btn-primary btn-big" onclick={() => goto('/learn')}>Kembali ke Belajar</button>
+			<Button variant="primary" class="btn-big" onclick={() => goto('/learn')}>Kembali ke Belajar</Button>
 		</div>
 	{/if}
 </div>

@@ -4,7 +4,7 @@
 	import { modules } from '$lib/stores/modules';
 	import { dailyGoal } from '$lib/stores/daily-goal.svelte';
 	import { flashcards } from '$lib/stores/flashcards.svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, Button } from '$lib/components/ui';
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { reminders, type ReminderSchedule } from '$lib/stores/reminders.svelte';
@@ -212,12 +212,13 @@
 			<div class="pomodoro-presets">
 				<span class="preset-label">{t('study.pomodoro_focus_duration')}</span>
 				{#each FOCUS_OPTIONS as opt}
-					<button
-						class="preset-btn"
-						class:active={focusMinutes === opt}
+					<Button
+						variant="outline"
+						size="sm"
+						class="preset-btn{focusMinutes === opt ? ' active' : ''}"
 						disabled={isRunning}
 						onclick={() => setFocusDuration(opt)}
-					>{opt}m</button>
+					>{opt}m</Button>
 				{/each}
 			</div>
 
@@ -244,32 +245,34 @@
 
 			<div class="pomodoro-actions">
 				{#if !isRunning}
-					<button class="pomodoro-btn primary" onclick={startTimer}>
+					<Button variant="primary" onclick={startTimer}>
 						{t('study.pomodoro_start')}
-					</button>
+					</Button>
 				{:else}
-					<button class="pomodoro-btn" onclick={pauseTimer}>
+					<Button variant="secondary" onclick={pauseTimer}>
 						{t('study.pomodoro_pause')}
-					</button>
+					</Button>
 				{/if}
-				<button class="pomodoro-btn" onclick={resetTimer}>
+				<Button variant="ghost" onclick={resetTimer}>
 					{t('study.pomodoro_reset')}
-				</button>
+				</Button>
 			</div>
 
 			<div class="pomodoro-mode-switch">
-				<button
-					class="mode-btn"
-					class:active={timerMode === 'focus'}
+				<Button
+					variant="outline"
+					size="sm"
+					class="mode-btn{timerMode === 'focus' ? ' active' : ''}"
 					onclick={switchToFocus}
 					disabled={isRunning}
-				>🎯 Fokus</button>
-				<button
-					class="mode-btn"
-					class:active={timerMode === 'break'}
+				>🎯 Fokus</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					class="mode-btn{timerMode === 'break' ? ' active' : ''}"
 					onclick={switchToBreak}
 					disabled={isRunning}
-				>☕ Istirahat</button>
+				>☕ Istirahat</Button>
 			</div>
 
 			{#if pomodoroCount > 0}
@@ -286,16 +289,16 @@
 
 			<div class="reminder-toggle-row">
 				<label class="reminder-label" for="reminder-toggle">{t('study.reminder_toggle')}</label>
-				<button
+				<Button
 					id="reminder-toggle"
-					class="toggle-switch"
-					class:active={reminderEnabled}
+					variant="ghost"
+					class="toggle-switch{reminderEnabled ? ' active' : ''}"
 					onclick={() => { reminderEnabled = !reminderEnabled; }}
 					role="switch"
 					aria-checked={reminderEnabled}
 				>
 					<span class="toggle-knob"></span>
-				</button>
+				</Button>
 			</div>
 
 			<div class="reminder-field">
@@ -312,22 +315,23 @@
 				<label>{t('study.reminder_days')}</label>
 				<div class="reminder-days">
 					{#each dayLabels as label, i}
-						<button
-							class="day-btn"
-							class:active={reminderDays.includes(i)}
+						<Button
+							variant="outline"
+							size="sm"
+							class="day-btn{reminderDays.includes(i) ? ' active' : ''}"
 							onclick={() => toggleDay(i)}
-						>{label}</button>
+						>{label}</Button>
 					{/each}
 				</div>
 			</div>
 
 			<div class="reminder-actions">
-				<button class="reminder-save-btn" onclick={saveReminder}>
+				<Button variant="primary" class="reminder-save-btn" onclick={saveReminder}>
 					{reminderSaved ? t('study.reminder_saved') : t('study.reminder_save')}
-				</button>
-				<button class="reminder-test-btn" onclick={testNotification}>
+				</Button>
+				<Button variant="outline" class="reminder-test-btn" onclick={testNotification}>
 					{t('study.reminder_test')}
-				</button>
+				</Button>
 			</div>
 		</section>
 
@@ -374,13 +378,13 @@
 				{#if showGoalInput}
 					<div class="goal-edit-row">
 						<input type="number" min="1" max="20" bind:value={editTarget} class="goal-input" />
-						<button class="goal-save-btn" onclick={saveDailyTarget}>{t('study.goal_save')}</button>
-						<button class="goal-cancel-btn" onclick={() => showGoalInput = false}>{t('study.goal_cancel')}</button>
+						<Button variant="primary" size="sm" class="goal-save-btn" onclick={saveDailyTarget}>{t('study.goal_save')}</Button>
+						<Button variant="ghost" size="sm" class="goal-cancel-btn" onclick={() => showGoalInput = false}>{t('study.goal_cancel')}</Button>
 					</div>
 				{:else}
-					<button class="change-goal-btn" onclick={() => { editTarget = dailyTarget; showGoalInput = true; }}>
+					<Button variant="outline" class="change-goal-btn" onclick={() => { editTarget = dailyTarget; showGoalInput = true; }}>
 						{t('study.goal_change', { target: dailyTarget })}
-					</button>
+					</Button>
 				{/if}
 
 				{#if todayProgress.completed >= todayProgress.target && todayProgress.target > 0}
@@ -842,7 +846,7 @@
 	.goal-achieved {
 		margin-top: 12px;
 		padding: 8px 16px;
-		background: rgba(34, 197, 94, 0.1);
+		background: var(--success-dim);
 		color: var(--success);
 		border-radius: 8px;
 		font-size: 13px;

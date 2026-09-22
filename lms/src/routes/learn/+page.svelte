@@ -122,13 +122,13 @@
 		{#if !loading}
 			<div class="category-filters">
 				{#each allCategories as cat}
-					<button
-						class="filter-chip"
-						class:active={selectedCategory === cat}
+					<Button
+						class="filter-chip {selectedCategory === cat ? 'active' : ''}"
+						variant={selectedCategory === cat ? 'primary' : 'outline'}
 						onclick={() => (selectedCategory = cat)}
 					>
 						{cat === 'All' ? '' : categoryEmoji(cat) + ' '}{cat}
-					</button>
+					</Button>
 				{/each}
 			</div>
 		{/if}

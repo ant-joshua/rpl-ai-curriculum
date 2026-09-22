@@ -6,6 +6,7 @@
   import { user } from '$lib/stores/user.svelte';
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
+  import { Button } from '$lib/components/ui';
 
   let { data } = $props();
 
@@ -133,7 +134,7 @@
   {#if errorMsg}
     <div class="error-state">
       <p>{errorMsg}</p>
-      <button class="btn-secondary" onclick={() => goto('/progress-quiz')}>Kembali</button>
+      <Button variant="secondary" onclick={() => goto('/progress-quiz')}>Kembali</Button>
     </div>
   {:else if finished}
     <div class="result-card">
@@ -175,8 +176,8 @@
       </div>
 
       <div class="result-actions">
-        <button class="btn-secondary" onclick={() => goto(`/progress-quiz/${blockId}`)}>🔄 Ulang Quiz</button>
-        <button class="btn-primary" onclick={() => goto('/progress-quiz')}>📋 Kembali ke Daftar</button>
+        <Button variant="secondary" onclick={() => goto(`/progress-quiz/${blockId}`)}>🔄 Ulang Quiz</Button>
+        <Button variant="primary" onclick={() => goto('/progress-quiz')}>📋 Kembali ke Daftar</Button>
       </div>
     </div>
   {:else if currentQuestion}
@@ -197,11 +198,9 @@
 
       <div class="options-list">
         {#each currentQuestion.options as option, i}
-          <button
-            class="option-btn"
-            class:selected={selectedOption === i}
-            class:correct={answered && i === currentQuestion.correctIndex}
-            class:wrong={answered && selectedOption === i && i !== currentQuestion.correctIndex}
+          <Button
+            variant="ghost"
+            class="option-btn {selectedOption === i ? 'selected' : ''} {answered && i === currentQuestion.correctIndex ? 'correct' : ''} {answered && selectedOption === i && i !== currentQuestion.correctIndex ? 'wrong' : ''}"
             onclick={() => selectOption(i)}
             disabled={answered}
           >
@@ -213,7 +212,7 @@
             {#if answered && selectedOption === i && i !== currentQuestion.correctIndex}
               <span class="option-cross">✕</span>
             {/if}
-          </button>
+          </Button>
         {/each}
       </div>
 
@@ -228,17 +227,17 @@
 
       <div class="question-actions">
         {#if !answered}
-          <button
-            class="btn-primary"
+          <Button
+            variant="primary"
             onclick={checkAnswer}
             disabled={selectedOption === null}
           >
             Cek Jawaban
-          </button>
+          </Button>
         {:else}
-          <button class="btn-primary" onclick={nextQuestion}>
+          <Button variant="primary" onclick={nextQuestion}>
             {currentIndex < questions.length - 1 ? 'Soal Selanjutnya →' : 'Lihat Hasil'}
-          </button>
+          </Button>
         {/if}
       </div>
     </div>
@@ -277,8 +276,8 @@
   }
   .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--hover); }
   .option-btn.selected { border-color: var(--accent); background: var(--accent-dim); }
-  .option-btn.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.1); }
-  .option-btn.wrong { border-color: var(--danger); background: rgba(231, 76, 60, 0.1); }
+  .option-btn.correct { border-color: var(--success); background: var(--success-light); }
+  .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); }
   .option-char { width: 28px; height: 28px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
   .option-btn.correct .option-char { background: var(--success); color: white; border-color: var(--success); }
   .option-btn.wrong .option-char { background: var(--danger); color: white; border-color: var(--danger); }
@@ -287,26 +286,12 @@
   .option-cross { color: var(--danger); font-weight: bold; }
 
   .feedback-box { padding: 16px; border-radius: 10px; margin-bottom: 20px; }
-  .feedback-box.correct { background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); }
-  .feedback-box:not(.correct) { background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); }
+  .feedback-box.correct { background: var(--success-light); border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
+  .feedback-box:not(.correct) { background: var(--danger-light); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); }
   .feedback-result { font-weight: 700; font-size: 16px; margin-bottom: 6px; color: var(--text); }
   .feedback-explain { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
 
   .question-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-  .btn-primary {
-    padding: 10px 20px; background: var(--accent); color: white;
-    border: none; border-radius: 10px; font-size: 14px;
-    font-weight: 600; cursor: pointer; transition: opacity 0.15s;
-  }
-  .btn-primary:hover:not(:disabled) { opacity: 0.9; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .btn-secondary {
-    padding: 10px 20px; background: var(--surface); color: var(--text);
-    border: 1px solid var(--border); border-radius: 10px;
-    font-size: 14px; cursor: pointer;
-  }
 
   .result-card { text-align: center; padding: 40px 20px; }
   .result-icon { font-size: 48px; margin-bottom: 16px; }
@@ -320,12 +305,12 @@
 
   .try-info { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
   .try-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
-  .try-badge.best { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
+  .try-badge.best { background: color-mix(in srgb, var(--warning) 10%, transparent); color: var(--warning); border-color: color-mix(in srgb, var(--warning) 30%, transparent); }
 
   .results-list { text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
   .result-item { padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); }
-  .result-item.correct { border-color: rgba(46, 204, 113, 0.3); }
-  .result-item.wrong { border-color: rgba(231, 76, 60, 0.3); }
+  .result-item.correct { border-color: color-mix(in srgb, var(--success) 30%, transparent); }
+  .result-item.wrong { border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
   .result-q { font-size: 14px; color: var(--text); margin-bottom: 6px; font-weight: 500; }
   .result-detail { font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 2px; }
   .result-correct { color: var(--success); }

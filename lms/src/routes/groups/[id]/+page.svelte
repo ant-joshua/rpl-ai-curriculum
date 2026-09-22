@@ -3,6 +3,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { page } from '$app/stores';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data } = $props();
 
@@ -140,9 +141,9 @@
 					class="msg-input"
 					disabled={sending}
 				/>
-				<button type="submit" class="send-btn" disabled={!messageText.trim() || sending}>
+				<Button type="submit" variant="primary" class="send-btn" disabled={!messageText.trim() || sending} loading={sending}>
 					Kirim
-				</button>
+				</Button>
 			</form>
 		</div>
 
@@ -163,11 +164,11 @@
 							{#if myRole === 'admin' && m.user_id !== groupCreatedBy}
 								<div class="member-actions">
 									{#if m.role === 'member'}
-										<button class="mini-btn" onclick={() => changeRole(m.id, 'admin')} title="Jadikan admin">⭐</button>
+										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => changeRole(m.id, 'admin')} title="Jadikan admin">⭐</Button>
 									{:else}
-										<button class="mini-btn" onclick={() => changeRole(m.id, 'member')} title="Turunkan jadi anggota">⬇</button>
+										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => changeRole(m.id, 'member')} title="Turunkan jadi anggota">⬇</Button>
 									{/if}
-									<button class="mini-btn danger" onclick={() => kickMember(m.id)} title="Keluarkan">✕</button>
+									<Button variant="danger" size="sm" class="mini-btn" onclick={() => kickMember(m.id)} title="Keluarkan">✕</Button>
 								</div>
 							{/if}
 						</div>
@@ -176,10 +177,10 @@
 			</div>
 			<div class="group-actions">
 				{#if myRole !== null}
-					<button class="action-btn leave" onclick={leaveGroup}>Keluar Grup</button>
+					<Button variant="outline" class="action-btn leave" onclick={leaveGroup}>Keluar Grup</Button>
 				{/if}
 				{#if myRole === 'admin'}
-					<button class="action-btn delete" onclick={deleteGroup}>Hapus Grup</button>
+					<Button variant="danger" class="action-btn delete" onclick={deleteGroup}>Hapus Grup</Button>
 				{/if}
 			</div>
 		</aside>

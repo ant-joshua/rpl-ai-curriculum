@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui';
 	import { user } from '$lib/stores/user.svelte';
 	import { api } from '$lib/utils/api';
 
@@ -95,17 +96,17 @@
 	<p class="subtitle">{t('reviews.subtitle')}</p>
 
 	<div class="tab-bar">
-		<button class="tab-btn" class:active={tab === 'request'} onclick={() => switchTab('request')}>
+		<Button variant="outline" class="tab-btn {tab === 'request' ? 'active' : ''}" onclick={() => switchTab('request')}>
 			{t('reviews.tab_request')}
-		</button>
-		<button class="tab-btn" class:active={tab === 'review'} onclick={() => switchTab('review')}>
+		</Button>
+		<Button variant="outline" class="tab-btn {tab === 'review' ? 'active' : ''}" onclick={() => switchTab('review')}>
 			{t('reviews.tab_review')}
-		</button>
+		</Button>
 	</div>
 
 	{#if showDetail && selectedRequest}
 		<div class="detail-view">
-			<button class="back-btn" onclick={() => { showDetail = false; selectedRequest = null; }}>{t('reviews.back')}</button>
+			<Button variant="ghost" size="sm" class="back-btn" onclick={() => { showDetail = false; selectedRequest = null; }}>{t('reviews.back')}</Button>
 			<div class="code-display">
 				<h3>📁 {selectedRequest.exercise_slug}</h3>
 				<p class="author-label">{t('reviews.by_author', { author: selectedRequest.author_name || selectedRequest.user_id?.slice(0, 8) })}</p>
@@ -137,9 +138,9 @@
 						<input id="score" type="range" min="1" max="10" bind:value={score} />
 						<span class="score-value">{score}/10</span>
 					</div>
-					<button class="submit-btn" onclick={submitReview} disabled={reviewSubmitting || !feedback.trim()}>
+					<Button variant="primary" loading={reviewSubmitting} onclick={submitReview} disabled={reviewSubmitting || !feedback.trim()}>
 						{reviewSubmitting ? t('reviews.submitting_review') : t('reviews.submit_review')}
-					</button>
+					</Button>
 				</div>
 			{/if}
 		</div>
@@ -163,9 +164,9 @@
 				{#if submitError}
 					<p class="form-error">{submitError}</p>
 				{/if}
-				<button class="submit-btn" onclick={handleSubmit} disabled={submitting || !exerciseSlug || !code.trim()}>
+				<Button variant="primary" loading={submitting} onclick={handleSubmit} disabled={submitting || !exerciseSlug || !code.trim()}>
 					{submitting ? 'Mengirim...' : t('reviews.submit')}
-				</button>
+				</Button>
 			</div>
 
 			<div class="my-requests">
@@ -233,15 +234,9 @@
 		margin-bottom: 20px;
 	}
 	.tab-btn {
-		padding: 8px 16px;
-		border-radius: 8px;
-		border: 1px solid var(--border);
-		background: transparent;
+		border-color: var(--border);
 		color: var(--text-secondary);
-		font-size: 13px;
 		font-weight: 600;
-		cursor: pointer;
-		font-family: inherit;
 	}
 	.tab-btn.active {
 		background: var(--accent);
@@ -249,14 +244,8 @@
 		border-color: var(--accent);
 	}
 	.back-btn {
-		padding: 6px 12px;
-		border-radius: 6px;
-		border: 1px solid var(--border);
-		background: transparent;
+		border-color: var(--border);
 		color: var(--text-secondary);
-		font-size: 12px;
-		cursor: pointer;
-		font-family: inherit;
 		margin-bottom: 16px;
 	}
 	.loading-text {
@@ -318,21 +307,7 @@
 		font-size: 12px;
 		margin-bottom: 8px;
 	}
-	.submit-btn {
-		padding: 8px 20px;
-		border-radius: 8px;
-		border: none;
-		background: var(--accent);
-		color: white;
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
-		font-family: inherit;
-	}
-	.submit-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
+	/* submit-btn styles removed — handled by Button variant="primary" */
 	.my-requests h3, .review-section h3 {
 		font-size: 16px;
 		margin-bottom: 12px;

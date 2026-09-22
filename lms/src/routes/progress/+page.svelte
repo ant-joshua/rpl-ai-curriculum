@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, Button } from '$lib/components/ui';
 	import { modules } from '$lib/stores/modules';
 	import { progress } from '$lib/stores/progress.svelte';
 	import { stats } from '$lib/stores/stats.svelte';
@@ -222,13 +222,13 @@
 			<!-- Level filter tabs -->
 			<div class="filter-tabs">
 				{#each filterTabs as tab}
-					<button
-						class="filter-tab"
-						class:active={activeLevel === tab.value}
+					<Button
+						variant="ghost"
+						class="filter-tab {activeLevel === tab.value ? 'active' : ''}"
 						onclick={() => activeLevel = tab.value}
 					>
 						{tab.icon}{tab.label}
-					</button>
+					</Button>
 				{/each}
 			</div>
 			<!-- Search input -->
@@ -240,23 +240,23 @@
 					bind:value={searchQuery}
 				/>
 				{#if searchQuery}
-					<button class="search-clear" onclick={() => searchQuery = ''}>×</button>
+					<Button variant="ghost" class="search-clear" onclick={() => searchQuery = ''}>×</Button>
 				{/if}
 			</div>
 		</div>
 
 		<!-- Sortable table header -->
 		<div class="table-header">
-			<button class="th th-title" onclick={() => toggleSort('title')}>
+			<Button variant="ghost" class="th th-title" onclick={() => toggleSort('title')}>
 				Modul<span class="sort-arrow">{getSortIndicator('title')}</span>
-			</button>
-			<button class="th" onclick={() => toggleSort('level')}>
+			</Button>
+			<Button variant="ghost" class="th" onclick={() => toggleSort('level')}>
 				Level<span class="sort-arrow">{getSortIndicator('level')}</span>
-			</button>
+			</Button>
 			<span class="th th-sessions">Sesi</span>
-			<button class="th th-progress-col" onclick={() => toggleSort('progress')}>
+			<Button variant="ghost" class="th th-progress-col" onclick={() => toggleSort('progress')}>
 				Progres<span class="sort-arrow">{getSortIndicator('progress')}</span>
-			</button>
+			</Button>
 		</div>
 
 		<!-- Module rows -->

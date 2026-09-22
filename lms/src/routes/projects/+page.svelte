@@ -4,6 +4,7 @@
 	import { projectsStore, type Project } from '$lib/stores/projects.svelte';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
+	import { Button } from '$lib/components/ui';
 
 	let projects = $state<Project[]>([]);
 	let filterDifficulty = $state('all');
@@ -57,26 +58,18 @@
 	<p class="subtitle">{t('projects.subtitle')}</p>
 
 	<div class="filter-bar">
-		<button
-			class="filter-btn"
-			class:active={filterDifficulty === 'all'}
-			onclick={() => (filterDifficulty = 'all')}
-		>{t('projects.filter_all')}</button>
-		<button
-			class="filter-btn"
-			class:active={filterDifficulty === 'beginner'}
-			onclick={() => (filterDifficulty = 'beginner')}
-		>{t('projects.filter_beginner')}</button>
-		<button
-			class="filter-btn"
-			class:active={filterDifficulty === 'intermediate'}
-			onclick={() => (filterDifficulty = 'intermediate')}
-		>{t('projects.filter_intermediate')}</button>
-		<button
-			class="filter-btn"
-			class:active={filterDifficulty === 'advanced'}
-			onclick={() => (filterDifficulty = 'advanced')}
-		>{t('projects.filter_advanced')}</button>
+		<Button variant="ghost" size="sm" class={'filter-btn' + (filterDifficulty === 'all' ? ' active' : '')} onclick={() => (filterDifficulty = 'all')}>
+			{t('projects.filter_all')}
+		</Button>
+		<Button variant="ghost" size="sm" class={'filter-btn' + (filterDifficulty === 'beginner' ? ' active' : '')} onclick={() => (filterDifficulty = 'beginner')}>
+			{t('projects.filter_beginner')}
+		</Button>
+		<Button variant="ghost" size="sm" class={'filter-btn' + (filterDifficulty === 'intermediate' ? ' active' : '')} onclick={() => (filterDifficulty = 'intermediate')}>
+			{t('projects.filter_intermediate')}
+		</Button>
+		<Button variant="ghost" size="sm" class={'filter-btn' + (filterDifficulty === 'advanced' ? ' active' : '')} onclick={() => (filterDifficulty = 'advanced')}>
+			{t('projects.filter_advanced')}
+		</Button>
 	</div>
 
 	{#if loading}
@@ -106,7 +99,7 @@
 				{/if}
 			</p>
 			{#if filterDifficulty !== 'all'}
-				<button class="empty-cta" onclick={() => (filterDifficulty = 'all')}>{t('projects.empty_cta')}</button>
+				<Button variant="primary" class="empty-cta" onclick={() => (filterDifficulty = 'all')}>{t('projects.empty_cta')}</Button>
 			{/if}
 		</div>
 	{:else}

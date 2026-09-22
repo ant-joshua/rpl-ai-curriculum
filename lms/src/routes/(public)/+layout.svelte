@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui';
 	let { children } = $props();
 	let mobileNavOpen = $state(false);
 </script>
@@ -16,11 +17,11 @@
 			</svg>
 			<span class="logo-text">RPL AI</span>
 		</a>
-		<button class="mobile-hamburger" onclick={() => mobileNavOpen = !mobileNavOpen} aria-label="Toggle menu">
+		<Button class="mobile-hamburger" variant="ghost" onclick={() => mobileNavOpen = !mobileNavOpen} aria-label="Toggle menu">
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
-		</button>
+		</Button>
 		<nav class="topbar-nav" aria-label="Main navigation">
 			<a href="/catalog">Modul</a>
 			<a href="/path">Path</a>

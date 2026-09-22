@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import { Card, CardContent, Spinner } from '$lib/components/ui';
+	import { Button, Card, CardContent, Spinner } from '$lib/components/ui';
 
 	let cert = $state<any>(null);
 	let loading = $state(true);
@@ -46,7 +46,7 @@
 			placeholder="Contoh: RPL-2026-ABC123"
 			bind:value={code}
 		/>
-		<button class="verify-btn" type="submit">Verifikasi</button>
+		<Button class="verify-btn" variant="primary" type="submit">Verifikasi</Button>
 	</form>
 
 	{#if loading}

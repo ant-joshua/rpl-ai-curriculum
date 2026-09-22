@@ -5,6 +5,7 @@
 	import { paths, getPathBySlug, computePathProgress, findNextSession } from '$lib/stores/paths';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
+	import { Button } from '$lib/components/ui';
 
 	let { data } = $props();
 	let path = $derived(data.path);
@@ -76,13 +77,13 @@
 				<span class="progress-text">{pathProgress.completed}/{pathProgress.total} sesi ({pathProgress.pct}%)</span>
 			</div>
 			{#if !hasProgress}
-				<button class="start-btn" onclick={startPath} style="--start-color: {path.color}">
+				<Button variant="primary" onclick={startPath}>
 					Mulai Path Ini 🚀
-				</button>
+				</Button>
 			{:else if firstIncomplete}
-				<button class="continue-btn" onclick={() => goto(`/module/${firstIncomplete.moduleSlug}`)} style="--start-color: {path.color}">
+				<Button variant="primary" onclick={() => goto(`/module/${firstIncomplete.moduleSlug}`)}>
 					▶️ Lanjut Belajar — {firstIncomplete.moduleTitle}
-				</button>
+				</Button>
 			{:else}
 				<div class="completed-badge">🎉 Semua selesai!</div>
 			{/if}
@@ -120,7 +121,7 @@
 				{@const modPct = moduleProgressMap[mod.slug] ?? 0}
 				{@const allDone = modPct === 100}
 				{@const isFirstIncomplete = firstIncomplete && firstIncomplete.moduleSlug === mod.slug && modPct < 100}
-				<button class="module-row" class:all-done={allDone} onclick={() => goToModule(mod.slug)}>
+				<Button variant="outline" class="module-row {allDone ? 'all-done' : ''}" onclick={() => goToModule(mod.slug)}>
 					<div class="module-row-left">
 						<span class="module-index">{i + 1}</span>
 						<span class="module-check" class:done={allDone}>
@@ -141,7 +142,7 @@
 							<span class="continue-tag" style="background: {path.color}">▶️ Lanjut Belajar</span>
 						{/if}
 					</div>
-				</button>
+				</Button>
 			{/each}
 		</div>
 	</section>
@@ -269,35 +270,6 @@
 		font-weight: 500;
 	}
 
-	.start-btn, .continue-btn {
-		padding: 10px 20px;
-		border-radius: 10px;
-		border: none;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		white-space: nowrap;
-		font-family: inherit;
-	}
-
-	.start-btn {
-		background: var(--start-color, var(--accent));
-		color: white;
-	}
-	.start-btn:hover {
-		opacity: 0.9;
-		transform: translateY(-1px);
-	}
-
-	.continue-btn {
-		background: var(--start-color, var(--accent));
-		color: white;
-	}
-	.continue-btn:hover {
-		opacity: 0.9;
-		transform: translateY(-1px);
-	}
 
 	.completed-badge {
 		font-size: 14px;
@@ -504,7 +476,7 @@
 	}
 	.related-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+		box-shadow: var(--shadow-dialog);
 	}
 
 	.related-card-bg {

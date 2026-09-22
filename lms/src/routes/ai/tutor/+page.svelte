@@ -3,6 +3,7 @@
 	let { data } = $props();
 
 	import { parseMarkdown } from '$lib/utils/markdown';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { browser } from '$app/environment';
 
 	type ChatTurn = { role: 'user' | 'assistant'; text: string };
@@ -99,7 +100,7 @@
 					<option value={offering.id}>{offering.course_title} — {offering.name}</option>
 				{/each}
 			</select>
-			<button onclick={clearChat} class="clear-btn" disabled={turns.length === 0}>Hapus Percakapan</button>
+			<Button variant="outline" size="sm" onclick={clearChat} disabled={turns.length === 0}>Hapus Percakapan</Button>
 		</div>
 	</div>
 
@@ -121,9 +122,9 @@
 					<p>Ayo bertanya! AI Tutor siap membantu belajarmu.</p>
 					<div class="suggested-prompts">
 						{#each suggestedPrompts as prompt}
-							<button onclick={() => usePrompt(prompt)} class="prompt-chip">
+							<Button variant="outline" size="sm" onclick={() => usePrompt(prompt)} class="prompt-chip">
 								{prompt}
-							</button>
+							</Button>
 						{/each}
 					</div>
 				</div>
@@ -154,9 +155,9 @@
 				rows="2"
 				disabled={loading}
 			></textarea>
-			<button onclick={sendMessage} disabled={!message.trim() || loading}>
+			<Button variant="primary" onclick={sendMessage} disabled={!message.trim() || loading}>
 				Kirim
-			</button>
+			</Button>
 		</div>
 	</div>
 </div>
@@ -211,27 +212,7 @@
 		cursor: pointer;
 	}
 
-	.clear-btn {
-		padding: 8px 14px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
-		color: var(--text-secondary);
-		font-size: 13px;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
 
-	.clear-btn:hover:not(:disabled) {
-		background: var(--hover);
-		color: var(--danger);
-		border-color: var(--danger);
-	}
-
-	.clear-btn:disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-	}
 
 	.chat-container {
 		flex: 1;
@@ -296,14 +277,14 @@
 	}
 
 	.bubble :global(code) {
-		background: rgba(0,0,0,0.1);
+		background: var(--bg-secondary);
 		padding: 2px 6px;
 		border-radius: 4px;
 		font-size: 13px;
 	}
 
 	.bubble :global(pre) {
-		background: rgba(0,0,0,0.15);
+		background: var(--bg-secondary);
 		padding: 12px;
 		border-radius: 8px;
 		overflow-x: auto;
@@ -386,22 +367,7 @@
 		margin-top: 8px;
 	}
 
-	.prompt-chip {
-		padding: 8px 16px;
-		border: 1px solid var(--border);
-		border-radius: 20px;
-		background: var(--surface);
-		color: var(--text-secondary);
-		font-size: 13px;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
 
-	.prompt-chip:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-		background: var(--accent-dim);
-	}
 
 	.input-area {
 		display: flex;
@@ -434,27 +400,7 @@
 		opacity: 0.5;
 	}
 
-	.input-area button {
-		padding: 10px 24px;
-		border: none;
-		border-radius: 10px;
-		background: var(--accent);
-		color: white;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.15s;
-		white-space: nowrap;
-	}
 
-	.input-area button:hover:not(:disabled) {
-		opacity: 0.9;
-	}
-
-	.input-area button:disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-	}
 
 	@media (max-width: 640px) {
 		.tutor-header {
@@ -469,7 +415,7 @@
 			flex-direction: column;
 		}
 
-		.input-area button {
+		.input-area :global(.btn) {
 			width: 100%;
 		}
 	}

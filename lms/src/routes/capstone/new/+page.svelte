@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
@@ -107,9 +108,9 @@
 			<div class="error-msg">{errorMsg}</div>
 		{/if}
 
-		<button type="submit" class="btn-primary" disabled={submitting}>
+		<Button type="submit" variant="primary" disabled={submitting}>
 			{submitting ? 'Menyimpan...' : 'Simpan Project'}
-		</button>
+		</Button>
 	</form>
 </div>
 

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { PageHeader, Card, CardContent, Spinner, EmptyState } from '$lib/components/ui';
+	import { Button, PageHeader, Card, CardContent, Spinner, EmptyState } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -56,10 +56,11 @@
 
 	<div class="lb-controls">
 		{#each periods as p}
-			<button
+			<Button
 				class="period-btn {period === p.value ? 'active' : ''}"
+				variant={period === p.value ? 'primary' : 'outline'}
 				onclick={() => { period = p.value; loadLeaderboard(); }}
-			>{p.label}</button>
+			>{p.label}</Button>
 		{/each}
 	</div>
 

@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { onMount } from 'svelte';
-	import { Card, EmptyState, SkeletonCard } from '$lib/components/ui';
+	import { Button, Card, EmptyState, SkeletonCard } from '$lib/components/ui';
 	import { fade } from 'svelte/transition';
 
 	let videosJson = $state<Record<string, {
@@ -160,10 +160,7 @@
 		<p class="result-count">Menampilkan {flatVideos.length} video</p>
 		<div class="video-grid">
 			{#each flatVideos as v (v.moduleSlug + v.id)}
-				<button
-					class="video-card"
-					onclick={() => openPlayer(v)}
-				>
+				<Button variant="ghost" class="video-card" onclick={() => openPlayer(v)}>
 					<div class="thumbnail">
 						<img
 							src="https://img.youtube.com/vi/{v.id}/mqdefault.jpg"
@@ -191,7 +188,7 @@
 							{/if}
 						</div>
 					</div>
-				</button>
+				</Button>
 			{/each}
 		</div>
 	{/if}
@@ -203,7 +200,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="modal-overlay" onclick={closePlayer} role="button" tabindex="-1" transition:fade={{ duration: 150 }}>
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-			<button class="modal-close" onclick={closePlayer}>&times;</button>
+			<Button variant="ghost" class="modal-close" onclick={closePlayer}>&times;</Button>
 			<h2 class="modal-title">{selectedVideo.title}</h2>
 			<div class="module-context">
 				<span class="context-badge">{selectedVideo.moduleTitle}</span>
@@ -340,8 +337,8 @@
 		align-items: center;
 		justify-content: center;
 		font-size: 48px;
-		color: rgba(255,255,255,0.9);
-		text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+		color: var(--video-badge-text);
+		text-shadow: 0 2px 8px var(--video-shadow);
 		pointer-events: none;
 	}
 
@@ -389,17 +386,17 @@
 	}
 
 	.level-beginner {
-		background: rgba(59, 130, 246, 0.12);
+		background: var(--level-beginner-bg);
 		color: var(--accent);
 	}
 
 	.level-intermediate {
-		background: rgba(234, 179, 8, 0.12);
+		background: var(--level-intermediate-bg);
 		color: var(--warning);
 	}
 
 	.level-advanced {
-		background: rgba(168, 85, 247, 0.12);
+		background: var(--level-advanced-bg);
 		color: var(--accent);
 	}
 
@@ -408,12 +405,21 @@
 		color: var(--text-secondary);
 	}
 
+	.videos-page {
+		--video-overlay-bg: rgba(0, 0, 0, 0.7);
+		--video-shadow: rgba(0, 0, 0, 0.5);
+		--video-badge-text: rgba(255, 255, 255, 0.9);
+		--level-beginner-bg: rgba(59, 130, 246, 0.12);
+		--level-intermediate-bg: rgba(234, 179, 8, 0.12);
+		--level-advanced-bg: rgba(168, 85, 247, 0.12);
+	}
+
 	/* Modal */
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
 		z-index: 500;
-		background: rgba(0,0,0,0.7);
+		background: var(--video-overlay-bg);
 		display: flex;
 		align-items: center;
 		justify-content: center;

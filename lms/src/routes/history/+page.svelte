@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { activity, type ActivityEntry } from '$lib/stores/activity.svelte';
 	import { modules } from '$lib/stores/modules';
 
@@ -74,28 +75,31 @@
 	<div class="history-header">
 		<h1>{t('history.title')}</h1>
 		{#if entries.length > 0}
-			<button class="clear-btn" onclick={() => showConfirm = true}>
+			<Button variant="danger" size="sm" class="clear-btn" onclick={() => showConfirm = true}>
 				{t('history.clear')}
-			</button>
+			</Button>
 		{/if}
 	</div>
 
 	<div class="filter-tabs">
-		<button
-			class="filter-tab"
-			class:active={filter === 'all'}
+		<Button
+			variant="outline"
+			size="sm"
+			class="filter-tab {filter === 'all' ? 'active' : ''}"
 			onclick={() => filter = 'all'}
-		>{t('history.filter_all')}</button>
-		<button
-			class="filter-tab"
-			class:active={filter === 'view'}
+		>{t('history.filter_all')}</Button>
+		<Button
+			variant="outline"
+			size="sm"
+			class="filter-tab {filter === 'view' ? 'active' : ''}"
 			onclick={() => filter = 'view'}
-		>{t('history.filter_viewed')}</button>
-		<button
-			class="filter-tab"
-			class:active={filter === 'complete'}
+		>{t('history.filter_viewed')}</Button>
+		<Button
+			variant="outline"
+			size="sm"
+			class="filter-tab {filter === 'complete' ? 'active' : ''}"
 			onclick={() => filter = 'complete'}
-		>{t('history.filter_completed')}</button>
+		>{t('history.filter_completed')}</Button>
 	</div>
 
 	{#if showConfirm}
@@ -103,8 +107,8 @@
 		<div class="confirm-dialog">
 			<p>{t('history.confirm_clear')}</p>
 			<div class="confirm-actions">
-				<button class="confirm-cancel" onclick={() => showConfirm = false}>{t('history.confirm_cancel')}</button>
-				<button class="confirm-yes" onclick={handleClear}>{t('history.confirm_yes')}</button>
+				<Button variant="secondary" size="sm" class="confirm-cancel" onclick={() => showConfirm = false}>{t('history.confirm_cancel')}</Button>
+				<Button variant="danger" size="sm" class="confirm-yes" onclick={handleClear}>{t('history.confirm_yes')}</Button>
 			</div>
 		</div>
 	{/if}
@@ -168,8 +172,8 @@
 	}
 
 	.clear-btn:hover {
-		background: rgba(239, 68, 68, 0.08);
-		border-color: var(--danger, var(--danger));
+			background: var(--danger-dim, rgba(239, 68, 68, 0.08));
+			border-color: var(--danger);
 	}
 
 	.filter-tabs {
@@ -281,7 +285,7 @@
 	.confirm-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(26, 26, 46, 0.6);
+		background: var(--overlay, rgba(26, 26, 46, 0.6));
 		z-index: 500;
 	}
 

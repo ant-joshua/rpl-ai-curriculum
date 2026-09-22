@@ -1,6 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/stores/i18n';
   import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
+  import { Button } from '$lib/components/ui';
   import { onMount } from 'svelte';
 
   let { data } = $props();
@@ -113,18 +114,19 @@
       </div>
       <div class="toolbar-actions">
         {#if hasNotes}
-          <button
-            class="toolbar-btn"
-            class:active={showNotes}
+          <Button
+            variant="ghost"
+            size="sm"
+            class={showNotes ? 'active' : ''}
             onclick={() => showNotes = !showNotes}
             title="Speaker Notes (n)"
           >
             📝 Notes
-          </button>
+          </Button>
         {/if}
-        <button class="toolbar-btn" onclick={toggleFullscreen} title="Fullscreen (f)">
+        <Button variant="ghost" size="sm" onclick={toggleFullscreen} title="Fullscreen (f)">
           {fullscreen ? '⛶ Exit' : '⛶ Fullscreen'}
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -145,32 +147,35 @@
 
     <!-- Navigation -->
     <div class="slides-nav">
-      <button
-        class="nav-arrow"
+      <Button
+        variant="outline"
+        size="sm"
         disabled={currentSlide === 0}
         onclick={() => navigateSlide(-1)}
       >
         &larr; Previous
-      </button>
+      </Button>
 
       <div class="slide-dots">
         {#each Array(totalSlides) as _, i}
-          <button
-            class="dot"
-            class:active={i === currentSlide}
+          <Button
+            variant="ghost"
+            size="sm"
+            class={i === currentSlide ? 'dot active' : 'dot'}
             onclick={() => currentSlide = i}
             aria-label="Go to slide {i + 1}"
-          ></button>
+          ></Button>
         {/each}
       </div>
 
-      <button
-        class="nav-arrow"
+      <Button
+        variant="outline"
+        size="sm"
         disabled={currentSlide === totalSlides - 1}
         onclick={() => navigateSlide(1)}
       >
         Next &rarr;
-      </button>
+      </Button>
     </div>
   </div>
 {/if}

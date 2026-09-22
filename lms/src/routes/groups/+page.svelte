@@ -105,12 +105,12 @@
 					{#if user.isLoggedIn}
 						{#if isMember(group)}
 							<a href="/groups/{group.id}" class="enter-btn">Masuk</a>
-							<button class="leave-btn" onclick={() => handleLeave(group.id)}>Keluar</button>
+							<Button variant="outline" size="sm" onclick={() => handleLeave(group.id)}>Keluar</Button>
 							{#if group.is_admin === 1 || group.created_by === user.userId}
-								<button class="delete-btn" onclick={() => handleDelete(group.id)}>🗑</button>
+								<Button variant="danger" size="sm" onclick={() => handleDelete(group.id)}>🗑</Button>
 							{/if}
 						{:else}
-							<button class="join-btn" onclick={() => handleJoin(group.id)}>Gabung</button>
+							<Button variant="primary" size="sm" onclick={() => handleJoin(group.id)}>Gabung</Button>
 						{/if}
 					{/if}
 				</div>
@@ -199,7 +199,7 @@
 		font-size: 12px;
 		color: var(--text-secondary);
 	}
-	.join-btn, .enter-btn, .leave-btn, .delete-btn {
+	.enter-btn {
 		padding: 6px 16px;
 		border-radius: 8px;
 		font-size: 12px;
@@ -207,40 +207,12 @@
 		cursor: pointer;
 		font-family: inherit;
 		border: none;
-	}
-	.join-btn {
-		background: var(--accent);
-		color: white;
-	}
-	.join-btn:hover {
-		opacity: 0.9;
-	}
-	.enter-btn {
 		background: var(--accent-dim);
 		color: var(--accent);
 		text-decoration: none;
 	}
 	.enter-btn:hover {
 		opacity: 0.9;
-	}
-	.leave-btn {
-		background: transparent;
-		color: var(--text-secondary);
-		border: 1px solid var(--border);
-	}
-	.leave-btn:hover {
-		color: var(--text);
-		border-color: var(--text-secondary);
-	}
-	.delete-btn {
-		background: transparent;
-		color: var(--danger);
-		padding: 6px 10px;
-		border: 1px solid transparent;
-	}
-	.delete-btn:hover {
-		background: var(--danger-light);
-		border-color: var(--danger);
 	}
 	.empty-state {
 		text-align: center;

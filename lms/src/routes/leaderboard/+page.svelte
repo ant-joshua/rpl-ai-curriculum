@@ -2,6 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { user } from '$lib/stores/user.svelte';
 	import { getDeviceId } from '$lib/utils/api';
+	import { Button } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let loading = $state(true);
@@ -76,16 +77,16 @@
 	</div>
 
 	<div class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'global'}
+		<Button
+			variant="ghost"
+			class="tab {activeTab === 'global' ? 'active' : ''}"
 			onclick={() => { activeTab = 'global'; }}
-		>{t('leaderboard.global_tab')}</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'path'}
+		>{t('leaderboard.global_tab')}</Button>
+		<Button
+			variant="ghost"
+			class="tab {activeTab === 'path' ? 'active' : ''}"
 			onclick={() => { activeTab = 'path'; }}
-		>{t('leaderboard.path_tab')}</button>
+		>{t('leaderboard.path_tab')}</Button>
 	</div>
 
 	{#if activeTab === 'path'}
@@ -566,7 +567,7 @@
 		max-width: 140px;
 		height: 5px;
 		border-radius: 3px;
-		background: rgba(255, 255, 255, 0.08);
+		background: color-mix(in srgb, var(--surface) 92%, white);
 		overflow: hidden;
 	}
 

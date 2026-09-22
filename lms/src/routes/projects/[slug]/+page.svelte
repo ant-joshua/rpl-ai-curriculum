@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { projectsStore, type Project } from '$lib/stores/projects.svelte';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui';
 
 	let { data } = $props();
 	let project = $state<Project | null>(data.project);
@@ -88,13 +89,13 @@
 
 		<div class="action-bar">
 			{#if started}
-				<button class="start-btn" onclick={startProject}>
+				<Button variant="primary" onclick={startProject}>
 					▶️ Lanjutkan (Langkah {progress.currentStep})
-				</button>
+				</Button>
 			{:else}
-				<button class="start-btn" onclick={startProject}>
+				<Button variant="primary" onclick={startProject}>
 					🚀 Mulai Project
-				</button>
+				</Button>
 			{/if}
 		</div>
 	{:else}
@@ -154,13 +155,6 @@
 	.step-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
 	.step-info p { font-size: 0.85rem; color: var(--muted); }
 	.action-bar { text-align: center; padding: 1.5rem 0; }
-	.start-btn {
-		background: var(--accent); color: white; border: none;
-		border-radius: 10px; padding: 1rem 2.5rem;
-		font-size: 1.1rem; font-weight: 600; cursor: pointer;
-		transition: opacity 0.2s;
-	}
-	.start-btn:hover { opacity: 0.9; }
 	.not-found { text-align: center; padding: 4rem 2rem; }
 	.not-found h2 { margin-bottom: 1rem; }
 </style>

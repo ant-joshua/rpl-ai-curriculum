@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { page } from '$app/stores';
+	import { Button } from '$lib/components/ui';
 </script>
 
 <svelte:head>
@@ -22,23 +23,27 @@
 		<div class="url-card">
 			<div class="url-label">RSS 2.0</div>
 			<code>https://lms-syllabus.ant-joshua.my.id/feed.xml</code>
-			<button
+			<Button
+				variant="primary"
+				size="sm"
 				class="feed-copy-btn"
 				onclick={() => navigator.clipboard.writeText('https://lms-syllabus.ant-joshua.my.id/feed.xml')}
 			>
 				📋 Salin
-			</button>
+			</Button>
 		</div>
 
 		<div class="url-card">
 			<div class="url-label">JSON Feed 1.1</div>
 			<code>https://lms-syllabus.ant-joshua.my.id/feed.json</code>
-			<button
+			<Button
+				variant="primary"
+				size="sm"
 				class="feed-copy-btn"
 				onclick={() => navigator.clipboard.writeText('https://lms-syllabus.ant-joshua.my.id/feed.json')}
 			>
 				📋 Salin
-			</button>
+			</Button>
 		</div>
 	</section>
 

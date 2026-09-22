@@ -90,13 +90,13 @@
 <div class="aiedu-section">
 	<h2 class="section-title">📚 Bank Materi Kurikulum Merdeka</h2>
 	<div class="bank-filters">
-		<button class="bank-chip" class:active={!bankMine && !bankFilter} onclick={() => { bankMine = false; bankFilter = ''; loadBank(); }}>Semua</button>
+		<Button variant="outline" size="sm" class="bank-chip {!bankMine && !bankFilter ? 'active' : ''}" onclick={() => { bankMine = false; bankFilter = ''; loadBank(); }}>Semua</Button>
 		{#each BANK_CATEGORIES as cat}
-			<button class="bank-chip" class:active={!bankMine && bankFilter === cat.type} onclick={() => { bankMine = false; bankFilter = cat.type; loadBank(); }}>
+			<Button variant="outline" size="sm" class="bank-chip {!bankMine && bankFilter === cat.type ? 'active' : ''}" onclick={() => { bankMine = false; bankFilter = cat.type; loadBank(); }}>
 				{cat.icon} {cat.title}
-			</button>
+			</Button>
 		{/each}
-		<button class="bank-chip" class:active={bankMine} onclick={() => { bankMine = true; bankFilter = ''; loadBank(); }}>📁 Materiku</button>
+		<Button variant="outline" size="sm" class="bank-chip {bankMine ? 'active' : ''}" onclick={() => { bankMine = true; bankFilter = ''; loadBank(); }}>📁 Materiku</Button>
 		<a class="bank-chip bank-chip-link" href="/aiedu/riwayat">🕘 Riwayat Generasi</a>
 	</div>
 	<div class="bank-search">

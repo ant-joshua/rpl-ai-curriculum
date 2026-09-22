@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
+	import { Button } from '$lib/components/ui';
 
 	let projects = $state<any[]>([]);
 	let loading = $state(true);
@@ -54,9 +55,9 @@
 			<h1>🎓 Capstone Project</h1>
 			<p class="subtitle">Proyek akhir RPL AI — bangun aplikasi nyata sebagai portofolio</p>
 		</div>
-		<button class="btn-primary" onclick={() => goto('/capstone/new')}>
+		<Button variant="primary" onclick={() => goto('/capstone/new')}>
 			+ Buat Project Baru
-		</button>
+		</Button>
 	</div>
 
 	{#if loading}
@@ -66,16 +67,16 @@
 	{:else if errorMsg}
 		<div class="error-state">
 			<p>{errorMsg}</p>
-			<button class="btn-secondary" onclick={loadProjects}>Coba Lagi</button>
+			<Button variant="secondary" onclick={loadProjects}>Coba Lagi</Button>
 		</div>
 	{:else if projects.length === 0}
 		<div class="empty-state">
 			<span class="empty-icon">🚀</span>
 			<h3>Belum ada proyek</h3>
 			<p>Buat proyek capstone pertamamu untuk menampilkan kemampuan!</p>
-			<button class="btn-primary" onclick={() => goto('/capstone/new')}>
+			<Button variant="primary" onclick={() => goto('/capstone/new')}>
 				Buat Project Baru
-			</button>
+			</Button>
 		</div>
 	{:else}
 		<div class="projects-grid">
@@ -139,34 +140,6 @@
 		color: var(--text-secondary);
 		font-size: 14px;
 		margin-top: 4px;
-	}
-
-	.btn-primary {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 20px;
-		background: var(--accent);
-		color: white;
-		border: none;
-		border-radius: 10px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.15s;
-		white-space: nowrap;
-	}
-
-	.btn-primary:hover { opacity: 0.9; }
-
-	.btn-secondary {
-		padding: 8px 16px;
-		background: var(--surface);
-		color: var(--text);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		font-size: 13px;
-		cursor: pointer;
 	}
 
 	.loading-state, .error-state, .empty-state {

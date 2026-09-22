@@ -213,12 +213,12 @@
 			{:else}
 				{#each threads as t (t.id)}
 					<div class="thread-item" class:active={activeThread?.id === t.id}>
-						<button class="thread-main" onclick={() => loadMessages(t.id)}>
+						<Button variant="ghost" class="thread-main" onclick={() => loadMessages(t.id)}>
 							<span class="thread-title">{t.title}</span>
 							<span class="thread-meta">{t.subject || '—'} · {t.message_count} pesan</span>
 							{#if t.curriculum_name}<span class="thread-cur">{t.curriculum_name}</span>{/if}
-						</button>
-						<button class="thread-del" onclick={() => deleteThread(t.id)} title="Hapus">🗑</button>
+						</Button>
+						<Button variant="danger" size="sm" class="thread-del" onclick={() => deleteThread(t.id)} title="Hapus">🗑</Button>
 					</div>
 				{/each}
 			{/if}
@@ -249,8 +249,8 @@
 							{:else}
 								<div class="md">{@html parseMarkdown(m.content)}</div>
 								<div class="msg-actions">
-									<button class="save-bank" onclick={() => speakMessage(m.content)} title="Dengarkan jawaban AI">🔊 Dengarkan</button>
-									<button class="save-bank" onclick={() => saveMsgToBank(m.id)} title="Simpan ke Bank Materi">📚 Simpan ke Bank</button>
+									<Button variant="ghost" size="sm" class="save-bank" onclick={() => speakMessage(m.content)} title="Dengarkan jawaban AI">🔊 Dengarkan</Button>
+									<Button variant="ghost" size="sm" class="save-bank" onclick={() => saveMsgToBank(m.id)} title="Simpan ke Bank Materi">📚 Simpan ke Bank</Button>
 								</div>
 							{/if}
 						</div>
@@ -260,9 +260,9 @@
 			</div>
 			<div class="chat-input">
 				{#if speechSupported}
-					<button class="mic-btn" class:recording={recording} onclick={toggleRecording} title={recording ? 'Berhenti merekam' : 'Input suara (voice)'}>
+					<Button variant="outline" size="sm" class="mic-btn {recording ? 'recording' : ''}" onclick={toggleRecording} title={recording ? 'Berhenti merekam' : 'Input suara (voice)'}>
 						{recording ? '🛑' : '🎤'}
-					</button>
+					</Button>
 				{/if}
 				<textarea bind:value={draft} rows={2} placeholder="Tulis pertanyaan untuk AI Guru... (atau tekan 🎤 untuk bicara)" onkeydown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}></textarea>
 				<Button variant="primary" onclick={send} loading={sending} disabled={!draft.trim()}>Kirim</Button>

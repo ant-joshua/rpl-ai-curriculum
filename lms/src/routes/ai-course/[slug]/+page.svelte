@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
 	import { aiModules, finalProject, type AiModule } from '$lib/stores/ai-course';
-	import { Skeleton } from '$lib/components/ui';
+	import { Skeleton, Button } from '$lib/components/ui';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -118,14 +118,14 @@
 <div class="read-progress" style="width: {readProgress}%"></div>
 
 <!-- Mobile sidebar toggle -->
-<button class="sidebar-toggle" onclick={() => showSidebar = !showSidebar}>
+<Button variant="primary" class="sidebar-toggle" onclick={() => showSidebar = !showSidebar}>
 	{showSidebar ? '✕' : '☰'} Daftar Modul
-</button>
+</Button>
 
 <!-- Fullscreen toggle -->
-<button class="fs-toggle" onclick={() => fullscreen = !fullscreen} title={fullscreen ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}>
+<Button variant="ghost" class="fs-toggle" onclick={() => fullscreen = !fullscreen} title={fullscreen ? 'Tampilkan sidebar' : 'Sembunyikan sidebar'}>
 	{fullscreen ? '☰' : '✕'}
-</button>
+</Button>
 
 <div class="module-layout" class:sidebar-open={showSidebar} class:fullscreen={fullscreen}>
 	<!-- Sidebar -->
@@ -205,12 +205,12 @@
 		<!-- Tabs (only show if exercise exists) -->
 		{#if !isFinalProject && exerciseContent}
 			<div class="tab-bar">
-				<button class="tab" class:active={activeTab === 'materi'} onclick={() => activeTab = 'materi'}>
+				<Button variant="ghost" class="tab {activeTab === 'materi' ? 'active' : ''}" onclick={() => activeTab = 'materi'}>
 					📖 Materi
-				</button>
-				<button class="tab" class:active={activeTab === 'latihan'} onclick={() => activeTab = 'latihan'}>
+				</Button>
+				<Button variant="ghost" class="tab {activeTab === 'latihan' ? 'active' : ''}" onclick={() => activeTab = 'latihan'}>
 					✏️ Latihan
-				</button>
+				</Button>
 			</div>
 		{/if}
 
@@ -262,9 +262,9 @@
 				<div></div>
 			{/if}
 
-			<button class="nav-check" onclick={() => toggleComplete(data.slug)}>
+			<Button variant="outline" class="nav-check" onclick={() => toggleComplete(data.slug)}>
 				{completedModules.has(data.slug) ? '✅ Selesai' : '⬜ Tandai Selesai'}
-			</button>
+			</Button>
 
 			{#if next}
 				<a href="/ai-course/{next.slug}" class="nav-btn nav-next">
@@ -288,7 +288,7 @@
 			<div class="sc-row"><kbd>→</kbd> Next module</div>
 			<div class="sc-row"><kbd>Esc</kbd> Toggle fullscreen</div>
 			<div class="sc-row"><kbd>?</kbd> Show/hide shortcuts</div>
-			<button class="sc-close" onclick={() => showShortcuts = false}>Got it</button>
+			<Button variant="primary" class="sc-close" onclick={() => showShortcuts = false}>Got it</Button>
 		</div>
 	</div>
 {/if}
@@ -340,7 +340,7 @@
 		position: fixed; bottom: 20px; right: 20px; z-index: 100;
 		background: var(--accent); color: white; border: none; border-radius: 100px;
 		padding: 10px 20px; font-size: 14px; font-weight: 600;
-		box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer;
+		box-shadow: 0 4px 16px color-mix(in srgb, var(--text) 20%, transparent); cursor: pointer;
 	}
 	.sidebar-overlay { display: none; }
 
@@ -438,7 +438,7 @@
 		}
 		.sidebar-open .module-sidebar { left: 0; }
 		.sidebar-overlay {
-			display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+			display: block; position: fixed; inset: 0; background: color-mix(in srgb, var(--text) 40%, transparent);
 			z-index: 150;
 		}
 		.module-content { padding: 24px 16px 64px; }
@@ -470,7 +470,7 @@
 		background: var(--surface, #fff); border: 1px solid var(--border, var(--border));
 		border-radius: 6px; padding: 8px 10px; cursor: pointer;
 		color: var(--text-secondary, #666); font-size: 16px;
-		transition: all 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+		transition: all 0.15s ease; box-shadow: 0 1px 3px color-mix(in srgb, var(--text) 8%, transparent);
 	}
 	.fs-toggle:hover { background: var(--surface-alt, var(--surface-alt)); color: var(--text, var(--text)); }
 
@@ -496,10 +496,10 @@
 	@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 	/* Keyboard shortcuts */
-	.shortcuts-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+	.shortcuts-overlay { position: fixed; inset: 0; background: color-mix(in srgb, var(--text) 40%, transparent); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 	.shortcuts-panel { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; box-shadow: none; max-width: 360px; width: 90%; }
 	.shortcuts-panel h3 { margin: 0 0 20px; font-size: 18px; color: var(--text); }
 	.sc-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; color: var(--text-secondary); }
-	kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 28px; padding: 0 8px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', monospace; font-size: 12px; font-weight: 600; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+	kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 28px; padding: 0 8px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', monospace; font-size: 12px; font-weight: 600; color: var(--text); box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent); }
 	.sc-close { margin-top: 20px; width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
 </style>

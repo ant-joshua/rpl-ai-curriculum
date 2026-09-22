@@ -3,6 +3,7 @@
   import { tutor } from '$lib/stores/tutor.svelte';
   import { parseMarkdown } from '$lib/utils/markdown';
   import { onMount } from 'svelte';
+  import { Button } from '$lib/components/ui';
 
   let { context = '' }: { context?: string } = $props();
 
@@ -132,10 +133,10 @@
     </div>
     <div class="header-actions">
       {#if tutor.messages.length > 0}
-        <button class="header-btn" onclick={() => tutor.clearChat()}>
+        <Button variant="danger" size="sm" class="header-btn" onclick={() => tutor.clearChat()}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           Clear
-        </button>
+        </Button>
       {/if}
     </div>
   </div>
@@ -166,9 +167,9 @@
         <p>Tanya apa aja tentang materi RPL AI Curriculum. Aku bisa bantu jelasin konsep, kode, dan praktik terbaik.</p>
         <div class="suggestion-chips">
           {#each suggestionSets.general as text}
-            <button class="chip" onclick={() => clickSuggestion(text)}>
+            <Button variant="outline" size="sm" class="chip" onclick={() => clickSuggestion(text)}>
               {text}
-            </button>
+            </Button>
           {/each}
         </div>
       </div>
@@ -224,9 +225,9 @@
       {#if suggestions.length > 0 && !tutor.isWaiting}
         <div class="suggestion-chips animate-in">
           {#each suggestions as text}
-            <button class="chip" onclick={() => clickSuggestion(text)}>
+            <Button variant="outline" size="sm" class="chip" onclick={() => clickSuggestion(text)}>
               {text}
-            </button>
+            </Button>
           {/each}
         </div>
       {/if}
@@ -235,9 +236,9 @@
 
   <!-- Scroll to bottom button -->
   {#if userScrolledUp}
-    <button class="scroll-bottom-btn" onclick={scrollToBottom}>
+    <Button variant="ghost" size="sm" class="scroll-bottom-btn" onclick={scrollToBottom}>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </button>
+    </Button>
   {/if}
 
   <!-- Input -->
@@ -252,18 +253,20 @@
         disabled={tutor.isWaiting}
       ></textarea>
       {#if tutor.isWaiting}
-        <button class="stop-btn" onclick={stopGeneration} title="Stop">
+        <Button variant="danger" size="sm" class="stop-btn" onclick={stopGeneration} title="Stop">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
-        </button>
+        </Button>
       {:else}
-        <button
+        <Button
+          variant="primary"
+          size="md"
           class="send-btn"
           onclick={sendMessage}
           disabled={!inputText.trim()}
           title="Send message"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
+        </Button>
       {/if}
     </div>
     <p class="input-hint">{tutor.isWaiting ? 'AI sedang menulis...' : 'Enter untuk kirim · Shift+Enter untuk newline'}</p>
@@ -544,7 +547,7 @@
     justify-content: center;
     transition: all 0.2s ease;
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px var(--shadow-color, rgba(0,0,0,0.3));
     animation: fadeIn 0.2s ease both;
   }
   .scroll-bottom-btn:hover {

@@ -12,6 +12,7 @@
 	import { progress } from '$lib/stores/progress.svelte';
 	import { initShortcuts, destroyShortcuts, onShortcut } from '$lib/stores/shortcuts.svelte';
 	import ScrollProgress from '$lib/components/ui/ScrollProgress.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import ShortcutHelp from '$lib/components/ShortcutHelp.svelte';
 	import CommandPalette from '$lib/components/ui/CommandPalette.svelte';
 	import OnboardingOverlay from '$lib/components/OnboardingOverlay.svelte';
@@ -344,9 +345,9 @@
 
 <!-- Mobile hamburger -->
 {#if !isMinimalRoute}
-<button class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigation">
+<Button variant="ghost" size="sm" class="hamburger" onclick={toggleSidebar} aria-label="Toggle navigation">
 	<Icon name={sidebarOpen ? "x" : "menu"} size={20} />
-</button>
+</Button>
 
 <!-- Sidebar overlay (mobile) -->
 {#if sidebarOpen}
@@ -487,16 +488,16 @@
 
 			<!-- Action buttons: lang, theme, logout -->
 			<div class="sidebar-actions">
-				<button onclick={() => { toggleLang(); closeSidebar(); }} class="sidebar-action-btn" title={getLang() === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}>
+				<Button variant="ghost" size="sm" onclick={() => { toggleLang(); closeSidebar(); }} class="sidebar-action-btn" title={getLang() === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}>
 					<Icon name="globe" size={16} />
-				</button>
-				<button onclick={() => { themeStore.toggle(); closeSidebar(); }} class="sidebar-action-btn" title={themeStore.theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+				</Button>
+				<Button variant="ghost" size="sm" onclick={() => { themeStore.toggle(); closeSidebar(); }} class="sidebar-action-btn" title={themeStore.theme === 'dark' ? 'Light mode' : 'Dark mode'}>
 					<Icon name={themeStore.theme === 'dark' ? 'sun' : 'moon'} size={16} />
-				</button>
+				</Button>
 				{#if auth.isLoggedIn || user.isLoggedIn}
-					<button onclick={() => { auth.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="sidebar-action-btn sidebar-action-btn--danger" title="Logout">
+					<Button variant="danger" size="sm" onclick={() => { auth.logout(); closeSidebar(); addToast('Logout berhasil', 'info'); }} class="sidebar-action-btn" title="Logout">
 						<Icon name="log-out" size={16} />
-					</button>
+					</Button>
 				{/if}
 			</div>
 		</div>

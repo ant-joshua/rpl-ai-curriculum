@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { flashcards, type Flashcard } from '$lib/stores/flashcards.svelte';
 	import { modules } from '$lib/stores/modules';
-	import { EmptyState, Skeleton } from '$lib/components/ui';
+	import { Button, EmptyState, Skeleton } from '$lib/components/ui';
 	import { fade } from 'svelte/transition';
 
 	let cards = $state<Flashcard[]>([]);
@@ -141,38 +141,38 @@
 			<aside class="sidebar" class:hidden={!sideBarOpen}>
 				<div class="sidebar-header">
 					<h3>Deck</h3>
-					<button class="close-sidebar" onclick={() => sideBarOpen = false}>&times;</button>
+					<Button variant="ghost" size="sm" class="close-sidebar" onclick={() => sideBarOpen = false}>&times;</Button>
 				</div>
 
 				<div class="deck-list">
-					<button
-						class="deck-item"
-						class:active={selectedDeck === 'all'}
+					<Button
+						variant="ghost"
+						class="deck-item {selectedDeck === 'all' ? 'active' : ''}"
 						onclick={() => selectDeck('all')}
 					>
 						<span class="deck-icon">📚</span>
 						<span>Semua Kartu</span>
 						<span class="deck-count">{cardCounts.total}</span>
-					</button>
-					<button
-						class="deck-item"
-						class:active={selectedDeck === 'new'}
+					</Button>
+					<Button
+						variant="ghost"
+						class="deck-item {selectedDeck === 'new' ? 'active' : ''}"
 						onclick={() => selectDeck('new')}
 					>
 						<span class="deck-icon">🆕</span>
 						<span>Kartu Baru</span>
 						<span class="deck-count">{cardCounts.newCards}</span>
-					</button>
+					</Button>
 					{#each decks as deck}
-						<button
-							class="deck-item"
-							class:active={selectedDeck === deck.slug}
+						<Button
+							variant="ghost"
+							class="deck-item {selectedDeck === deck.slug ? 'active' : ''}"
 							onclick={() => selectDeck(deck.slug)}
 						>
 							<span class="deck-icon">📦</span>
 							<span class="deck-title">{deck.title}</span>
 							<span class="deck-count">{deck.count}</span>
-						</button>
+						</Button>
 					{/each}
 				</div>
 
@@ -200,9 +200,9 @@
 			<main class="main-area">
 				<!-- Progress bar -->
 				<div class="progress-row">
-					<button class="toggle-sidebar" onclick={() => sideBarOpen = !sideBarOpen}>
+					<Button variant="ghost" size="sm" class="toggle-sidebar" onclick={() => sideBarOpen = !sideBarOpen}>
 						{sideBarOpen ? '◀' : '▶'}
-					</button>
+					</Button>
 					<div class="progress-info">
 						<span>{currentIndex + 1}/{total} kartu</span>
 						<span class="progress-pct">{progressPercent}%</span>
@@ -211,21 +211,21 @@
 						<div class="progress-bar-fill" style="width: {progressPercent}%"></div>
 					</div>
 					<div class="progress-actions">
-						<button class="action-btn" onclick={handleShuffle} title="Acak">
+						<Button variant="outline" size="sm" class="action-btn" onclick={handleShuffle} title="Acak">
 							🔀
-						</button>
+						</Button>
 					</div>
 				</div>
 
 				<!-- Card -->
 				{#if currentCard}
 					<div class="card-area" in:fade={{ duration: 200 }}>
-						<button
-							class="flashcard flip-card"
-							class:flipped
+						<Button
+							variant="ghost"
+							class="flashcard flip-card {flipped ? 'flipped' : ''}"
 							onclick={handleFlip}
 							tabindex={0}
-							onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(); } }}
+							onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(); } }}
 						>
 							<div class="flip-inner">
 								<div class="flip-front">
@@ -251,55 +251,61 @@
 									</div>
 								</div>
 							</div>
-						</button>
+						</Button>
 					</div>
 
 					<!-- Rating buttons (shown when flipped) -->
 					{#if flipped}
 						<div class="rating-row" in:fade={{ duration: 200 }}>
-							<button
+							<Button
+								variant="outline"
 								class="rating-btn btn-again"
 								onclick={() => handleRating(4)}
 							>
 								<span class="rating-emoji">🔄</span>
 								<span class="rating-label">Sulit</span>
-							</button>
-							<button
+							</Button>
+							<Button
+								variant="outline"
 								class="rating-btn btn-hard"
 								onclick={() => handleRating(3)}
 							>
 								<span class="rating-emoji">🤔</span>
 								<span class="rating-label">Sedang</span>
-							</button>
-							<button
+							</Button>
+							<Button
+								variant="outline"
 								class="rating-btn btn-good"
 								onclick={() => handleRating(2)}
 							>
 								<span class="rating-emoji">✅</span>
 								<span class="rating-label">Mudah</span>
-							</button>
-							<button
+							</Button>
+							<Button
+								variant="outline"
 								class="rating-btn btn-easy"
 								onclick={() => handleRating(1)}
 							>
 								<span class="rating-emoji">⚡</span>
 								<span class="rating-label">Sangat Mudah</span>
-							</button>
+							</Button>
 						</div>
 					{/if}
 
 					<!-- Navigation -->
 					<div class="nav-row">
-						<button
+						<Button
+							variant="outline"
 							class="nav-btn"
 							disabled={currentIndex === 0}
 							onclick={handlePrev}
-						>◀ Sebelumnya</button>
-						<button
+						>◀ Sebelumnya</Button>
+						<Button
+							variant="outline"
 							class="nav-btn"
 							disabled={currentIndex >= total - 1}
 							onclick={handleNext}
-						>Berikutnya ▶</button>
+						>Berikutnya ▶</Button>
 					</div>
 				{/if}
 			</main>
@@ -369,14 +375,15 @@
 		margin: 0;
 	}
 
-	.close-sidebar {
-		background: none;
-		border: none;
+	:global(.close-sidebar) {
+		background: none !important;
+		border: none !important;
 		font-size: 20px;
 		color: var(--text-secondary);
 		cursor: pointer;
-		padding: 0;
+		padding: 0 !important;
 		line-height: 1;
+		min-height: auto !important;
 	}
 
 	.deck-list {
@@ -386,29 +393,30 @@
 		margin-bottom: 16px;
 	}
 
-	.deck-item {
-		display: flex;
+	:global(.deck-item) {
+		display: flex !important;
 		align-items: center;
 		gap: 8px;
-		padding: 8px 10px;
-		border-radius: 8px;
-		border: none;
-		background: transparent;
+		padding: 8px 10px !important;
+		border-radius: 8px !important;
+		border: none !important;
+		background: transparent !important;
 		color: var(--text-secondary);
 		font-size: 13px;
 		cursor: pointer;
 		text-align: left;
 		width: 100%;
 		transition: all 0.15s;
+		min-height: auto !important;
 	}
 
-	.deck-item:hover {
-		background: var(--hover);
+	:global(.deck-item:hover) {
+		background: var(--hover) !important;
 		color: var(--text);
 	}
 
-	.deck-item.active {
-		background: var(--accent-dim);
+	:global(.deck-item.active) {
+		background: var(--accent-dim) !important;
 		color: var(--accent);
 		font-weight: 600;
 	}
@@ -432,7 +440,7 @@
 		color: var(--text-secondary);
 	}
 
-	.deck-item.active .deck-count {
+	:global(.deck-item.active) .deck-count {
 		background: var(--accent);
 		color: white;
 	}
@@ -468,18 +476,19 @@
 		gap: 10px;
 	}
 
-	.toggle-sidebar {
-		background: none;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		padding: 4px 8px;
+	:global(.toggle-sidebar) {
+		background: none !important;
+		border: 1px solid var(--border) !important;
+		border-radius: 6px !important;
+		padding: 4px 8px !important;
 		cursor: pointer;
 		font-size: 12px;
 		color: var(--text-secondary);
+		min-height: auto !important;
 	}
 
-	.toggle-sidebar:hover {
-		background: var(--hover);
+	:global(.toggle-sidebar:hover) {
+		background: var(--hover) !important;
 	}
 
 	.progress-info {
@@ -515,19 +524,20 @@
 		gap: 4px;
 	}
 
-	.action-btn {
-		background: none;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		padding: 4px 8px;
+	:global(.action-btn) {
+		background: none !important;
+		border: 1px solid var(--border) !important;
+		border-radius: 6px !important;
+		padding: 4px 8px !important;
 		cursor: pointer;
 		font-size: 14px;
 		transition: all 0.15s;
+		min-height: auto !important;
 	}
 
-	.action-btn:hover {
-		background: var(--hover);
-		border-color: var(--accent);
+	:global(.action-btn:hover) {
+		background: var(--hover) !important;
+		border-color: var(--accent) !important;
 	}
 
 	/* Flashcard */
@@ -537,13 +547,13 @@
 		perspective: 1000px;
 	}
 
-	.flashcard {
+	:global(.flashcard) {
 		width: 100%;
 		min-height: 280px;
 		cursor: pointer;
-		background: transparent;
-		border: none;
-		padding: 0;
+		background: transparent !important;
+		border: none !important;
+		padding: 0 !important;
 	}
 
 	.flip-inner {
@@ -554,7 +564,7 @@
 		transform-style: preserve-3d;
 	}
 
-	.flashcard.flipped .flip-inner {
+	:global(.flashcard.flipped) .flip-inner {
 		transform: rotateY(180deg);
 	}
 
@@ -640,21 +650,22 @@
 		max-width: 520px;
 	}
 
-	.rating-btn {
-		flex: 1;
-		display: flex;
+	:global(.rating-btn) {
+		flex: 1 !important;
+		display: flex !important;
 		flex-direction: column;
 		align-items: center;
 		gap: 4px;
-		padding: 12px 8px;
-		border-radius: 12px;
-		border: 1px solid var(--border);
-		background: var(--surface);
+		padding: 12px 8px !important;
+		border-radius: 12px !important;
+		border: 1px solid var(--border) !important;
+		background: var(--surface) !important;
 		cursor: pointer;
 		transition: all 0.15s ease;
+		min-height: auto !important;
 	}
 
-	.rating-btn:hover {
+	:global(.rating-btn:hover) {
 		transform: translateY(-2px);
 		box-shadow: none;
 	}
@@ -669,24 +680,24 @@
 		color: var(--text-secondary);
 	}
 
-	.btn-again:hover {
-		border-color: var(--danger);
-		background: rgba(239, 68, 68, 0.08);
+	:global(.btn-again:hover) {
+		border-color: var(--danger) !important;
+		background: rgba(239, 68, 68, 0.08) !important;
 	}
 
-	.btn-hard:hover {
-		border-color: var(--warning);
-		background: rgba(245, 158, 11, 0.08);
+	:global(.btn-hard:hover) {
+		border-color: var(--warning) !important;
+		background: rgba(245, 158, 11, 0.08) !important;
 	}
 
-	.btn-good:hover {
-		border-color: var(--accent);
-		background: rgba(59, 130, 246, 0.08);
+	:global(.btn-good:hover) {
+		border-color: var(--accent) !important;
+		background: rgba(59, 130, 246, 0.08) !important;
 	}
 
-	.btn-easy:hover {
-		border-color: var(--success);
-		background: rgba(16, 185, 129, 0.08);
+	:global(.btn-easy:hover) {
+		border-color: var(--success) !important;
+		background: rgba(16, 185, 129, 0.08) !important;
 	}
 
 	/* Navigation */
@@ -698,24 +709,25 @@
 		justify-content: space-between;
 	}
 
-	.nav-btn {
-		padding: 8px 16px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
+	:global(.nav-btn) {
+		padding: 8px 16px !important;
+		border: 1px solid var(--border) !important;
+		border-radius: 8px !important;
+		background: var(--surface) !important;
 		color: var(--text-secondary);
 		font-size: 13px;
 		cursor: pointer;
 		transition: all 0.15s;
+		min-height: auto !important;
 	}
 
-	.nav-btn:hover:not(:disabled) {
-		background: var(--hover);
-		border-color: var(--accent);
+	:global(.nav-btn:hover:not(:disabled)) {
+		background: var(--hover) !important;
+		border-color: var(--accent) !important;
 		color: var(--text);
 	}
 
-	.nav-btn:disabled {
+	:global(.nav-btn:disabled) {
 		opacity: 0.4;
 		cursor: not-allowed;
 	}
@@ -739,7 +751,7 @@
 		.rating-row {
 			flex-wrap: wrap;
 		}
-		.rating-btn {
+		:global(.rating-btn) {
 			min-width: calc(50% - 6px);
 		}
 	}

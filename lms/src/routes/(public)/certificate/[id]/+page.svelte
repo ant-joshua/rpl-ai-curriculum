@@ -65,9 +65,9 @@
 		</div>
 	{:else if cert}
 		<div class="cert-actions no-print">
-			<button onclick={handlePrint} class="print-btn">
+			<Button onclick={handlePrint} class="print-btn" variant="primary">
 				⬇️ Download / Cetak Sertifikat
-			</button>
+			</Button>
 			<a href="/my/dashboard" class="dashboard-link">&larr; Dashboard</a>
 		</div>
 

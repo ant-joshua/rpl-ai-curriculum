@@ -243,7 +243,7 @@
 	{:else if error && !started}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn btn-primary" onclick={loadInitial}>Retry</button>
+			<Button variant="primary" onclick={loadInitial}>Retry</Button>
 		</div>
 
 	{:else if submitted && resultData}
@@ -440,13 +440,7 @@
 							<div class="section-questions">
 								{#each questions.slice(section.start, section.start + section.count) as q, i}
 									{@const idx = section.start + i}
-									<button
-										class="q-btn"
-										class:active={idx === currentQuestionIndex}
-										class:answered={answers[q.id]?.trim() !== ''}
-										class:flagged={flaggedQuestions.has(q.id)}
-										onclick={() => goToQuestion(idx)}
-									>{idx + 1}</button>
+									<Button variant="ghost" class="q-btn{idx === currentQuestionIndex ? ' active' : ''}{answers[q.id]?.trim() !== '' ? ' answered' : ''}{flaggedQuestions.has(q.id) ? ' flagged' : ''}" onclick={() => goToQuestion(idx)}>{idx + 1}</Button>
 								{/each}
 							</div>
 						</div>
@@ -465,10 +459,9 @@
 							<span class="q-difficulty q-diff-{currentQuestion.difficulty || 'medium'}">
 								{currentQuestion.difficulty || 'medium'}
 							</span>
-							<button class="flag-btn" class:flagged={flaggedQuestions.has(currentQuestion.id)}
-								onclick={() => toggleFlag(currentQuestion.id)}>
+							<Button variant="ghost" class="flag-btn{flaggedQuestions.has(currentQuestion.id) ? ' flagged' : ''}" onclick={() => toggleFlag(currentQuestion.id)}>
 								{flaggedQuestions.has(currentQuestion.id) ? '🚩' : '🏳️'}
-							</button>
+							</Button>
 						</div>
 
 						<div class="q-content">
@@ -476,17 +469,13 @@
 
 							<div class="options-list">
 								{#each currentQuestion.options as opt}
-									<button
-										class="option-btn"
-										class:selected={answers[currentQuestion.id] === opt.label}
-										onclick={() => selectAnswer(opt.label)}
-									>
+									<Button variant="outline" class="option-btn{answers[currentQuestion.id] === opt.label ? ' selected' : ''}" onclick={() => selectAnswer(opt.label)}>
 										<span class="opt-letter">{opt.label}</span>
 										<span class="opt-text">{opt.text}</span>
 										{#if answers[currentQuestion.id] === opt.label}
 											<span class="opt-check">✓</span>
 										{/if}
-									</button>
+									</Button>
 								{/each}
 							</div>
 						</div>
@@ -684,7 +673,7 @@
 	.opt-letter {
 		display: inline-flex; align-items: center; justify-content: center;
 		width: 32px; height: 32px; border-radius: 8px;
-		background: rgba(0,0,0,0.08); font-size: 14px; font-weight: 700;
+		background: color-mix(in srgb, var(--text, #000) 8%, transparent); font-size: 14px; font-weight: 700;
 		flex-shrink: 0;
 	}
 	.option-btn.selected .opt-letter { background: var(--accent); color: white; }
@@ -711,7 +700,7 @@
 		display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
 		width: 140px; height: 140px; border-radius: 50%;
 		border: 4px solid var(--score-clr, var(--accent));
-		background: rgba(0,0,0,0.02);
+		background: color-mix(in srgb, var(--text, #000) 2%, transparent);
 	}
 	.score-value { font-size: 40px; font-weight: 800; color: var(--score-clr, var(--accent)); }
 	.score-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
@@ -782,7 +771,7 @@
 
 	/* Modal */
 	.modal-overlay {
-		position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+		position: fixed; inset: 0; background: color-mix(in srgb, var(--text, #000) 60%, transparent);
 		display: flex; align-items: center; justify-content: center;
 		z-index: 100; animation: fadeIn 0.15s ease both;
 	}

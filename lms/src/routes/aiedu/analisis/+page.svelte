@@ -146,8 +146,8 @@
 <div class="analisis-layout">
 	<div class="form-col">
 		<div class="mode-tabs">
-			<button class="mode-tab" class:active={mode === 'manual'} onclick={() => mode = 'manual'}>📊 Input Manual</button>
-			<button class="mode-tab" class:active={mode === 'gradebook'} onclick={() => mode = 'gradebook'}>📋 Dari Gradebook</button>
+			<Button variant={mode === 'manual' ? 'primary' : 'outline'} size="sm" class="mode-tab" onclick={() => mode = 'manual'}>📊 Input Manual</Button>
+			<Button variant={mode === 'gradebook' ? 'primary' : 'outline'} size="sm" class="mode-tab" onclick={() => mode = 'gradebook'}>📋 Dari Gradebook</Button>
 		</div>
 
 		{#if mode === 'gradebook'}
@@ -241,7 +241,7 @@
 									class="score-input"
 								/>
 							{/each}
-							<button class="del-btn" onclick={() => removeStudent(si)} title="Hapus">✕</button>
+							<Button variant="ghost" size="sm" class="del-btn" onclick={() => removeStudent(si)} title="Hapus">✕</Button>
 						</div>
 					{/each}
 				</div>
@@ -315,8 +315,6 @@
 	.grid-row { display: grid; grid-template-columns: 1.4fr repeat(auto-fit, minmax(80px, 0.8fr)) 20px; gap: 6px; margin-bottom: 6px; align-items: center; }
 	.grid-row input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; width: 100%; box-sizing: border-box; }
 	.score-input { text-align: center; }
-	.del-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; }
-	.del-btn:hover { color: var(--danger); }
 	.grid-tools { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
 	.form-actions { margin-top: 8px; }
 	.center { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 32px; color: var(--text-secondary); font-size: 13px; }
@@ -333,8 +331,6 @@
 	.history-item { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
 	.h-time { color: var(--text-muted); font-size: 12px; }
 	.mode-tabs { display: flex; gap: 4px; margin-bottom: 14px; }
-	.mode-tab { flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 10px; background: white; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; }
-	.mode-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 	.gb-summary { display: flex; gap: 18px; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
 	.gb-preview { max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
 	.gb-row { display: grid; grid-template-columns: 1fr repeat(auto-fit, minmax(60px, 0.5fr)); gap: 4px; padding: 7px 10px; border-bottom: 1px solid var(--surface); font-size: 12px; }

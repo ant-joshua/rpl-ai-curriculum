@@ -5,7 +5,7 @@
 	import { certificate } from '$lib/stores/certificate.svelte';
 	import { user } from '$lib/stores/user.svelte';
 	import { onMount } from 'svelte';
-	import { StatCard } from '$lib/components/ui';
+	import { Button, StatCard } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	onMount(() => {
@@ -66,9 +66,9 @@
 	{:else}
 		<!-- Eligible: show beautiful certificate -->
 		<div class="cert-actions no-print">
-			<button onclick={handlePrint} class="print-btn">
+			<Button onclick={handlePrint} class="print-btn" variant="primary">
 				⬇️ Download / {t('certificate.print')} Sertifikat
-			</button>
+			</Button>
 			<ShareButton
 				title="Sertifikat RPL AI Curriculum"
 				text="Aku lulus RPL AI Curriculum! 🎓🎉"

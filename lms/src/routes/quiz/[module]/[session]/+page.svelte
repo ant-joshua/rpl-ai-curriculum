@@ -1,5 +1,6 @@
 <script lang="ts">
   import Confetti from '$lib/components/ui/Confetti.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
   import { t } from '$lib/stores/i18n';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
@@ -45,6 +46,13 @@
 
   let currentQuestion = $derived(questions[currentIndex]);
   let progress = $derived(questions.length > 0 ? ((currentIndex + (answered ? 1 : 0)) / questions.length) * 100 : 0);
+  function optionClass(i: number) {
+    let cls = 'option-btn';
+    if (selectedOption === i) cls += ' selected';
+    if (answered && i === currentQuestion.correctIndex) cls += ' correct';
+    if (answered && selectedOption === i && i !== currentQuestion.correctIndex) cls += ' wrong';
+    return cls;
+  }
 
   function selectOption(index: number) {
     if (answered) return;
@@ -133,7 +141,7 @@
   {#if errorMsg}
     <div class="error-state">
       <p>{errorMsg}</p>
-      <button class="btn-secondary" onclick={() => goto('/quiz')}>Kembali</button>
+      <Button variant="secondary" onclick={() => goto('/quiz')}>Kembali</Button>
     </div>
   {:else if finished}
     <Confetti active={finished && score >= Math.ceil(questions.length * 0.7)} duration={4000} density="low" />
@@ -174,8 +182,8 @@
       </div>
 
       <div class="result-actions">
-        <button class="btn-secondary" onclick={restart}>🔄 Ulang Quiz</button>
-        <button class="btn-primary" onclick={() => goto('/quiz')}>📋 Kembali ke Daftar</button>
+        <Button variant="secondary" onclick={restart}>🔄 Ulang Quiz</Button>
+        <Button variant="primary" onclick={() => goto('/quiz')}>📋 Kembali ke Daftar</Button>
       </div>
     </div>
   {:else if currentQuestion}
@@ -189,11 +197,9 @@
 
       <div class="options-list">
         {#each currentQuestion.options as option, i}
-          <button
-            class="option-btn"
-            class:selected={selectedOption === i}
-            class:correct={answered && i === currentQuestion.correctIndex}
-            class:wrong={answered && selectedOption === i && i !== currentQuestion.correctIndex}
+          <Button
+            variant="outline"
+            class={optionClass(i)}
             onclick={() => selectOption(i)}
             disabled={answered}
           >
@@ -205,7 +211,7 @@
             {#if answered && selectedOption === i && i !== currentQuestion.correctIndex}
               <span class="option-cross">✕</span>
             {/if}
-          </button>
+          </Button>
         {/each}
       </div>
 
@@ -220,17 +226,18 @@
 
       <div class="question-actions">
         {#if !answered}
-          <button
-            class="btn-primary"
+          <Button
+            variant="primary"
             onclick={checkAnswer}
             disabled={selectedOption === null || saving}
+            loading={saving}
           >
             {saving ? 'Menyimpan...' : 'Cek Jawaban'}
-          </button>
+          </Button>
         {:else}
-          <button class="btn-primary" onclick={nextQuestion}>
+          <Button variant="primary" onclick={nextQuestion}>
             {currentIndex < questions.length - 1 ? 'Soal Selanjutnya →' : 'Lihat Hasil'}
-          </button>
+          </Button>
         {/if}
       </div>
     </div>
@@ -342,8 +349,8 @@
 
   .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--hover); }
   .option-btn.selected { border-color: var(--accent); background: var(--accent-dim); }
-  .option-btn.correct { border-color: var(--success); background: rgba(46, 204, 113, 0.1); }
-  .option-btn.wrong { border-color: var(--danger); background: rgba(231, 76, 60, 0.1); }
+  .option-btn.correct { border-color: var(--success); background: color-mix(in srgb, var(--success) 10%, transparent); }
+  .option-btn.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 
   .option-char {
     width: 28px; height: 28px; border-radius: 50%;
@@ -359,8 +366,8 @@
   .option-cross { color: var(--danger); font-weight: bold; }
 
   .feedback-box { padding: 16px; border-radius: 10px; margin-bottom: 20px; }
-  .feedback-box.correct { background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); }
-  .feedback-box.wrong { background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); }
+  .feedback-box.correct { background: color-mix(in srgb, var(--success) 10%, transparent); border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
+  .feedback-box.wrong { background: color-mix(in srgb, var(--danger) 10%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); }
 
   .feedback-result { font-weight: 700; font-size: 16px; margin-bottom: 6px; color: var(--text); }
   .feedback-explain { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
@@ -394,15 +401,15 @@
     border: 1px solid var(--border);
   }
   .try-badge.best {
-    background: rgba(245, 158, 11, 0.1);
+    background: color-mix(in srgb, var(--warning) 10%, transparent);
     color: var(--warning);
-    border-color: rgba(245, 158, 11, 0.3);
+    border-color: color-mix(in srgb, var(--warning) 30%, transparent);
   }
 
   .results-list { text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
   .result-item { padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); }
-  .result-item.correct { border-color: rgba(46, 204, 113, 0.3); }
-  .result-item.wrong { border-color: rgba(231, 76, 60, 0.3); }
+  .result-item.correct { border-color: color-mix(in srgb, var(--success) 30%, transparent); }
+  .result-item.wrong { border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
   .result-q { font-size: 14px; color: var(--text); margin-bottom: 6px; font-weight: 500; }
   .result-detail { font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 2px; }
   .result-correct { color: var(--success); }

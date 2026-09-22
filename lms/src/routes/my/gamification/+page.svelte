@@ -273,15 +273,9 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 		<!-- Tabs -->
 		<div class="tabs">
-			<button class="tab" class:tab--active={tab === 'overview'} onclick={() => tab = 'overview'}>
-				🎖️ Badge Saya
-			</button>
-			<button class="tab" class:tab--active={tab === 'leaderboard'} onclick={() => tab = 'leaderboard'}>
-				🏆 Papan Skor
-			</button>
-			<button class="tab" class:tab--active={tab === 'activity'} onclick={() => tab = 'activity'}>
-				📊 Aktivitas XP
-			</button>
+			<Button variant={tab === 'overview' ? 'primary' : 'ghost'} size="sm" onclick={() => tab = 'overview'}>🎖️ Badge Saya</Button>
+			<Button variant={tab === 'leaderboard' ? 'primary' : 'ghost'} size="sm" onclick={() => tab = 'leaderboard'}>🏆 Papan Skor</Button>
+			<Button variant={tab === 'activity' ? 'primary' : 'ghost'} size="sm" onclick={() => tab = 'activity'}>📊 Aktivitas XP</Button>
 		</div>
 
 		<!-- Tab: Badges -->

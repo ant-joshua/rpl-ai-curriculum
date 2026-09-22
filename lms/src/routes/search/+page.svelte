@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { fade } from 'svelte/transition';
-	import { Card, EmptyState, SearchInput, Skeleton } from '$lib/components/ui';
+	import { Button, Card, EmptyState, SearchInput, Skeleton } from '$lib/components/ui';
 
 	type FilterType = 'all' | 'lesson' | 'course' | 'offering' | 'exercise' | 'video' | 'flashcard' | 'project';
 
@@ -228,14 +228,14 @@
 		<div class="recent-searches" in:fade={{ duration: 150 }}>
 			<div class="recent-header">
 				<span class="recent-label">Pencarian terakhir</span>
-				<button class="recent-clear" onclick={clearRecentSearches}>Hapus</button>
+				<Button variant="ghost" size="sm" class="recent-clear" onclick={clearRecentSearches}>Hapus</Button>
 			</div>
 			<div class="recent-chips">
 				{#each recentSearches as q}
-					<button class="recent-chip" onclick={() => rerunSearch(q)}>
+					<Button variant="outline" size="sm" class="recent-chip" onclick={() => rerunSearch(q)}>
 						<span>🕐</span> {q}
 						<span class="recent-remove" onclick={(e) => { e.stopPropagation(); removeRecentSearch(q); }}>&times;</span>
-					</button>
+					</Button>
 				{/each}
 			</div>
 		</div>
@@ -244,41 +244,48 @@
 	<!-- Filter toggles (shown when has results) -->
 	{#if hasSearched && !loading}
 		<div class="filter-toggles" in:fade={{ duration: 150 }}>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'all'}
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'all' ? 'active' : ''}"
 				onclick={() => activeFilter = 'all'}
-			>Semua</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'lesson'}
+			>Semua</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'lesson' ? 'active' : ''}"
 				onclick={() => activeFilter = 'lesson'}
-			>📖 Pelajaran</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'course'}
+			>📖 Pelajaran</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'course' ? 'active' : ''}"
 				onclick={() => activeFilter = 'course'}
-			>📚 Kursus</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'exercise'}
+			>📚 Kursus</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'exercise' ? 'active' : ''}"
 				onclick={() => activeFilter = 'exercise'}
-			>💻 Latihan</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'video'}
+			>💻 Latihan</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'video' ? 'active' : ''}"
 				onclick={() => activeFilter = 'video'}
-			>🎬 Video</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'flashcard'}
+			>🎬 Video</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'flashcard' ? 'active' : ''}"
 				onclick={() => activeFilter = 'flashcard'}
-			>🃏 Kartu</button>
-			<button
-				class="filter-chip"
-				class:active={activeFilter === 'project'}
+			>🃏 Kartu</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				class="filter-chip {activeFilter === 'project' ? 'active' : ''}"
 				onclick={() => activeFilter = 'project'}
-			>📦 Proyek</button>
+			>📦 Proyek</Button>
 		</div>
 	{/if}
 

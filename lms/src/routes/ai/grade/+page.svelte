@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
+	import { Button } from '$lib/components/ui';
 
 
 	type Submission = {
@@ -112,9 +113,9 @@
 			<h1>Penilaian AI</h1>
 			<p class="subtitle">Penilaian otomatis tugas esai menggunakan AI</p>
 		</div>
-		<button onclick={loadSubmissions} disabled={loading} class="refresh-btn">
-			{loading ? 'Memuat...' : '🔄 Refresh'}
-		</button>
+		<Button variant="secondary" onclick={loadSubmissions} disabled={loading} loading={loading}>
+			Refresh
+		</Button>
 	</header>
 
 	{#if error}
@@ -126,7 +127,7 @@
 		<div class="detail-card">
 			<div class="detail-header">
 				<h2>{selectedSub.assessment_title || selectedSub.assignment_title || 'Submission'}</h2>
-				<button onclick={closeResult} class="back-btn">← Kembali</button>
+				<Button variant="ghost" size="sm" onclick={closeResult}>← Kembali</Button>
 			</div>
 			<div class="detail-meta">
 				<span>Siswa: <strong>{selectedSub.user_name}</strong></span>
@@ -137,9 +138,9 @@
 				<pre class="answer-text">{selectedSub.submission_text || (typeof selectedSub.answers === 'string' ? selectedSub.answers : JSON.stringify(selectedSub.answers, null, 2)) || 'Tidak ada teks'}</pre>
 			</div>
 
-			<button onclick={() => gradeSubmission(selectedSub.id)} disabled={grading === selectedSub.id} class="grade-btn">
-				{grading === selectedSub.id ? '⏳ Menilai...' : '🤖 Nilai dengan AI'}
-			</button>
+			<Button variant="primary" onclick={() => gradeSubmission(selectedSub.id)} disabled={grading === selectedSub.id} loading={grading === selectedSub.id}>
+				Nilai dengan AI
+			</Button>
 
 			{#if gradeResult}
 				<div class="grade-result">
@@ -188,13 +189,13 @@
 					<div class="empty">Tidak ada tugas yang perlu dinilai</div>
 				{:else}
 					{#each submissions.assessment_submissions as sub}
-						<button onclick={() => selectSub(sub)} class="sub-card">
+						<Button variant="outline" size="sm" onclick={() => selectSub(sub)} class="sub-card">
 							<div class="sub-info">
 								<span class="sub-title">{sub.assessment_title || 'Tugas'}</span>
 								<span class="sub-user">{sub.user_name}</span>
 							</div>
 							<span class="sub-date">{formatDate(sub.submitted_at)}</span>
-						</button>
+						</Button>
 					{/each}
 				{/if}
 			</section>
@@ -205,13 +206,13 @@
 					<div class="empty">Tidak ada esai yang perlu dinilai</div>
 				{:else}
 					{#each submissions.assignment_submissions as sub}
-						<button onclick={() => selectSub(sub)} class="sub-card">
+						<Button variant="outline" size="sm" onclick={() => selectSub(sub)} class="sub-card">
 							<div class="sub-info">
 								<span class="sub-title">{sub.assignment_title || 'Esai'}</span>
 								<span class="sub-user">{sub.user_name}</span>
 							</div>
 							<span class="sub-date">{formatDate(sub.submitted_at)}</span>
-						</button>
+						</Button>
 					{/each}
 				{/if}
 			</section>
@@ -236,20 +237,11 @@
 	.grade-header h1 { font-size: 26px; font-weight: 700; color: var(--text); margin: 0; }
 	.subtitle { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
 
-	.refresh-btn {
-		padding: 8px 16px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--surface);
-		color: var(--text);
-		cursor: pointer;
-		font-size: 13px;
-	}
-	.refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 
 	.error-msg {
 		padding: 12px 16px;
-		background: rgba(239, 68, 68, 0.08);
+		background: color-mix(in srgb, var(--danger) 8%, transparent);
 		color: var(--danger);
 		border-radius: 8px;
 		margin-bottom: 16px;
@@ -292,32 +284,20 @@
 	.detail-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
 	.detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 	.detail-header h2 { font-size: 18px; margin: 0; }
-	.back-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
+	
 	.detail-meta { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; flex-wrap: wrap; }
 	.detail-body { margin-bottom: 16px; }
 	.detail-body h3 { font-size: 14px; margin: 0 0 8px; }
 	.answer-text { background: var(--bg); padding: 12px; border-radius: 8px; font-size: 13px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
 
-	.grade-btn {
-		padding: 10px 24px;
-		border: none;
-		border-radius: 8px;
-		background: var(--accent);
-		color: white;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.15s;
-	}
-	.grade-btn:hover:not(:disabled) { opacity: 0.9; }
-	.grade-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 
 	.grade-result {
 		margin-top: 20px;
 		padding: 20px;
 		border: 1px solid var(--accent-dim);
 		border-radius: 12px;
-		background: rgba(99, 102, 241, 0.04);
+		background: color-mix(in srgb, var(--accent) 4%, transparent);
 	}
 
 	.score-display { text-align: center; margin-bottom: 16px; }
@@ -334,7 +314,7 @@
 	.weaknesses { margin-top: 12px; }
 	.weaknesses h4 { font-size: 13px; color: var(--warning, var(--warning)); margin: 0 0 4px; }
 	.weaknesses ul { margin: 0; padding-left: 20px; font-size: 13px; }
-	.ai-warning { margin-top: 12px; font-size: 13px; color: var(--warning); padding: 8px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; }
+	.ai-warning { margin-top: 12px; font-size: 13px; color: var(--warning); padding: 8px; background: color-mix(in srgb, var(--warning) 10%, transparent); border-radius: 6px; }
 
 	@media (max-width: 640px) {
 		.grade-header { flex-direction: column; gap: 12px; }

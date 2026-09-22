@@ -22,6 +22,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	import Skeleton from '$lib/components/Skeleton.svelte';
 	import { fade } from 'svelte/transition';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button } from '$lib/components/ui';
 
 	let { data } = $props();
 
@@ -452,9 +453,9 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 			<ProgressBar value={moduleProgress} />
 			<div class="header-actions">
 				<FontSizeControl />
-				<button class="share-btn" onclick={copyShareLink}>
+				<Button variant="outline" size="sm" class="share-btn" onclick={copyShareLink}>
 					🔗 Share
-				</button>
+				</Button>
 				{#if mod && pdfIndex[mod.dirName]}
 					<a href="/pdfs/{mod.dirName}.pdf" target="_blank" class="pdf-download-btn" download>
 						📥 Download PDF
@@ -487,9 +488,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 				<ul class="session-list">
 					{#each mod.sessions as session}
 						<li>
-							<button
-								class="session-item"
-								class:active={activeSession === session.id}
+							<Button variant="ghost" class="session-item {activeSession === session.id ? 'active' : ''}"
 								onclick={() => loadSession(session.id)}
 							>
 								<span class="session-check" class:done={progress.isSessionCompleted(mod.slug, session.id)}>
@@ -501,7 +500,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 									{@const rt = Math.max(1, Math.round(wc / 200))}
 									<span class="word-count">📝{wc} kata · ⏱{rt} mnt</span>
 								{/if}
-							</button>
+								</Button>
 						</li>
 					{/each}
 				</ul>
@@ -520,62 +519,50 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 							{/if}
 						</h2>
 						<div class="toolbar-actions">
-							<button
-								class="notes-toggle-btn"
-								class:active={showNotes}
+							<Button variant="outline" size="sm" class="notes-toggle-btn {showNotes ? 'active' : ''}"
 								onclick={() => showNotes = !showNotes}
 								title="Catatan (n)"
 							>
 								📝 Catatan
-							</button>
+							</Button>
 							<FontSizeControl />
 							{#if quizQuestions.length > 0}
-								<button
-									class="quiz-toggle-btn"
-									class:active={showQuiz}
+								<Button variant="outline" size="sm" class="quiz-toggle-btn {showQuiz ? 'active' : ''}"
 									onclick={() => showQuiz = !showQuiz}
 									title="Quiz (q)"
 								>
 									🧪 Quiz
-								</button>
+								</Button>
 							{/if}
 							{#if exerciseCode}
-								<button
-									class="exercise-toggle-btn"
-									class:active={showExercise}
+								<Button variant="outline" size="sm" class="exercise-toggle-btn {showExercise ? 'active' : ''}"
 									onclick={() => showExercise = !showExercise}
 									title="Coba Kode (e)"
 								>
 									▶️ Coba Kode
-								</button>
+								</Button>
 							{/if}
 							{#if moduleVideos.length > 0}
-								<button
-									class="video-toggle-btn"
-									class:active={showVideos}
+								<Button variant="outline" size="sm" class="video-toggle-btn {showVideos ? 'active' : ''}"
 									onclick={() => showVideos = !showVideos}
 									title="Video (v)"
 								>
 									🎥 Video
-								</button>
+								</Button>
 							{/if}
-							<button
-								class="complete-btn"
-								class:done={progress.isSessionCompleted(mod.slug, activeSession)}
-								class:celebrate={celebrateSession === activeSession}
+							<Button variant="secondary" size="sm"
+								class="complete-btn {progress.isSessionCompleted(mod.slug, activeSession) ? 'done' : ''} {celebrateSession === activeSession ? 'celebrate' : ''}"
 								onclick={() => toggleComplete(activeSession)}
 								title="Tandai Selesai (d)"
 							>
 								{progress.isSessionCompleted(mod.slug, activeSession) ? '✓ Selesai' : 'Tandai Selesai'}
-							</button>
-							<button
-								class="discuss-toggle-btn"
-								class:active={showDiscussions}
+							</Button>
+							<Button variant="outline" size="sm" class="discuss-toggle-btn {showDiscussions ? 'active' : ''}"
 								onclick={() => showDiscussions = !showDiscussions}
 								title="Diskusi (c)"
 							>
 								💬 Diskusi
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div class="markdown-content">
@@ -626,11 +613,10 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 													<span class="video-duration">{v.duration}</span>
 												{/if}
 												{#if v.url}
-													<span class="video-status published">Published</span>
-													<button
-														class="video-play-btn"
-														onclick={() => selectedVideo = v}
-													>▶ Putar</button>
+												<span class="video-status published">Published</span>
+												<Button variant="ghost" size="sm" class="video-play-btn"
+													onclick={() => selectedVideo = v}
+												>▶ Putar</Button>
 												{:else}
 													<span class="video-status planned">Planned</span>
 												{/if}
@@ -662,17 +648,15 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 											</div>
 											<p class="discussion-content">{comment.content}</p>
 											<div class="discussion-actions">
-												<button
-													class="reply-btn"
+												<Button variant="ghost" size="sm" class="reply-btn"
 													onclick={() => replyToId = replyToId === comment.id ? null : comment.id}
-												>↩ Balas</button>
+													>↩ Balas</Button>
 												{#if getDeviceId() === comment.user_id}
-													<button
-														class="delete-btn"
+													<Button variant="danger" size="sm" class="delete-btn"
 														onclick={async () => {
 															await discussions.deleteComment(comment.id, slug, activeSession ?? undefined);
 														}}
-													>🗑 Hapus</button>
+														>🗑 Hapus</Button>
 												{/if}
 											</div>
 
@@ -689,12 +673,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 														</div>
 														<p class="discussion-content">{reply.content}</p>
 														{#if getDeviceId() === reply.user_id}
-															<button
-																class="delete-btn"
+															<Button variant="danger" size="sm" class="delete-btn"
 																onclick={async () => {
 																	await discussions.deleteComment(reply.id, slug, activeSession ?? undefined);
 																}}
-															>🗑 Hapus</button>
+																>🗑 Hapus</Button>
 														{/if}
 													</div>
 												</div>
@@ -715,8 +698,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 															}
 														}}
 													/>
-													<button
-														class="send-reply-btn"
+													<Button variant="primary" size="sm" class="send-reply-btn"
 														disabled={!discussionInput.trim()}
 														onclick={async () => {
 															if (discussionInput.trim()) {
@@ -725,7 +707,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 																replyToId = null;
 															}
 														}}
-													>Kirim</button>
+														>Kirim</Button>
 												</div>
 											{/if}
 										</div>
@@ -839,7 +821,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="modal-overlay" onclick={() => selectedVideo = null} role="button" tabindex="-1">
 		<div class="modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-			<button class="modal-close" onclick={() => selectedVideo = null}>&times;</button>
+			<Button variant="ghost" size="sm" class="modal-close" onclick={() => selectedVideo = null}>&times;</Button>
 			<h3 class="modal-title">{selectedVideo.title}</h3>
 			{#if ytId}
 				<div class="video-wrapper">
@@ -884,7 +866,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.banner-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0,0,0,0.5);
+		background: color-mix(in srgb, var(--bg, #000) 50%, transparent);
 		display: flex;
 		align-items: flex-end;
 		padding: 32px;
@@ -991,22 +973,15 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 
 	.share-btn {
-		display: inline-flex;
-		align-items: center;
 		gap: 4px;
 		padding: 8px 18px;
-		border: 1px solid var(--border);
 		border-radius: 8px;
 		background: var(--surface);
-		color: var(--text);
 		font-size: 13px;
 		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.15s ease;
 	}
 
 	.share-btn:hover {
-		border-color: var(--accent);
 		color: var(--accent);
 	}
 
@@ -1046,12 +1021,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	.session-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 
 	.session-item {
-		display: flex; align-items: center; gap: 8px;
+		gap: 8px;
 		width: 100%; padding: 8px 10px; border-radius: 8px;
-		border: none; background: transparent;
-		color: var(--text-secondary); font-size: 13px;
-		text-align: left; cursor: pointer;
-		transition: all 0.15s ease; flex-wrap: wrap;
+		font-size: 13px;
+		text-align: left;
+		flex-wrap: wrap;
 	}
 
 	.session-item:hover { background: var(--hover); color: var(--text); }
@@ -1110,9 +1084,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 
 	.notes-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 
 	.notes-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -1120,23 +1093,21 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 
 	.quiz-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 
 	.quiz-toggle-btn:hover { border-color: var(--warning); color: var(--warning); }
-	.quiz-toggle-btn.active { background: rgba(245, 158, 11, 0.1); border-color: var(--warning); color: var(--warning); }
+	.quiz-toggle-btn.active { background: color-mix(in srgb, var(--warning) 10%, transparent); border-color: var(--warning); color: var(--warning); }
 
 	.exercise-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 
 	.exercise-toggle-btn:hover { border-color: var(--success); color: var(--success); }
-	.exercise-toggle-btn.active { background: rgba(34, 197, 94, 0.1); border-color: var(--success); color: var(--success); }
+	.exercise-toggle-btn.active { background: color-mix(in srgb, var(--success) 10%, transparent); border-color: var(--success); color: var(--success); }
 
 	.quiz-section {
 		margin-top: 24px;
@@ -1148,9 +1119,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 
 	.complete-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 
 	.complete-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -1242,12 +1212,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	/* Video toggle button */
 	.video-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 	.video-toggle-btn:hover { border-color: var(--danger); color: var(--danger); }
-	.video-toggle-btn.active { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: var(--danger); }
+	.video-toggle-btn.active { background: color-mix(in srgb, var(--danger) 10%, transparent); border-color: var(--danger); color: var(--danger); }
 
 	/* Videos section */
 	.videos-section {
@@ -1322,23 +1291,19 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		border-radius: 4px;
 	}
 	.video-status.published {
-		background: rgba(34, 197, 94, 0.12);
+		background: color-mix(in srgb, var(--success) 12%, transparent);
 		color: var(--success);
 	}
 	.video-status.planned {
-		background: rgba(245, 158, 11, 0.12);
+		background: color-mix(in srgb, var(--warning) 12%, transparent);
 		color: var(--warning);
 	}
 	.video-play-btn {
 		padding: 4px 12px;
 		border-radius: 6px;
-		border: 1px solid var(--border);
 		background: var(--surface);
-		color: var(--text);
 		font-size: 12px;
 		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.15s ease;
 		margin-left: auto;
 	}
 	.video-play-btn:hover {
@@ -1351,7 +1316,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		position: fixed;
 		inset: 0;
 		z-index: 500;
-		background: rgba(0,0,0,0.7);
+		background: color-mix(in srgb, var(--bg, #000) 70%, transparent);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1370,11 +1335,7 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 		position: absolute;
 		top: 12px;
 		right: 16px;
-		background: none;
-		border: none;
 		font-size: 28px;
-		color: var(--text-secondary);
-		cursor: pointer;
 		line-height: 1;
 		z-index: 1;
 	}
@@ -1482,8 +1443,8 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	/* Module complete banner */
 	.module-complete-banner {
 		margin-bottom: 20px;
-		background: rgba(var(--success-rgb, 45,122,79), 0.08);
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: color-mix(in srgb, var(--success) 8%, transparent);
+		border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
 		border-radius: 12px;
 		padding: 16px 20px;
 	}
@@ -1535,12 +1496,11 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	/* Discussion section */
 	.discuss-toggle-btn {
 		padding: 8px 16px; border-radius: 8px;
-		border: 1px solid var(--border); background: var(--surface);
-		color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer;
-		transition: all 0.15s ease;
+		background: var(--surface);
+		font-size: 13px; font-weight: 600;
 	}
 	.discuss-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
-	.discuss-toggle-btn.active { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); color: var(--accent); }
+	.discuss-toggle-btn.active { background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: var(--accent); color: var(--accent); }
 
 	.discussions-section {
 		margin-top: 24px;
@@ -1634,17 +1594,12 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 	.reply-btn, .delete-btn {
 		padding: 2px 8px;
-		border: none;
-		background: transparent;
-		color: var(--text-secondary);
 		font-size: 12px;
 		font-weight: 500;
-		cursor: pointer;
 		border-radius: 4px;
-		transition: all 0.15s ease;
 	}
 	.reply-btn:hover { color: var(--accent); background: var(--accent-dim); }
-	.delete-btn:hover { color: var(--danger, var(--danger)); background: rgba(239, 68, 68, 0.1); }
+	.delete-btn:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 
 	.reply-input {
 		display: flex;
@@ -1667,15 +1622,10 @@ import { fontSizeStore } from '$lib/stores/font-size.svelte';
 	}
 	.send-reply-btn {
 		padding: 8px 16px;
-		border: 1px solid var(--accent);
 		border-radius: 8px;
 		background: var(--accent-dim);
-		color: var(--accent);
 		font-size: 12px;
 		font-weight: 600;
-		cursor: pointer;
-		white-space: nowrap;
-		transition: all 0.15s ease;
 	}
 	.send-reply-btn:hover { background: var(--accent); color: white; }
 	.send-reply-btn:disabled { opacity: 0.4; cursor: default; }

@@ -119,9 +119,9 @@
   <div class="page-header">
     <h1>📢 Pengumuman</h1>
     <div class="header-actions">
-      <button class="admin-toggle" onclick={toggleAdmin}>
+      <Button variant="outline" size="sm" onclick={toggleAdmin}>
         {isAdmin ? '🔒 Admin' : '🔑 Admin Login'}
-      </button>
+      </Button>
     </div>
   </div>
 
@@ -155,7 +155,7 @@
               <span class="priority-badge {priorityBadge(ann.priority).class}">{priorityBadge(ann.priority).label}</span>
             </div>
             {#if isAdmin}
-              <button class="delete-btn" onclick={() => deleteAnnouncement(ann.id)} title="Hapus">🗑️</button>
+              <Button variant="ghost" size="sm" onclick={() => deleteAnnouncement(ann.id)} title="Hapus">🗑️</Button>
             {/if}
           </div>
           <div class="ann-content">{ann.content}</div>
@@ -177,8 +177,6 @@
   .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
   .page-header h1 { font-size: 1.4rem; }
   .header-actions { display: flex; gap: 0.5rem; }
-  .admin-toggle { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer; color: var(--text); }
-  .admin-toggle:hover { background: var(--hover); }
   .message { padding: 0.5rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
   .admin-form { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
   .admin-form h3 { font-size: 1rem; margin: 0; }
@@ -191,9 +189,7 @@
   .badge-high { background: var(--danger-light); color: var(--danger); }
   .badge-normal { background: var(--accent-dim); color: var(--accent); }
   .badge-low { background: var(--surface-hover); color: var(--text-secondary); }
-  .delete-btn { background: none; border: none; font-size: 1rem; cursor: pointer; padding: 0.25rem; opacity: 0.6; }
-  .delete-btn:hover { opacity: 1; }
-  .ann-content { font-size: 0.9rem; color: var(--text); line-height: 1.6; white-space: pre-wrap; margin-bottom: 0.75rem; }
+.ann-content { font-size: 0.9rem; color: var(--text); line-height: 1.6; white-space: pre-wrap; margin-bottom: 0.75rem; }
   .ann-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; color: var(--text-secondary); }
   .ann-path { background: var(--accent-dim); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 4px; }
   .empty { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }

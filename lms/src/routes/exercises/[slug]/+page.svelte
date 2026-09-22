@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import ExerciseRunner from '$lib/components/ExerciseRunner.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { submitCode } from '$lib/stores/submissions.svelte';
 
 	let { data } = $props();
@@ -138,9 +139,9 @@
 			{#if !showEditor}
 				<div class="code-section-prompt">
 					<p class="prompt-text">Latihan ini memiliki kode yang bisa kamu coba langsung.</p>
-					<button class="btn btn-primary" onclick={() => showEditor = true}>
+					<Button variant="primary" onclick={() => showEditor = true}>
 						▶ Coba Kode
-					</button>
+					</Button>
 				</div>
 			{:else}
 				<div class="code-section">
@@ -151,13 +152,14 @@
 						starterCode=""
 					/>
 					<div class="submit-area">
-						<button
-							class="btn btn-primary submit-btn"
-							onclick={() => submitCode(exercise.slug, '', exercise.type === 'html' ? 'html' : 'javascript', 'Output submitted', true)}
+						<Button
+							variant="primary"
+							loading={submitStatus === 'submitting'}
 							disabled={submitStatus === 'submitting'}
+							onclick={() => submitCode(exercise.slug, '', exercise.type === 'html' ? 'html' : 'javascript', 'Output submitted', true)}
 						>
 							{submitStatus === 'submitting' ? '⏳ Mengirim...' : submitStatus === 'submitted' ? '✓ Terkirim' : '📤 Kirim Jawaban'}
-						</button>
+						</Button>
 						{#if submitMessage}
 							<p class="submit-message" class:success={submitStatus === 'submitted'} class:error={submitStatus === 'error'}>
 								{submitMessage}

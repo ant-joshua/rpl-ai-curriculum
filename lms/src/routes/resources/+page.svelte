@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { modules } from '$lib/stores/modules';
-	import { EmptyState, Skeleton } from '$lib/components/ui';
+	import { EmptyState, Skeleton, Button } from '$lib/components/ui';
 	import { fade } from 'svelte/transition';
 
 	let pdfFiles = $state<
@@ -136,7 +136,7 @@
 			bind:value={searchQuery}
 		/>
 		{#if searchQuery}
-			<button class="search-clear" onclick={() => searchQuery = ''}>&times;</button>
+			<Button class="search-clear" variant="ghost" onclick={() => searchQuery = ''}>&times;</Button>
 		{/if}
 	</div>
 

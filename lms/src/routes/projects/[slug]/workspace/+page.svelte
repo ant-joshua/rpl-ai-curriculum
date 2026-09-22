@@ -7,6 +7,7 @@
 	import CodeEditor from '$lib/components/CodeEditor.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button } from '$lib/components/ui';
 
 	let { data } = $props();
 	let project = $state<Project>(data.project);
@@ -199,20 +200,19 @@
 		<div class="header-center">
 			<div class="progress-steps">
 				{#each project?.steps || [] as step, i}
-					<button
-						class="step-dot"
-						class:active={i === currentStepIdx}
-						class:done={completedSteps.includes(step.id)}
-						class:future={i > currentStepIdx}
+					<Button
+						variant="ghost"
+						size="sm"
+						class="step-dot{i === currentStepIdx ? ' active' : ''}{completedSteps.includes(step.id) ? ' done' : ''}{i > currentStepIdx ? ' future' : ''}"
 						onclick={() => goToStep(i)}
 						title={step.title}
-					>{i + 1}</button>
+					>{i + 1}</Button>
 				{/each}
 			</div>
 		</div>
 		<div class="header-right">
 			<span class="progress-pct">{progressPct}%</span>
-			<button class="reset-btn" onclick={resetProgress} title="Reset progress">🔄</button>
+			<Button variant="ghost" size="sm" class="reset-btn" onclick={resetProgress} title="Reset progress">🔄</Button>
 		</div>
 	</div>
 
@@ -237,7 +237,7 @@
 			<span class="error-icon">❌</span>
 			<h2>Gagal Memuat Project</h2>
 			<p>{error}</p>
-			<button class="action-btn" onclick={() => loadProgress()}>🔄 Coba Lagi</button>
+			<Button variant="primary" onclick={() => loadProgress()}>🔄 Coba Lagi</Button>
 			<a href="/projects" class="action-btn secondary">← Kembali ke Project Studio</a>
 		</div>
 	{:else if projectCompleted}
@@ -246,28 +246,31 @@
 			<p>+50 XP telah diberikan.</p>
 			<div class="completed-actions">
 				<a href="/projects" class="action-btn">← Kembali ke Project Studio</a>
-				<button class="action-btn secondary" onclick={resetProgress}>🔄 Ulangi Project</button>
+				<Button variant="secondary" onclick={resetProgress}>🔄 Ulangi Project</Button>
 			</div>
 		</div>
 	{:else if currentStep}
 		<div class="workspace-body">
 			<!-- Mobile tab bar (hidden on desktop) -->
 			<div class="mobile-tab-bar">
-				<button
-					class="mobile-tab"
-					class:active={mobileTab === 'instructions'}
+				<Button
+					variant="ghost"
+					size="sm"
+					class="mobile-tab{mobileTab === 'instructions' ? ' active' : ''}"
 					onclick={() => (mobileTab = 'instructions')}
-				>📝 Instruksi</button>
-				<button
-					class="mobile-tab"
-					class:active={mobileTab === 'code'}
+				>📝 Instruksi</Button>
+				<Button
+					variant="ghost"
+					size="sm"
+					class="mobile-tab{mobileTab === 'code' ? ' active' : ''}"
 					onclick={() => { mobileTab = 'code'; activeTab = 'code'; }}
-				>✏️ Code</button>
-				<button
-					class="mobile-tab"
-					class:active={mobileTab === 'preview'}
+				>✏️ Code</Button>
+				<Button
+					variant="ghost"
+					size="sm"
+					class="mobile-tab{mobileTab === 'preview' ? ' active' : ''}"
 					onclick={() => { mobileTab = 'preview'; activeTab = 'preview'; }}
-				>👁️ Preview</button>
+				>👁️ Preview</Button>
 			</div>
 
 			<div class="instruction-panel" class:mobile-show={mobileTab === 'instructions'}>
@@ -284,28 +287,30 @@
 						<p>{currentStep.hint}</p>
 					</div>
 				{/if}
-				<button class="hint-btn" onclick={() => (showHint = !showHint)}>
+				<Button variant="outline" size="sm" class="hint-btn" onclick={() => (showHint = !showHint)}>
 					{showHint ? '🙈 Sembunyikan' : '💡 Petunjuk'}
-				</button>
+				</Button>
 				<div class="mobile-verify-row">
-					<button class="verify-btn" onclick={verifyStep} disabled={verifying || !code.trim()}>
-						{verifying ? '⏳ Mengecek...' : '✅ Verifikasi'}
-					</button>
+					<Button variant="outline" size="sm" class="verify-btn" onclick={verifyStep} disabled={verifying || !code.trim()} loading={verifying}>
+						{verifying ? 'Mengecek...' : '✅ Verifikasi'}
+					</Button>
 				</div>
 			</div>
 
 			<div class="code-panel" class:mobile-show={mobileTab === 'code' || mobileTab === 'preview'}>
 				<div class="panel-tabs">
-					<button
-						class="panel-tab"
-						class:active={activeTab === 'code'}
+					<Button
+						variant="ghost"
+						size="sm"
+						class="panel-tab{activeTab === 'code' ? ' active' : ''}"
 						onclick={() => (activeTab = 'code')}
-					>✏️ Editor</button>
-					<button
-						class="panel-tab"
-						class:active={activeTab === 'preview'}
+					>✏️ Editor</Button>
+					<Button
+						variant="ghost"
+						size="sm"
+						class="panel-tab{activeTab === 'preview' ? ' active' : ''}"
 						onclick={() => (activeTab = 'preview')}
-					>👁️ Preview</button>
+					>👁️ Preview</Button>
 				</div>
 
 				<div class="panel-content">
@@ -346,16 +351,17 @@
 				<span class="save-status">{saving ? 'Menyimpan...' : ''}</span>
 			</div>
 			<div class="footer-actions">
-				<button class="verify-btn" onclick={verifyStep} disabled={verifying || !code.trim()}>
-					{verifying ? '⏳ Mengecek...' : '✅ Verifikasi'}
-				</button>
-				<button
+				<Button variant="outline" size="sm" class="verify-btn" onclick={verifyStep} disabled={verifying || !code.trim()} loading={verifying}>
+					{verifying ? 'Mengecek...' : '✅ Verifikasi'}
+				</Button>
+				<Button
+					variant="primary"
 					class="next-btn"
 					onclick={completeStep}
 					disabled={!verifyResult?.passed}
 				>
 					{currentStepIdx < totalSteps - 1 ? '➡️ Langkah Selanjutnya' : '🏁 Selesaikan Project'}
-				</button>
+				</Button>
 			</div>
 		</div>
 	{/if}
