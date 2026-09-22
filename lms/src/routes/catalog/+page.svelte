@@ -272,7 +272,7 @@
     font-feature-settings: 'cv01', 'ss03';
     font-weight: 510;
     background: transparent;
-    border: 1px solid rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
     border-radius: 6px;
     color: var(--text-secondary);
     outline: none;
@@ -282,8 +282,8 @@
   }
 
   .filter-select:hover {
-    background: rgba(0,0,0,0.04);
-    border-color: rgba(255,255,255,0.12);
+    background: var(--surface-alt);
+    border-color: var(--border);
     color: var(--text);
   }
 
@@ -311,7 +311,7 @@
   /* Clear button */
   .clear-btn {
     background: transparent;
-    border: 1px solid rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
     color: var(--text-secondary);
     font-family: inherit;
     font-size: 13px;

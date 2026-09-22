@@ -1,8 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/stores/i18n';
   import Icon from '$lib/components/ui/Icon.svelte';
-  import { EmptyState } from '$lib/components/ui/index.js';
-
+  import { EmptyState, ProgressBar } from '$lib/components/ui/index.js';
   let { data }: { data: import('./$types').PageData } = $props();
   let courses = $state(data.courses || []);
 </script>
@@ -37,9 +36,7 @@
             <span class="course-meta">{course.progress || 0}% selesai</span>
           </div>
           <div class="course-progress">
-            <div class="progress-track">
-              <div class="progress-fill" style="width: {course.progress || 0}%"></div>
-            </div>
+            <ProgressBar value={course.progress || 0} max={100} height={4} color="var(--success)" />
           </div>
           <Icon name="chevron-right" size={16} class="course-arrow" />
         </a>
@@ -86,7 +83,7 @@
   }
   .course-item:hover {
     border-color: var(--border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: var(--shadow-soft);
   }
   .course-icon {
     width: 40px;
@@ -119,18 +116,6 @@
   .course-progress {
     width: 80px;
     flex-shrink: 0;
-  }
-  .progress-track {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--success);
-    border-radius: 2px;
-    transition: width 0.3s ease;
   }
   .course-arrow {
     color: var(--text-muted);
