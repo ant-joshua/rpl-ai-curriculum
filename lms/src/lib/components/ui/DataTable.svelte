@@ -160,8 +160,8 @@
 
 <style>
 	.dt-wrapper {
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		overflow: hidden;
 		font-family: var(--font-sans);
@@ -173,19 +173,19 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 16px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.dt-search-icon { font-size: 14px; opacity: 0.5; }
 
 	.dt-search-input {
 		flex: 1;
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 6px;
 		padding: 6px 12px;
 		font-size: 13px;
-		color: #1a1a2e;
+		color: var(--text);
 		font-family: inherit;
 		font-feature-settings: 'cv01', 'ss03';
 		outline: none;
@@ -193,11 +193,11 @@
 	}
 
 	.dt-search-input:focus {
-		border-color: #4F46E5;
+		border-color: var(--accent);
 		box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 	}
 
-	.dt-search-input::placeholder { color: #64748b; }
+	.dt-search-input::placeholder { color: var(--text-secondary); }
 
 	.dt-scroll { overflow-x: auto; }
 
@@ -206,37 +206,37 @@
 		border-collapse: collapse;
 	}
 
-	thead tr { background: rgba(0, 0, 0, 0.04); }
+	thead tr { background: var(--surface-alt); }
 
 	th {
 		text-align: left;
 		font-size: 13px;
 		font-weight: 510;
-		color: #64748b;
+		color: var(--text-secondary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		padding: 10px 16px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 		white-space: nowrap;
 		user-select: none;
 	}
 
 	th.sortable { cursor: pointer; transition: color 0.15s; }
-	th.sortable:hover { color: #1a1a2e; }
+	th.sortable:hover { color: var(--text); }
 
 	.th-inner { display: flex; align-items: center; gap: 4px; }
-	.sort-arrow { font-size: 11px; color: #4F46E5; }
-	.sort-arrow.faded { color: #94a3b8; }
+	.sort-arrow { font-size: 11px; color: var(--accent); }
+	.sort-arrow.faded { color: var(--text-muted); }
 
 	td {
 		font-size: 14px;
-		color: #64748b;
+		color: var(--text-secondary);
 		padding: 12px 16px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 	}
 
 	tbody tr { transition: all 0.15s ease; animation: fadeSlideIn 0.25s ease both; opacity: 0; }
-	tbody tr:hover { background: rgba(0, 0, 0, 0.02); }
+	tbody tr:hover { background: var(--surface-alt); }
 	tbody tr:hover td:first-child { padding-left: 20px; }
 	tbody tr td { transition: padding 0.15s ease; }
 	tbody tr:last-child td { border-bottom: none; }
@@ -252,35 +252,35 @@
 	}
 
 	.dt-empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
-	.dt-empty-text { font-size: 14px; color: #64748b; margin: 0; }
+	.dt-empty-text { font-size: 14px; color: var(--text-secondary); margin: 0; }
 
 	.dt-pagination {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 16px;
-		border-top: 1px solid rgba(0, 0, 0, 0.05);
+		border-top: 1px solid var(--border);
 	}
 
-	.dt-page-info { font-size: 13px; color: #64748b; }
+	.dt-page-info { font-size: 13px; color: var(--text-secondary); }
 	.dt-page-controls { display: flex; gap: 6px; }
 
 	.dt-page-btn {
-		background: rgba(0, 0, 0, 0.04);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 6px;
 		padding: 4px 12px;
 		font-size: 13px;
 		font-weight: 510;
-		color: #64748b;
+		color: var(--text-secondary);
 		cursor: pointer;
 		font-family: inherit;
 		transition: all 0.15s;
 	}
 
 	.dt-page-btn:hover:not(:disabled) {
-		background: rgba(0, 0, 0, 0.08);
-		color: #1a1a2e;
+		background: var(--surface-alt);
+		color: var(--text);
 	}
 
 	.dt-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }

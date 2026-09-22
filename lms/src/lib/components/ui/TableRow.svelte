@@ -18,11 +18,11 @@
 
 <style>
 	.table-row {
-		border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+		border-bottom: 1px solid var(--surface-alt);
 		transition: background-color 0.15s ease;
 	}
 	.table-row:hover {
-		background: rgba(0, 0, 0, 0.02);
+		background: var(--surface-alt);
 	}
 	.table-row:last-child {
 		border-bottom: none;

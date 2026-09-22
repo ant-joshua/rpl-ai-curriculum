@@ -9,7 +9,7 @@
     density?: 'low' | 'high';
   } = $props();
 
-  const colors = ['#4F46E5', '#22C55E', '#FF9600', '#EC4899', '#3B82F6'];
+  const colors = ['var(--accent)', 'var(--success)', 'var(--warning)', '#EC4899', '#3B82F6'];
   const particleCount = density === 'high' ? 100 : 50;
 
   interface Particle {

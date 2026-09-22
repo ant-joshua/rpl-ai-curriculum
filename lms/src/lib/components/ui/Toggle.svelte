@@ -103,7 +103,7 @@
 		background: var(--text, #e8eaf0);
 		border-radius: 50%;
 		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+		box-shadow: var(--shadow-soft);
 		pointer-events: none;
 	}
 

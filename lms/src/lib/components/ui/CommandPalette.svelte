@@ -263,7 +263,7 @@
 	.palette-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.6);
+		background: rgba(26, 26, 46, 0.6);
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
@@ -276,13 +276,13 @@
 	.palette-modal {
 		width: 100%;
 		max-width: 580px;
-		background: #ffffff;
-		border: 1px solid #E2E8F0;
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 16px;
 		box-shadow:
-			0 0 0 1px rgba(0, 0, 0, 0.04),
-			0 8px 32px rgba(0, 0, 0, 0.12),
-			0 24px 64px rgba(0, 0, 0, 0.08);
+			0 0 0 1px var(--surface-alt),
+			0 8px 32px rgba(var(--accent-rgb), 0.12),
+			0 24px 64px var(--surface-alt);
 		max-height: 70vh;
 		display: flex;
 		flex-direction: column;
@@ -301,14 +301,14 @@
 		display: flex;
 		align-items: center;
 		padding: 12px 16px;
-		border-bottom: 1px solid #E2E8F0;
+		border-bottom: 1px solid var(--border);
 		flex-shrink: 0;
 	}
 
 	.palette-search-icon {
 		position: absolute;
 		left: 20px;
-		color: #94a3b8;
+		color: var(--text-muted);
 		pointer-events: none;
 		flex-shrink: 0;
 	}
@@ -319,7 +319,7 @@
 		font-size: 16px;
 		font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 		font-weight: 500;
-		color: #1a1a2e;
+		color: var(--text);
 		background: transparent;
 		border: none;
 		outline: none;
@@ -327,7 +327,7 @@
 	}
 
 	.palette-input::placeholder {
-		color: #94a3b8;
+		color: var(--text-muted);
 		font-weight: 400;
 	}
 
@@ -351,9 +351,9 @@
 		font-size: 11px;
 		font-family: 'SF Mono', 'Fira Code', monospace;
 		font-weight: 600;
-		color: #94a3b8;
-		background: #F1F5F9;
-		border: 1px solid #E2E8F0;
+		color: var(--text-muted);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 5px;
 		line-height: 1;
 	}
@@ -379,7 +379,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 32px;
-		color: #94a3b8;
+		color: var(--text-muted);
 	}
 
 	.palette-empty-icon {
@@ -399,7 +399,7 @@
 	.palette-group-label {
 		font-size: 11px;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		padding: 8px 20px 4px;
@@ -445,7 +445,7 @@
 	.palette-item-title {
 		font-size: 14px;
 		font-weight: 590;
-		color: #1a1a2e;
+		color: var(--text);
 		font-feature-settings: 'cv01', 'ss03';
 		white-space: nowrap;
 		overflow: hidden;
@@ -454,7 +454,7 @@
 
 	.palette-item-desc {
 		font-size: 12px;
-		color: #94a3b8;
+		color: var(--text-muted);
 		font-weight: 400;
 		white-space: nowrap;
 		overflow: hidden;
@@ -473,22 +473,22 @@
 
 	.badge-module {
 		background: rgba(79, 70, 229, 0.1);
-		color: #4F46E5;
+		color: var(--accent);
 	}
 
 	.badge-exercise {
 		background: rgba(34, 197, 94, 0.1);
-		color: #16A34A;
+		color: var(--success);
 	}
 
 	.badge-quiz {
 		background: rgba(245, 158, 11, 0.1);
-		color: #D97706;
+		color: var(--warning);
 	}
 
 	.badge-page {
 		background: rgba(100, 116, 139, 0.1);
-		color: #475569;
+		color: var(--text-secondary);
 	}
 
 	/* ===== Footer ===== */
@@ -497,7 +497,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 8px 20px;
-		border-top: 1px solid #E2E8F0;
+		border-top: 1px solid var(--border);
 		flex-shrink: 0;
 	}
 
@@ -512,7 +512,7 @@
 		align-items: center;
 		gap: 4px;
 		font-size: 11px;
-		color: #94a3b8;
+		color: var(--text-muted);
 	}
 
 	.palette-footer-hints kbd {
@@ -525,16 +525,16 @@
 		font-size: 10px;
 		font-family: 'SF Mono', 'Fira Code', monospace;
 		font-weight: 600;
-		color: #94a3b8;
-		background: #F1F5F9;
-		border: 1px solid #E2E8F0;
+		color: var(--text-muted);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 4px;
 		line-height: 1;
 	}
 
 	.palette-footer-count {
 		font-size: 11px;
-		color: #94a3b8;
+		color: var(--text-muted);
 	}
 
 	/* ===== Scrollbar ===== */
@@ -545,11 +545,11 @@
 		background: transparent;
 	}
 	.palette-results::-webkit-scrollbar-thumb {
-		background: #E2E8F0;
+		background: var(--surface-alt);
 		border-radius: 3px;
 	}
 	.palette-results::-webkit-scrollbar-thumb:hover {
-		background: #CBD5E1;
+		background: var(--border);
 	}
 
 	/* ===== Mobile: fullscreen ===== */
@@ -557,7 +557,7 @@
 		.palette-overlay {
 			padding: 0;
 			align-items: stretch;
-			background: rgba(0, 0, 0, 0.5);
+			background: rgba(26, 26, 46, 0.6);
 		}
 
 		.palette-modal {
@@ -566,7 +566,7 @@
 			border-radius: 0;
 			border: none;
 			margin-top: 60px;
-			box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+			box-shadow: 0 -4px 20px rgba(var(--accent-rgb), 0.1);
 		}
 
 		.palette-input {

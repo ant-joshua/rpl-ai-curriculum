@@ -91,13 +91,13 @@
 		position: absolute;
 		left: 12px;
 		top: 14px;
-		color: #94a3b8;
+		color: var(--text-muted);
 		pointer-events: none;
 		z-index: 1;
 		transition: color 0.2s ease;
 	}
 	.textarea-wrapper--focused .textarea-icon-prefix {
-		color: #4F46E5;
+		color: var(--accent);
 	}
 
 	.textarea-field {
@@ -106,9 +106,9 @@
 		padding: 0.625rem 0.75rem;
 		font-size: 0.875rem;
 		line-height: 1.5;
-		color: #1a1a2e;
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: var(--text);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		transition: border-color 0.2s ease, box-shadow 0.2s ease, padding-top 0.2s ease;
 		font-family: var(--font-sans);
@@ -121,24 +121,24 @@
 		padding-left: 36px;
 	}
 	.textarea-field::placeholder {
-		color: #94a3b8;
+		color: var(--text-muted);
 		transition: opacity 0.2s ease;
 	}
 	.textarea-field:focus {
 		outline: none;
-		border-color: #4F46E5;
-		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-light);
 	}
 	.textarea-field:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
 	}
 	.textarea-error {
-		border-color: #ef4444;
+		border-color: var(--danger);
 	}
 	.textarea-error:focus {
-		border-color: #ef4444;
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+		border-color: var(--danger);
+		box-shadow: 0 0 0 3px var(--danger-light);
 	}
 
 	/* Floating label */
@@ -147,7 +147,7 @@
 		left: 12px;
 		top: 14px;
 		font-size: 13px;
-		color: #94a3b8;
+		color: var(--text-muted);
 		font-weight: 500;
 		pointer-events: none;
 		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -159,12 +159,12 @@
 	.textarea-label--float {
 		top: 6px;
 		font-size: 10px;
-		color: #4F46E5;
+		color: var(--accent);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 	}
 	.textarea-wrapper--error .textarea-label--float {
-		color: #ef4444;
+		color: var(--danger);
 	}
 	.textarea-label--float ~ .textarea-field {
 		padding-top: 1rem;
@@ -173,7 +173,7 @@
 
 	.textarea-error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--danger);
 		margin-top: 2px;
 		display: flex;
 		align-items: center;
@@ -185,7 +185,7 @@
 		width: 4px;
 		height: 4px;
 		border-radius: 50%;
-		background: #ef4444;
+		background: var(--danger);
 		flex-shrink: 0;
 	}
 

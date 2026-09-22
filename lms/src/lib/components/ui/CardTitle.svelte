@@ -21,7 +21,7 @@
 		font-size: 1.125rem;
 		font-weight: 590;
 		line-height: 1.3;
-		color: #1a1a2e;
+		color: var(--text);
 		font-feature-settings: 'cv01', 'ss03';
 	}
 </style>

@@ -21,11 +21,11 @@
 		padding: 0.75rem 1rem;
 		text-align: left;
 		font-weight: 510;
-		color: #64748b;
+		color: var(--text-secondary);
 		font-size: 0.8125rem;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		border-bottom: 1px solid var(--surface-alt);
 		white-space: nowrap;
 		font-feature-settings: 'cv01', 'ss03';
 		background: rgba(255, 255, 255, 0.01);

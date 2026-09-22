@@ -40,7 +40,7 @@
 		top: 0;
 		left: 0;
 		height: 3px;
-		background: linear-gradient(90deg, #4F46E5, #22C55E);
+		background: linear-gradient(90deg, var(--accent), var(--success));
 		z-index: 9999;
 		transition: width 0.1s ease-out;
 		pointer-events: none;

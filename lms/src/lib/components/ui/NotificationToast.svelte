@@ -87,13 +87,13 @@
 		border: 1px solid var(--accent-dim, rgba(79,70,229,0.3));
 		border-left: 4px solid var(--accent, #4F46E5);
 		border-radius: 10px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 8px 24px rgba(26, 26, 46, 0.6);
 		pointer-events: auto;
 		cursor: pointer;
 		transition: box-shadow 0.15s;
 	}
 	.notification-toast:hover {
-		box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 10px 32px rgba(26, 26, 46, 0.6);
 	}
 	.nt-icon {
 		font-size: 20px;

@@ -25,14 +25,14 @@
 	.ui-loading-spinner {
 		width: 24px;
 		height: 24px;
-		border: 3px solid rgba(0, 0, 0, 0.06);
-		border-top-color: #4F46E5;
+		border: 3px solid var(--border);
+		border-top-color: var(--accent);
 		border-radius: 50%;
 		animation: spin 0.7s linear infinite;
 	}
 	.ui-loading-text {
 		font-size: 14px;
-		color: #64748b;
+		color: var(--text-secondary);
 	}
 	@keyframes spin { to { transform: rotate(360deg); } }
 </style>
