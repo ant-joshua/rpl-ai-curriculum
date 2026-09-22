@@ -52,11 +52,12 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			success: true,
 			data: {
 				id: user.id,
-				name: user.name,
+				name: user.display_name || user.name || user.username || 'User',
+				username: user.username || user.display_name || 'user',
 				email: user.email,
-				avatar: user.avatar,
-				provider: user.provider,
-				role: userRow?.role || 'student',
+				avatar: user.avatar_url || user.avatar || null,
+				provider: user.provider || 'local',
+				role: userRow?.role || user.role || 'student',
 			},
 		});
 	} catch (e: unknown) {

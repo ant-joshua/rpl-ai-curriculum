@@ -23,6 +23,18 @@ export async function handle({ event, resolve }: {
 	const url = new URL(event.request.url);
 	let path = url.pathname;
 
+	// Redirect legacy auth URLs
+	if (path === '/auth/login') {
+		const redirectUrl = new URL(event.request.url);
+		redirectUrl.pathname = '/login';
+		return Response.redirect(redirectUrl.toString(), 301);
+	}
+	if (path === '/auth/register') {
+		const redirectUrl = new URL(event.request.url);
+		redirectUrl.pathname = '/register';
+		return Response.redirect(redirectUrl.toString(), 301);
+	}
+
 	// Rate limiting for API routes (skip static files)
 	// Method-aware: mutations (POST/PATCH/DELETE) get a stricter limit
 	if (path.startsWith('/api/')) {
@@ -119,7 +131,7 @@ export async function handle({ event, resolve }: {
 		const token = getBearerToken(event.request);
 
 		if (!token) {
-			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
@@ -163,7 +175,7 @@ export async function handle({ event, resolve }: {
 	if (path.startsWith(INSTRUCTOR_API_PREFIX) || path.startsWith(GURU_API_PREFIX) || path.startsWith(TUTOR_API_PREFIX) || path.startsWith(BIMBEL_API_PREFIX) || path.startsWith(DOSEN_API_PREFIX) || path.startsWith(MAHASISWA_API_PREFIX) || path.startsWith(KAPRODI_API_PREFIX)) {
 		const token = getBearerToken(event.request);
 		if (!token) {
-			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
@@ -192,7 +204,7 @@ export async function handle({ event, resolve }: {
 	if (path.startsWith('/api/parent/')) {
 		const token = getBearerToken(event.request);
 		if (!token) {
-			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — Bearer token required' }), {
+			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));

@@ -1,9 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import { getDB } from '$lib/server/d1';
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { getTokenFromRequest, getSession } from '$lib/server/auth';
 
 export async function load({ request, platform }: { request: Request; platform: App.Platform }) {
-	const token = getBearerToken(request);
+	const token = getTokenFromRequest(request);
 	if (!token) { throw redirect(302, '/login'); }
 	
 	const session = await getSession(platform, token);

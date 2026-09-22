@@ -9,10 +9,10 @@ export async function load({ platform, request, url }: {
 	url: URL;
 }) {
 	const token = getBearerToken(request) || url.searchParams.get('token');
-	if (!token) throw redirect(307, '/auth/login?redirect=/learn');
+	if (!token) throw redirect(302, '/login?redirect=/learn');
 
 	const session = await getSession(platform, token);
-	if (!session) throw redirect(307, '/auth/login?redirect=/learn');
+	if (!session) throw redirect(302, '/login?redirect=/learn');
 
 	const db = getDB(platform);
 	const userId = session.user.id;

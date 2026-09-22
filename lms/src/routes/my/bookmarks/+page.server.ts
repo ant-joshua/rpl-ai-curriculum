@@ -13,12 +13,12 @@ export async function load({ request, platform, url }: {
 
 	const token = getBearerToken(request) || url.searchParams.get('token');
 	if (!token) {
-		throw redirect(302, '/auth/login?redirect=/my/bookmarks');
+		throw redirect(302, '/login?redirect=/my/bookmarks');
 	}
 
 	const session = await getSession(platform, token);
 	if (!session) {
-		throw redirect(302, '/auth/login?redirect=/my/bookmarks');
+		throw redirect(302, '/login?redirect=/my/bookmarks');
 	}
 
 	const userId = session.user.id;

@@ -108,19 +108,26 @@ function createAuthStore() {
 				const res = await fetch('/api/auth/me', {
 					headers: { 'Authorization': `Bearer ${authToken}` },
 				});
-				const body = await res.json();
-				if (body.success && body.data) {
-					authUser = body.data as OAuthUser;
+				if (res.status === 401) {
+					// Session expired or revoked
+					authToken = null;
+					authUser = null;
 					saveToStorage();
-					return true;
+					return false;
 				}
-				// Session expired
-				authToken = null;
-				authUser = null;
-				saveToStorage();
-				return false;
+				if (res.ok) {
+					const body = await res.json();
+					if (body.success && body.data) {
+						authUser = body.data as OAuthUser;
+						saveToStorage();
+						return true;
+					}
+				}
+				// Transient server error (500/503) — preserve existing session
+				return true;
 			} catch {
-				return false;
+				// Offline or network error — preserve existing session
+				return true;
 			}
 		},
 		loadFromStorage,

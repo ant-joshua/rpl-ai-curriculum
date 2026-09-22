@@ -1,30 +1,27 @@
-import { getBearerToken, deleteSession } from '$lib/server/auth';
+import { getTokenFromRequest, deleteSession } from '$lib/server/auth';
 
-function json(data: unknown, status = 200): Response {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { 'Content-Type': 'application/json' },
-	});
-}
-
-/**
- * POST /api/auth/logout
- *
- * Accepts Authorization: Bearer <token> header.
- * Deletes the session from D1.
- */
 export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return json({ success: false, error: 'No session token provided' }, 401);
+		const token = getTokenFromRequest(request);
+		if (token) {
+			await deleteSession(platform, token);
 		}
 
-		await deleteSession(platform, token);
-
-		return json({ success: true });
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				'Set-Cookie': 'lms_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0',
+			},
+		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return new Response(JSON.stringify({ success: false, error: msg }), {
+			status: 500,
+			headers: {
+				'Content-Type': 'application/json',
+				'Set-Cookie': 'lms_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0',
+			},
+		});
 	}
 }

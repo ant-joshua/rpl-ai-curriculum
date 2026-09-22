@@ -1143,5 +1143,8 @@ export const idTranslations: Record<string, string> = {
     'videos.page_title': 'Video Pembelajaran',
     'videos.playlist_link': '📺 Lihat Playlist',
     'videos.search': 'Cari video...',
-  }
+      'leaderboard.stat_level': 'Level',
+    'loading': 'Memuat...',
+    'siswa.belum_ada_absensi_tabel': 'Belum ada data absensi tercatat',
+}
 

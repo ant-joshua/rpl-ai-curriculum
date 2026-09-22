@@ -59,13 +59,15 @@
 				user.username = trimmed;
 				progress.updateStreak();
 				addToast('Login berhasil! Selamat datang ' + trimmed, 'success');
+				const params = new URLSearchParams(window.location.search);
+				const target = params.get('redirect') || (data.user.role === 'parent' ? '/parent' : '/dashboard');
 				setTimeout(() => {
-					window.location.href = data.user.role === 'parent' ? '/parent' : '/dashboard';
+					window.location.href = target;
 				}, 50);
 			}
 		} catch {
-			error = 'Network error';
-			addToast('Network error', 'error');
+			error = 'Terjadi gangguan koneksi ke server';
+			addToast('Terjadi gangguan koneksi ke server', 'error');
 		}
 	}
 
@@ -73,7 +75,7 @@
 		e.preventDefault();
 		const trimmed = code.trim();
 		if (!trimmed || trimmed.length !== 6) {
-			error = ''+t('login.signin')+'kan kode 6 digit dari aplikasi authenticator';
+			error = 'Masukkan kode 6 digit dari aplikasi authenticator';
 			addToast('Kode 6 digit diperlukan', 'warning');
 			return;
 		}
@@ -93,16 +95,18 @@
 				user.username = name;
 				progress.updateStreak();
 				addToast('Verifikasi 2FA berhasil!', 'success');
+				const params = new URLSearchParams(window.location.search);
+				const target = params.get('redirect') || (data.user.role === 'parent' ? '/parent' : '/dashboard');
 				setTimeout(() => {
-					window.location.href = data.user.role === 'parent' ? '/parent' : '/dashboard';
+					window.location.href = target;
 				}, 50);
 			} else {
 				error = data.error || 'Kode verifikasi salah';
 				addToast(error, 'error');
 			}
 		} catch {
-			error = 'Network error';
-			addToast('Network error', 'error');
+			error = 'Terjadi gangguan koneksi ke server';
+			addToast('Terjadi gangguan koneksi ke server', 'error');
 		} finally {
 			verifying2fa = false;
 		}

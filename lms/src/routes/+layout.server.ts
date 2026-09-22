@@ -1,8 +1,43 @@
 import { redirect } from '@sveltejs/kit';
 import { getSession, getTokenFromRequest } from '$lib/server/auth';
 
-const PUBLIC_PATHS = new Set(['/', '/feed', '/feed.json', '/feed.xml', '/certificate', '/sitemap.xml', '/robots.txt', '/login', '/register', '/register/instructor', '/reset-password', '/catalog']);
-const PUBLIC_PREFIXES = ['/certificate/', '/announcements'];
+const PUBLIC_PATHS = new Set([
+	'/',
+	'/feed',
+	'/feed.json',
+	'/feed.xml',
+	'/certificate',
+	'/sitemap.xml',
+	'/robots.txt',
+	'/login',
+	'/auth/login',
+	'/register',
+	'/auth/register',
+	'/register/instructor',
+	'/reset-password',
+	'/forgot-password',
+	'/catalog',
+	'/about',
+	'/contact',
+	'/privacy',
+	'/terms',
+	'/pricing',
+	'/offline'
+]);
+
+const PUBLIC_PREFIXES = [
+	'/certificate/',
+	'/certificates/',
+	'/announcements',
+	'/ai-course',
+	'/slides',
+	'/content',
+	'/practice',
+	'/badges',
+	'/leaderboard',
+	'/explore',
+	'/t/'
+];
 
 function isPublicPath(pathname: string): boolean {
 	if (PUBLIC_PATHS.has(pathname)) return true;
@@ -14,17 +49,40 @@ export async function load({ request, platform, url }: {
 	platform: App.Platform;
 	url: URL;
 }) {
-	if (url.pathname.startsWith('/api/') || isPublicPath(url.pathname)) {
+	const isApi = url.pathname.startsWith('/api/');
+	const isPublic = isPublicPath(url.pathname);
+
+	if (isApi) {
 		return {};
 	}
 
 	const token = getTokenFromRequest(request);
-	if (!token) {
-		throw redirect(302, '/login');
+
+	// Try to resolve user session if token is present
+	let sessionUser: any = null;
+	if (token && platform?.env?.DB) {
+		try {
+			const session = await getSession(platform, token);
+			if (session) {
+				sessionUser = session.user;
+			}
+		} catch (e) {
+			console.error('Session load error:', e);
+		}
 	}
-	const session = await getSession(platform, token);
-	if (!session) {
-		throw redirect(302, '/login');
+
+	// For public paths: return user if available, otherwise null
+	if (isPublic) {
+		return { user: sessionUser };
 	}
-	return { user: session.user };
+
+	// For protected routes: if no valid session, redirect to login with return target
+	if (!sessionUser) {
+		const redirectTarget = url.pathname !== '/' && url.pathname !== '/login'
+			? `?redirect=${encodeURIComponent(url.pathname + url.search)}`
+			: '';
+		throw redirect(302, `/login${redirectTarget}`);
+	}
+
+	return { user: sessionUser };
 }

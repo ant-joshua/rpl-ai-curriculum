@@ -45,84 +45,124 @@ export async function createSession(
 
 /**
  * Validate a session token. Returns the session + user data if valid, null otherwise.
- * Cleans up expired sessions as a side-effect.
+ * Cleans up expired sessions probabilistically in background.
  */
 export async function getSession(
 	platform: App.Platform,
 	token: string,
 ): Promise<{ session: Session; user: any } | null> {
+	if (!platform?.env?.DB || !token) return null;
 	const db = getDB(platform);
 	const now = new Date().toISOString();
 
-	// Clean expired sessions occasionally
-	await db
-		.prepare("DELETE FROM sessions WHERE expires_at < ?")
-		.bind(now)
-		.run();
-
-	const session = await db
-		.prepare('SELECT * FROM sessions WHERE id = ? AND expires_at > ?')
-		.bind(token, now)
-		.first<Session>();
-
-	if (!session) return null;
-
-	// Try users table first (password auth), fallback to oauth_users (OAuth)
-	let user = await db
-		.prepare('SELECT * FROM users WHERE id = ?')
-		.bind(session.user_id)
-		.first<any>();
-
-	if (!user) {
-		user = await db
-			.prepare('SELECT * FROM oauth_users WHERE id = ?')
-			.bind(session.user_id)
-			.first<OAuthUser>();
+	// Clean expired sessions occasionally (5% of requests, fire-and-forget) to avoid blocking reads
+	if (Math.random() < 0.05) {
+		db.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(now).run().catch(() => {});
 	}
 
-	if (!user) {
-		// User deleted but session remains — clean it up
-		await db.prepare('DELETE FROM sessions WHERE id = ?').bind(token).run();
+	try {
+		const session = await db
+			.prepare('SELECT * FROM sessions WHERE id = ? AND expires_at > ?')
+			.bind(token, now)
+			.first<Session>();
+
+		if (!session) return null;
+
+		// Try users table first (password auth), fallback to oauth_users (OAuth)
+		let user = await db
+			.prepare('SELECT * FROM users WHERE id = ?')
+			.bind(session.user_id)
+			.first<any>();
+
+		if (!user) {
+			user = await db
+				.prepare('SELECT * FROM oauth_users WHERE id = ?')
+				.bind(session.user_id)
+				.first<OAuthUser>();
+		}
+
+		if (!user) {
+			// User deleted but session remains — clean it up
+			await db.prepare('DELETE FROM sessions WHERE id = ?').bind(token).run();
+			return null;
+		}
+
+		return { session, user };
+	} catch (e) {
+		console.error('getSession error:', e);
 		return null;
 	}
-
-	return { session, user };
 }
 
 /**
  * Delete a session (logout).
  */
 export async function deleteSession(platform: App.Platform, token: string): Promise<void> {
+	if (!platform?.env?.DB || !token) return;
 	const db = getDB(platform);
-	await db.prepare('DELETE FROM sessions WHERE id = ?').bind(token).run();
+	await db.prepare('DELETE FROM sessions WHERE id = ?').bind(token).run().catch(() => {});
 }
 
 /**
- * Extract Bearer token from Authorization header, or null.
+ * Extract Bearer token from Authorization header.
  */
-export function getBearerToken(request: Request): string | null {
-	const auth = request.headers.get('Authorization');
+export function extractBearerToken(request: Request): string | null {
+	const auth = request.headers.get('Authorization') || request.headers.get('authorization');
 	if (!auth || !auth.startsWith('Bearer ')) return null;
 	return auth.slice(7).trim() || null;
 }
 
 /**
- * Read token from cookie or Authorization header.
- * Cookie takes precedence.
+ * Read token from cookie header.
  */
-export function getTokenFromRequest(request: Request): string | null {
-	// Try cookie first
-	const cookieHeader = request.headers.get('Cookie');
-	if (cookieHeader) {
-		const cookies = cookieHeader.split(';').map(c => c.trim());
-		for (const c of cookies) {
-			if (c.startsWith('lms_token=')) {
-				return decodeURIComponent(c.slice('lms_token='.length)) || null;
-			}
+export function extractCookieToken(request: Request): string | null {
+	const cookieHeader = request.headers.get('cookie') || request.headers.get('Cookie');
+	if (!cookieHeader) return null;
+	const cookies = cookieHeader.split(';').map(c => c.trim());
+	for (const c of cookies) {
+		if (c.startsWith('lms_token=')) {
+			const val = c.slice('lms_token='.length).trim();
+			return decodeURIComponent(val) || null;
+		}
+		if (c.startsWith('auth_token=')) {
+			const val = c.slice('auth_token='.length).trim();
+			return decodeURIComponent(val) || null;
+		}
+		if (c.startsWith('token=')) {
+			const val = c.slice('token='.length).trim();
+			return decodeURIComponent(val) || null;
 		}
 	}
-	// Fall back to Bearer header
-	return getBearerToken(request);
+	return null;
+}
+
+/**
+ * Read token from cookie, Authorization header, or URL parameter.
+ * Cookie takes precedence for web sessions.
+ */
+export function getTokenFromRequest(request: Request): string | null {
+	// 1. Try cookie first
+	const fromCookie = extractCookieToken(request);
+	if (fromCookie) return fromCookie;
+
+	// 2. Try Bearer header
+	const fromBearer = extractBearerToken(request);
+	if (fromBearer) return fromBearer;
+
+	// 3. Fall back to URL query parameter (?token=)
+	try {
+		const url = new URL(request.url);
+		return url.searchParams.get('token') || null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Extract Bearer token or fall back to cookie/query token so API/hooks don't reject web sessions.
+ */
+export function getBearerToken(request: Request): string | null {
+	return extractBearerToken(request) || getTokenFromRequest(request);
 }
 
 export async function getOrCreateUsersRow(

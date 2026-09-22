@@ -51,7 +51,7 @@
 
 <section class="cta-section">
   <h2>Siap mulai?</h2>
-  <a href="/auth/login" class="cta-button">Masuk Sekarang →</a>
+  <a href="/login" class="cta-button">Masuk Sekarang →</a>
 </section>
 
 <style>

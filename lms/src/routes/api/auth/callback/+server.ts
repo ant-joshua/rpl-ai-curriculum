@@ -222,9 +222,13 @@ export async function GET({ request, platform }: {
 			id: finalUserId, name: userInfo.name, email: userInfo.email, avatar: userInfo.avatar, provider, role: oauthRole,
 		}));
 
+		const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
 		return new Response(null, {
 			status: 302,
-			headers: { Location: `/?oauth_token=${token}&oauth_user=${userJson}` },
+			headers: {
+				Location: `/?oauth_token=${token}&oauth_user=${userJson}`,
+				'Set-Cookie': `lms_token=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${COOKIE_MAX_AGE}`,
+			},
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
