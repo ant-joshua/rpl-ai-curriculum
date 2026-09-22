@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Skeleton from '$lib/components/ui/Skeleton.svelte';
-	import EmptyState from '$lib/components/ui/EmptyState.svelte';
+	import { EmptyState, Skeleton, StatCard } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 
@@ -62,35 +61,15 @@
 	{#if loading}
 		<div class="stats-grid">
 			{#each Array(4) as _}
-				<div class="stat-card">
-					<Skeleton variant="text" width="60px" height="12px" />
-					<Skeleton variant="title" width="48px" height="28px" />
-					<Skeleton variant="text" width="80px" height="10px" />
-				</div>
+				<Skeleton variant="card" height="90px" />
 			{/each}
 		</div>
 	{:else}
 		<div class="stats-grid">
-			<div class="stat-card">
-				<span class="stat-label">Kursus Saya</span>
-				<span class="stat-value">{courseCount}</span>
-				<span class="stat-hint">kursus aktif</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Total Siswa</span>
-				<span class="stat-value">{totalStudents}</span>
-				<span class="stat-hint">terdaftar</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Menunggu Nilai</span>
-				<span class="stat-value">{pendingCount}</span>
-				<span class="stat-hint">tugas</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Rata-rata Nilai</span>
-				<span class="stat-value">{averageGrade}%</span>
-				<span class="stat-hint">semua kursus</span>
-			</div>
+			<StatCard value={courseCount} label="Kursus Saya" />
+			<StatCard value={totalStudents} label="Total Siswa" />
+			<StatCard value={pendingCount} label="Menunggu Nilai" />
+			<StatCard value="{averageGrade}%" label="Rata-rata Nilai" />
 		</div>
 	{/if}
 
@@ -186,36 +165,6 @@
 		grid-template-columns: repeat(4, 1fr);
 		gap: 12px;
 		margin-bottom: 24px;
-	}
-
-	.stat-card {
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 20px;
-		background: var(--bg, #fff);
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.stat-label {
-		font-size: 12px;
-		color: var(--text-secondary);
-		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-	}
-
-	.stat-value {
-		font-size: 28px;
-		font-weight: 700;
-		color: var(--text);
-		line-height: 1.2;
-	}
-
-	.stat-hint {
-		font-size: 11px;
-		color: var(--text-muted);
 	}
 
 	/* Section Cards */
@@ -345,12 +294,6 @@
 			grid-template-columns: repeat(2, 1fr);
 			gap: 8px;
 		}
-		.stat-card {
-			padding: 16px;
-		}
-		.stat-value {
-			font-size: 22px;
-		}
 		.submission-row {
 			flex-wrap: wrap;
 			gap: 8px;
@@ -364,12 +307,6 @@
 		.stats-grid {
 			grid-template-columns: 1fr 1fr;
 			gap: 6px;
-		}
-		.stat-card {
-			padding: 12px 10px;
-		}
-		.stat-value {
-			font-size: 20px;
 		}
 		.quick-links {
 			gap: 6px;

@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let submissions = $state<any[]>([]);
@@ -144,13 +145,13 @@
 							placeholder="Feedback untuk siswa..."
 							bind:value={feedbackDraft[s.id]}
 						/>
-						<button
-							class="grade-btn"
+						<Button
+							variant="primary"
 							onclick={() => grade(s)}
 							disabled={gradingId === s.id}
 						>
 							{gradingId === s.id ? 'Menyimpan...' : '💾 Simpan Nilai'}
-						</button>
+						</Button>
 					</div>
 				</div>
 			{/each}
@@ -224,20 +225,6 @@
 		font-family: inherit;
 	}
 	.fb-input { flex: 1; min-width: 160px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 9px; font-size: 13px; font-family: inherit; }
-	.grade-btn {
-		padding: 9px 16px;
-		background: var(--accent);
-		color: white;
-		border: none;
-		border-radius: 9px;
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.15s;
-		font-family: inherit;
-	}
-	.grade-btn:hover { opacity: 0.9; }
-	.grade-btn:disabled { opacity: 0.6; cursor: wait; }
 	@media (max-width: 560px) {
 		.sub-head { flex-direction: column; }
 		.grade-row { flex-direction: column; }

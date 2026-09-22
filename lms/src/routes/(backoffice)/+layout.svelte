@@ -7,6 +7,7 @@
 	import type { PageData } from './$types';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: PageData } = $props();
 
@@ -147,9 +148,9 @@
 </svelte:head>
 
 <div class="admin-layout">
-	<button class="sidebar-toggle" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle sidebar menu">
+	<Button variant="ghost" size="sm" class="sidebar-toggle" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle sidebar menu">
 		<Icon name="menu" size={20} />
-	</button>
+	</Button>
 
 	{#if sidebarOpen}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->

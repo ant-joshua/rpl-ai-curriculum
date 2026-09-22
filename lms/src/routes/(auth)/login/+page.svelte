@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui';
 	import { t } from '$lib/stores/i18n';
 	import { user } from '$lib/stores/user.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
@@ -139,9 +140,9 @@
 				{#if error}
 					<p class="login-error">{error}</p>
 				{/if}
-				<button type="submit" class="login-submit" disabled={verifying2fa}>
+				<Button type="submit" variant="primary" size="lg" disabled={verifying2fa} class="w-full">
 					{verifying2fa ? 'Memverifikasi...' : 'Verifikasi & Masuk'}
-				</button>
+				</Button>
 			</form>
 		{:else}
 			<!-- Normal Login -->
@@ -164,9 +165,9 @@
 				{#if error}
 					<p class="login-error">{error}</p>
 				{/if}
-				<button type="submit" class="login-submit">
+				<Button type="submit" variant="primary" size="lg" class="w-full">
 					Mulai Belajar
-				</button>
+				</Button>
 			</form>
 
 			<div class="oauth-divider">

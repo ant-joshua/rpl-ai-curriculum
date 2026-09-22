@@ -179,13 +179,13 @@
 						{@const daySessions = getDaySessions(dayIdx).filter(s => s.startTime.slice(0, 5) === hour)}
 						<div class="cal-cell" class:has-sessions={daySessions.length > 0}>
 							{#each daySessions as s}
-								<button class="session-block" style={getSessionStyle(s)} onclick={() => openEditSession(s)}>
+								<Button variant="ghost" class="session-block" style={getSessionStyle(s)} onclick={() => openEditSession(s)}>
 									<span class="session-time">{s.startTime.slice(0,5)}-{s.endTime.slice(0,5)}</span>
 									<span class="session-name">{s.studentName}</span>
 									{#if s.subject}
 										<span class="session-subject">{s.subject}</span>
 									{/if}
-								</button>
+								</Button>
 							{/each}
 						</div>
 					{/each}

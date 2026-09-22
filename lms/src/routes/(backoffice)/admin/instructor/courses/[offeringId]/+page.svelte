@@ -250,9 +250,9 @@
 
 		<!-- Tabs -->
 		<div class="tabs">
-			<button class="tab" class:tab--active={activeTab === 'overview'} onclick={() => activeTab = 'overview'}>📋 Overview</button>
-			<button class="tab" class:tab--active={activeTab === 'assignments'} onclick={() => activeTab = 'assignments'}>📝 Assignments & Grading</button>
-			<button class="tab" class:tab--active={activeTab === 'roster'} onclick={() => activeTab = 'roster'}>👥 Roster</button>
+			<Button variant={activeTab === 'overview' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'overview'}>📋 Overview</Button>
+			<Button variant={activeTab === 'assignments' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'assignments'}>📝 Assignments & Grading</Button>
+			<Button variant={activeTab === 'roster' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'roster'}>👥 Roster</Button>
 		</div>
 
 		<!-- Tab: Overview -->

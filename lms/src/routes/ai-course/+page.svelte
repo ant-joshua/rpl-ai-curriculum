@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui';
 	import { aiModules } from '$lib/stores/ai-course';
 	import { parseMarkdown, stripFrontmatter } from '$lib/utils/markdown';
 	import { onMount } from 'svelte';
@@ -82,14 +83,15 @@
 						<p class="module-desc">{mod.description}</p>
 						<div class="module-footer">
 							<span class="module-duration">⏱️ {mod.duration}</span>
-							<button
-								class="check-btn"
-								class:done={completedModules.has(mod.slug)}
-								onclick={(e) => { e.preventDefault(); e.stopPropagation(); toggleComplete(mod.slug); }}
-								title={completedModules.has(mod.slug) ? 'Tandai belum selesai' : 'Tandai selesai'}
+							<Button
+								variant="ghost"
+								size="sm"
+								class="check-btn {completedModules.has(mod.slug) ? 'done' : ''}"
+								onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggleComplete(mod.slug); }}
+								aria-label={completedModules.has(mod.slug) ? 'Tandai belum selesai' : 'Tandai selesai'}
 							>
 								{completedModules.has(mod.slug) ? '✅' : '⬜'}
-							</button>
+							</Button>
 						</div>
 					</a>
 				{/each}

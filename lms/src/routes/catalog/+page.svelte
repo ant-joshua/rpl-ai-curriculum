@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import Icon from '$lib/components/ui/Icon.svelte';
   import SearchInput from '$lib/components/ui/SearchInput.svelte';
-  import { EmptyState, SkeletonCard } from '$lib/components/ui/index.js';
+  import { Button, EmptyState, SkeletonCard } from '$lib/components/ui';
   import CourseCard from '$lib/components/catalog/CourseCard.svelte';
 
   let { data }: { data: import('./$types').PageData } = $props();
@@ -172,7 +172,7 @@
       title="No courses found"
       description={searchQuery ? 'Try a different search term or clear your filters.' : 'No courses match your current filters.'}
     >
-      <button class="clear-btn" onclick={clearFilters}>Clear all filters</button>
+      <Button variant="outline" size="sm" onclick={clearFilters}>Clear all filters</Button>
     </EmptyState>
   {:else}
     <!-- Course grid -->
@@ -308,26 +308,6 @@
     gap: 16px;
   }
 
-  /* Clear button */
-  .clear-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 510;
-    font-feature-settings: 'cv01', 'ss03';
-    padding: 7px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .clear-btn:hover {
-    background: rgba(var(--accent-rgb), 0.06);
-    border-color: rgba(var(--accent-rgb), 0.15);
-    color: var(--accent);
-  }
 
   /* Responsive */
   @media (max-width: 900px) {

@@ -156,14 +156,14 @@
 						{:else}
 							<div class="options">
 								{#each quizState.question.options || [] as opt, i}
-									<button
-										class="opt"
-										class:selected={selectedAnswer === String(i)}
+									<Button
+										variant="ghost"
+										class="opt {selectedAnswer === String(i) ? 'selected' : ''}"
 										onclick={() => (selectedAnswer = String(i))}
 									>
 										<span class="opt-key">{String.fromCharCode(65 + i)}</span>
 										<span>{showOption(opt)}</span>
-									</button>
+									</Button>
 								{/each}
 							</div>
 							<Button onclick={submit} disabled={!selectedAnswer || submitting} class="submit-btn">
@@ -221,9 +221,9 @@
 	.pts { font-size: 13px; color: var(--text-muted); margin-left: auto; }
 	.q-text { font-size: 19px; margin: 0 0 18px; line-height: 1.45; }
 	.options { display: flex; flex-direction: column; gap: 10px; }
-	.opt { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface, #fff); cursor: pointer; font-size: 15px; text-align: left; transition: border-color 0.15s, background 0.15s; }
-	.opt:hover { border-color: var(--accent); }
-	.opt.selected { border-color: var(--accent); background: var(--accent-light); }
+	:global(.opt) { display: flex; align-items: center; justify-content: flex-start; width: 100%; gap: 12px; padding: 13px 14px; border: 2px solid var(--border); border-radius: 12px; background: var(--surface, #fff); cursor: pointer; font-size: 15px; text-align: left; transition: border-color 0.15s, background 0.15s; }
+	:global(.opt:hover) { border-color: var(--accent); }
+	:global(.opt.selected) { border-color: var(--accent); background: var(--accent-light); }
 	.opt-key { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-weight: 700; font-size: 13px; flex-shrink: 0; }
 	.submit-btn { width: 100%; margin-top: 14px; }
 	.result { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 12px; font-size: 15px; }

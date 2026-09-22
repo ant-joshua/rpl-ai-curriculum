@@ -4,7 +4,7 @@
 	import { progress } from '$lib/stores/progress.svelte';
 	import { paths, computePathProgress } from '$lib/stores/paths';
 	import { goto } from '$app/navigation';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, Button } from '$lib/components/ui';
 
 	type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 
@@ -140,16 +140,16 @@
 
 	<!-- Tab bar -->
 	<div class="tab-bar">
-		<button
-			class="tab-btn"
-			class:active={activeTab === 'timeline'}
+		<Button
+			variant={activeTab === 'timeline' ? 'primary' : 'ghost'}
+			size="sm"
 			onclick={() => activeTab = 'timeline'}
-		>📋 {t('path.tab_timeline')}</button>
-		<button
-			class="tab-btn"
-			class:active={activeTab === 'paths'}
+		>📋 {t('path.tab_timeline')}</Button>
+		<Button
+			variant={activeTab === 'paths' ? 'primary' : 'ghost'}
+			size="sm"
 			onclick={() => activeTab = 'paths'}
-		>🗺️ {t('path.tab_paths')}</button>
+		>🗺️ {t('path.tab_paths')}</Button>
 	</div>
 
 	{#if activeTab === 'timeline'}
@@ -176,9 +176,12 @@
 						</div>
 					{/if}
 
-					<button
+					<div
+						role="button"
+						tabindex="0"
 						class="timeline-module"
 						onclick={() => goToModule(mod.slug)}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToModule(mod.slug); }}
 						style="--level-color: {meta.color}"
 					>
 						<div class="timeline-line-connector"></div>
@@ -205,7 +208,7 @@
 								<span class="progress-pct">{mod.pct}%</span>
 							</div>
 						</div>
-					</button>
+					</div>
 				{/each}
 			</div>
 		</section>
@@ -220,10 +223,13 @@
 			<div class="paths-grid">
 				{#each paths as path, i}
 					{@const pp = pathProgressMap[path.slug]}
-					<button
+					<div
+						role="button"
+						tabindex="0"
 						class="path-card"
 						style="--path-color: {path.color}; --path-color-end: {path.colorEnd}; --anim-delay: {i * 0.06}s"
 						onclick={() => goToPath(path.slug)}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToPath(path.slug); }}
 					>
 						<div class="path-card-bg" style="background: linear-gradient(135deg, {path.color}12, {path.colorEnd}12)"></div>
 						<div class="path-card-top">
@@ -245,14 +251,17 @@
 									style="width: {pp.pct}%; background: linear-gradient(90deg, {path.color}, {path.colorEnd})"
 								></div>
 							</div>
-							<span class="progress-pct">{pp.pct}%</span>
+							<div class="progress-info">
+								<span class="progress-pct">{pp.pct}%</span>
+								<span class="progress-ratio">{pp.completed}/{pp.total} {t('path.sessions_unit')}</span>
+							</div>
 						</div>
 						{#if pp.completed > 0 && pp.pct < 100}
 							<div class="path-card-footer">
 								<span class="continue-link" style="color: {path.color}">{t('path.continue')} →</span>
 							</div>
 						{/if}
-					</button>
+					</div>
 				{/each}
 			</div>
 		</section>

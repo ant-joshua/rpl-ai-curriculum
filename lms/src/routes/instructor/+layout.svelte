@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Avatar } from '$lib/components/ui';
+	import { Avatar, Button } from '$lib/components/ui';
 
 	let { data, children }: {
 		data: import('./$types').PageData;
@@ -35,11 +35,11 @@
 
 <div class="instructor-layout">
 	<!-- Mobile toggle -->
-	<button class="hamburger" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle menu">
+	<Button variant="ghost" size="sm" class="hamburger" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle menu">
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
-	</button>
+	</Button>
 
 	<aside class="sidebar" class:open={sidebarOpen}>
 		<div class="sidebar-header">

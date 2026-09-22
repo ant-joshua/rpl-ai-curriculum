@@ -320,13 +320,14 @@
 									<span class="session-module">{session.moduleTitle}</span>
 									<span class="session-title">{session.sessionTitle}</span>
 								</div>
-								<button
-									class="btn-session"
-									class:done={isSessionDone(session.moduleSlug, session.sessionId)}
+								<Button
+									variant={isSessionDone(session.moduleSlug, session.sessionId) ? 'secondary' : 'primary'}
+									size="sm"
+									class="btn-session {isSessionDone(session.moduleSlug, session.sessionId) ? 'done' : ''}"
 									onclick={() => handleCompleteSession(session.moduleSlug, session.sessionId)}
 								>
 									{isSessionDone(session.moduleSlug, session.sessionId) ? '✅ Selesai' : '⬜ Selesaikan'}
-								</button>
+								</Button>
 							</div>
 						{/each}
 					</div>

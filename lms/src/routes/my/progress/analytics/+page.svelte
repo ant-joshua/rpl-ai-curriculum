@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let apiError = $state('');
@@ -167,48 +168,12 @@
 
 	<!-- Header Stats -->
 	<div class="stats-row">
-		<div class="stat-card">
-			<span class="stat-icon">⭐</span>
-			<div class="stat-body">
-				<span class="stat-value">{totalXp}</span>
-				<span class="stat-label">XP Total</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<span class="stat-icon">🎖️</span>
-			<div class="stat-body">
-				<span class="stat-value">Lv {level}</span>
-				<span class="stat-label">Level</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<span class="stat-icon">🔥</span>
-			<div class="stat-body">
-				<span class="stat-value">{streak}</span>
-				<span class="stat-label">Streak Hari Ini</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<span class="stat-icon">🏆</span>
-			<div class="stat-body">
-				<span class="stat-value">{longestStreak}</span>
-				<span class="stat-label">Streak Terpanjang</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<span class="stat-icon">📊</span>
-			<div class="stat-body">
-				<span class="stat-value">{overallProgress}%</span>
-				<span class="stat-label">Penguasaan Mapel</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<span class="stat-icon">📅</span>
-			<div class="stat-body">
-				<span class="stat-value">{attendancePct}%</span>
-				<span class="stat-label">Kehadiran</span>
-			</div>
-		</div>
+		<StatCard icon="⭐" value={totalXp} label="XP Total" />
+		<StatCard icon="🎖️" value="Lv {level}" label="Level" />
+		<StatCard icon="🔥" value={streak} label="Streak Hari Ini" />
+		<StatCard icon="🏆" value={longestStreak} label="Streak Terpanjang" />
+		<StatCard icon="📊" value="{overallProgress}%" label="Penguasaan Mapel" />
+		<StatCard icon="📅" value="{attendancePct}%" label="Kehadiran" />
 	</div>
 
 	<!-- XP Over Time -->
@@ -365,37 +330,6 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 10px;
 		margin-bottom: 16px;
-	}
-	.stat-card {
-		background: var(--surface, #FFF);
-		border: 1px solid var(--border, var(--border));
-		border-radius: var(--radius, 12px);
-		padding: 14px 16px;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		box-shadow: none;
-		transition: all 0.15s ease;
-		animation: fadeSlideIn 0.3s ease both;
-		opacity: 0;
-	}
-	.stat-card:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-		border-color: rgba(79, 70, 229, 0.2);
-	}
-	.stat-icon { font-size: 22px; }
-	.stat-body { display: flex; flex-direction: column; }
-	.stat-value {
-		font-size: 18px;
-		font-weight: 700;
-		color: var(--text, var(--text));
-		line-height: 1.2;
-	}
-	.stat-label {
-		font-size: 11px;
-		font-weight: 400;
-		color: var(--text-secondary, var(--text-secondary));
 	}
 
 	/* Chart cards */

@@ -417,16 +417,15 @@ import { Badge } from '$lib/components/ui';
 
 				<div class="nav-questions">
 					{#each questions as q, i}
-						<button
-							class="nav-q-btn"
-							class:active={i === currentQuestionIndex}
-							class:answered={answers[q.id]?.trim() !== ''}
-							class:flagged={flaggedQuestions.has(q.id)}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="nav-q-btn {i === currentQuestionIndex ? 'active' : ''} {answers[q.id]?.trim() !== '' ? 'answered' : ''} {flaggedQuestions.has(q.id) ? 'flagged' : ''}"
 							onclick={() => goToQuestion(i)}
 							title="{q.question?.slice(0, 80)}..."
 						>
 							{i + 1}
-						</button>
+						</Button>
 					{/each}
 				</div>
 			</aside>

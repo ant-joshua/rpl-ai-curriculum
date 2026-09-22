@@ -338,23 +338,23 @@
 										<div class="attach-row">
 											<span class="attach-type">{DOC_TYPE_LABELS[d.doc_type] || d.doc_type}</span>
 											<span class="attach-title">{d.title}</span>
-											<button class="attach-del" onclick={() => detachDoc(d.link_id)} title="Lepas">✕</button>
+											<Button variant="ghost" size="sm" class="attach-del" onclick={() => detachDoc(d.link_id)} title="Lepas">✕</Button>
 										</div>
 									{/each}
 								{/if}
 								{#if showAttachDoc}
-									<button class="attach-toggle" onclick={loadAvailableDocs}>+ Pilih dari Materiku</button>
+									<Button variant="ghost" size="sm" class="attach-toggle" onclick={loadAvailableDocs}>+ Pilih dari Materiku</Button>
 									<div class="attach-pick">
 										{#each availableDocs as d (d.id)}
-											<button class="attach-option" onclick={() => attachDoc(d.id)} disabled={attachingDoc === d.id}>
+											<Button variant="outline" size="sm" class="attach-option" onclick={() => attachDoc(d.id)} disabled={attachingDoc === d.id}>
 												{DOC_TYPE_LABELS[d.doc_type] || d.doc_type} — {d.title}
-											</button>
+											</Button>
 										{:else}
 											<p class="attach-empty">Tidak ada materi di bank. Generate dulu di AIEdu.</p>
 										{/each}
 									</div>
 								{:else}
-									<button class="attach-toggle" onclick={() => { showAttachDoc = true; loadAvailableDocs(); }}>+ Attach Materi AIEdu</button>
+									<Button variant="ghost" size="sm" class="attach-toggle" onclick={() => { showAttachDoc = true; loadAvailableDocs(); }}>+ Attach Materi AIEdu</Button>
 								{/if}
 							</div>
 						{/if}
@@ -426,12 +426,11 @@
 	.attach-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--surface); font-size: 12px; }
 	.attach-type { font-size: 10px; font-weight: 700; background: var(--surface); padding: 2px 7px; border-radius: 6px; color: var(--primary); flex-shrink: 0; }
 	.attach-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-	.attach-del { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-muted); }
+	.attach-del { font-size: 11px; color: var(--text-muted); }
 	.attach-del:hover { color: var(--danger); }
-	.attach-toggle { background: none; border: none; cursor: pointer; font-size: 12px; color: var(--primary); font-weight: 600; padding: 6px 0; }
+	.attach-toggle { color: var(--primary); font-weight: 600; padding: 6px 0; }
 	.attach-pick { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-top: 8px; }
-	.attach-option { text-align: left; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 12px; cursor: pointer; }
-	.attach-option:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, white); }
+	.attach-option { text-align: left; justify-content: flex-start; white-space: normal; }
 
 	@media (max-width: 768px) {
 		.editor-layout { grid-template-columns: 1fr; }

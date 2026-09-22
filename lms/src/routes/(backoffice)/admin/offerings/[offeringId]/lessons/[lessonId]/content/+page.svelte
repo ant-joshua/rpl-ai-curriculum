@@ -622,10 +622,11 @@
 			<label class="tpl-label">Jenis Template</label>
 			<div class="tpl-types">
 				{#each TEMPLATE_TYPES as tt}
-					<button
-						class="tpl-type-btn {tplType === tt.value ? 'active' : ''}"
+					<Button
+						variant={tplType === tt.value ? 'primary' : 'outline'}
+						size="sm"
 						onclick={() => tplType = tt.value}
-					>{tt.label}</button>
+					>{tt.label}</Button>
 				{/each}
 			</div>
 			<Input bind:value={tplTopic} label="Topik / Materi *" placeholder="Contoh: Pengenalan Algoritma, Basis Data Relasional, Struktur Data" />

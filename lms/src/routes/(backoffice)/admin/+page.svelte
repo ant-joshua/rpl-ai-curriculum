@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { t } from '$lib/stores/i18n';
-	import { Skeleton } from '$lib/components/ui';
+	import { Skeleton, StatCard } from '$lib/components/ui';
 
 	interface ActivityItem {
 		id?: string | number;
@@ -73,42 +73,15 @@
 	<div class="stats-grid">
 		{#if loading}
 			{#each Array(6) as _}
-				<div class="stat-card">
-					<Skeleton variant="text" width="60px" height="12px" />
-					<Skeleton variant="title" width="80px" height="28px" />
-				</div>
+				<Skeleton variant="card" height="90px" />
 			{/each}
 		{:else if data}
-			<div class="stat-card">
-				<span class="stat-icon">👥</span>
-				<span class="stat-number">{data.totalUsers.toLocaleString()}</span>
-				<span class="stat-label">Total Users</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📋</span>
-				<span class="stat-number">{data.activeEnrollments.toLocaleString()}</span>
-				<span class="stat-label">Active Enrollments</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📚</span>
-				<span class="stat-number">{data.totalCourses.toLocaleString()}</span>
-				<span class="stat-label">Total Courses</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">📝</span>
-				<span class="stat-number">{data.totalLessons.toLocaleString()}</span>
-				<span class="stat-label">Published Lessons</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">⏳</span>
-				<span class="stat-number">{data.pendingGrades.toLocaleString()}</span>
-				<span class="stat-label">Pending Grades</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-icon">🆕</span>
-				<span class="stat-number">{data.newUsers.toLocaleString()}</span>
-				<span class="stat-label">New Users (7d)</span>
-			</div>
+			<StatCard icon="👥" value={data.totalUsers.toLocaleString()} label="Total Users" />
+			<StatCard icon="📋" value={data.activeEnrollments.toLocaleString()} label="Active Enrollments" />
+			<StatCard icon="📚" value={data.totalCourses.toLocaleString()} label="Total Courses" />
+			<StatCard icon="📝" value={data.totalLessons.toLocaleString()} label="Published Lessons" />
+			<StatCard icon="⏳" value={data.pendingGrades.toLocaleString()} label="Pending Grades" />
+			<StatCard icon="🆕" value={data.newUsers.toLocaleString()} label="New Users (7d)" />
 		{/if}
 	</div>
 
@@ -180,33 +153,6 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 12px;
 		margin-bottom: 32px;
-	}
-
-	.stat-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 18px 16px;
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.stat-icon {
-		font-size: 20px;
-		line-height: 1;
-	}
-
-	.stat-number {
-		font-size: 28px;
-		font-weight: 700;
-		color: var(--text);
-		line-height: 1.2;
-	}
-
-	.stat-label {
-		font-size: 13px;
-		color: var(--text-muted);
 	}
 
 	/* Sections */

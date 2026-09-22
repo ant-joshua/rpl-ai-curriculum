@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton } from '$lib/components/ui/index.js';
+	import { Skeleton, StatCard } from '$lib/components/ui/index.js';
 
 	let loading = $state(true);
 	let userName = $state('Student');
@@ -111,9 +111,7 @@
 		<!-- Stats skeleton -->
 		<div class="stats-row">
 			{#each [1, 2, 3, 4] as _}
-				<div class="stat-card">
-					<Skeleton variant="block" count={2} />
-				</div>
+				<Skeleton variant="card" height="80px" />
 			{/each}
 		</div>
 		<div class="section">
@@ -125,34 +123,10 @@
 	{:else}
 		<!-- Stats Row -->
 		<div class="stats-row">
-			<div class="stat-card">
-				<div class="stat-icon">📚</div>
-				<div class="stat-info">
-					<span class="stat-value">{enrolledCount}</span>
-					<span class="stat-label">Enrolled Courses</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">✅</div>
-				<div class="stat-info">
-					<span class="stat-value">{completedCount}</span>
-					<span class="stat-label">Completed</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">⏱️</div>
-				<div class="stat-info">
-					<span class="stat-value">{studyHours}</span>
-					<span class="stat-label">Study Time (hours)</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon">🏆</div>
-				<div class="stat-info">
-					<span class="stat-value">{certificateCount}</span>
-					<span class="stat-label">Certificates</span>
-				</div>
-			</div>
+			<StatCard icon="📚" value={enrolledCount} label="Enrolled Courses" />
+			<StatCard icon="✅" value={completedCount} label="Completed" />
+			<StatCard icon="⏱️" value={studyHours} label="Study Time (hours)" />
+			<StatCard icon="🏆" value={certificateCount} label="Certificates" />
 		</div>
 
 		<!-- Continue Learning -->
@@ -271,34 +245,6 @@
 		grid-template-columns: repeat(4, 1fr);
 		gap: 12px;
 		margin-bottom: 24px;
-	}
-	.stat-card {
-		background: var(--surface, #fff);
-		border: 1px solid var(--border, var(--border));
-		border-radius: 8px;
-		padding: 20px;
-		display: flex;
-		align-items: center;
-		gap: 14px;
-	}
-	.stat-icon {
-		font-size: 24px;
-		line-height: 1;
-	}
-	.stat-info {
-		display: flex;
-		flex-direction: column;
-	}
-	.stat-value {
-		font-size: 22px;
-		font-weight: 600;
-		color: var(--text, var(--text));
-		line-height: 1.2;
-	}
-	.stat-label {
-		font-size: 12px;
-		color: var(--text-muted, var(--text-muted));
-		margin-top: 2px;
 	}
 
 	.section {

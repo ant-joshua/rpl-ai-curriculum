@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button } from '$lib/components/ui';
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
@@ -119,9 +120,9 @@
 				{#if error}
 					<p class="reset-error">{error}</p>
 				{/if}
-				<button type="submit" class="reset-submit" disabled={loading}>
+				<Button type="submit" variant="primary" size="lg" disabled={loading} class="w-full">
 					{loading ? 'Mengirim...' : 'Kirim Link Reset'}
-				</button>
+				</Button>
 			</form>
 		{:else}
 			<p class="reset-desc">Masukkan password baru kamu</p>
@@ -147,9 +148,9 @@
 				{#if error}
 					<p class="reset-error">{error}</p>
 				{/if}
-				<button type="submit" class="reset-submit" disabled={loading}>
+				<Button type="submit" variant="primary" size="lg" disabled={loading} class="w-full">
 					{loading ? 'Menyimpan...' : 'Reset Password'}
-				</button>
+				</Button>
 			</form>
 		{/if}
 

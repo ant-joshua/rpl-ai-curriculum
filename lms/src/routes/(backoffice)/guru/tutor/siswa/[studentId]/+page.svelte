@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton, EmptyState, Badge, DataTable } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, DataTable, Button } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n';
@@ -136,12 +136,12 @@ import { t } from '$lib/stores/i18n';
 			</div>
 
 			<div class="tabs">
-				<button class="tab" class:tab--active={activeTab === 'sessions'} onclick={() => activeTab = 'sessions'}>
+				<Button variant={activeTab === 'sessions' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'sessions'}>
 					{t('tutor.riwayat_sesi')}
-				</button>
-				<button class="tab" class:tab--active={activeTab === 'notes'} onclick={() => activeTab = 'notes'}>
+				</Button>
+				<Button variant={activeTab === 'notes' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'notes'}>
 					{t('tutor.catatan_progres')}
-				</button>
+				</Button>
 			</div>
 
 			{#if activeTab === 'sessions'}
