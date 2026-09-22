@@ -201,7 +201,7 @@
 						{#if couponInfo && appliedCoupon}
 							<div class="coupon-badge">
 								<span>🎟️ {appliedCoupon} applied</span>
-								<button class="coupon-remove" onclick={removeCoupon}>✕</button>
+								<Button variant="ghost" size="sm" class="coupon-remove" onclick={removeCoupon}>✕</Button>
 							</div>
 						{:else}
 							<div class="coupon-input-row">
@@ -275,6 +275,6 @@
 		border: 1px solid var(--success); border-radius: 8px; font-size: 13px;
 		color: var(--success); font-weight: 600;
 	}
-	.coupon-remove { background: none; border: none; cursor: pointer; color: var(--success); font-size: 14px; }
+	:global(.coupon-remove) { background: none !important; border: none !important; cursor: pointer; color: var(--success); font-size: 14px; padding: 0 !important; min-width: auto !important; }
 	.coupon-error { font-size: 12px; color: var(--danger); margin: 0 0 8px; }
 </style>

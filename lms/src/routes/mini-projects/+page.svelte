@@ -54,8 +54,7 @@
 					<li>
 						<Button
 							variant="ghost"
-							class="item-link"
-							class:active={activeSlug === item.slug}
+							class="item-link {activeSlug === item.slug ? 'active' : ''}"
 							onclick={() => toggleItem(item.slug)}
 						>
 							{item.title.replace(/^#\s*/, '')}
