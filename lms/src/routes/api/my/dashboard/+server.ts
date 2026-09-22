@@ -1,21 +1,15 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError } from '$lib/server/api';
 
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
-
-		const userId = session.user.id;
+		const user = auth.user;
+		const userId = user.id;
 		const db = getDB(platform);
-		const userName = session.user.name || session.user.email?.split('@')[0] || 'Student';
+		const userName = user.display_name || user.name || user.username || user.email?.split('@')[0] || 'Student';
 
 		// --- Current streak: count consecutive days with activity ---
 		const today = new Date().toISOString().slice(0, 10);
@@ -175,25 +169,22 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			 LIMIT 10`
 		).bind(userId, userId).all<any>();
 
-		return jsonResponse({
-			success: true,
-			data: {
-				userName,
-				currentStreak,
-				averageProgress,
-				activeCourses,
-				upcomingDeadlines: upcomingDeadlines || [],
-				recentActivity: (recentActivity || []).map(a => ({
-					action: a.action,
-					entityType: a.entity_type,
-					entityId: a.entity_id,
-					metadata: a.metadata ? (() => { try { return JSON.parse(a.metadata); } catch { return a.metadata; } })() : null,
-					createdAt: a.created_at,
-				})),
-			}
+		return apiOk({
+			userName,
+			currentStreak,
+			averageProgress,
+			activeCourses,
+			upcomingDeadlines: upcomingDeadlines || [],
+			recentActivity: (recentActivity || []).map((a: any) => ({
+				action: a.action,
+				entityType: a.entity_type,
+				entityId: a.entity_id,
+				metadata: a.metadata ? (() => { try { return JSON.parse(a.metadata); } catch { return a.metadata; } })() : null,
+				createdAt: a.created_at,
+			})),
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

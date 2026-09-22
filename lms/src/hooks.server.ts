@@ -109,124 +109,88 @@ export async function handle({ event, resolve }: {
 		}
 	}
 
-	// Try to get logged-in user for activity logging (available for any route)
+	// Resolve authentication once for all routes (cookie, Bearer, or query token)
 	let currentUser: any = null;
-	if (!path.startsWith('/api/admin/')) {
-		const token = getBearerToken(event.request);
-		if (token) {
-			try {
-				const session = await getSession(event.platform, token);
-				if (session) {
-					const db = getDB(event.platform);
-					currentUser = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
-				}
-			} catch {
-				// best-effort
+	const token = getBearerToken(event.request);
+	if (token) {
+		try {
+			const session = await getSession(event.platform, token);
+			if (session) {
+				const db = getDB(event.platform);
+				currentUser = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
+				event.locals = event.locals || {};
+				event.locals.session = session;
+				event.locals.user = currentUser || session.user;
 			}
+		} catch {
+			// best-effort
 		}
 	}
 
-	// Admin API auth check
+	// Admin API auth guard
 	if (path.startsWith('/api/admin/')) {
-		const token = getBearerToken(event.request);
-
 		if (!token) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-
-		const session = await getSession(event.platform, token);
-
-		if (!session) {
+		if (!currentUser) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-
-		// Also query the users table for role (migration 0021 added role column)
-		const db = getDB(event.platform);
-		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
-
-		if (!user) {
-			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'User not found' }), {
-				status: 403,
-				headers: { 'Content-Type': 'application/json' },
-			}));
-		}
-
-		// Check admin role
-		if (!ADMIN_ROLES.includes(user.role)) {
+		if (!ADMIN_ROLES.includes(currentUser.role)) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — admin role required' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-
-		// Attach user info to locals for downstream use
-		event.locals = event.locals || {};
-		event.locals.user = user;
-		currentUser = user;
 	}
 
-	// Instructor API auth check — instructors access their own course data
+	// Instructor API auth guard
 	if (path.startsWith(INSTRUCTOR_API_PREFIX) || path.startsWith(GURU_API_PREFIX) || path.startsWith(TUTOR_API_PREFIX) || path.startsWith(BIMBEL_API_PREFIX) || path.startsWith(DOSEN_API_PREFIX) || path.startsWith(MAHASISWA_API_PREFIX) || path.startsWith(KAPRODI_API_PREFIX)) {
-		const token = getBearerToken(event.request);
 		if (!token) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		const session = await getSession(event.platform, token);
-		if (!session) {
+		if (!currentUser) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		const db = getDB(event.platform);
-		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
-		if (!user || !['superadmin', 'admin', 'instructor'].includes(user.role)) {
+		if (!['superadmin', 'admin', 'instructor'].includes(currentUser.role)) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — instructor role required' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		event.locals = event.locals || {};
-		event.locals.user = user;
-		currentUser = user;
 	}
 
-	// Parent API auth check — parents access their linked students' progress
+	// Parent API auth guard
 	if (path.startsWith('/api/parent/')) {
-		const token = getBearerToken(event.request);
 		if (!token) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — login required' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		const session = await getSession(event.platform, token);
-		if (!session) {
+		if (!currentUser) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Unauthorized — invalid or expired token' }), {
 				status: 401,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		const db = getDB(event.platform);
-		const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(session.user.id).first<any>();
-		if (!user || !['parent', 'superadmin', 'admin'].includes(user.role)) {
+		if (!['parent', 'superadmin', 'admin'].includes(currentUser.role)) {
 			return addSecurityHeaders(new Response(JSON.stringify({ success: false, error: 'Forbidden — parent role required' }), {
 				status: 403,
 				headers: { 'Content-Type': 'application/json' },
 			}));
 		}
-		event.locals = event.locals || {};
-		event.locals.user = user;
-		currentUser = user;
 	}
 
 	// Activity logging — capture full HTTP metadata

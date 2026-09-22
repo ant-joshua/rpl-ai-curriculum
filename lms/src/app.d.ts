@@ -26,7 +26,11 @@ interface D1Result {
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			user?: any;
+			session?: any;
+			tenant?: any;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		interface Platform {
