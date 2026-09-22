@@ -18,7 +18,7 @@ function createAuthStore() {
 	let authToken = $state<string | null>(null);
 
 	function loadFromStorage() {
-		if (!browser) return;
+		if (!browser || typeof localStorage === 'undefined') return;
 		try {
 			const token = localStorage.getItem(AUTH_KEY);
 			const raw = localStorage.getItem(AUTH_USER_KEY);
@@ -27,19 +27,27 @@ function createAuthStore() {
 				authUser = JSON.parse(raw);
 			}
 		} catch {
-			localStorage.removeItem(AUTH_KEY);
-			localStorage.removeItem(AUTH_USER_KEY);
+			try {
+				localStorage.removeItem(AUTH_KEY);
+				localStorage.removeItem(AUTH_USER_KEY);
+			} catch {
+				// ignore
+			}
 		}
 	}
 
 	function saveToStorage() {
-		if (!browser) return;
-		if (authToken && authUser) {
-			localStorage.setItem(AUTH_KEY, authToken);
-			localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authUser));
-		} else {
-			localStorage.removeItem(AUTH_KEY);
-			localStorage.removeItem(AUTH_USER_KEY);
+		if (!browser || typeof localStorage === 'undefined') return;
+		try {
+			if (authToken && authUser) {
+				localStorage.setItem(AUTH_KEY, authToken);
+				localStorage.setItem(AUTH_USER_KEY, JSON.stringify(authUser));
+			} else {
+				localStorage.removeItem(AUTH_KEY);
+				localStorage.removeItem(AUTH_USER_KEY);
+			}
+		} catch {
+			// ignore
 		}
 	}
 

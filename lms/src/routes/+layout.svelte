@@ -23,9 +23,7 @@
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
 	import { startPolling as startDmPolling, stopPolling as stopDmPolling, getSnapshot as getDmSnapshot, subscribe as subscribeDm } from '$lib/stores/direct-unread.svelte';
-	import AchievementToast from '$lib/components/toast/AchievementToast.svelte';
-	import GamificationToast from '$lib/components/toast/GamificationToast.svelte';
-	import QuestCompletePopup from '$lib/components/QuestCompletePopup.svelte';
+	import { GamificationToasts } from '$lib/features/gamification';
 	import ViewportBanner from '$lib/components/layout/ViewportBanner.svelte';
 	import OfflineBadge from '$lib/components/layout/OfflineBadge.svelte';
 	import FloatingActions from '$lib/components/layout/FloatingActions.svelte';
@@ -539,9 +537,6 @@
 
 <NotificationToast />
 
-<AchievementToast />
-
-<GamificationToast />
-<QuestCompletePopup />
+<GamificationToasts />
 
 <ConfirmDialog />
