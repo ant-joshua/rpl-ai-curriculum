@@ -375,11 +375,7 @@
 	.form-success { padding: 10px 14px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--success); border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
 
 	.actions { display: flex; gap: 8px; align-items: center; }
-	.btn-secondary { padding: 8px 20px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
-	.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
-	.btn-secondary:hover:not(:disabled) { background: var(--accent-hover); }
-	.btn-ghost { padding: 8px 16px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-ghost:hover { background: rgba(0,0,0,0.04); }
+
 	.btn-outline { padding: 8px 14px; background: transparent; color: var(--accent); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
 	.btn-outline:hover { border-color: var(--accent); background: var(--accent-dim); }
 </style>

@@ -201,8 +201,5 @@
 	.col-amount { font-weight: 600; }
 	.col-date { color: var(--text-tertiary); font-size: 12px; }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

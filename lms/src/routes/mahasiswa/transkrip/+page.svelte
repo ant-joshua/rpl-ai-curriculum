@@ -173,9 +173,6 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
-	.btn-refresh:hover { background: var(--surface-hover); }
 
 	.ipk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; }
 	.ipk-row { display: flex; gap: 32px; }

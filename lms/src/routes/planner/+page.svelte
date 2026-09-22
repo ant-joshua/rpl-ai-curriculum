@@ -7,6 +7,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { paths } from '$lib/stores/paths';
 	import { modules } from '$lib/stores/modules';
+	import { Button } from '$lib/components/ui';
 
 	let selectedPathSlug = $state('');
 	let targetDate = $state('');
@@ -241,9 +242,9 @@
 				</div>
 			{/if}
 
-			<button class="btn-primary" onclick={handleCreatePlan} disabled={!selectedPathSlug || !targetDate || computedTotalDays <= 0}>
+			<Button variant="primary" onclick={handleCreatePlan} disabled={!selectedPathSlug || !targetDate || computedTotalDays <= 0} class="w-full">
 				🚀 Mulai
-			</button>
+			</Button>
 		</div>
 	{:else}
 		<!-- Active Plan Dashboard -->
@@ -256,8 +257,8 @@
 					</p>
 				</div>
 				<div class="plan-actions">
-					<button class="btn-secondary" onclick={printPlan}>🖨️ Cetak Rencana</button>
-					<button class="btn-danger" onclick={handleAbandon}>🚫 Hentikan</button>
+					<Button variant="secondary" onclick={printPlan}>🖨️ Cetak Rencana</Button>
+					<Button variant="danger" onclick={handleAbandon}>🚫 Hentikan</Button>
 				</div>
 			</div>
 
@@ -426,29 +427,6 @@
 		color: var(--accent);
 	}
 
-	.btn-primary {
-		display: block;
-		width: 100%;
-		padding: 12px;
-		border: none;
-		border-radius: 10px;
-		background: var(--accent);
-		color: white;
-		font-size: 16px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: opacity 0.15s;
-	}
-
-	.btn-primary:disabled {
-		opacity: 0.4;
-		cursor: not-allowed;
-	}
-
-	.btn-primary:not(:disabled):hover {
-		opacity: 0.9;
-	}
-
 	.plan-dashboard {
 		display: flex;
 		flex-direction: column;
@@ -472,39 +450,6 @@
 	.plan-actions {
 		display: flex;
 		gap: 8px;
-	}
-
-	.btn-secondary {
-		padding: 8px 16px;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: transparent;
-		color: var(--text);
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.btn-secondary:hover {
-		background: var(--hover);
-	}
-
-	.btn-danger {
-		padding: 8px 16px;
-		border: 1px solid var(--danger, var(--danger));
-		border-radius: 8px;
-		background: transparent;
-		color: var(--danger, var(--danger));
-		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.btn-danger:hover {
-		background: var(--danger, var(--danger));
-		color: white;
 	}
 
 	.timeline-section {

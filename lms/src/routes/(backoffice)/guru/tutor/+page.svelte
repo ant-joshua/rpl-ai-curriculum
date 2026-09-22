@@ -48,7 +48,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn btn-secondary btn-sm" onclick={loadStats}>🔄 Muat Ulang</button>
+			<Button variant="secondary" size="sm" onclick={loadStats}>🔄 Muat Ulang</Button>
 		</div>
 	{:else}
 		<div class="stats-grid">

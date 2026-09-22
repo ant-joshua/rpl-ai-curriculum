@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import RichEditor from '$lib/components/RichEditor.svelte';
+import { Button } from '$lib/components/ui';
 import { addToast } from '$lib/stores/toast.svelte';
 
 	let projects: any[] = $state([]);
@@ -106,9 +107,9 @@ import { addToast } from '$lib/stores/toast.svelte';
 	{:else}
 		<div class="section-header">
 			<div class="tabs">
-				<button class="tab" class:active={tab === 'all'} onclick={() => tab = 'all'}>All ({projects.length})</button>
-				<button class="tab" class:active={tab === 'published'} onclick={() => tab = 'published'}>Published ({projects.filter(p => p.status === 'published').length})</button>
-				<button class="tab" class:active={tab === 'draft'} onclick={() => tab = 'draft'}>Drafts ({projects.filter(p => p.status === 'draft' || !p.status).length})</button>
+				<Button variant="ghost" class="tab {tab === 'all' ? 'active' : ''}" onclick={() => tab = 'all'}>All ({projects.length})</Button>
+				<Button variant="ghost" class="tab {tab === 'published' ? 'active' : ''}" onclick={() => tab = 'published'}>Published ({projects.filter(p => p.status === 'published').length})</Button>
+				<Button variant="ghost" class="tab {tab === 'draft' ? 'active' : ''}" onclick={() => tab = 'draft'}>Drafts ({projects.filter(p => p.status === 'draft' || !p.status).length})</Button>
 			</div>
 			<Button variant="primary" class="btn" onclick={openNew}>{t('admin.new_project')}</Button>
 		</div>
@@ -299,8 +300,6 @@ import { addToast } from '$lib/stores/toast.svelte';
 
 	.btn { display: inline-block; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; }
 	.btn-sm { padding: 5px 10px; font-size: 12px; }
-	.btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
-	.btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
 	.btn:hover { opacity: 0.85; }
 
 	@media (max-width: 768px) {

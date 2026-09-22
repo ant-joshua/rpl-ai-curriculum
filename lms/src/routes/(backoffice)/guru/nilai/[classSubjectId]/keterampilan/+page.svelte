@@ -179,22 +179,21 @@
 		<!-- Type Selector -->
 		<div class="type-selector">
 			{#each skillTypes as st}
-				<button
-					class="type-chip"
-					class:type-chip--active={selectedType === st.value}
+				<Button
+					class="type-chip {selectedType === st.value ? 'type-chip--active' : ''}"
 					onclick={() => { selectedType = st.value; selectedKdId = ''; reloadScores(); }}
-				>{st.label}</button>
+				>{st.label}</Button>
 			{/each}
 		</div>
 
 		<!-- KD Selector -->
 		{#if kds.length > 0}
 			<div class="kd-selector">
-				<button class="kd-chip" class:kd-chip--active={!selectedKdId} onclick={() => selectedKdId = ''}>Semua KD</button>
+				<Button class="kd-chip {!selectedKdId ? 'kd-chip--active' : ''}" onclick={() => selectedKdId = ''}>Semua KD</Button>
 				{#each kds as kd}
-					<button class="kd-chip" class:kd-chip--active={selectedKdId === kd.id} onclick={() => selectedKdId = kd.id}>
+					<Button class="kd-chip {selectedKdId === kd.id ? 'kd-chip--active' : ''}" onclick={() => selectedKdId = kd.id}>
 						{kd.code || `KD ${kd.no}`}
-					</button>
+					</Button>
 				{/each}
 			</div>
 		{/if}

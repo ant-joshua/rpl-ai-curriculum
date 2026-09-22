@@ -282,31 +282,6 @@
     color: var(--text-secondary);
   }
 
-  .btn-primary {
-    padding: 10px 20px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  .btn-primary:hover:not(:disabled) { opacity: 0.9; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .btn-secondary {
-    padding: 10px 20px;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
   .quiz-progress-bar {
     height: 6px;
     background: var(--bg-secondary);

@@ -915,18 +915,6 @@ import { Badge } from '$lib/components/ui';
 		border-top: 1px solid var(--border);
 	}
 
-	.btn-ghost {
-		background: transparent;
-		border: none;
-		color: var(--text-secondary);
-		cursor: pointer;
-		font-size: 13px;
-	}
-
-	.btn-ghost:hover {
-		color: var(--text);
-	}
-
 	.flagged-btn {
 		color: var(--warning) !important;
 	}
@@ -938,58 +926,6 @@ import { Badge } from '$lib/components/ui';
 		align-items: center;
 		gap: 12px;
 		margin-top: 8px;
-	}
-
-	.btn {
-		padding: 10px 20px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		border: none;
-		transition: all 0.15s ease;
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-	}
-
-	.btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: white;
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		background: var(--accent-hover);
-	}
-
-	.btn-success {
-		background: var(--success);
-		color: white;
-	}
-
-	.btn-success:hover:not(:disabled) {
-		background: var(--success);
-	}
-
-	.btn-outline {
-		background: transparent;
-		border: 1px solid var(--border);
-		color: var(--text);
-	}
-
-	.btn-outline:hover:not(:disabled) {
-		background: var(--hover);
-		border-color: var(--accent);
-	}
-
-	.btn-sm {
-		padding: 6px 12px;
-		font-size: 12px;
 	}
 
 	/* Submit Confirmation Modal */

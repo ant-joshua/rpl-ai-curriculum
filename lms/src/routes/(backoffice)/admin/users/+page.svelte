@@ -254,8 +254,8 @@
 					<td class="clickable-cell" onclick={() => openEdit(u)}>{new Date(u.created_at).toLocaleDateString()}</td>
 					<td>
 						<div class="action-btns">
-							<button class="icon-btn" title="Edit" onclick={() => openEdit(u)}>✏️</button>
-							<button class="icon-btn" title="Reset Password" onclick={() => resetPassword(u.id, u.username)}>🔑</button>
+							<Button variant="ghost" size="sm" class="icon-btn" title="Edit" onclick={() => openEdit(u)}>✏️</Button>
+							<Button variant="ghost" size="sm" class="icon-btn" title="Reset Password" onclick={() => resetPassword(u.id, u.username)}>🔑</Button>
 						</div>
 					</td>
 				</tr>
@@ -342,7 +342,7 @@
 	{#snippet footer()}
 		<div class="modal-footer">
 			<div class="footer-left">
-				<button class="danger-link" onclick={deleteUser}>🗑️ Hapus User</button>
+				<Button variant="danger" onclick={deleteUser}>🗑️ Hapus User</Button>
 			</div>
 			<div class="footer-right">
 				<Button onclick={closeEdit} variant="secondary">Batal</Button>
@@ -455,9 +455,5 @@
 	.modal-footer { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 	.footer-left { }
 	.footer-right { display: flex; gap: 8px; }
-	.danger-link {
-		background: none; border: none; color: var(--color-red, var(--danger));
-		font-size: 13px; font-weight: 500; cursor: pointer; padding: 0;
-	}
-	.danger-link:hover { text-decoration: underline; }
+
 </style>

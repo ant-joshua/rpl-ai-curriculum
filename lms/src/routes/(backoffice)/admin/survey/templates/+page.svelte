@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -300,13 +301,13 @@
 
 	<!-- Type filter -->
 	<div class="filter-bar">
-		<button class="filter-btn" class:active={surveyTypeFilter === ''} onclick={() => { surveyTypeFilter = ''; loadTemplates(); }}>
+		<Button variant="ghost" size="sm" class="filter-btn {surveyTypeFilter === '' ? 'active' : ''}" onclick={() => { surveyTypeFilter = ''; loadTemplates(); }}>
 			All
-		</button>
+		</Button>
 		{#each surveyTypes as t}
-			<button class="filter-btn" class:active={surveyTypeFilter === t} onclick={() => { surveyTypeFilter = t; loadTemplates(); }}>
+			<Button variant="ghost" size="sm" class="filter-btn {surveyTypeFilter === t ? 'active' : ''}" onclick={() => { surveyTypeFilter = t; loadTemplates(); }}>
 				{t}
-			</button>
+			</Button>
 		{/each}
 	</div>
 
@@ -486,12 +487,8 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-small { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 11px; cursor: pointer; }
 	.btn-small:hover { background: var(--surface-hover); }
-	.btn-danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
 	.btn-text { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; }
 	.btn-text:hover { text-decoration: underline; }
 	.btn-icon { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; cursor: pointer; font-size: 12px; line-height: 1; }

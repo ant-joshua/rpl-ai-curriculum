@@ -66,9 +66,9 @@
 <PageHeader title="AIEdu Admin" subtitle="Statistik, generasi, dan bank materi seluruh pengguna" />
 
 <div class="tabs">
-	<button class="tab" class:active={tab === 'stats'} onclick={() => { tab = 'stats'; }}>📊 Statistik</button>
-	<button class="tab" class:active={tab === 'gens'} onclick={() => { tab = 'gens'; }}>🕘 Generasi ({gens.length})</button>
-	<button class="tab" class:active={tab === 'docs'} onclick={() => { tab = 'docs'; }}>📚 Bank Materi ({docs.length})</button>
+	<Button variant="ghost" class="tab {tab === 'stats' ? 'active' : ''}" onclick={() => { tab = 'stats'; }}>📊 Statistik</Button>
+	<Button variant="ghost" class="tab {tab === 'gens' ? 'active' : ''}" onclick={() => { tab = 'gens'; }}>🕘 Generasi ({gens.length})</Button>
+	<Button variant="ghost" class="tab {tab === 'docs' ? 'active' : ''}" onclick={() => { tab = 'docs'; }}>📚 Bank Materi ({docs.length})</Button>
 </div>
 
 {#if tab === 'stats'}

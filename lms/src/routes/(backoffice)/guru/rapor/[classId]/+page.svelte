@@ -203,7 +203,5 @@ import { t } from '$lib/stores/i18n';
 	.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 	.sem-select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; }
 	.error-state { padding: 40px 20px; text-align: center; color: var(--danger); }
-	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; font-family: inherit; }
-	.btn-secondary:hover { background: var(--surface-hover); }
-	.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+
 </style>

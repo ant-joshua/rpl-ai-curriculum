@@ -493,27 +493,27 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	<div class="header-row">
 		<h1>🏆 Gamification</h1>
 		<div class="tabs">
-			<button class="tab" class:tab--active={activeTab === 'badges'} onclick={() => activeTab = 'badges'}>
+			<Button variant="ghost" class="tab {activeTab === 'badges' ? 'tab--active' : ''}" onclick={() => activeTab = 'badges'}>
 				🎖️ Badge
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'xp-rules'} onclick={() => activeTab = 'xp-rules'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'xp-rules' ? 'tab--active' : ''}" onclick={() => activeTab = 'xp-rules'}>
 				⚡ Aturan XP
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'levels'} onclick={() => activeTab = 'levels'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'levels' ? 'tab--active' : ''}" onclick={() => activeTab = 'levels'}>
 				📊 Level
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'leaderboard'} onclick={() => activeTab = 'leaderboard'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'leaderboard' ? 'tab--active' : ''}" onclick={() => activeTab = 'leaderboard'}>
 				🏆 Papan Skor
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'settings'} onclick={() => activeTab = 'settings'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'settings' ? 'tab--active' : ''}" onclick={() => activeTab = 'settings'}>
 				⚙️ Pengaturan
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'quests'} onclick={() => activeTab = 'quests'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'quests' ? 'tab--active' : ''}" onclick={() => activeTab = 'quests'}>
 				📜 Quest Harian
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'boosts'} onclick={() => activeTab = 'boosts'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'boosts' ? 'tab--active' : ''}" onclick={() => activeTab = 'boosts'}>
 				🚀 XP Boost
-			</button>
+			</Button>
 		</div>
 	</div>
 

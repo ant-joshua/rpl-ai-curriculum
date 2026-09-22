@@ -279,6 +279,5 @@
 	.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
 	.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
-	.btn-secondary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary:hover { background: var(--accent-hover); }
+
 </style>

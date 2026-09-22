@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, StatCard, Card } from '$lib/components/ui';
+	import { Button, StatCard, Card, CardHeader } from '$lib/components/ui';
 	import { DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -122,15 +122,15 @@
 
 		<!-- Tabs -->
 		<div class="tabs">
-			<button class="tab" class:tab--active={activeTab === 'exams'} onclick={() => activeTab = 'exams'}>
+			<Button variant="ghost" class="tab {activeTab === 'exams' ? 'tab--active' : ''}" onclick={() => activeTab = 'exams'}>
 				📋 Ujian
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'rooms'} onclick={() => activeTab = 'rooms'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'rooms' ? 'tab--active' : ''}" onclick={() => activeTab = 'rooms'}>
 				🏫 Ruangan
-			</button>
-			<button class="tab" class:tab--active={activeTab === 'types'} onclick={() => activeTab = 'types'}>
+			</Button>
+			<Button variant="ghost" class="tab {activeTab === 'types' ? 'tab--active' : ''}" onclick={() => activeTab = 'types'}>
 				🏷️ Tipe Ujian
-			</button>
+			</Button>
 		</div>
 
 		<!-- Exams Tab -->
@@ -140,14 +140,14 @@
 			{:else if exams.length === 0}
 				<div class="empty-state">
 					<p>{t('admin.belum_ada_ujian')}</p>
-					<a href="/admin/exam-scheduler/exams" class="btn-primary">{t('admin.buat_ujian_pertama')}</a>
+					<Button href="/admin/exam-scheduler/exams" variant="primary">{t('admin.buat_ujian_pertama')}</Button>
 				</div>
 			{:else}
-				<Card>
-					<div class="card-header">
+				<Card overflow-hidden>
+					<CardHeader>
 						<h3>Jadwal Ujian Terbaru</h3>
 						<a href="/admin/exam-scheduler/exams" class="link-btn">{t('admin.lihat_semua')}</a>
-					</div>
+					</CardHeader>
 					<div class="table-container">
 						<table>
 							<thead>
@@ -181,14 +181,14 @@
 			{:else if rooms.length === 0}
 				<div class="empty-state">
 					<p>Belum ada ruangan</p>
-					<a href="/admin/exam-scheduler/rooms" class="btn-primary">Tambah Ruangan Pertama</a>
+					<Button href="/admin/exam-scheduler/rooms" variant="primary">Tambah Ruangan Pertama</Button>
 				</div>
 			{:else}
-				<Card>
-					<div class="card-header">
+				<Card overflow-hidden>
+					<CardHeader>
 						<h3>Ruangan Tersedia</h3>
 						<a href="/admin/exam-scheduler/rooms" class="link-btn">{t('admin.lihat_semua')}</a>
-					</div>
+					</CardHeader>
 					<div class="table-container">
 						<table>
 							<thead>
@@ -231,10 +231,10 @@
 					<Button variant="primary" onclick={() => window.location.href = '/admin/exam-scheduler/exams'}>Kelola Ujian</Button>
 				</div>
 			{:else}
-				<Card>
-					<div class="card-header">
+				<Card overflow-hidden>
+					<CardHeader>
 						<h3>{t('admin.tipe_ujian')}</h3>
-					</div>
+					</CardHeader>
 					<div class="table-container">
 						<table>
 							<thead>
@@ -265,8 +265,7 @@
 	.page { max-width: 1000px; }
 	.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
-	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; text-decoration: none !important; display: inline-block; }
+	.header-actions { display: flex; gap: 8px; }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-refresh:hover { background: var(--surface-hover); }
 
@@ -309,14 +308,7 @@
 	.tab--active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 
 	/* Content */
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 18px;
-		border-bottom: 1px solid var(--border);
-	}
-	.card-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+	:global(.overflow-hidden) { overflow: hidden; border-radius: 12px; }
 	.link-btn { font-size: 13px; color: var(--accent); text-decoration: none !important; }
 	.link-btn:hover { text-decoration: underline; }
 

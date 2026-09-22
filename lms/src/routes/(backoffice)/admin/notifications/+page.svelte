@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
+	import { Button, Card, CardHeader, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -127,11 +127,11 @@ const queueColumns: ColumnDef<any, any>[] = [
 
 		<div class="grid-2col">
 			<!-- Recent Queue -->
-			<Card>
-				<div class="card-header">
+			<Card overflow-hidden>
+				<CardHeader>
 					<h3>{t('admin.antrian_terbaru')}</h3>
 					<a href="/admin/notifications/queue" class="link-btn">{t('admin.lihat_semua')}</a>
-				</div>
+				</CardHeader>
 				{#if loading}
 					<div class="loading">{t('common.loading')}</div>
 				{:else if recentQueue.length === 0}
@@ -155,8 +155,8 @@ const queueColumns: ColumnDef<any, any>[] = [
 			</Card>
 
 			<!-- Quick links -->
-			<Card>
-				<div class="card-header"><h3>{t('admin.menu_cepat')}</h3></div>
+			<Card overflow-hidden>
+				<CardHeader><h3>{t('admin.menu_cepat')}</h3></CardHeader>
 				<div class="quick-links">
 					<a href="/admin/notifications/templates" class="quick-link">
 						<span class="ql-icon">📋</span>
@@ -230,9 +230,7 @@ const queueColumns: ColumnDef<any, any>[] = [
 	.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
 
 	.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-	.card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-	.card-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+	:global(.overflow-hidden) { overflow: hidden; border-radius: 12px; }
 	.link-btn { font-size: 13px; color: var(--accent); text-decoration: none !important; }
 	.loading { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }
 	.error-state { text-align: center; padding: 40px; }

@@ -148,7 +148,7 @@
 		</div>
 		<div class="header-actions">
 			<Button class="btn-refresh" onclick={loadQueue}>🔄</Button>
-			<Button class="btn-outline" onclick={retryFailed} disabled={retrying}>
+			<Button variant="outline" onclick={retryFailed} disabled={retrying}>
 				{retrying ? 'Meretry...' : 'Retry Failed'}
 			</Button>
 		</div>
@@ -157,15 +157,15 @@
 	<!-- Filters -->
 	<div class="filter-bar">
 		<span class="filter-label">Status:</span>
-		<button class="filter-btn" class:active={statusFilter === ''} onclick={() => { statusFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</button>
+		<Button variant="ghost" size="sm" class="filter-btn {statusFilter === '' ? 'active' : ''}" onclick={() => { statusFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</Button>
 		{#each statuses as s}
-			<button class="filter-btn" class:active={statusFilter === s} onclick={() => { statusFilter = s; pagination.page = 1; loadQueue(); }}>{s}</button>
+			<Button variant="ghost" size="sm" class="filter-btn {statusFilter === s ? 'active' : ''}" onclick={() => { statusFilter = s; pagination.page = 1; loadQueue(); }}>{s}</Button>
 		{/each}
 		<span class="filter-label" style="margin-left:12px">Channel:</span>
-		<button class="filter-btn" class:active={channelFilter === ''} onclick={() => { channelFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</button>
-		<button class="filter-btn" class:active={channelFilter === 'in_app'} onclick={() => { channelFilter = 'in_app'; pagination.page = 1; loadQueue(); }}>In-App</button>
-		<button class="filter-btn" class:active={channelFilter === 'email'} onclick={() => { channelFilter = 'email'; pagination.page = 1; loadQueue(); }}>{t('register.email')}</button>
-		<button class="filter-btn" class:active={channelFilter === 'whatsapp'} onclick={() => { channelFilter = 'whatsapp'; pagination.page = 1; loadQueue(); }}>WhatsApp</button>
+		<Button variant="ghost" size="sm" class="filter-btn {channelFilter === '' ? 'active' : ''}" onclick={() => { channelFilter = ''; pagination.page = 1; loadQueue(); }}>{t('common.all')}</Button>
+		<Button variant="ghost" size="sm" class="filter-btn {channelFilter === 'in_app' ? 'active' : ''}" onclick={() => { channelFilter = 'in_app'; pagination.page = 1; loadQueue(); }}>In-App</Button>
+		<Button variant="ghost" size="sm" class="filter-btn {channelFilter === 'email' ? 'active' : ''}" onclick={() => { channelFilter = 'email'; pagination.page = 1; loadQueue(); }}>{t('register.email')}</Button>
+		<Button variant="ghost" size="sm" class="filter-btn {channelFilter === 'whatsapp' ? 'active' : ''}" onclick={() => { channelFilter = 'whatsapp'; pagination.page = 1; loadQueue(); }}>WhatsApp</Button>
 	</div>
 
 	{#if error}
@@ -205,10 +205,6 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-outline { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
-	.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
-	.btn-outline:hover:not(:disabled) { background: var(--hover); }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
 
 	.filter-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }

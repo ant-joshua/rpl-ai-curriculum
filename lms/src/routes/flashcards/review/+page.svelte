@@ -547,30 +547,7 @@
     gap: 8px;
   }
 
-  .btn {
-    padding: 8px 20px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s ease;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-secondary {
-    border-color: var(--text-secondary);
-    color: var(--text);
-  }
-  .btn-secondary:hover { border-color: var(--accent); }
-  .btn.big { padding: 12px 24px; font-size: 15px; width: 100%; }
+  :global(.btn.big) { padding: 12px 24px; font-size: 15px; width: 100%; }
 
   /* Empty */
   .empty-screen {

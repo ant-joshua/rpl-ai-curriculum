@@ -203,17 +203,15 @@
 
 		<!-- KD Selector -->
 		<div class="kd-selector">
-			<button
-				class="kd-chip"
-				class:kd-chip--active={!selectedKdId}
+			<Button
+				class="kd-chip {!selectedKdId ? 'kd-chip--active' : ''}"
 				onclick={() => selectedKdId = ''}
-			>Semua KD</button>
+			>Semua KD</Button>
 			{#each kds as kd}
-				<button
-					class="kd-chip"
-					class:kd-chip--active={selectedKdId === kd.id}
+				<Button
+					class="kd-chip {selectedKdId === kd.id ? 'kd-chip--active' : ''}"
 					onclick={() => selectedKdId = kd.id}
-				>{kd.code || `KD ${kd.no}`}</button>
+				>{kd.code || `KD ${kd.no}`}</Button>
 			{/each}
 		</div>
 

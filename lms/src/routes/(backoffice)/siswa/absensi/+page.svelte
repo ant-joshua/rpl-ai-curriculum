@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { DataTable, Skeleton, EmptyState, StatCard } from '$lib/components/ui';
+import { Button } from '$lib/components/ui/index.js';
 import { t } from '$lib/stores/i18n';
 
 	type DayRec = {
@@ -207,9 +208,9 @@ async function doCheckIn() {
 				onkeydown={(e) => { if (e.key === 'Enter') doCheckIn(); }}
 				maxlength="32"
 			/>
-			<button class="checkin-btn" onclick={doCheckIn} disabled={checkingIn}>
+			<Button class="checkin-btn" onclick={doCheckIn} disabled={checkingIn}>
 				{checkingIn ? 'Memproses...' : '✓ Absen Sekarang'}
-			</button>
+			</Button>
 		</div>
 		{#if checkinError}
 			<div class="checkin-error">{checkinError}</div>
@@ -237,7 +238,7 @@ async function doCheckIn() {
 			</select>
 		</div>
 		<div class="filter-action">
-			<button class="btn-secondary" onclick={loadAttendance}>{t('absensi.tampilkan')}</button>
+			<Button variant="secondary" onclick={loadAttendance}>{t('absensi.tampilkan')}</Button>
 		</div>
 	</div>
 
@@ -333,6 +334,5 @@ async function doCheckIn() {
 	.percent-value { font-size: 32px; font-weight: 700; }
 	.percent-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
 
-	.btn-secondary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary:hover { background: var(--accent-hover); }
+
 </style>

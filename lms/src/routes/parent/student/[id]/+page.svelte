@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Card, CardContent, Badge, Spinner, EmptyState } from '$lib/components/ui';
+	import { PageHeader, Card, CardContent, Badge, Spinner, EmptyState, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -35,11 +35,6 @@
 		loadData();
 	});
 
-	function pctClass(pct: number): string {
-		if (pct >= 80) return 'good';
-		if (pct >= 60) return 'mid';
-		return 'bad';
-	}
 </script>
 
 <svelte:head>
@@ -56,22 +51,10 @@
 	{:else if data}
 		<!-- Quick stats -->
 		<div class="stats-row">
-			<div class="stat-card">
-				<span class="stat-label">Rata-rata Nilai</span>
-				<span class="stat-value {pctClass(data.avgGrade)}">{data.avgGrade}%</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Kehadiran</span>
-				<span class="stat-value {pctClass(data.attendance)}">{data.attendance}%</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Sudah Dinilai</span>
-				<span class="stat-value">{data.gradedCount}</span>
-			</div>
-			<div class="stat-card">
-				<span class="stat-label">Pesan Baru</span>
-				<span class="stat-value">{data.unreadMessages}</span>
-			</div>
+			<StatCard icon="📊" value="{data.avgGrade}%" label="Rata-rata Nilai" color={data.avgGrade >= 80 ? 'var(--success)' : data.avgGrade >= 60 ? 'var(--warning)' : 'var(--danger)'} />
+			<StatCard icon="🎓" value="{data.attendance}%" label="Kehadiran" color={data.attendance >= 80 ? 'var(--success)' : data.attendance >= 60 ? 'var(--warning)' : 'var(--danger)'} />
+			<StatCard icon="✅" value={data.gradedCount} label="Sudah Dinilai" />
+			<StatCard icon="💬" value={data.unreadMessages} label="Pesan Baru" />
 		</div>
 
 		<!-- Enrollments -->
@@ -140,12 +123,6 @@
 	.center { display: flex; justify-content: center; padding: 40px; }
 	.error-text { color: var(--danger); }
 	.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-	.stat-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
-	.stat-label { font-size: 12px; color: var(--text-secondary); }
-	.stat-value { font-size: 22px; font-weight: 700; }
-	.stat-value.good { color: var(--success); }
-	.stat-value.mid { color: var(--warning); }
-	.stat-value.bad { color: var(--danger); }
 	.section-title { font-size: 15px; margin: 0 0 10px; }
 	.list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 	.list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 13px; }

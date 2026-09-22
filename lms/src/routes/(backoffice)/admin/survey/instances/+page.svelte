@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -154,13 +155,13 @@
 
 	<!-- Status filter -->
 	<div class="filter-bar">
-		<button class="filter-btn" class:active={statusFilter === ''} onclick={() => { statusFilter = ''; loadAll(); }}>
+		<Button variant="ghost" size="sm" class="filter-btn {statusFilter === '' ? 'active' : ''}" onclick={() => { statusFilter = ''; loadAll(); }}>
 			All
-		</button>
+		</Button>
 		{#each statuses as s}
-			<button class="filter-btn" class:active={statusFilter === s} onclick={() => { statusFilter = s; loadAll(); }}>
+			<Button variant="ghost" size="sm" class="filter-btn {statusFilter === s ? 'active' : ''}" onclick={() => { statusFilter = s; loadAll(); }}>
 				{s}
-			</button>
+			</Button>
 		{/each}
 	</div>
 
@@ -280,10 +281,7 @@
 	.header h1 { font-size: 24px; font-weight: 700; margin: 0; }
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; }
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 	.btn-primary-small { padding: 4px 10px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; }
-	.btn-secondary { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
 	.btn-small { padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-secondary); color: var(--text); font-size: 11px; cursor: pointer; text-decoration: none; display: inline-block; }
 	.btn-small:hover { background: var(--surface-hover); }
 	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }

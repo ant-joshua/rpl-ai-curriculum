@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button } from '$lib/components/ui/index.js';
 
 	type CalEvent = {
 		id: string;
@@ -153,9 +154,9 @@
 			<h1>📅 Academic Calendar</h1>
 			<p class="subtitle">Kelola libur, ujian, periode semester, dan acara sekolah</p>
 		</div>
-		<button class="btn-primary" onclick={() => (showForm = !showForm)}>
+		<Button variant="primary" onclick={() => (showForm = !showForm)}>
 			{showForm ? '✕ Tutup' : '＋ Tambah Event'}
-		</button>
+		</Button>
 	</div>
 
 	{#if error}
@@ -196,10 +197,10 @@
 				<textarea rows="2" placeholder="Detail event..." bind:value={formDesc}></textarea>
 			</div>
 			<div class="form-actions">
-				<button class="btn-primary" onclick={saveEvent} disabled={saving}>
+				<Button variant="primary" onclick={saveEvent} disabled={saving}>
 					{saving ? 'Menyimpan...' : '💾 Simpan Event'}
-				</button>
-				<button class="btn-secondary" onclick={resetForm}>Batal</button>
+				</Button>
+				<Button variant="secondary" onclick={resetForm}>Batal</Button>
 			</div>
 		</div>
 	{/if}
@@ -236,7 +237,7 @@
 									<span class="event-range">s/d {formatDate(ev.end_date)}</span>
 								{/if}
 							</div>
-							<button class="btn-del" onclick={() => deleteEvent(ev.id)} title="Hapus">🗑️</button>
+							<Button variant="danger" class="btn-del" onclick={() => deleteEvent(ev.id)} title="Hapus">🗑️</Button>
 						</div>
 					{/each}
 				</div>
@@ -249,16 +250,7 @@
 	.page { max-width: 780px; }
 	.page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
 	.subtitle { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
-	.btn-primary {
-		padding: 9px 16px; border-radius: 8px; border: none;
-		background: var(--accent, var(--accent)); color: white; font-weight: 600;
-		cursor: pointer; font-family: inherit; font-size: 14px;
-	}
-	.btn-secondary {
-		padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border);
-		background: var(--surface); color: var(--text); font-weight: 600;
-		cursor: pointer; font-family: inherit; font-size: 14px;
-	}
+
 	.error-state { padding: 24px; border-radius: 10px; background: var(--danger-light); color: var(--danger); margin-bottom: 16px; }
 	.loading { padding: 40px; text-align: center; color: var(--text-secondary); }
 

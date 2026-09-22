@@ -424,28 +424,4 @@
 		display: flex;
 		justify-content: flex-end;
 	}
-
-	.btn {
-		padding: 10px 24px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		border: none;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.btn:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: white;
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		opacity: 0.9;
-	}
 </style>

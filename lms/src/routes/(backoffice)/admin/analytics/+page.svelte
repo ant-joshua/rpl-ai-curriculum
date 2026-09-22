@@ -172,14 +172,14 @@
 	<!-- Tabs -->
 	<div class="tabs">
 		{#each tabs as tab}
-			<button
-				class="tab"
-				class:tab--active={activeTab === tab.id}
+			<Button
+				variant="ghost"
+				class="tab {activeTab === tab.id ? 'tab--active' : ''}"
 				onclick={() => activeTab = tab.id}
 			>
 				<span class="tab-icon">{tab.icon}</span>
 				<span>{tab.label}</span>
-			</button>
+			</Button>
 		{/each}
 	</div>
 

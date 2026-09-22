@@ -177,7 +177,7 @@
 									<td class="col-nis">{s.nis || '-'}</td>
 									<td class="col-date">{formatDate(s.joinedAt)}</td>
 									<td class="col-action">
-										<button class="btn-unenroll" onclick={() => unenrollStudent(s.id)}>{t('batch.remove')}</button>
+										<Button variant="danger" size="sm" onclick={() => unenrollStudent(s.id)}>{t('batch.remove')}</Button>
 									</td>
 								</tr>
 							{/each}
@@ -231,18 +231,5 @@
 	.col-nis { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
 	.col-date { color: var(--text-tertiary); font-size: 12px; }
 	.col-action { text-align: right; }
-	.btn-unenroll {
-		background: none; border: none; color: var(--danger); cursor: pointer;
-		font-size: 12px; font-weight: 500; font-family: inherit; padding: 4px 8px;
-		border-radius: 4px; transition: background 0.15s;
-	}
-	.btn-unenroll:hover { background: rgba(239,68,68,0.1); }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-ghost { background: transparent; color: var(--text-secondary); }
-	.btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text); }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
 </style>

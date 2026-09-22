@@ -185,11 +185,5 @@
 	.input-field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
 	.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-ghost { background: transparent; color: var(--text-secondary); }
-	.btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text); }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

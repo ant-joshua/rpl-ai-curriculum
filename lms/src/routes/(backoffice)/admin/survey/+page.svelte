@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Button, Card, StatCard } from '$lib/components/ui';
+	import { Button, Card, CardHeader, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -125,11 +125,11 @@ const instanceColumns: ColumnDef<any, any>[] = [
 
 		<div class="grid-2col">
 			<!-- Recent Instances -->
-			<Card>
-				<div class="card-header">
+			<Card overflow-hidden>
+				<CardHeader>
 					<h3>{t('admin.survei_terbaru')}</h3>
 					<a href="/admin/survey/instances" class="link-btn">{t('admin.lihat_semua')}</a>
-				</div>
+				</CardHeader>
 				{#if loading}
 					<div class="loading">Memuat survei...</div>
 				{:else if recentInstances.length === 0}
@@ -142,11 +142,11 @@ const instanceColumns: ColumnDef<any, any>[] = [
 			</Card>
 
 			<!-- Templates Summary -->
-			<Card>
-				<div class="card-header">
+			<Card overflow-hidden>
+				<CardHeader>
 					<h3>{t('admin.templates')}</h3>
 					<a href="/admin/survey/templates" class="link-btn">{t('admin.kelola_arrow')}</a>
-				</div>
+				</CardHeader>
 				{#if loading}
 					<div class="loading">Memuat template...</div>
 				{:else if templates.length === 0}
@@ -204,20 +204,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 
 	.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-	.card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		overflow: hidden;
-	}
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 18px;
-		border-bottom: 1px solid var(--border);
-	}
-	.card-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+	:global(.overflow-hidden) { overflow: hidden; border-radius: 12px; }
 	.link-btn { font-size: 13px; color: var(--accent); text-decoration: none !important; }
 
 	.loading { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 13px; }

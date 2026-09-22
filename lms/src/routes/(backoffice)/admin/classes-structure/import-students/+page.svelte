@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, DataTable, Input, Select } from '$lib/components/ui';
+	import { Button, Card, CardHeader, DataTable, Input, Select } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let file: File | null = $state(null);
@@ -185,8 +185,8 @@
 		</Card>
 
 {:else if step === 'preview'}
-		<Card>
-			<div class="card-header">
+		<Card overflow-hidden>
+			<CardHeader>
 				<h2>Pratinjau Data ({previewData.length} baris)</h2>
 				<div class="card-header-actions">
 					<Button variant="secondary" onclick={() => step = 'upload'}>{t('common.back')}</Button>
@@ -194,7 +194,7 @@
 						{importing ? 'Mengimport...' : '✅ Import ke Kelas'}
 					</Button>
 				</div>
-			</div>
+			</CardHeader>
 
 			<div class="table-container">
 				<DataTable columns={previewColumns} data={previewData} pageSize={20} showSearch={false} showPagination={true} />
@@ -257,7 +257,7 @@
 
 	.error-banner { padding: 12px 16px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); border-radius: 10px; font-size: 14px; margin-bottom: 16px; }
 
-	.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+	:global(.overflow-hidden) { overflow: hidden; border-radius: 12px; }
 	.upload-card { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 	.result-card { padding: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 	.result-icon { font-size: 48px; }

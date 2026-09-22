@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { Skeleton, EmptyState, Badge } from '$lib/components/ui/index.js';
+import { Button } from '$lib/components/ui/index.js';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -83,11 +84,10 @@
 				<label class="sem-label">Semester:</label>
 				<div class="sem-toggle">
 					{#each semesters as s}
-						<button
-							class="sem-btn"
-							class:sem-btn--active={selectedSemester === s}
+						<Button
+							class="sem-btn {selectedSemester === s ? 'sem-btn--active' : ''}"
 							onclick={() => selectedSemester = s}
-						>{getSemesterLabel(s)}</button>
+						>{getSemesterLabel(s)}</Button>
 					{/each}
 				</div>
 			</div>

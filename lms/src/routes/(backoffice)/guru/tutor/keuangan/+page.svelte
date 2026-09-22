@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { Skeleton, EmptyState, Badge, DataTable, Select } from '$lib/components/ui/index.js';
+	import { Button } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n';
 
@@ -121,7 +122,7 @@ import { t } from '$lib/stores/i18n';
 				{/each}
 			</select>
 		</div>
-		<button class="btn btn-secondary btn-sm" onclick={loadInvoices}>{t('common.refresh')}</button>
+		<Button variant="secondary" size="sm" onclick={loadInvoices}>{t('common.refresh')}</Button>
 	</div>
 
 	{#if loading}
@@ -164,8 +165,5 @@ import { t } from '$lib/stores/i18n';
 	}
 	.filter-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

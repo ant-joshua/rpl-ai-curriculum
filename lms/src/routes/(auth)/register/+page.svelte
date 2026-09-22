@@ -2,6 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui';
 
 	let name = $state('');
 	let email = $state('');
@@ -152,10 +153,9 @@
 				/>
 			</div>
 
-			<button type="submit" class="btn btn-primary btn-lg btn-full" disabled={loading}>
+			<Button variant="primary" size="lg" class="btn-full" type="submit" disabled={loading}>
 				{loading ? t('common.loading') : t('register.register_btn')}
-			</button>
-
+			</Button>
 			<p class="login-link">
 				Sudah punya akun? <a href="/login">Masuk</a>
 			</p>
@@ -246,28 +246,6 @@
 		box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15);
 	}
 
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 10px 20px;
-		font-size: 14px;
-		font-weight: 590;
-		border-radius: 8px;
-		border: none;
-		cursor: pointer;
-		text-decoration: none;
-		transition: all 0.15s;
-		font-family: inherit;
-	}
-	.btn-primary {
-		background: var(--accent);
-		color: white;
-	}
-	.btn-primary:hover:not(:disabled) { opacity: 0.85; }
-	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-lg { padding: 12px 24px; font-size: 15px; }
 	.btn-full { width: 100%; }
 
 	.login-link {

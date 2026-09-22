@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton } from '$lib/components/ui/index.js';
+	import { Skeleton, Button } from '$lib/components/ui/index.js';
 	import { StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
@@ -47,7 +47,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn btn-secondary btn-sm" onclick={loadStats}>🔄 Muat Ulang</button>
+			<Button variant="secondary" size="sm" onclick={loadStats}>🔄 Muat Ulang</Button>
 		</div>
 	{:else}
 		<div class="stats-grid">
@@ -97,8 +97,5 @@
 	.card-arrow { font-size: 18px; color: var(--text-tertiary); transition: transform 0.15s ease; }
 	.nav-card:hover .card-arrow { transform: translateX(4px); color: var(--accent); }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

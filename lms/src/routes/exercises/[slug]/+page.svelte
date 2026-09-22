@@ -123,9 +123,9 @@
 
 		<div class="actions">
 			{#if exercise.moduleSlug}
-				<a href="/module/{exercise.moduleSlug}" class="btn btn-secondary">
+				<Button variant="secondary" href="/module/{exercise.moduleSlug}">
 					&larr; Kembali ke Modul
-				</a>
+				</Button>
 			{/if}
 		</div>
 
@@ -270,34 +270,6 @@
 		gap: 12px;
 		margin-bottom: 24px;
 		flex-wrap: wrap;
-	}
-
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 10px 20px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		text-decoration: none !important;
-		cursor: pointer;
-		transition: opacity 0.15s ease;
-	}
-
-	.btn:hover {
-		opacity: 0.9;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: white;
-	}
-
-	.btn-secondary {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		color: var(--text);
 	}
 
 	.content {

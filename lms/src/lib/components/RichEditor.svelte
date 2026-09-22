@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
+	import { Button } from '$lib/components/ui';
 
 	let {
 		content = '',
@@ -157,8 +158,8 @@
 					autofocus
 				/>
 				<div class="link-dialog-actions">
-					<button onclick={() => isLinkDialog = false} class="btn btn-sm">Cancel</button>
-					<button onclick={applyLink} class="btn btn-sm btn-primary">Apply</button>
+					<Button variant="ghost" size="sm" onclick={() => isLinkDialog = false}>Cancel</Button>
+					<Button variant="primary" size="sm" onclick={applyLink}>Apply</Button>
 				</div>
 			</div>
 		</div>
@@ -399,31 +400,4 @@
 		justify-content: flex-end;
 	}
 
-	.btn {
-		display: inline-block;
-		padding: 6px 14px;
-		border-radius: 6px;
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-		color: var(--text);
-		font-size: 12px;
-		font-weight: 500;
-		cursor: pointer;
-		font-family: inherit;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: #fff;
-		border-color: var(--accent);
-	}
-
-	.btn-sm {
-		padding: 5px 10px;
-		font-size: 12px;
-	}
-
-	.btn:hover {
-		opacity: 0.85;
-	}
-</style>
+	/* button styles removed — using Button component */</style>

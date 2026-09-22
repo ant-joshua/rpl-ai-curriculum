@@ -179,7 +179,7 @@ import { Badge } from '$lib/components/ui';
 			<div class="state-emoji">🎉</div>
 			<h2>Tidak ada soal untuk latihan 🎉</h2>
 			<p class="state-desc">Selesaikan kuis dulu! Soal yang dijawab salah akan muncul di sini untuk kamu latih lagi.</p>
-			<a href="/learn" class="btn btn-primary btn-link">← Kembali ke Belajar</a>
+			<Button variant="primary" href="/learn">← Kembali ke Belajar</Button>
 		</div>
 	{:else if currentItem && result === null}
 		<!-- Question card -->
@@ -329,24 +329,9 @@ import { Badge } from '$lib/components/ui';
 		transform: translateY(2px);
 		box-shadow: 0 2px 0 rgba(var(--accent-rgb), 0.15);
 	}
-	.btn-primary {
-		background: var(--accent, var(--accent));
-		color: white;
-	}
-	.btn-primary:hover:not(:disabled) {
-		background: var(--accent-hover);
-		transform: translateY(-1px);
-		box-shadow: 0 5px 0 rgba(var(--accent-rgb), 0.15);
-	}
-	.btn-primary:disabled {
-		background: var(--accent-light);
-		cursor: not-allowed;
-		box-shadow: 0 4px 0 var(--border);
-	}
 	.btn-check { width: 100%; }
 	.btn-continue { width: 100%; }
 	.btn-big { font-size: 18px; padding: 16px 48px; }
-	.btn-link { color: white; }
 
 	/* ---------- Progress ---------- */
 	.progress-container {

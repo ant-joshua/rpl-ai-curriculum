@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/stores/i18n';
   import Icon from '$lib/components/ui/Icon.svelte';
-  import { EmptyState, ProgressBar } from '$lib/components/ui/index.js';
+  import { EmptyState, ProgressBar, Button } from '$lib/components/ui/index.js';
   let { data }: { data: import('./$types').PageData } = $props();
   let courses = $state(data.courses || []);
 </script>
@@ -22,7 +22,7 @@
       title="Belum ada kursus"
       description="Daftar kursus dulu dari katalog"
     >
-      <a href="/catalog" class="btn-primary">Lihat Katalog</a>
+      <Button variant="primary" href="/catalog">Lihat Katalog</Button>
     </EmptyState>
   {:else}
     <div class="course-list">

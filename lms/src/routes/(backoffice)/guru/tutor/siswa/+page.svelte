@@ -74,7 +74,7 @@ import { t } from '$lib/stores/i18n';
 	</div>
 
 	<div class="toolbar">
-		<button class="btn btn-secondary btn-sm" onclick={loadStudents}>{t('common.refresh')}</button>
+		<Button variant="secondary" size="sm" onclick={loadStudents}>{t('common.refresh')}</Button>
 	</div>
 
 	{#if loading}
@@ -99,8 +99,5 @@ import { t } from '$lib/stores/i18n';
 
 	.toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
 
-	.btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
-	.btn-secondary { background: var(--accent); color: white; }
-	.btn-secondary:hover { background: var(--accent-hover); }
-	.btn-sm { padding: 6px 12px; font-size: 12px; }
+
 </style>

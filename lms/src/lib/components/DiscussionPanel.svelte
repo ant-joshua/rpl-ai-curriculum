@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { Button } from '$lib/components/ui';
 
 	interface Thread {
 		id: string;
@@ -318,9 +319,9 @@
 			{:else if threads.length === 0}
 				<div class="empty-state">
 					<p class="empty-text">No discussions yet.</p>
-					<button class="btn btn-sm" onclick={() => activeTab = 'ask'}>
+					<Button variant="secondary" size="sm" onclick={() => activeTab = 'ask'}>
 						Start a discussion
-					</button>
+					</Button>
 				</div>
 			{:else}
 				<div class="thread-list">
@@ -429,13 +430,14 @@
 											></textarea>
 											<div class="reply-actions">
 												<span class="hint">Ctrl+Enter to post</span>
-												<button
-													class="btn btn-sm"
+												<Button
+													variant="secondary"
+													size="sm"
 													onclick={() => createReply(thread.id)}
 													disabled={replyingTo.has(thread.id)}
 												>
 													{replyingTo.has(thread.id) ? 'Posting...' : 'Reply'}
-												</button>
+												</Button>
 											</div>
 										</div>
 									{/if}
@@ -467,13 +469,13 @@
 					bind:value={newBody}
 					rows="5"
 				></textarea>
-				<button
-					class="btn btn-primary"
+				<Button
+					variant="primary"
 					onclick={createThread}
 					disabled={submitting || !newTitle.trim() || !newBody.trim()}
 				>
 					{submitting ? 'Posting...' : 'Post Question'}
-				</button>
+				</Button>
 			</div>
 		{/if}
 	</div>
@@ -816,45 +818,6 @@
 		font-size: 11px;
 		color: var(--text-secondary);
 		opacity: 0.5;
-	}
-
-	/* Buttons */
-	.btn {
-		padding: 6px 14px;
-		font-size: 12px;
-		font-weight: 500;
-		color: var(--text);
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.15s;
-	}
-
-	.btn:hover:not(:disabled) {
-		border-color: var(--accent);
-		color: var(--accent);
-	}
-
-	.btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.btn-primary {
-		background: var(--accent);
-		color: #fff;
-		border-color: var(--accent);
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		background: var(--accent-secondary);
-		color: #fff;
-	}
-
-	.btn-sm {
-		padding: 4px 12px;
-		font-size: 12px;
 	}
 
 	/* Ask form */
