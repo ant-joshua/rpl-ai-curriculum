@@ -58,43 +58,43 @@
 		padding: 12px 14px;
 		border-radius: 8px;
 		border: 1px solid;
-		transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+		transition: opacity 0.2s ease, transform 0.2s ease;
 		font-size: 14px;
 		line-height: 1.5;
-		font-feature-settings: 'cv01', 'ss03';
+		font-family: var(--font-sans);
 	}
 
 	.alert-info {
-		background: rgba(79, 70, 229, 0.08);
-		border-color: rgba(79, 70, 229, 0.2);
-		color: #1a1a2e;
+		background: var(--accent-light);
+		border-color: var(--border);
+		color: var(--text);
 		animation: slideDown 0.25s ease both;
 	}
-	.alert-info .alert-icon { color: #4F46E5; }
+	.alert-info .alert-icon { color: var(--accent); }
 
 	.alert-success {
-		background: rgba(16, 185, 129, 0.08);
-		border-color: rgba(16, 185, 129, 0.2);
-		color: #1a1a2e;
+		background: var(--success-light);
+		border-color: rgba(45, 122, 79, 0.25);
+		color: var(--text);
 		animation: slideDown 0.25s ease both;
 	}
-	.alert-success .alert-icon { color: #10b981; }
+	.alert-success .alert-icon { color: var(--success); }
 
 	.alert-warning {
-		background: rgba(245, 158, 11, 0.08);
-		border-color: rgba(245, 158, 11, 0.2);
-		color: #1a1a2e;
+		background: var(--warning-light);
+		border-color: rgba(184, 134, 11, 0.25);
+		color: var(--text);
 		animation: slideDown 0.25s ease both;
 	}
-	.alert-warning .alert-icon { color: #f59e0b; }
+	.alert-warning .alert-icon { color: var(--warning); }
 
 	.alert-danger {
-		background: rgba(239, 68, 68, 0.08);
-		border-color: rgba(239, 68, 68, 0.2);
-		color: #1a1a2e;
+		background: var(--danger-light);
+		border-color: rgba(166, 61, 64, 0.25);
+		color: var(--text);
 		animation: slideDown 0.25s ease both;
 	}
-	.alert-danger .alert-icon { color: #ef4444; }
+	.alert-danger .alert-icon { color: var(--danger); }
 
 	.alert-icon {
 		flex-shrink: 0;
@@ -120,7 +120,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: #64748b;
+		color: var(--text-muted);
 		padding: 2px;
 		border-radius: 4px;
 		transition: all 0.12s ease;
@@ -132,7 +132,12 @@
 
 	.alert-close:hover {
 		opacity: 1;
-		color: #1a1a2e;
-		background: rgba(0, 0, 0, 0.04);
+		color: var(--text);
+		background: var(--surface-alt);
+	}
+
+	@keyframes slideDown {
+		from { opacity: 0; transform: translateY(-4px); }
+		to { opacity: 1; transform: translateY(0); }
 	}
 </style>

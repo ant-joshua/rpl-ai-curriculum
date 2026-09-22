@@ -5,7 +5,7 @@
     icon,
     value,
     label,
-    color = '#4F46E5',
+    color = 'var(--accent)',
     delay = 0,
     class: className = '',
     children,
@@ -25,7 +25,7 @@
 <div class="stat-card {className}" style="animation-delay: {delay}s" {...rest}>
   <div class="stat-card-header">
     {#if icon}
-      <div class="stat-card-icon" style:background="{color}12" style:color={color}>
+      <div class="stat-card-icon" style:background="{color}" style:opacity="0.12" style:color={color}>
         <span>{icon}</span>
       </div>
     {/if}
@@ -41,22 +41,20 @@
 
 <style>
   .stat-card {
-    background: rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-left: 3px solid transparent;
     border-radius: 8px;
     padding: 16px;
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, transform 0.15s ease;
     animation: fadeSlideIn 0.3s ease both;
     opacity: 0;
   }
 
   .stat-card:hover {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(79, 70, 229, 0.2);
-    border-left-color: #4F46E5;
+    border-color: var(--accent);
+    border-left-color: var(--accent);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .stat-card-header {
@@ -84,9 +82,9 @@
 
   .stat-card-value {
     font-size: 28px;
-    font-weight: 590;
+    font-weight: 700;
     letter-spacing: -0.6px;
-    color: #1a1a2e;
+    color: var(--text);
     line-height: 1.1;
     font-feature-settings: 'cv01', 'ss03';
     font-family: var(--font-sans);
@@ -94,8 +92,8 @@
 
   .stat-card-label {
     font-size: 13px;
-    font-weight: 510;
-    color: #64748b;
+    font-weight: 500;
+    color: var(--text-secondary);
     font-feature-settings: 'cv01', 'ss03';
     font-family: var(--font-sans);
     margin-top: 2px;

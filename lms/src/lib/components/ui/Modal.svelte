@@ -59,7 +59,8 @@
 	.ui-modal-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.85);
+		background: rgba(26, 26, 46, 0.6);
+		backdrop-filter: blur(4px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -68,20 +69,15 @@
 		animation: fadeIn 0.15s ease;
 	}
 	.ui-modal {
-		background: #F1F5F9;
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 12px;
 		width: 100%;
 		max-width: 480px;
 		max-height: 85vh;
 		display: flex;
 		flex-direction: column;
-		box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2),
-			0 8px 2px rgba(0, 0, 0, 0),
-			0 5px 2px rgba(0, 0, 0, 0.01),
-			0 3px 2px rgba(0, 0, 0, 0.04),
-			0 1px 1px rgba(0, 0, 0, 0.07),
-			0 0 1px rgba(0, 0, 0, 0.08);
+		box-shadow: var(--shadow-dialog);
 		animation: scaleIn 0.15s ease;
 	}
 	.ui-modal-header {
@@ -89,28 +85,30 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 16px 20px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 		flex-shrink: 0;
 	}
 	.ui-modal-title {
 		font-size: 17px;
-		font-weight: 590;
+		font-weight: 650;
 		margin: 0;
-		color: #1a1a2e;
+		color: var(--heading);
 		font-feature-settings: 'cv01', 'ss03';
+		font-family: var(--font-sans);
+		letter-spacing: -0.01em;
 	}
 	.ui-modal-close {
 		background: none;
 		border: none;
 		font-size: 24px;
-		color: #64748b;
+		color: var(--text-muted);
 		cursor: pointer;
 		padding: 0;
 		line-height: 1;
 		transition: color 0.15s;
 	}
 	.ui-modal-close:hover {
-		color: #1a1a2e;
+		color: var(--text);
 	}
 	.ui-modal-body {
 		padding: 20px;
@@ -125,7 +123,7 @@
 		justify-content: flex-end;
 		gap: 8px;
 		padding: 16px 20px;
-		border-top: 1px solid rgba(0, 0, 0, 0.05);
+		border-top: 1px solid var(--border);
 		flex-shrink: 0;
 	}
 
