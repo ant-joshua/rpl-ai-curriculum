@@ -20,9 +20,17 @@
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
-	import { startPolling, stopPolling, getSnapshot, subscribe } from '$lib/stores/notifications.svelte';
-	import { startPolling as startDmPolling, stopPolling as stopDmPolling, getSnapshot as getDmSnapshot, subscribe as subscribeDm } from '$lib/stores/direct-unread.svelte';
+	import {
+		NotificationToast,
+		startPolling,
+		stopPolling,
+		getSnapshot,
+		subscribe,
+		startDmPolling,
+		stopDmPolling,
+		getDmSnapshot,
+		subscribeDm,
+	} from '$lib/features/notifications';
 	import { GamificationToasts } from '$lib/features/gamification';
 	import ViewportBanner from '$lib/components/layout/ViewportBanner.svelte';
 	import OfflineBadge from '$lib/components/layout/OfflineBadge.svelte';

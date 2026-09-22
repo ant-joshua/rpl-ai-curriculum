@@ -1,32 +1,38 @@
 import type { PageServerLoad } from './$types';
+import { CourseService } from '$lib/features/courses/server';
 import { getTokenFromRequest, getSession } from '$lib/server/auth';
-import { getDB } from '$lib/server/d1';
-import { cachedDbQuery } from '$lib/server/cache';
 
-export const load: PageServerLoad = async ({ request, platform }) => {
-  const db = getDB(platform);
-  const token = getTokenFromRequest(request);
-  if (!token) return { courses: [] };
+export const load: PageServerLoad = async ({ request, platform, locals }) => {
+  if (!platform) {
+    return { courses: [] };
+  }
 
-  const session = await getSession(platform, token);
-  if (!session) return { courses: [] };
+  let userId = locals?.user?.id;
 
-  const userId = session.user.id;
+  if (!userId) {
+    const token = getTokenFromRequest(request);
+    if (token) {
+      const session = await getSession(platform, token);
+      if (session) {
+        userId = session.user.id;
+      }
+    }
+  }
 
-  const { results: courses } = await cachedDbQuery<any>(
-    db,
-    `SELECT 
-      e.course_offering_id AS offeringId,
-      co.name,
-      COALESCE(c.title, co.name) AS title,
-      COALESCE(c.icon, 'book') AS icon
-    FROM enrollments e
-    JOIN course_offerings co ON co.id = e.course_offering_id
-    LEFT JOIN courses c ON c.id = co.course_id
-    WHERE e.user_id = ?
-    ORDER BY e.enrolled_at DESC`,
-    [userId]
-  );
+  if (!userId) {
+    return { courses: [] };
+  }
 
-  return { courses: courses || [] };
+  const courseService = new CourseService(platform);
+  const enrolled = await courseService.getUserEnrolledCoursesWithProgress(userId);
+
+  return {
+    courses: (enrolled || []).map(item => ({
+      offeringId: item.offeringId,
+      name: item.offeringName,
+      title: item.course.title || item.offeringName,
+      icon: item.course.icon || 'book',
+      progress: item.progress.percentage,
+    }))
+  };
 };
