@@ -1,9 +1,14 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const routesPath = join(__dirname, '..', '.svelte-kit', 'cloudflare', '_routes.json');
+
+if (!existsSync(routesPath)) {
+	console.log('patch-routes: _routes.json not found, skipping (adapter v3 handles this)');
+	process.exit(0);
+}
 
 const routes = JSON.parse(readFileSync(routesPath, 'utf-8'));
 

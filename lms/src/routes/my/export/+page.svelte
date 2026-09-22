@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { addToast } from '$lib/stores/toast.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let exporting = $state(false);
 	let scope = $state('all');
@@ -74,9 +75,9 @@
 			</div>
 		</div>
 
-		<button class="export-btn" onclick={doExport} disabled={exporting}>
+		<Button variant="primary" onclick={doExport} disabled={exporting}>
 			{exporting ? 'Menyiapkan file...' : '⬇️ Unduh Export'}
-		</button>
+		</Button>
 	</div>
 
 	<div class="export-note">

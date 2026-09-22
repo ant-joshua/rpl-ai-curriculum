@@ -2,7 +2,7 @@
   import { t } from '$lib/stores/i18n';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Card, CardContent, EmptyState, Skeleton, PageHeader } from '$lib/components/ui';
+  import { Card, CardContent, EmptyState, Skeleton, PageHeader, Button } from '$lib/components/ui';
 
   let schedules = $state<any[]>([]);
   let assignments = $state<any[]>([]);
@@ -148,13 +148,11 @@
   <PageHeader title="Jadwal Saya" subtitle="Pantau jadwal kuliah dan kegiatan belajar">
     {#snippet action()}
       <div class="header-actions">
-        <button class="export-cal-btn" onclick={exportCalendar} title="Export ke Google Calendar / iCal">
-          📅 Export Kalender
-        </button>
+        <Button variant="outline" size="sm" onclick={exportCalendar}>📅 Export Kalender</Button>
         <div class="filter-row">
-          <button class="filter-btn" class:active={filter === 'upcoming'} onclick={() => filter = 'upcoming'}>Akan Datang</button>
-          <button class="filter-btn" class:active={filter === 'today'} onclick={() => filter = 'today'}>Hari Ini</button>
-          <button class="filter-btn" class:active={filter === 'all'} onclick={() => filter = 'all'}>Semua</button>
+          <Button variant={filter === 'upcoming' ? 'primary' : 'ghost'} size="sm" onclick={() => filter = 'upcoming'}>Akan Datang</Button>
+          <Button variant={filter === 'today' ? 'primary' : 'ghost'} size="sm" onclick={() => filter = 'today'}>Hari Ini</Button>
+          <Button variant={filter === 'all' ? 'primary' : 'ghost'} size="sm" onclick={() => filter = 'all'}>Semua</Button>
         </div>
       </div>
     {/snippet}
@@ -265,7 +263,7 @@
   .filter-row { display: flex; gap: 6px; }
   .filter-btn {
     padding: 6px 14px;
-    border: 1px solid rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
     border-radius: 6px;
     background: transparent;
     color: var(--text-secondary);
@@ -302,14 +300,14 @@
     display: flex;
     gap: 14px;
     padding: 14px 16px;
-    background: rgba(0,0,0,0.02);
-    border: 1px solid rgba(0,0,0,0.06);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
     border-radius: 8px;
     text-decoration: none;
     transition: all 0.15s;
   }
   .schedule-item:hover {
-    background: rgba(0,0,0,0.04);
+    background: var(--surface-alt);
     border-color: rgba(255,255,255,0.12);
   }
   .schedule-item.assignment-item {

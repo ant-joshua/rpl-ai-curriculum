@@ -460,12 +460,11 @@
 					<h3>{data.myReview ? 'Ubah Review Kamu' : 'Kasih Rating'}</h3>
 					<div class="star-input">
 						{#each [1, 2, 3, 4, 5] as n}
-							<button
-								type="button"
-								class="star-btn"
-								class:selected={n <= (reviewRating || (data.myReview?.rating ?? 0))}
+							<Button
+								variant="ghost"
+								class="star-btn {n <= (reviewRating || (data.myReview?.rating ?? 0)) ? 'selected' : ''}"
 								onclick={() => reviewRating = n}
-							>★</button>
+							>★</Button>
 						{/each}
 						<span class="star-hint">{reviewRating || data.myReview?.rating || 0}/5</span>
 					</div>
@@ -475,9 +474,9 @@
 						bind:value={reviewComment}
 						rows={3}
 					></textarea>
-					<button class="review-submit" onclick={submitReview} disabled={reviewSubmitting}>
+					<Button variant="primary" class="review-submit" onclick={submitReview} disabled={reviewSubmitting} loading={reviewSubmitting}>
 						{reviewSubmitting ? 'Menyimpan...' : data.myReview ? 'Update Review' : 'Kirim Review'}
-					</button>
+					</Button>
 				</div>
 
 				{#if reviews.length > 0}
@@ -514,7 +513,8 @@
 			<div class="module-tree">
 				{#each tree as section}
 					<div class="module-card" class:expanded={expandedSections.has(section.id)}>
-						<button
+						<Button
+							variant="ghost"
 							class="module-header"
 							onclick={() => toggleSection(section.id)}
 							aria-expanded={expandedSections.has(section.id)}
@@ -536,7 +536,7 @@
 							{#if section.duration_min}
 								<span class="module-duration">⏱ {section.duration_min}m</span>
 							{/if}
-						</button>
+						</Button>
 
 						{#if expandedSections.has(section.id) && section.children?.length > 0}
 							<div class="lesson-list">
@@ -715,8 +715,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.06);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 12px;
 		flex-shrink: 0;
 	}
@@ -766,7 +766,7 @@
 	.progress-ring-info { flex: 1; }
 	.progress-ring {
 		width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0;
-		background: conic-gradient(var(--accent) calc(var(--ring-pct) * 1%), rgba(0,0,0,0.06) 0);
+		background: conic-gradient(var(--accent) calc(var(--ring-pct) * 1%), var(--border) 0);
 		display: flex; align-items: center; justify-content: center;
 		position: relative;
 		transition: background 0.6s ease;
@@ -909,8 +909,8 @@
 	.review-form h3 { font-size: 14px; margin: 0 0 8px; }
 	.star-input { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
 	.star-btn {
-		background: none; border: none; font-size: 26px; cursor: pointer;
-		color: var(--border); padding: 0; line-height: 1; transition: color 0.15s;
+		background: none !important; border: none !important; font-size: 26px;
+		color: var(--border); padding: 0 !important; line-height: 1; transition: color 0.15s;
 	}
 	.star-btn.selected { color: var(--warning); }
 	.star-hint { font-size: 13px; color: var(--text-muted); margin-left: 8px; }
@@ -920,10 +920,11 @@
 		background: white; resize: vertical; box-sizing: border-box;
 	}
 	.review-submit {
-		margin-top: 10px; padding: 8px 20px; background: var(--warning); color: white;
-		border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+		margin-top: 10px;
+		background: var(--warning) !important;
+		border-color: var(--warning) !important;
 	}
-	.review-submit:hover { background: var(--warning); }
+	.review-submit:hover { background: var(--warning) !important; }
 	.reviews-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
 	.review-item { padding: 10px 0; border-top: 1px solid var(--border); }
 	.review-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -985,8 +986,8 @@
 	}
 
 	.module-card {
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.06);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		overflow: hidden;
 		transition: border-color 0.15s ease;
@@ -1011,10 +1012,11 @@
 		text-align: left;
 		transition: background 0.15s ease;
 		gap: 12px;
+		border-radius: 0 !important;
 	}
 
 	.module-header:hover {
-		background: rgba(0,0,0,0.04);
+		background: var(--surface) !important;
 	}
 
 	.module-title-row {
@@ -1068,7 +1070,7 @@
 	.lesson-list {
 		display: flex;
 		flex-direction: column;
-		border-top: 1px solid rgba(0,0,0,0.08);
+		border-top: 1px solid var(--border);
 	}
 
 	.lesson-item {
@@ -1077,7 +1079,7 @@
 		gap: 12px;
 		padding: 12px 16px 12px 48px;
 		text-decoration: none;
-		border-bottom: 1px solid rgba(0,0,0,0.04);
+		border-bottom: 1px solid var(--border);
 		transition: background 0.12s ease;
 	}
 
@@ -1154,7 +1156,7 @@
 	}
 
 	.lesson-duration {
-		background: rgba(0,0,0,0.04);
+		background: var(--surface);
 		color: var(--text-muted);
 	}
 
@@ -1182,7 +1184,7 @@
 
 	/* Nested sections */
 	.nested-section {
-		border-top: 1px solid rgba(0,0,0,0.08);
+		border-top: 1px solid var(--border);
 	}
 
 	.nested-header {
@@ -1193,7 +1195,7 @@
 		font-size: 13px;
 		font-weight: 510;
 		color: var(--text-secondary);
-		background: rgba(0,0,0,0.02);
+		background: var(--surface);
 		font-feature-settings: 'cv01', 'ss03';
 	}
 
@@ -1227,8 +1229,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 10px 14px;
-		background: rgba(0,0,0,0.02);
-		border: 1px solid rgba(0,0,0,0.08);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.15s ease;
@@ -1236,7 +1238,7 @@
 
 	.quick-item:hover {
 		border-color: rgba(79,70,229,0.2);
-		background: rgba(0,0,0,0.04);
+		background: var(--surface);
 	}
 
 	.quick-title {
@@ -1249,7 +1251,7 @@
 	.quick-type {
 		font-size: 11px;
 		color: var(--text-muted);
-		background: rgba(0,0,0,0.04);
+		background: var(--surface);
 		padding: 2px 8px;
 		border-radius: 9999px;
 		font-feature-settings: 'cv01', 'ss03';

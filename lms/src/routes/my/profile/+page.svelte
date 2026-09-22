@@ -330,9 +330,9 @@
 					alt={displayName}
 					size="xl"
 				/>
-				<button class="edit-avatar-btn" onclick={startEditAvatar} disabled={saving}>
+				<Button variant="outline" size="sm" onclick={startEditAvatar} disabled={saving}>
 					{avatarUrl ? '🖼️ Ganti' : '➕ Tambah Foto'}
-				</button>
+				</Button>
 			</div>
 
 			<div class="profile-info">
@@ -354,9 +354,7 @@
 				{:else}
 					<div class="name-row">
 						<h1 class="profile-name">{displayName || 'Pengguna'}</h1>
-						<button class="icon-btn" onclick={startEditName} title="Edit nama">
-							✏️
-						</button>
+						<Button variant="ghost" size="sm" onclick={startEditName}>✏️</Button>
 					</div>
 				{/if}
 
@@ -456,10 +454,7 @@
 						<p class="fa-setup-step">2. Atau masukkan kode rahasia ini secara manual:</p>
 						<div class="fa-secret-box">
 							<code class="fa-secret">{totpSecret}</code>
-							<button
-								class="fa-copy-btn"
-								onclick={() => { navigator.clipboard.writeText(totpSecret); addToast('Kode rahasia disalin', 'info'); }}
-							>📋 Salin</button>
+							<Button variant="ghost" size="sm" onclick={() => { navigator.clipboard.writeText(totpSecret); addToast('Kode rahasia disalin', 'info'); }}>📋 Salin</Button>
 						</div>
 
 						{#if showingRecoveryCodes && recoveryCodes.length > 0}

@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 	import Avatar from '$lib/components/ui/Avatar.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data } = $props<{ data: import('./$types').PageData }>();
 
@@ -190,9 +191,7 @@
 				</div>
 			{:else}
 				{#if messages.length < totalMessages}
-					<button class="load-older" onclick={loadOlder}>
-						Muat pesan sebelumnya ({totalMessages - messages.length} lainnya)
-					</button>
+					<Button variant="ghost" size="sm" onclick={loadOlder}>Muat pesan sebelumnya ({totalMessages - messages.length} lainnya)</Button>
 				{/if}
 
 				{#each messages as msg (msg.id)}
@@ -233,9 +232,7 @@
 				rows="2"
 				maxlength="1000"
 			></textarea>
-			<button class="send-btn" onclick={sendMessage} disabled={!newMessage.trim()}>
-				Kirim
-			</button>
+			<Button variant="primary" onclick={sendMessage} disabled={!newMessage.trim()}>Kirim</Button>
 		</div>
 	</div>
 </div>

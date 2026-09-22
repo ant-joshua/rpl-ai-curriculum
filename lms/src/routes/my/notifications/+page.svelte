@@ -4,6 +4,7 @@
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
+	import { Button } from '$lib/components/ui';
 
 	const TYPE_LABELS: Record<string, string> = {
 		assessment: 'Penilaian',
@@ -192,32 +193,32 @@
 		</div>
 		<div class="header-actions">
 			{#if selectedIds.size > 0}
-				<button class="btn-outline" onclick={markSelectedRead}>Tandai {selectedIds.size} Dibaca</button>
+				<Button variant="outline" onclick={markSelectedRead}>Tandai {selectedIds.size} Dibaca</Button>
 			{/if}
-			<button class="btn-outline" onclick={markAllRead} disabled={unreadCount === 0}>
+			<Button variant="outline" onclick={markAllRead} disabled={unreadCount === 0}>
 				Tandai Semua Dibaca
-			</button>
-			<button class="btn-refresh" onclick={loadNotifications}>🔄</button>
+			</Button>
+			<Button variant="ghost" onclick={loadNotifications}>🔄</Button>
 		</div>
 	</div>
 
 	<!-- Filter bar -->
 	<div class="filter-bar">
-		<button class="filter-btn" class:active={typeFilter === ''} onclick={() => { typeFilter = ''; pagination.page = 1; loadNotifications(); }}>
-			Semua
-		</button>
-		{#each types as t}
-			<button class="filter-btn" class:active={typeFilter === t} onclick={() => filterByType(t)}>
-				{TYPE_ICONS[t]} {TYPE_LABELS[t]}
-			</button>
-		{/each}
+	<Button variant="ghost" size="sm" class="filter-btn{typeFilter === '' ? ' active' : ''}" onclick={() => { typeFilter = ''; pagination.page = 1; loadNotifications(); }}>
+		Semua
+	</Button>
+	{#each types as t}
+		<Button variant="ghost" size="sm" class="filter-btn{typeFilter === t ? ' active' : ''}" onclick={() => filterByType(t)}>
+			{TYPE_ICONS[t]} {TYPE_LABELS[t]}
+		</Button>
+	{/each}
 	</div>
 
 	<!-- Error -->
 	{#if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
-			<button class="btn-primary" onclick={loadNotifications}>Coba Lagi</button>
+			<Button variant="primary" onclick={loadNotifications}>Coba Lagi</Button>
 		</div>
 	{/if}
 
@@ -263,9 +264,9 @@
 					</div>
 					<div class="notif-actions">
 						{#if !n.is_read}
-							<button class="btn-icon" onclick={() => markRead(n.id)} title="Tandai dibaca">✓</button>
+							<Button variant="ghost" size="sm" onclick={() => markRead(n.id)} title="Tandai dibaca">✓</Button>
 						{/if}
-						<button class="btn-icon btn-icon-danger" onclick={() => archiveNotif(n.id)} title="Arsipkan">🗑️</button>
+						<Button variant="ghost" size="sm" class="btn-danger-icon" onclick={() => archiveNotif(n.id)} title="Arsipkan">🗑️</Button>
 					</div>
 				</div>
 			{/each}
@@ -274,9 +275,9 @@
 		<!-- Pagination -->
 		{#if pagination.totalPages > 1}
 			<div class="pagination">
-				<button class="btn-outline" disabled={pagination.page <= 1} onclick={() => changePage(-1)}>← Sebelumnya</button>
+				<Button variant="outline" disabled={pagination.page <= 1} onclick={() => changePage(-1)}>← Sebelumnya</Button>
 				<span class="page-info">Halaman {pagination.page} dari {pagination.totalPages}</span>
-				<button class="btn-outline" disabled={pagination.page >= pagination.totalPages} onclick={() => changePage(1)}>Selanjutnya →</button>
+				<Button variant="outline" disabled={pagination.page >= pagination.totalPages} onclick={() => changePage(1)}>Selanjutnya →</Button>
 			</div>
 		{/if}
 	{/if}
@@ -289,15 +290,7 @@
 	.subtitle { color: var(--text-secondary); font-size: 14px; margin: 4px 0 0; }
 	.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
-	.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-	.btn-outline { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; }
-	.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
-	.btn-outline:hover:not(:disabled) { background: var(--hover); }
-	.btn-refresh { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text); font-size: 13px; cursor: pointer; }
-	.btn-icon { padding: 4px 8px; border: none; border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 14px; }
-	.btn-icon:hover { background: var(--hover); }
-	.btn-icon-danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+	.btn-danger-icon:hover { background: var(--danger-dim, rgba(239,68,68,0.1)); color: var(--danger); }
 
 	/* Filter bar */
 	.filter-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -332,7 +325,7 @@
 	}
 	.notif-item:hover { background: var(--hover); }
 	.notif-item.unread { background: var(--accent-dim); }
-	.notif-item.selected { background: rgba(79,70,229,0.08); }
+	.notif-item.selected { background: var(--accent-dim, rgba(79,70,229,0.08)); }
 	.notif-checkbox { margin-top: 4px; accent-color: var(--accent); }
 	.notif-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; margin-top: 2px; }
 	.notif-content { flex: 1; min-width: 0; cursor: pointer; }
@@ -340,7 +333,8 @@
 	.notif-title { font-size: 14px; font-weight: 600; color: var(--text); }
 	.notif-type-label {
 		font-size: 10px; padding: 2px 6px; border-radius: 4px;
-		background: rgba(98,102,109,0.15); color: var(--text-secondary);
+		background: color-mix(in srgb, var(--text-secondary) 15%, transparent);
+		color: var(--text-secondary);
 		font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
 	}
 	.notif-body { margin: 4px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.4; }

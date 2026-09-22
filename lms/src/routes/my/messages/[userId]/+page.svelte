@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import { api } from '$lib/utils/api';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let partnerId = $derived(($page.params as any).userId);
 	let partner: any = $state(null);
@@ -126,9 +127,9 @@
 			class="msg-input"
 			disabled={sending}
 		/>
-		<button type="submit" class="send-btn" disabled={!messageText.trim() || sending}>
-			Kirim
-		</button>
+		<Button variant="primary" type="submit" disabled={!messageText.trim() || sending}>
+			{sending ? 'Mengirim...' : 'Kirim'}
+		</Button>
 	</form>
 </div>
 

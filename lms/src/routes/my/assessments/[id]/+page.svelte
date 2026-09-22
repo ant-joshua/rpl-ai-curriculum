@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
-	import { StatCard } from '$lib/components/ui';
+	import { StatCard, Button } from '$lib/components/ui';
  
 	// State
 	let loading = $state(true);
@@ -272,7 +272,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button class="btn btn-primary" onclick={() => loadAssessment()}>Retry</button>
+			<Button variant="primary" onclick={() => loadAssessment()}>Retry</Button>
 		</div>
 	{:else if submitted && resultData}
 		<!-- Result Screen -->
@@ -358,18 +358,18 @@
 				{/if}
 
 				<div class="result-actions">
-					<button class="btn btn-outline" onclick={() => goto('/my/grades')}>
+					<Button variant="outline" onclick={() => goto('/my/grades')}>
 						Back to Grades
-					</button>
+					</Button>
 					{#if practiceMode}
-						<button class="btn btn-primary" onclick={() => { submitted = false; resultData = null; answers = {}; showFeedback = {}; currentQuestionIndex = 0; loadAssessment(); }}>
+						<Button variant="primary" onclick={() => { submitted = false; resultData = null; answers = {}; showFeedback = {}; currentQuestionIndex = 0; loadAssessment(); }}>
 							🎯 Practice Again
-						</button>
+						</Button>
 					{/if}
 					{#if attemptsRemaining > 0 && !practiceMode}
-						<button class="btn btn-primary" onclick={handleRetry}>
+						<Button variant="primary" onclick={handleRetry}>
 							Retry ({attemptsRemaining} attempt{attemptsRemaining > 1 ? 's' : ''} left)
-						</button>
+						</Button>
 					{/if}
 				</div>
 
@@ -381,7 +381,7 @@
 					</div>
 				</div>
 				<div class="result-actions">
-					<button class="btn btn-outline" onclick={() => goto('/my/grades')}>Back to Grades</button>
+					<Button variant="outline" onclick={() => goto('/my/grades')}>Back to Grades</Button>
 				</div>
 			{/if}
 		</div>
@@ -492,34 +492,35 @@
 						{/if}
 
 						<div class="question-actions">
-							<button
-								class="btn btn-sm btn-ghost"
-								class:flagged-btn={flaggedQuestions.has(question.id)}
+							<Button
+								variant="ghost"
+								size="sm"
+								class={flaggedQuestions.has(question.id) ? 'flagged-btn' : ''}
 								onclick={() => toggleFlag(question.id)}
 							>
 								{flaggedQuestions.has(question.id) ? '🚩 Flagged' : '🏳️ Flag for review'}
-							</button>
+							</Button>
 						</div>
 					</div>
 
 					<div class="question-navigation">
-						<button class="btn btn-outline" onclick={prevQuestion} disabled={currentQuestionIndex === 0}>
+						<Button variant="outline" onclick={prevQuestion} disabled={currentQuestionIndex === 0}>
 							← Previous
-						</button>
+						</Button>
 
 						{#if currentQuestionIndex < questions.length - 1}
-							<button class="btn btn-primary" onclick={nextQuestion}>
+							<Button variant="primary" onclick={nextQuestion}>
 								Next →
-							</button>
+							</Button>
 						{:else}
 							{#if practiceMode}
-								<button class="btn btn-primary" onclick={handlePracticeSubmit} disabled={submitting}>
+								<Button variant="primary" onclick={handlePracticeSubmit} disabled={submitting}>
 									{submitting ? 'Checking...' : '✅ Check Answers'}
-								</button>
+								</Button>
 							{:else}
-								<button class="btn btn-success" onclick={handleConfirmSubmit} disabled={submitting}>
+								<Button variant="primary" onclick={handleConfirmSubmit} disabled={submitting}>
 									{submitting ? 'Submitting...' : 'Submit Assessment'}
-								</button>
+								</Button>
 							{/if}
 						{/if}
 					</div>
@@ -545,10 +546,10 @@
 						{/if}
 					</div>
 					<div class="modal-actions">
-						<button class="btn btn-outline" onclick={() => confirmSubmit = false}>Continue Reviewing</button>
-						<button class="btn btn-primary" onclick={handleSubmit} disabled={submitting}>
+						<Button variant="outline" onclick={() => confirmSubmit = false}>Continue Reviewing</Button>
+						<Button variant="primary" onclick={handleSubmit} disabled={submitting}>
 							{submitting ? 'Submitting...' : 'Submit'}
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -659,7 +660,7 @@
 	}
 	.new-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px; }
 	.badge-earned {
-		padding: 3px 10px; background: white; border: 1px solid var(--warning);
+		padding: 3px 10px; background: var(--surface); border: 1px solid var(--warning);
 		border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--warning);
 	}
 
@@ -861,7 +862,7 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: white;
+		background: var(--surface);
 	}
 
 	.option-label {
@@ -994,7 +995,7 @@
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0,0,0,0.6);
+		background: var(--overlay);
 		display: flex;
 		align-items: center;
 		justify-content: center;

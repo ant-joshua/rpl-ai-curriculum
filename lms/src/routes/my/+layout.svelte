@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Avatar, Card } from '$lib/components/ui';
+	import { Button } from '$lib/components/ui';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { getSnapshot, subscribe, stopPolling, fetchUnreadCount } from '$lib/stores/notifications.svelte';
@@ -122,11 +123,11 @@
 
 <div class="my-layout">
 	<!-- Mobile hamburger -->
-	<button class="hamburger" onclick={toggleSidebar} aria-label="Toggle menu">
+	<Button variant="ghost" size="sm" class="hamburger" onclick={toggleSidebar} aria-label="Toggle menu">
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
 		<span class="hamburger-line"></span>
-	</button>
+	</Button>
 
 	<!-- Sidebar -->
 	<aside class="sidebar" class:open={sidebarOpen}>
@@ -162,10 +163,10 @@
 
 		<div class="sidebar-footer">
 			{#if deferredPrompt}
-				<button onclick={installPwa} class="nav-item pwa-install-item">
+				<Button variant="ghost" class="nav-item pwa-install-item" onclick={installPwa}>
 					<span class="nav-icon">📲</span>
 					<span class="nav-label">Install App</span>
-				</button>
+				</Button>
 			{/if}
 			<a href="/" class="nav-item back-link">
 				<span class="nav-icon">🏠</span>
@@ -182,9 +183,9 @@
 	<!-- Main content -->
 	<main class="main-content">
 		<div class="main-toolbar">
-			<button class="search-toggle-btn" onclick={toggleSearch} title="Cari materi">
+			<Button variant="ghost" size="sm" class="search-toggle-btn" onclick={toggleSearch} title="Cari materi">
 				🔍
-			</button>
+			</Button>
 		</div>
 		{@render children()}
 	</main>
@@ -379,8 +380,8 @@
 	}
 
 	.search-toggle-btn {
-		background: rgba(0,0,0,0.04);
-		border: 1px solid rgba(0,0,0,0.06);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 6px 10px;
 		font-size: 16px;
@@ -417,7 +418,7 @@
 			display: block;
 			position: fixed;
 			inset: 0;
-			background: rgba(26, 26, 46, 0.6);
+			background: rgba(0, 0, 0, 0.5);
 			z-index: 55;
 		}
 

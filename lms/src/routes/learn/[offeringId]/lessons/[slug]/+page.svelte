@@ -460,9 +460,9 @@
 
 		<div class="lesson-content" bind:this={contentAreaEl} onscroll={handleScroll}>
 			<div class="mobile-topbar">
-				<button class="mobile-menu-btn" onclick={() => (sidebarMobileOpen = !sidebarMobileOpen)} aria-label="Toggle sidebar">
+				<Button variant="ghost" class="mobile-menu-btn" onclick={() => (sidebarMobileOpen = !sidebarMobileOpen)} aria-label="Toggle sidebar">
 					<Icon name="menu" size={20} />
-				</button>
+				</Button>
 				<span class="mobile-title">{lesson.title}</span>
 			</div>
 
@@ -485,15 +485,17 @@
 					{/if}
 				</div>
 				<div class="header-actions">
-					<button
+					<Button
+						variant="ghost"
 						class="ask-ai-btn"
 						onclick={() => askLessonAI()}
 						title="Tanya AI tentang materi ini"
 					>
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 						<span>Tanya AI</span>
-					</button>
-					<button
+					</Button>
+					<Button
+						variant="ghost"
 						class="ask-ai-btn"
 						onclick={() => toggleReadAloud()}
 						title={isReading ? 'Berhenti membacakan' : 'Bacakan materi (text-to-speech)'}
@@ -505,16 +507,16 @@
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
 							<span>Bacakan</span>
 						{/if}
-					</button>
-					<button
-						class="bookmark-btn"
-						class:bookmarked={isBookmarked}
+					</Button>
+					<Button
+						variant="ghost"
+						class="bookmark-btn{isBookmarked ? ' bookmarked' : ''}"
 						onclick={() => toggleBookmark()}
 						disabled={isBookmarking}
 						title={isBookmarked ? 'Remove bookmark' : 'Bookmark this lesson'}
 					>
 						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-					</button>
+					</Button>
 					<div class="badge-group">
 						{#if lesson.duration_minutes}
 							<Badge variant="primary">{lesson.duration_minutes} min</Badge>
@@ -693,7 +695,7 @@
 	.resources-list { display: flex; flex-direction: column; gap: 6px; }
 	.resource-item {
 		display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-		background: white; border: 1px solid var(--border, var(--border)); border-radius: 8px;
+		background: var(--surface, var(--bg)); border: 1px solid var(--border, var(--border)); border-radius: 8px;
 		text-decoration: none; color: inherit; transition: border-color 0.15s;
 	}
 	.resource-item:hover { border-color: var(--accent, var(--accent)); }
@@ -742,7 +744,7 @@
 	.lesson-body { margin-bottom: 32px; min-height: 200px; }
 	.empty-content { padding: 48px 0; text-align: center; }
 
-	.complete-section { text-align: center; padding: 24px 0; margin-bottom: 32px; border-top: 1px solid rgba(0,0,0,0.06); }
+	.complete-section { text-align: center; padding: 24px 0; margin-bottom: 32px; border-top: 1px solid var(--border, var(--border)); }
 	
 	.lesson-nav { display: flex; justify-content: space-between; margin-bottom: 48px; gap: 16px; }
 	.nav-item { flex: 1; }

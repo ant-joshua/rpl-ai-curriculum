@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
@@ -72,9 +73,9 @@
 			<h1>💬 Pesan</h1>
 			<p class="subtitle">Pesan pribadi dengan guru, siswa, atau rekan</p>
 		</div>
-		<button class="new-btn" onclick={() => (searchOpen = !searchOpen)}>
+		<Button variant="primary" onclick={() => (searchOpen = !searchOpen)}>
 			{searchOpen ? 'Tutup' : '+ Pesan Baru'}
-		</button>
+		</Button>
 	</div>
 
 	{#if searchOpen}
@@ -88,13 +89,13 @@
 			{#if searching}<span class="search-hint">Mencari...</span>{/if}
 			<div class="search-results">
 				{#each searchResults as u}
-					<button class="search-item" onclick={() => openConversation(u.id)}>
+					<Button variant="ghost" class="search-item" onclick={() => openConversation(u.id)}>
 						<span class="avatar">{avatarFor(u.name)}</span>
 						<div>
 							<span class="search-name">{u.name}</span>
 							<span class="search-role">{roleLabel(u.role)}</span>
 						</div>
-					</button>
+					</Button>
 				{/each}
 				{#if !searching && searchQuery.trim().length >= 2 && searchResults.length === 0}
 					<div class="search-empty">Tidak ada hasil</div>

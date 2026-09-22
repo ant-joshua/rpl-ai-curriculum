@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Card, Alert, Badge, PageHeader, EmptyState } from '$lib/components/ui';
+	import { Card, Alert, Badge, PageHeader, EmptyState, Button } from '$lib/components/ui';
 
 	let invoices: any[] = $state([]);
 	let loading = $state(true);
@@ -222,13 +222,9 @@
 
 						{#if canPay(inv.status)}
 							<div class="invoice-actions">
-								<button
-									class="btn btn-primary"
-									onclick={() => bayar(inv)}
-									disabled={processingId === inv.id}
-								>
+								<Button variant="primary" onclick={() => bayar(inv)} disabled={processingId === inv.id}>
 									{processingId === inv.id ? 'Memproses...' : 'Bayar Sekarang'}
-								</button>
+								</Button>
 							</div>
 						{/if}
 					</div>

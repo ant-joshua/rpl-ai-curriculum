@@ -294,7 +294,7 @@
   {#if error}
     <div class="error-banner">
       <span>⚠️ {error}</span>
-      <button class="error-dismiss" onclick={() => error = ''}>✕</button>
+      <Button variant="ghost" size="sm" class="error-dismiss" onclick={() => error = ''}>✕</Button>
     </div>
   {/if}
 
@@ -306,15 +306,15 @@
   {:else if offering}
     <!-- Tab Navigation -->
     <div class="tab-bar">
-      <button class="tab" class:active={activeTab === 'overview'} onclick={() => activeTab = 'overview'}>
+      <Button variant="ghost" class="tab {activeTab === 'overview' ? 'active' : ''}" onclick={() => activeTab = 'overview'}>
         📊 Ringkasan
-      </button>
-      <button class="tab" class:active={activeTab === 'weekly'} onclick={() => activeTab = 'weekly'}>
+      </Button>
+      <Button variant="ghost" class="tab {activeTab === 'weekly' ? 'active' : ''}" onclick={() => activeTab = 'weekly'}>
         📈 Mingguan
-      </button>
-      <button class="tab" class:active={activeTab === 'time'} onclick={() => activeTab = 'time'}>
+      </Button>
+      <Button variant="ghost" class="tab {activeTab === 'time' ? 'active' : ''}" onclick={() => activeTab = 'time'}>
         ⏱ Waktu
-      </button>
+      </Button>
     </div>
 
     {#if activeTab === 'overview'}
@@ -346,9 +346,9 @@
       <Card padding="lg">
         <div class="section-card-header">
           <h2>⏱ Waktu Belajar</h2>
-          <button class="toggle-btn" onclick={() => showTimeTracking = !showTimeTracking}>
+          <Button variant="ghost" size="sm" class="toggle-btn" onclick={() => showTimeTracking = !showTimeTracking}>
             {showTimeTracking ? 'Tutup' : 'Catat Waktu'}
-          </button>
+          </Button>
         </div>
 
         <div class="time-stats">
@@ -375,16 +375,16 @@
             <p class="quick-log-label">Catat waktu belajar:</p>
             <div class="quick-times">
               {#each quickTimes as t}
-                <button class="time-btn" onclick={() => logStudyTime(t)}>
+                <Button variant="outline" size="sm" class="time-btn" onclick={() => logStudyTime(t)}>
                   {t} menit
-                </button>
+                </Button>
               {/each}
             </div>
             <div class="manual-log">
               <input type="number" min="1" max="480" bind:value={studyMinutes} class="time-input" />
-              <button class="btn small" onclick={() => { if (studyMinutes > 0) logStudyTime(studyMinutes); studyMinutes = 0; }}>
+              <Button variant="primary" size="sm" onclick={() => { if (studyMinutes > 0) logStudyTime(studyMinutes); studyMinutes = 0; }}>
                 Catat
-              </button>
+              </Button>
             </div>
           </div>
         {/if}
@@ -394,9 +394,9 @@
       <Card padding="lg">
         <div class="section-card-header">
           <h2>⚙️ Atur Target</h2>
-          <button class="toggle-btn" onclick={() => showSetup = !showSetup}>
+          <Button variant="ghost" size="sm" class="toggle-btn" onclick={() => showSetup = !showSetup}>
             {showSetup ? 'Tutup' : plan ? 'Ubah Target' : 'Buat Rencana'}
-          </button>
+          </Button>
         </div>
 
         {#if showSetup}
@@ -888,8 +888,8 @@
   }
 
   .error-banner {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--danger-dim, rgba(239, 68, 68, 0.1));
+    border: 1px solid var(--danger-border, rgba(239, 68, 68, 0.3));
     border-radius: 10px;
     padding: 10px 14px;
     margin-bottom: 16px;
@@ -990,7 +990,7 @@
     display: flex; align-items: flex-start; gap: 10px; padding: 12px;
     background: var(--bg); border-radius: 10px; border: 1px solid var(--border);
   }
-  .rec-item.warning { border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+  .rec-item.warning { border-color: var(--warning-border, rgba(245, 158, 11, 0.3)); background: var(--warning-dim, rgba(245, 158, 11, 0.05)); }
   .rec-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
   .rec-item div { display: flex; flex-direction: column; gap: 2px; }
   .rec-label { font-size: 13px; color: var(--text-secondary); }
