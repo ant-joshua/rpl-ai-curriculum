@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui';
+	import { Button, Select, Textarea } from '$lib/components/ui';
 	import { user } from '$lib/stores/user.svelte';
 	import { api } from '$lib/utils/api';
 
@@ -131,7 +131,7 @@
 					<h4>{t('reviews.give_review')}</h4>
 					<div class="form-field">
 						<label for="feedback">{t('reviews.feedback_label')}</label>
-						<textarea id="feedback" bind:value={feedback} placeholder="{t('reviews.feedback_placeholder')}"></textarea>
+						<Textarea id="feedback" bind:value={feedback} placeholder={t('reviews.feedback_placeholder')} rows={3} />
 					</div>
 					<div class="form-field">
 						<label for="score">{t('reviews.score_label')}</label>
@@ -150,16 +150,16 @@
 				<h3>{t('reviews.submit_code')}</h3>
 				<div class="form-field">
 					<label for="ex-slug">{t('reviews.exercise_label')}</label>
-					<select id="ex-slug" bind:value={exerciseSlug}>
+					<Select id="ex-slug" bind:value={exerciseSlug}>
 						<option value="">{t('reviews.select_exercise')}</option>
 						{#each exercises as ex}
 							<option value={ex}>{ex}</option>
 						{/each}
-					</select>
+					</Select>
 				</div>
 				<div class="form-field">
 					<label for="code-input">{t('reviews.code_label')}</label>
-					<textarea id="code-input" bind:value={code} placeholder="{t('reviews.code_placeholder')}" rows="8"></textarea>
+					<Textarea id="code-input" bind:value={code} placeholder={t('reviews.code_placeholder')} rows={8} />
 				</div>
 				{#if submitError}
 					<p class="form-error">{submitError}</p>

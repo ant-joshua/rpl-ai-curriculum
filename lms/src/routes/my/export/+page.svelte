@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
+	import { Button, Select } from '$lib/components/ui';
 
 	let exporting = $state(false);
 	let scope = $state('all');
@@ -51,12 +51,12 @@
 	<div class="export-card">
 		<div class="field-group">
 			<label class="field-label">Cakupan Data</label>
-			<select bind:value={scope} class="field-select">
+			<Select bind:value={scope} class="field-select">
 				<option value="all">Semua (nilai + XP + kursus)</option>
 				<option value="grades">Nilai saja</option>
 				<option value="xp">XP / Gamification saja</option>
 				<option value="courses">Kursus / Enrollments saja</option>
-			</select>
+			</Select>
 		</div>
 
 		<div class="field-group">

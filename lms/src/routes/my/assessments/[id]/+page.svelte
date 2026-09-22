@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/utils/api';
-	import { StatCard, Button } from '$lib/components/ui';
+	import { StatCard, Button, Textarea } from '$lib/components/ui';
 import { Badge } from '$lib/components/ui';
  
 	// State
@@ -472,22 +472,22 @@ import { Badge } from '$lib/components/ui';
 
 						{:else if question.type === 'short_answer'}
 							<div class="short-answer">
-								<textarea
+								<Textarea
 									placeholder="Type your answer..."
 									value={answers[question.id] || ''}
 									oninput={(e) => { answers[question.id] = (e.target as HTMLTextAreaElement).value; }}
-									rows="3"
-								></textarea>
+									rows={3}
+								/>
 							</div>
 
 						{:else if question.type === 'essay'}
 							<div class="essay-answer">
-								<textarea
+								<Textarea
 									placeholder="Write your essay answer..."
 									value={answers[question.id] || ''}
 									oninput={(e) => { answers[question.id] = (e.target as HTMLTextAreaElement).value; }}
-									rows="8"
-								></textarea>
+									rows={8}
+								/>
 							</div>
 						{/if}
 

@@ -94,11 +94,11 @@
 			<p class="subtitle">{t('admin.kelola_instruktur')}</p>
 		</div>
 		<div class="filter-row">
-			<select class="filter-select" value={filterStatus} onchange={handleFilterChange}>
+			<Select class="filter-select" value={filterStatus} onchange={handleFilterChange}>
 				<option value="pending">{t('admin.menunggu')}</option>
 				<option value="approved">{t('admin.disetujui')}</option>
 				<option value="rejected">{t('admin.ditolak')}</option>
-			</select>
+			</Select>
 			<Button variant="secondary" onclick={loadApplications}>🔄 Refresh</Button>
 		</div>
 	</div>

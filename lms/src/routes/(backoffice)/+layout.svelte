@@ -5,6 +5,7 @@
 	import { setContext } from 'svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 	import type { PageData } from './$types';
+	import Select from '$lib/components/ui/Select.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -173,12 +174,12 @@
 			<div class="tenant-switcher">
 				<label class="tenant-label">Tenant</label>
 				<div class="tenant-select-wrapper">
-					<select class="tenant-select" onchange={(e) => switchTenant((e.target as HTMLSelectElement).value)}>
+					<Select class="tenant-select" onchange={(e) => switchTenant((e.target as HTMLSelectElement).value)}>
 						<option value="">Default (no prefix)</option>
 						{#each tenants as t}
 							<option value={t.slug} selected={currentTenantSlug === t.slug}>{t.name}</option>
 						{/each}
-					</select>
+					</Select>
 					<Icon name="chevron-down" size={14} class="tenant-select-chevron" />
 				</div>
 			</div>

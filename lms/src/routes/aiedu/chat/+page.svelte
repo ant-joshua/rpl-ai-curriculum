@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Button, Spinner, EmptyState, Alert } from '$lib/components/ui';
+	import { PageHeader, Button, Spinner, EmptyState, Alert, Select, Textarea } from '$lib/components/ui';
 	import { parseMarkdown } from '$lib/utils/markdown';
 	import { SpeechReader } from '$lib/speech';
 
@@ -196,10 +196,10 @@
 				<label class="field"><span>Kelas</span><input type="text" bind:value={newGrade} placeholder="X" /></label>
 				<label class="field">
 					<span>Kurikulum</span>
-					<select bind:value={newCurriculum}>
+					<Select bind:value={newCurriculum}>
 						<option value="">Default (Merdeka)</option>
 						{#each curricula as c}<option value={c.id}>{c.name}</option>{/each}
-					</select>
+					</Select>
 				</label>
 				<Button variant="primary" size="sm" onclick={createThread} loading={sending}>Mulai</Button>
 			</div>
@@ -264,7 +264,7 @@
 						{recording ? '🛑' : '🎤'}
 					</Button>
 				{/if}
-				<textarea bind:value={draft} rows={2} placeholder="Tulis pertanyaan untuk AI Guru... (atau tekan 🎤 untuk bicara)" onkeydown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}></textarea>
+				<Textarea bind:value={draft} rows={2} placeholder="Tulis pertanyaan untuk AI Guru... (atau tekan 🎤 untuk bicara)" onkeydown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }} />
 				<Button variant="primary" onclick={send} loading={sending} disabled={!draft.trim()}>Kirim</Button>
 			</div>
 		{/if}

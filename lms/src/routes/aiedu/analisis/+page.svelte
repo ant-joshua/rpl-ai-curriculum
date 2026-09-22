@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Button, Card, CardContent, Spinner, EmptyState, Alert } from '$lib/components/ui';
+	import { PageHeader, Button, Card, CardContent, Spinner, EmptyState, Alert, Select } from '$lib/components/ui';
 	import { parseMarkdown } from '$lib/utils/markdown';
 
 	let subject = $state('');
@@ -156,12 +156,12 @@
 					<h3 class="section-title">Ambil Nilai dari Kelas</h3>
 					<label class="field">
 						<span>Pilih Kelas/Kursus</span>
-						<select bind:value={selectedOffering} onchange={loadGradebook}>
+						<Select bind:value={selectedOffering} onchange={loadGradebook}>
 							<option value="">— Pilih kelas —</option>
 							{#each offerings as o (o.id)}
 								<option value={o.id}>{o.subject || o.code || o.id}</option>
 							{/each}
-						</select>
+						</Select>
 					</label>
 					{#if gbLoading}
 						<div class="center"><Spinner /> <span>Memuat data nilai...</span></div>
@@ -205,10 +205,10 @@
 					<label class="field"><span>Kelas</span><input type="text" bind:value={grade} placeholder="X" /></label>
 					<label class="field">
 						<span>Kurikulum</span>
-						<select bind:value={curriculumId}>
+						<Select bind:value={curriculumId}>
 							<option value="">Default (Merdeka)</option>
 							{#each curricula as c}<option value={c.id}>{c.name}</option>{/each}
-						</select>
+						</Select>
 					</label>
 				</div>
 

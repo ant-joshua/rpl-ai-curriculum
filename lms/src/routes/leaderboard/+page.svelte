@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { user } from '$lib/stores/user.svelte';
 	import { getDeviceId } from '$lib/utils/api';
-	import { Button } from '$lib/components/ui';
+	import { Button, Select } from '$lib/components/ui';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 
 	let loading = $state(true);
@@ -91,12 +91,12 @@
 
 	{#if activeTab === 'path'}
 		<div class="path-selector">
-			<select bind:value={pathSlug} onchange={() => { if (pathSlug) activeTab = 'path'; }}>
+			<Select bind:value={pathSlug} onchange={() => { if (pathSlug) activeTab = 'path'; }}>
 				<option value="">{t('leaderboard.select_path')}</option>
 				{#each paths as p}
 					<option value={p.slug}>{p.title}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 	{/if}
 

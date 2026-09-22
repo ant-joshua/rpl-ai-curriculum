@@ -134,17 +134,17 @@
 </div>
 
 <div class="filters">
-	<select onchange={filterSubject} class="filter-select">
+	<Select onchange={filterSubject} class="filter-select">
 		<option value="">Semua Mata Pelajaran</option>
 		{#each data.subjects as s}
 			<option value={s.id} selected={data.filters.subjectId === s.id}>{s.name}</option>
 		{/each}
-	</select>
-	<select onchange={filterType} class="filter-select">
+	</Select>
+	<Select onchange={filterType} class="filter-select">
 		<option value="">{t('exercises.all_types')}</option>
 		<option value="pengetahuan" selected={data.filters.type === 'pengetahuan'}>Pengetahuan</option>
 		<option value="keterampilan" selected={data.filters.type === 'keterampilan'}>Keterampilan</option>
-	</select>
+	</Select>
 </div>
 
 <div class="table-wrap">

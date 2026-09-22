@@ -7,7 +7,7 @@
 	import { gamification } from '$lib/stores/gamification.svelte';
 	import { paths } from '$lib/stores/paths';
 	import { modules } from '$lib/stores/modules';
-	import { Button } from '$lib/components/ui';
+	import { Button, Select } from '$lib/components/ui';
 
 	let selectedPathSlug = $state('');
 	let targetDate = $state('');
@@ -208,12 +208,12 @@
 
 			<div class="form-group">
 				<label for="path-select">Learning Path</label>
-				<select id="path-select" bind:value={selectedPathSlug}>
+				<Select id="path-select" bind:value={selectedPathSlug}>
 					<option value="">— Pilih Path —</option>
 					{#each paths as p}
 						<option value={p.slug}>{p.icon} {p.title}</option>
 					{/each}
-				</select>
+				</Select>
 			</div>
 
 			<div class="form-group">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Button, Card, CardContent, Spinner, EmptyState, Alert } from '$lib/components/ui';
+	import { PageHeader, Button, Card, CardContent, Spinner, EmptyState, Alert, Select, Textarea } from '$lib/components/ui';
 	import { parseMarkdown } from '$lib/utils/markdown';
 
 	let studentName = $state('');
@@ -193,10 +193,10 @@ ${html}
 					<label class="field"><span>Kelas</span><input type="text" bind:value={grade} placeholder="X" /></label>
 				</div>
 				<label class="field"><span>Kurikulum</span>
-					<select bind:value={curriculumId}>
+					<Select bind:value={curriculumId}>
 						<option value="">Default (Merdeka)</option>
 						{#each curricula as c}<option value={c.id}>{c.name}</option>{/each}
-					</select>
+					</Select>
 				</label>
 
 				<div class="scores-head">
@@ -212,7 +212,7 @@ ${html}
 				<Button size="sm" variant="secondary" onclick={addScore}>+ Aspek Nilai</Button>
 
 				<label class="field mt"><span>Catatan Sikap (opsional)</span>
-					<textarea bind:value={attitude} rows={2} placeholder="Disiplin, aktif, kerja sama..."></textarea>
+					<Textarea bind:value={attitude} rows={2} placeholder="Disiplin, aktif, kerja sama..." />
 				</label>
 
 				<div class="form-actions">

@@ -123,10 +123,10 @@
 			</p>
 		</div>
 		<div class="header-actions">
-			<select class="sem-select" bind:value={selectedSemester} onchange={() => loadGrades()}>
+			<Select class="sem-select" bind:value={selectedSemester} onchange={() => loadGrades()}>
 				<option value="1">{t('nilai.semester_ganjil')}</option>
 				<option value="2">{t('nilai.semester_genap')}</option>
-			</select>
+			</Select>
 		</div>
 	</div>
 

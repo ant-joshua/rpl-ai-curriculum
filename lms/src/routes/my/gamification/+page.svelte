@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader, Button } from '$lib/components/ui';
+	import { Card, CardContent, CardHeader, CardTitle, Badge, Spinner, EmptyState, ProgressBar, PageHeader, Button, Select } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -314,12 +314,12 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			<div class="leaderboard-section">
 				<div class="lb-header">
 					<h2>🏆 Papan Skor Global — Top 20</h2>
-					<select bind:value={lbPeriod} onchange={() => loadLeaderboard()} class="lb-period">
+					<Select bind:value={lbPeriod} onchange={() => loadLeaderboard()} class="lb-period">
 						<option value="all">Semua Waktu</option>
 						<option value="daily">Hari Ini</option>
 						<option value="weekly">7 Hari</option>
 						<option value="monthly">30 Hari</option>
-					</select>
+					</Select>
 				</div>
 				{#if leaderboardLoading}
 					<div class="loading"><Spinner /> Memuat papan skor...</div>
@@ -340,12 +340,12 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<div class="activity-header">
 					<h2>📊 Aktivitas XP Terbaru</h2>
 					<div class="activity-tools">
-						<select bind:value={reasonFilter} class="reason-filter">
+						<Select bind:value={reasonFilter} class="reason-filter">
 							<option value="all">Semua Alasan</option>
 							{#each Object.entries(REASON_LABELS) as [key, label]}
 								<option value={key}>{label}</option>
 							{/each}
-						</select>
+						</Select>
 						<Button variant="secondary" size="sm" onclick={exportCsv}>⬇️ Export CSV</Button>
 					</div>
 				</div>

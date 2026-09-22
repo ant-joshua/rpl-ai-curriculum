@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Card, CardContent, Button, Alert, Spinner, EmptyState, Badge } from '$lib/components/ui';
+	import { PageHeader, Card, CardContent, Button, Alert, Spinner, EmptyState, Badge, Select } from '$lib/components/ui';
 
 	let offerings = $state<any[]>([]);
 	let selectedOffering = $state('');
@@ -98,12 +98,12 @@
 		<Card>
 			<CardContent>
 				<h3 class="section-title">1. Pilih Kelas</h3>
-				<select bind:value={selectedOffering} onchange={loadOfferingData} class="offering-select">
+				<Select bind:value={selectedOffering} onchange={loadOfferingData} class="offering-select">
 					<option value="">— Pilih kelas —</option>
 					{#each offerings as o (o.id)}
 						<option value={o.id}>{o.name || o.code || o.id}</option>
 					{/each}
-				</select>
+				</Select>
 
 				<h3 class="section-title mt2">2. Soal dari Question Bank</h3>
 				{#if loadingQ}

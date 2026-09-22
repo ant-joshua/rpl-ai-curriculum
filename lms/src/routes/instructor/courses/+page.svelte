@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Button, Card, CardContent, EmptyState, PageHeader, Spinner, Badge } from '$lib/components/ui';
+	import { Button, Card, CardContent, EmptyState, PageHeader, Spinner, Badge, Select } from '$lib/components/ui';
 
 	let courses = $state<any[]>([]);
 	let loading = $state(true);
@@ -106,12 +106,12 @@
 				</label>
 				<label class="field">
 					<span>Terikat Kelas (opsional)</span>
-					<select bind:value={newClassId}>
+					<Select bind:value={newClassId}>
 						<option value="">— Mandiri / Self-paced —</option>
 						{#each classes as c}
 							<option value={c.id}>{c.name}{c.code ? ` (${c.code})` : ''}</option>
 						{/each}
-					</select>
+					</Select>
 					{#if newClassId}
 						<span class="field-hint">✨ Anggota kelas otomatis di-enroll saat kursus dibuat</span>
 					{/if}

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { PageHeader, Card, CardContent, Button, Spinner, Alert } from '$lib/components/ui';
+	import { PageHeader, Card, CardContent, Button, Spinner, Alert, Select, Textarea } from '$lib/components/ui';
 	import { parseMarkdown } from '$lib/utils/markdown';
 
 	let { data }: { data: import('./$types').PageData } = $props();
@@ -192,22 +192,22 @@
 				</label>
 				<label class="field">
 					<span>Kurikulum</span>
-					<select bind:value={curriculumId}>
+					<Select bind:value={curriculumId}>
 						<option value="">Default (Kurikulum Merdeka)</option>
 						{#each curricula as c}
 							<option value={c.id}>{c.name}{c.is_default ? ' (default)' : ''}</option>
 						{/each}
-					</select>
+					</Select>
 				</label>
 				<label class="field">
 					<span>Kelas / Fase</span>
-					<select bind:value={grade}>
+					<Select bind:value={grade}>
 						{#each grades as g}<option value={g}>{g}</option>{/each}
-					</select>
+					</Select>
 				</label>
 				<label class="field">
 					<span>Materi / Topik *</span>
-					<textarea bind:value={topic} rows={4} placeholder="Contoh: Perulangan dalam Python, Persamaan Kuadrat, Sistem Pencernaan..."></textarea>
+					<Textarea bind:value={topic} rows={4} placeholder="Contoh: Perulangan dalam Python, Persamaan Kuadrat, Sistem Pencernaan..." />
 				</label>
 				<Button variant="primary" fullWidth onclick={generate} loading={generating}>
 					✨ Generate
@@ -219,12 +219,12 @@
 					<div class="material-gen">
 						<div class="material-gen-title">🧠 Generate Soal dari Materi</div>
 						<p class="material-gen-hint">Paste/upload materi belajar — AI langsung buat soal + kunci ke Question Bank, tanpa review.</p>
-						<textarea
+						<Textarea
 							bind:value={material}
 							rows={6}
 							placeholder="Tempel isi materi di sini (teks pelajaran, ringkasan, catatan)..."
 							class="material-input"
-						></textarea>
+						/>
 						<label class="material-count">
 							<span>Jumlah soal:</span>
 							<input type="number" min="3" max="20" bind:value={questionCount} class="count-input" />

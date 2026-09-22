@@ -3,7 +3,7 @@
   import { tutor } from '$lib/stores/tutor.svelte';
   import { parseMarkdown } from '$lib/utils/markdown';
   import { onMount } from 'svelte';
-  import { Button } from '$lib/components/ui';
+  import { Button, Textarea } from '$lib/components/ui';
 
   let { context = '' }: { context?: string } = $props();
 
@@ -244,14 +244,14 @@
   <!-- Input -->
   <div class="chat-input-wrap">
     <div class="chat-input-row">
-      <textarea
+      <Textarea
         class="chat-input"
         bind:value={inputText}
         onkeydown={handleKeydown}
         placeholder="Tanya tentang materi RPL..."
-        rows="1"
+        rows={1}
         disabled={tutor.isWaiting}
-      ></textarea>
+      />
       {#if tutor.isWaiting}
         <Button variant="danger" size="sm" class="stop-btn" onclick={stopGeneration} title="Stop">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>

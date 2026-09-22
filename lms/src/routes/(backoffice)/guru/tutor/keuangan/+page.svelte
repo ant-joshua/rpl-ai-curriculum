@@ -116,11 +116,11 @@ import { t } from '$lib/stores/i18n';
 	<div class="toolbar">
 		<div class="filter-group">
 			<label for="filter-status">{t('tutor.filter_status')}</label>
-			<select id="filter-status" class="filter-select" bind:value={filterStatus}>
+			<Select id="filter-status" class="filter-select" bind:value={filterStatus}>
 				{#each filterOptions as opt}
 					<option value={opt.value}>{opt.label}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 		<Button variant="secondary" size="sm" onclick={loadInvoices}>{t('common.refresh')}</Button>
 	</div>

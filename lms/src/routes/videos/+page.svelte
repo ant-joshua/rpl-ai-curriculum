@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { modules, type Module } from '$lib/stores/modules';
 	import { onMount } from 'svelte';
-	import { Button, Card, EmptyState, SkeletonCard } from '$lib/components/ui';
+	import { Button, Card, EmptyState, Select, SkeletonCard } from '$lib/components/ui';
 	import { fade } from 'svelte/transition';
 
 	let videosJson = $state<Record<string, {
@@ -116,19 +116,19 @@
 	</header>
 
 	<div class="filters">
-		<select bind:value={filterModule}>
+		<Select bind:value={filterModule}>
 			<option value="">{t('videos.filter_module')}</option>
 			{#each modules as mod}
 				<option value={mod.slug}>{mod.title}</option>
 			{/each}
-		</select>
+		</Select>
 
-		<select bind:value={filterLevel}>
+		<Select bind:value={filterLevel}>
 			<option value="">{t('videos.filter_level')}</option>
 			<option value="Beginner">{t('videos.level_beginner')}</option>
 			<option value="Intermediate">{t('videos.level_intermediate')}</option>
 			<option value="Advanced">{t('videos.level_advanced')}</option>
-		</select>
+		</Select>
 
 		<input
 			type="search"

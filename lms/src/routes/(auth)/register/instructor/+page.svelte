@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 
-	import { Button } from '$lib/components/ui';
+	import { Button, Textarea } from '$lib/components/ui';
 
 	let name = $state('');
 	let email = $state('');
@@ -128,24 +128,24 @@
 
 				<div class="form-group">
 					<label for="bio">{t('register.bio')}</label>
-					<textarea
+					<Textarea
 						id="bio"
 						bind:value={bio}
 						placeholder="Ceritakan pengalaman mengajar atau latar belakang Anda..."
 						rows={4}
 						disabled={loading}
-					></textarea>
+					/>
 				</div>
 
 				<div class="form-group">
 					<label for="courseInterests">Minat Kursus</label>
-					<textarea
+					<Textarea
 						id="courseInterests"
 						bind:value={courseInterests}
 						placeholder="Kursus atau topik apa yang ingin Anda ajarkan?"
 						rows={3}
 						disabled={loading}
-					></textarea>
+					/>
 				</div>
 
 				<Button variant="primary" size="lg" class="btn-full" type="submit" disabled={loading}>

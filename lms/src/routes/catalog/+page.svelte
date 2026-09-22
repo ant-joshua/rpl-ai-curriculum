@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import Icon from '$lib/components/ui/Icon.svelte';
   import SearchInput from '$lib/components/ui/SearchInput.svelte';
-  import { Button, EmptyState, SkeletonCard } from '$lib/components/ui';
+  import { Button, EmptyState, Select, SkeletonCard } from '$lib/components/ui';
   import CourseCard from '$lib/components/catalog/CourseCard.svelte';
 
   let { data }: { data: import('./$types').PageData } = $props();
@@ -132,27 +132,27 @@
     <SearchInput bind:value={searchQuery} placeholder="Search courses..." />
 
     <div class="filter-row">
-      <select class="filter-select" bind:value={levelFilter}>
+      <Select class="filter-select" bind:value={levelFilter}>
         <option value="all">All Levels</option>
         <option value="beginner">Beginner</option>
         <option value="intermediate">Intermediate</option>
         <option value="advanced">Advanced</option>
-      </select>
+      </Select>
 
-      <select class="filter-select" bind:value={categoryFilter}>
+      <Select class="filter-select" bind:value={categoryFilter}>
         <option value="all">All Categories</option>
         {#each categories as cat}
           <option value={cat}>{cat}</option>
         {/each}
-      </select>
+      </Select>
 
-      <select class="filter-select" bind:value={sortBy}>
+      <Select class="filter-select" bind:value={sortBy}>
         <option value="popular">Most Popular</option>
         <option value="rating">Highest Rated</option>
         <option value="reviewed">Most Reviewed</option>
         <option value="newest">Newest</option>
         <option value="az">A–Z</option>
-      </select>
+      </Select>
 
       <span class="result-count">{filteredOfferings.length} course{filteredOfferings.length !== 1 ? 's' : ''}</span>
     </div>

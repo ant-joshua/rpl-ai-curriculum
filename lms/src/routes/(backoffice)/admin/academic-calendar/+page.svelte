@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Button } from '$lib/components/ui/index.js';
+	import { Button, Select, Textarea } from '$lib/components/ui/index.js';
 
 	type CalEvent = {
 		id: string;
@@ -173,11 +173,7 @@
 				</div>
 				<div class="form-field">
 					<label>Tipe</label>
-					<select bind:value={formType} onchange={() => (formColor = TYPE_COLORS[formType])}>
-						{#each TYPE_OPTIONS as opt}
-							<option value={opt.value}>{opt.label}</option>
-						{/each}
-					</select>
+					<Select bind:value={formType} options={TYPE_OPTIONS} onchange={() => (formColor = TYPE_COLORS[formType])} />
 				</div>
 				<div class="form-field">
 					<label>Tanggal Mulai *</label>
@@ -194,7 +190,7 @@
 			</div>
 			<div class="form-field">
 				<label>Keterangan (opsional)</label>
-				<textarea rows="2" placeholder="Detail event..." bind:value={formDesc}></textarea>
+				<Textarea rows={2} placeholder="Detail event..." bind:value={formDesc} />
 			</div>
 			<div class="form-actions">
 				<Button variant="primary" onclick={saveEvent} disabled={saving}>

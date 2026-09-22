@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Spinner, Badge } from '$lib/components/ui';
+	import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Spinner, Badge, Select } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let stats = $state<any>(null);
@@ -139,11 +139,11 @@
 {:else}
 	<div class="doc-controls">
 		<input type="search" placeholder="Cari judul / konten..." bind:value={q} oninput={() => loadDocs()} class="search-input" />
-		<select bind:value={docFilter} onchange={() => loadDocs()}>
+		<Select bind:value={docFilter} onchange={() => loadDocs()}>
 			<option value="">Semua sumber</option>
 			<option value="seed">Seed</option>
 			<option value="generated">Generated</option>
-		</select>
+		</Select>
 	</div>
 	{#if loadingDocs}
 		<div class="center"><Spinner /></div>

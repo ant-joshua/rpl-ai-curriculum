@@ -2,7 +2,7 @@
   import { t } from '$lib/stores/i18n';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import { Button, Card, EmptyState, PageHeader, StatCard } from '$lib/components/ui';
+  import { Button, Card, EmptyState, PageHeader, Select, StatCard } from '$lib/components/ui';
 
   let { data }: { data: import('./$types').PageData } = $props();
 
@@ -275,7 +275,7 @@
   <div class="controls">
     <div class="offering-select-wrapper">
       <label class="select-label" for="offering-select">Pilih Course</label>
-      <select
+      <Select
         id="offering-select"
         class="offering-select"
         bind:value={selectedOfferingId}
@@ -287,7 +287,7 @@
             {e.course_icon} {e.course_title} — {e.offering_name}
           </option>
         {/each}
-      </select>
+      </Select>
     </div>
   </div>
 

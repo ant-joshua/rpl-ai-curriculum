@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { api } from '$lib/utils/api';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import { Button, Card, Badge } from '$lib/components/ui';
+	import { Button, Card, Badge, Textarea } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -366,13 +366,13 @@
 							 assignment.submission_type === 'code' ? 'Kode/Teks' : 'Teks Jawaban'}
 						</label>
 						{#if assignment.submission_type === 'text' || assignment.submission_type === 'code'}
-							<textarea
+							<Textarea
 								id="submission-text"
 								bind:value={submissionText}
-								rows="8"
+								rows={8}
 								placeholder="Tulis jawaban Anda di sini..."
 								class="text-input"
-							></textarea>
+							/>
 						{:else}
 							<input
 								id="submission-text"

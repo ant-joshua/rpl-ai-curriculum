@@ -304,11 +304,11 @@
 		</div>
 		<div class="field">
 			<label>Role</label>
-			<select class="input" bind:value={editRole}>
+			<Select class="input" bind:value={editRole}>
 				{#each VALID_ROLES as role}
 					<option value={role}>{role}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 		<div class="field">
 			<label>Status</label>

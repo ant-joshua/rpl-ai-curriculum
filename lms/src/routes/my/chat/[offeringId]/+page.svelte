@@ -4,6 +4,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import Avatar from '$lib/components/ui/Avatar.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Textarea from '$lib/components/ui/Textarea.svelte';
 
 	let { data } = $props<{ data: import('./$types').PageData }>();
 
@@ -224,14 +225,14 @@
 
 		<!-- Input -->
 		<div class="chat-input-area">
-			<textarea
+			<Textarea
 				class="chat-input"
 				bind:value={newMessage}
 				onkeydown={handleKeydown}
 				placeholder="Ketik pesan... (Enter untuk kirim)"
-				rows="2"
-				maxlength="1000"
-			></textarea>
+				rows={2}
+				maxlength={1000}
+			/>
 			<Button variant="primary" onclick={sendMessage} disabled={!newMessage.trim()}>Kirim</Button>
 		</div>
 	</div>

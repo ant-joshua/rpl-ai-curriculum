@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Button, Card, CardContent, Badge, EmptyState, Spinner, Alert } from '$lib/components/ui';
+	import { Button, Card, CardContent, Badge, EmptyState, Spinner, Alert, Select } from '$lib/components/ui';
 
 	let curricula = $state<any[]>([]);
 	let loading = $state(true);
@@ -112,7 +112,7 @@
 				<label class="field"><span>Nama *</span><input type="text" bind:value={formName} placeholder="Contoh: Kurikulum Yayasan Harapan" /></label>
 				<label class="field">
 					<span>Tipe</span>
-					<select bind:value={formType}>
+					<Select bind:value={formType}>
 						<option value="merdeka">Merdeka</option>
 						<option value="k13">K13</option>
 						<option value="ib">IB</option>
@@ -120,16 +120,16 @@
 						<option value="sekolah">Sekolah</option>
 						<option value="institusi">Institusi</option>
 						<option value="custom">Custom</option>
-					</select>
+					</Select>
 				</label>
 				<label class="field">
 					<span>Authority</span>
-					<select bind:value={formAuthority}>
+					<Select bind:value={formAuthority}>
 						<option value="kemdikbud">Kemendikbud</option>
 						<option value="sekolah">Sekolah</option>
 						<option value="institusi">Institusi</option>
 						<option value="internasional">Internasional</option>
-					</select>
+					</Select>
 				</label>
 				<label class="field"><span>Deskripsi</span><input type="text" bind:value={formDesc} placeholder="Deskripsi singkat" /></label>
 			</div>

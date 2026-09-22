@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { adaptive } from '$lib/stores/adaptive.svelte';
-	import { Skeleton, EmptyState, Card } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Card, Select } from '$lib/components/ui/index.js';
 	import { Badge } from '$lib/components/ui';
 
 	let exercisesData = $state<{ exercises: any[] } | null>(null);
@@ -111,18 +111,18 @@
 					bind:value={searchQuery}
 				/>
 			</div>
-			<select bind:value={filterDifficulty}>
+			<Select bind:value={filterDifficulty}>
 				<option value="">{t('exercises.all_levels')}</option>
 				{#each difficulties as d}
 					<option value={d}>{d}</option>
 				{/each}
-			</select>
-			<select bind:value={filterType}>
+			</Select>
+			<Select bind:value={filterType}>
 				<option value="">{t('exercises.all_types')}</option>
 				{#each types as t}
 					<option value={t}>{typeLabels[t] || t}</option>
 				{/each}
-			</select>
+			</Select>
 			<span class="count">{t('exercises.count', { filtered: filtered.length, total: exercisesData.exercises.length })} latihan</span>
 		</div>
 

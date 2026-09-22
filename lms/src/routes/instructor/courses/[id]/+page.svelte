@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { Button, Card, CardContent, EmptyState, PageHeader, Spinner, Badge } from '$lib/components/ui';
+	import { Button, Card, CardContent, EmptyState, PageHeader, Spinner, Badge, Select, Textarea } from '$lib/components/ui';
 
 	let { data }: { data: import('./$types').PageData } = $props();
 	let courseId = $derived($page.params.id);
@@ -241,20 +241,20 @@
 					</div>
 					<label class="field">
 						<span>Kurikulum</span>
-						<select bind:value={curriculumId}>
+						<Select bind:value={curriculumId}>
 							<option value="">Default (Kurikulum Merdeka)</option>
 							{#each curricula as c}
 								<option value={c.id}>{c.name}{c.is_default ? ' (default)' : ''}</option>
 							{/each}
-						</select>
+						</Select>
 					</label>
 					<label class="field">
 						<span>Status</span>
-						<select bind:value={courseStatus}>
+						<Select bind:value={courseStatus}>
 							<option value="draft">Draft</option>
 							<option value="active">Aktif</option>
 							<option value="archived">Arsip</option>
-						</select>
+						</Select>
 					</label>
 					<div class="form-actions">
 						<Button variant="primary" onclick={saveCourse} loading={saving}>Simpan</Button>
@@ -301,7 +301,7 @@
 						</label>
 						<label class="field">
 							<span>Konten (Markdown/HTML)</span>
-							<textarea bind:value={lessonContent} rows={8} placeholder="Tulis materi di sini..."></textarea>
+							<Textarea bind:value={lessonContent} rows={8} placeholder="Tulis materi di sini..." />
 						</label>
 						<div class="form-row">
 							<label class="field">
@@ -311,11 +311,11 @@
 							{#if editingLesson}
 								<label class="field">
 									<span>Status</span>
-									<select bind:value={lessonStatus}>
+									<Select bind:value={lessonStatus}>
 										<option value="draft">Draft</option>
 										<option value="published">Published</option>
 										<option value="archived">Archived</option>
-									</select>
+									</Select>
 								</label>
 							{/if}
 						</div>

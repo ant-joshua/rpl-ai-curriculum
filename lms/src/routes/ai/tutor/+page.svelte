@@ -3,7 +3,7 @@
 	let { data } = $props();
 
 	import { parseMarkdown } from '$lib/utils/markdown';
-	import Button from '$lib/components/ui/Button.svelte';
+	import { Button, Select, Textarea } from '$lib/components/ui';
 	import { browser } from '$app/environment';
 
 	type ChatTurn = { role: 'user' | 'assistant'; text: string };
@@ -94,12 +94,12 @@
 			<p class="subtitle">Asisten belajar RPL berbasis AI. Tanya apa pun tentang materi kuliah.</p>
 		</div>
 		<div class="header-actions">
-			<select bind:value={selectedOfferingId} class="offering-select">
+			<Select bind:value={selectedOfferingId} class="offering-select">
 				<option value="">— Semua kursus —</option>
 				{#each offerings as offering}
 					<option value={offering.id}>{offering.course_title} — {offering.name}</option>
 				{/each}
-			</select>
+			</Select>
 			<Button variant="outline" size="sm" onclick={clearChat} disabled={turns.length === 0}>Hapus Percakapan</Button>
 		</div>
 	</div>
@@ -148,13 +148,13 @@
 		</div>
 
 		<div class="input-area">
-			<textarea
+			<Textarea
 				bind:value={message}
 				onkeydown={handleKeydown}
 				placeholder="Tulis pertanyaanmu di sini..."
-				rows="2"
+				rows={2}
 				disabled={loading}
-			></textarea>
+			/>
 			<Button variant="primary" onclick={sendMessage} disabled={!message.trim() || loading}>
 				Kirim
 			</Button>

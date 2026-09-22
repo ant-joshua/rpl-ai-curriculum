@@ -14,6 +14,7 @@
 		icon,
 		class: className = '',
 		onchange,
+		children,
 		...rest
 	}: {
 		label?: string;
@@ -25,6 +26,7 @@
 		icon?: string;
 		class?: string;
 		onchange?: (e: Event) => void;
+		children?: import('svelte').Snippet;
 		[key: string]: unknown;
 	} = $props();
 
@@ -70,15 +72,19 @@
 		onblur={() => focused = false}
 		{...rest}
 	>
-		{#if placeholder}
-			<option value="" disabled>{placeholder}</option>
+		{#if children}
+			{@render children()}
+		{:else}
+			{#if placeholder}
+				<option value="" disabled>{placeholder}</option>
+			{/if}
+			{#each options as opt}
+				<option
+					value={opt.value}
+					selected={opt.value === value}
+				>{opt.label}</option>
+			{/each}
 		{/if}
-		{#each options as opt}
-			<option
-				value={opt.value}
-				selected={opt.value === value}
-			>{opt.label}</option>
-		{/each}
 	</select>
 
 	{#if label}

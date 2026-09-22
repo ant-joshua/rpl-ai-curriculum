@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui';
+	import { Button, Select, Textarea } from '$lib/components/ui';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
@@ -64,12 +64,12 @@
 	<form onsubmit={handleSubmit}>
 		<div class="form-group">
 			<label for="path">Learning Path</label>
-			<select id="path" bind:value={pathSlug} required>
+			<Select id="path" bind:value={pathSlug} required>
 				<option value="">— Pilih Path —</option>
 				{#each paths as p}
 					<option value={p.slug}>{p.icon} {p.title}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 
 		<div class="form-group">
@@ -85,13 +85,13 @@
 
 		<div class="form-group">
 			<label for="desc">Deskripsi</label>
-			<textarea
+			<Textarea
 				id="desc"
 				bind:value={description}
 				placeholder="Jelaskan proyek yang akan kamu buat — fitur utama, teknologi yang digunakan, dll."
-				rows="5"
+				rows={5}
 				required
-			></textarea>
+			/>
 		</div>
 
 		<div class="form-group">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { DataTable, Skeleton, EmptyState, StatCard } from '$lib/components/ui';
+	import { DataTable, Skeleton, EmptyState, StatCard, Select } from '$lib/components/ui';
 import { Button } from '$lib/components/ui/index.js';
 import { t } from '$lib/stores/i18n';
 
@@ -223,19 +223,19 @@ async function doCheckIn() {
 	<div class="filters">
 		<div class="filter-group">
 			<label for="month-select">{t('absensi.bulan')}</label>
-			<select id="month-select" bind:value={selectedMonth}>
+			<Select id="month-select" bind:value={selectedMonth}>
 				{#each months as m}
 					<option value={m.value}>{m.label}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 		<div class="filter-group">
 			<label for="year-select">{t('absensi.tahun')}</label>
-			<select id="year-select" bind:value={selectedYear}>
+			<Select id="year-select" bind:value={selectedYear}>
 				{#each years as y}
 					<option value={y}>{y}</option>
 				{/each}
-			</select>
+			</Select>
 		</div>
 		<div class="filter-action">
 			<Button variant="secondary" onclick={loadAttendance}>{t('absensi.tampilkan')}</Button>

@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Button, Alert, Avatar, Badge, Progress } from '$lib/components/ui';
+	import { Card, CardContent, Button, Alert, Avatar, Badge, Progress, Textarea } from '$lib/components/ui';
 
 	let { data } = $props();
 
@@ -377,7 +377,7 @@
 		{#if showAskForm}
 			<div class="qa-ask-form">
 				<input class="qa-input" placeholder="Judul pertanyaan" bind:value={askTitle} />
-				<textarea class="qa-textarea" placeholder="Detail pertanyaan..." rows={3} bind:value={askBody}></textarea>
+				<Textarea class="qa-textarea" placeholder="Detail pertanyaan..." rows={3} bind:value={askBody} />
 				{#if qaError}<p class="qa-error">{qaError}</p>{/if}
 				<div class="qa-form-actions">
 					<Button size="sm" onclick={submitQuestion} disabled={asking}>{asking ? 'Mengirim...' : 'Kirim Pertanyaan'}</Button>
@@ -468,12 +468,12 @@
 						{/each}
 						<span class="star-hint">{reviewRating || data.myReview?.rating || 0}/5</span>
 					</div>
-					<textarea
+					<Textarea
 						class="review-comment"
 						placeholder="Ceritakan pengalaman belajarmu di kursus ini..."
 						bind:value={reviewComment}
 						rows={3}
-					></textarea>
+					/>
 					<Button variant="primary" class="review-submit" onclick={submitReview} disabled={reviewSubmitting} loading={reviewSubmitting}>
 						{reviewSubmitting ? 'Menyimpan...' : data.myReview ? 'Update Review' : 'Kirim Review'}
 					</Button>
