@@ -5,26 +5,11 @@
 	}
 
 	:root {
-		--bg: var(--surface);
-		--surface: var(--surface);
-		--surface-alt: var(--surface-alt);
-		--text: var(--text);
-		--text-secondary: var(--text-muted);
-		--text-muted: var(--text-muted);
-		--border: var(--border);
-		--border-light: rgba(0,0,0,0.06);
-		--accent: var(--text);
-		--accent-hover: var(--text);
-		--accent-light: rgba(0,0,0,0.05);
-		--accent-rgb: 17, 17, 17;
-		--success: var(--success);
-		--success-light: rgba(22,163,74,0.08);
-		--warning: var(--warning);
-		--danger: var(--danger);
-		--danger-light: rgba(220,38,38,0.08);
+		--border-light: rgba(222, 216, 204, 0.6);
+		--accent-rgb: 30, 58, 95;
 		--shadow-sm: none;
-		--shadow: 0 1px 2px rgba(0,0,0,0.04);
-		--shadow-lg: 0 2px 8px rgba(0,0,0,0.06);
+		--shadow: 0 1px 2px rgba(30, 58, 95, 0.04);
+		--shadow-lg: 0 4px 12px rgba(30, 58, 95, 0.06);
 		--shadow-3d: none;
 		--shadow-3d-success: none;
 		--radius: 8px;
