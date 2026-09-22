@@ -50,12 +50,12 @@ Multi-tenant LMS (K13 sekolah / bimbel / tutor / universitas) built with SvelteK
 
 ```sh
 cd lms && npm run build   # ~9 min, RAM-heavy
-npx wrangler pages deploy .svelte-kit/cloudflare --project-name rpl-ai-curriculum --branch main
+CLOUDFLARE_ACCOUNT_ID=32b2efbe93d68a826eb2f250e9bb7df6 npx wrangler deploy
 ```
 
-- Build slow → run background with `notify_on_complete=true`; deploy only after exit 0.
-- Deploy twice if upload flakes; commit BEFORE deploy (rollback safety).
-- Wrangler account: `32b2efbe93d68a826eb2f250e9bb7df6` (R2/DB).
+- Deployed as Cloudflare Worker with static assets binding (`[assets]`).
+- Worker URL: `https://rpl-ai-curriculum.couple-romance.workers.dev`
+- Wrangler account: `32b2efbe93d68a826eb2f250e9bb7df6` (Worker/R2/D1).
 
 ## Pitfalls learned (do not repeat)
 

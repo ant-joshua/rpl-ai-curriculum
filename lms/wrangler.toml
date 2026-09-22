@@ -1,8 +1,12 @@
+account_id = "32b2efbe93d68a826eb2f250e9bb7df6"
 name = "rpl-ai-curriculum"
+main = ".svelte-kit/cloudflare/worker.js"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
-pages_build_output_dir = ".svelte-kit/cloudflare"
+[assets]
+directory = ".svelte-kit/cloudflare/client"
+binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
