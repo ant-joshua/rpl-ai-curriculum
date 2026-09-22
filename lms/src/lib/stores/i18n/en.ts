@@ -587,6 +587,8 @@ export const enTranslations: Record<string, string> = {
     'profile.recent_activity': 'Recent Activity',
     'profile.sessions_completed': '{n} Sesi',
     'profile.time_just_now': 'Just now',
+    'profile.time_min_ago': '{m} minutes ago',
+    'profile.time_hour_ago': '{j} hours ago',
     'profile.total_sessions': '{n} Total Sessions',
     'profile.total_xp': '{xp} Total XP',
     'projects.empty_cta': 'View All Modules',

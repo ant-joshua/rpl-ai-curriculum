@@ -54,9 +54,9 @@
 			const d = new Date(iso + 'Z');
 			const now = new Date();
 			const diff = now.getTime() - d.getTime();
-			if (diff < 60000) return ''+t('profile.time_just_now')+'';
-			if (diff < 3600000) return `{t('profile.time_min_ago', { m: Math.floor(diff / 60000) })}`;
-			if (diff < 86400000) return `{t('profile.time_hour_ago', { j: Math.floor(diff / 3600000) })}`;
+			if (diff < 60000) return t('profile.time_just_now');
+			if (diff < 3600000) return t('profile.time_min_ago', { m: Math.floor(diff / 60000) });
+			if (diff < 86400000) return t('profile.time_hour_ago', { j: Math.floor(diff / 3600000) });
 			return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 		} catch {
 			return iso;

@@ -1,22 +1,16 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError, parseJson } from '$lib/server/api';
 
 /**
  * GET /api/my/notes?lessonId=X
  * Returns the user's note for a given lesson, or all notes if no lessonId.
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
+		const userId = auth.user.id;
 		const db = getDB(platform);
 		const url = new URL(request.url);
 		const lessonId = url.searchParams.get('lessonId');
@@ -27,7 +21,7 @@ export async function GET({ request, platform }: { request: Request; platform: A
 				.prepare('SELECT * FROM notes WHERE user_id = ? AND lesson_id = ?')
 				.bind(userId, lessonId)
 				.first<{ id: string; user_id: string; lesson_id: string; module_slug: string; session_id: string; content: string; created_at: string; updated_at: string }>();
-			return jsonResponse({ success: true, data: note || null });
+			return apiOk(note || null);
 		}
 
 		// Return all notes with lesson titles for reference
@@ -41,10 +35,10 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			`)
 			.bind(userId)
 			.all();
-		return jsonResponse({ success: true, data: results || [] });
+		return apiOk(results || []);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -53,26 +47,21 @@ export async function GET({ request, platform }: { request: Request; platform: A
  * Create or update a note for a lesson.
  * Body: { lessonId, content, moduleSlug?, sessionId? }
  */
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
-		const db = getDB(platform);
-		const body: { lessonId?: string; content?: string; moduleSlug?: string; sessionId?: string } = await request.json();
-		const { lessonId, content = '', moduleSlug, sessionId } = body;
+		const userId = auth.user.id;
+		const parsed = await parseJson<{ lessonId?: string; content?: string; moduleSlug?: string; sessionId?: string }>(request);
+		if (parsed.response) return parsed.response;
 
+		const { lessonId, content = '', moduleSlug, sessionId } = parsed.data || {};
 		if (!lessonId) {
-			return jsonResponse({ success: false, error: 'lessonId is required' }, 400);
+			return apiError('lessonId is required', 400);
 		}
 
+		const db = getDB(platform);
 		const now = new Date().toISOString();
 
 		// Check existing note for this user + lesson
@@ -87,7 +76,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 				.prepare('UPDATE notes SET content = ?, updated_at = ? WHERE id = ?')
 				.bind(content, now, existing.id)
 				.run();
-			return jsonResponse({ success: true, data: { id: existing.id, content, updatedAt: now } });
+			return apiOk({ id: existing.id, content, updatedAt: now });
 		}
 
 		// Insert new
@@ -102,9 +91,9 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			.bind(id, userId, lessonId, modSlug, slug, content, now, now)
 			.run();
 
-		return jsonResponse({ success: true, data: { id, content } });
+		return apiOk({ id, content });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

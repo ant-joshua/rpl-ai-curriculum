@@ -1,22 +1,18 @@
-import { getBearerToken, getSession } from '$lib/server/auth';
-import { getDB, jsonResponse } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError, parseJson } from '$lib/server/api';
+import { getDB } from '$lib/server/d1';
 import { NotificationRepository } from '$lib/repositories/notification.repository';
 
 /**
  * GET /api/notifications — list user notifications (paginated, filterable)
  * Query: page, limit, type, unread
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		const userId = session.user.id;
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const db = getDB(platform);
-		const tenantRow = await db.prepare('SELECT tenant_id FROM users WHERE id = ?').bind(userId).first<{ tenant_id: string }>();
-		const tenantId = tenantRow?.tenant_id || 'default';
+		const userId = auth.user.id;
+		const tenantId = (locals?.tenant as any)?.id || 'default';
 
 		const url = new URL(request.url);
 		const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
@@ -29,20 +25,20 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			unreadOnly, type, limit, offset
 		});
 
-		return jsonResponse({
-			success: true,
-			data: result.rows,
-			pagination: {
-				page,
-				limit,
-				total: result.total,
-				totalPages: Math.ceil(result.total / limit)
-			},
-			unreadCount: result.unreadCount
+		return apiOk(result.rows, {
+			meta: {
+				pagination: {
+					page,
+					limit,
+					total: result.total,
+					totalPages: Math.ceil(result.total / limit)
+				},
+				unreadCount: result.unreadCount
+			}
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -50,32 +46,31 @@ export async function GET({ request, platform }: { request: Request; platform: A
  * PUT /api/notifications — mark notifications read
  * Body: { ids?: string[], all?: boolean }
  */
-export async function PUT({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function PUT({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		const userId = session.user.id;
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const db = getDB(platform);
-		const tenantRow = await db.prepare('SELECT tenant_id FROM users WHERE id = ?').bind(userId).first<{ tenant_id: string }>();
-		const tenantId = tenantRow?.tenant_id || 'default';
+		const userId = auth.user.id;
+		const tenantId = (locals?.tenant as any)?.id || 'default';
 
-		const body = await request.json();
+		const parsed = await parseJson<{ ids?: string[]; all?: boolean }>(request);
+		if (parsed.response) return parsed.response;
+		const body = parsed.data || {};
+
 		if (body.all) {
 			await NotificationRepository.markAllAsRead(userId, tenantId, platform);
-			return jsonResponse({ success: true });
+			return apiOk({ markedAll: true });
 		}
 		if (body.ids && Array.isArray(body.ids)) {
 			for (const id of body.ids) {
 				await NotificationRepository.markAsRead(userId, id, platform);
 			}
 		}
-		return jsonResponse({ success: true });
+		return apiOk({ updated: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -83,21 +78,22 @@ export async function PUT({ request, platform }: { request: Request; platform: A
  * POST /api/notifications — create a notification (internal/API use)
  * Body: { user_id, type, title, body?, reference_type?, reference_id?, channel? }
  */
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const body = await request.json();
+		const parsed = await parseJson<any>(request);
+		if (parsed.response) return parsed.response;
+		const body = parsed.data || {};
+
 		if (!body.user_id || !body.type || !body.title) {
-			return jsonResponse({ success: false, error: 'user_id, type, dan title wajib diisi' }, 400);
+			return apiError('user_id, type, dan title wajib diisi', 400);
 		}
 
 		const validTypes = ['assessment','assignment','attendance','payment','grade','system','announcement'];
 		if (!validTypes.includes(body.type)) {
-			return jsonResponse({ success: false, error: 'Tipe notifikasi tidak valid' }, 400);
+			return apiError('Tipe notifikasi tidak valid', 400);
 		}
 
 		const db = getDB(platform);
@@ -127,10 +123,10 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			});
 		}
 
-		return jsonResponse({ success: true, data: notif }, 201);
+		return apiOk(notif, { status: 201 });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -138,23 +134,24 @@ export async function POST({ request, platform }: { request: Request; platform: 
  * DELETE /api/notifications — archive a notification
  * Body: { id: string }
  */
-export async function DELETE({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function DELETE({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		const userId = session.user.id;
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const body = await request.json();
+		const userId = auth.user.id;
+		const parsed = await parseJson<{ id?: string }>(request);
+		if (parsed.response) return parsed.response;
+		const body = parsed.data || {};
+
 		if (!body.id) {
-			return jsonResponse({ success: false, error: 'id wajib diisi' }, 400);
+			return apiError('id wajib diisi', 400);
 		}
 
 		await NotificationRepository.archiveNotification(userId, body.id, platform);
-		return jsonResponse({ success: true });
+		return apiOk({ archived: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

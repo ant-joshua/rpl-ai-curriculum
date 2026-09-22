@@ -994,6 +994,8 @@ export const idTranslations: Record<string, string> = {
     'profile.recent_activity': 'Aktivitas Terbaru',
     'profile.sessions_completed': '{n} Sesi',
     'profile.time_just_now': 'Baru saja',
+    'profile.time_min_ago': '{m} menit yang lalu',
+    'profile.time_hour_ago': '{j} jam yang lalu',
     'profile.total_sessions': '{n} Sesi Total',
     'profile.total_xp': '{xp} XP Total',
     'projects.empty_cta': 'Lihat Semua Modul',

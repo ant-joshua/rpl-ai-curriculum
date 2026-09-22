@@ -1,20 +1,17 @@
-import { getBearerToken, getSession } from '$lib/server/auth';
-import { getDB, jsonResponse } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError } from '$lib/server/api';
+import { getDB } from '$lib/server/d1';
 
 /**
  * GET /api/notifications/unread-count — lightweight endpoint for polling
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) return jsonResponse({ success: false, error: 'Not authenticated' }, 401);
-		const session = await getSession(platform, token);
-		if (!session) return jsonResponse({ success: false, error: 'Session expired or invalid' }, 401);
-		const userId = session.user.id;
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
+		const userId = auth.user.id;
+		const tenantId = (locals?.tenant as any)?.id || 'default';
 		const db = getDB(platform);
-		const tenantRow = await db.prepare('SELECT tenant_id FROM users WHERE id = ?').bind(userId).first<{ tenant_id: string }>();
-		const tenantId = tenantRow?.tenant_id || 'default';
 
 		const unreadRow = await db.prepare(
 			'SELECT COUNT(*) as count FROM notifications WHERE tenant_id = ? AND user_id = ? AND is_read = 0'
@@ -26,13 +23,12 @@ export async function GET({ request, platform }: { request: Request; platform: A
 			'SELECT id, type, title, body, created_at FROM notifications WHERE tenant_id = ? AND user_id = ? AND is_read = 0 ORDER BY created_at DESC LIMIT 3'
 		).bind(tenantId, userId).all<any>();
 
-		return jsonResponse({
-			success: true,
+		return apiOk({
 			unreadCount,
 			latest: latest || [],
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

@@ -1,16 +1,20 @@
 import type { RequestEvent } from '@sveltejs/kit';
+import { getDB } from '$lib/server/d1';
+import { apiOk, apiError } from '$lib/server/api';
 
 export async function GET({ platform }: RequestEvent) {
-	const db = platform.env.DB;
+	if (!platform) {
+		return apiError('Platform runtime unavailable', 500);
+	}
 	try {
+		const db = getDB(platform as App.Platform);
 		await db.prepare('SELECT 1').run();
-		return new Response(JSON.stringify({ status: 'ok', d1: 'connected' }), {
-			headers: { 'content-type': 'application/json' },
+		return apiOk({
+			status: 'healthy',
+			d1: 'connected',
+			timestamp: new Date().toISOString(),
 		});
 	} catch (e) {
-		return new Response(JSON.stringify({ status: 'error', d1: 'disconnected', error: String(e) }), {
-			status: 500,
-			headers: { 'content-type': 'application/json' },
-		});
+		return apiError(`Database check failed: ${String(e)}`, 500);
 	}
 }

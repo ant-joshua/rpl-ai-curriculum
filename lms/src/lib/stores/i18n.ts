@@ -43,17 +43,25 @@ export function toggleLang() {
   setLang(currentLang === 'id' ? 'en' : 'id');
 }
 
-export function t(key: string): string {
+export function t(key: string, params?: Record<string, string | number>): string {
   if (!key) return '';
   const l = currentLang;
   // Try active language
-  const val = translations[l]?.[key];
-  if (val !== undefined && val !== '') return val;
-  // Fallback to other language before returning raw key
-  const fallbackLang: Lang = l === 'id' ? 'en' : 'id';
-  const fallbackVal = translations[fallbackLang]?.[key];
-  if (fallbackVal !== undefined && fallbackVal !== '') return fallbackVal;
-  return key;
+  let val = translations[l]?.[key];
+  if (val === undefined || val === '') {
+    // Fallback to other language before returning raw key
+    const fallbackLang: Lang = l === 'id' ? 'en' : 'id';
+    val = translations[fallbackLang]?.[key];
+  }
+  if (val === undefined || val === '') {
+    val = key;
+  }
+  if (params && typeof val === 'string') {
+    for (const [k, v] of Object.entries(params)) {
+      val = val.replaceAll(`{${k}}`, String(v));
+    }
+  }
+  return val;
 }
 
 export { idTranslations, enTranslations };

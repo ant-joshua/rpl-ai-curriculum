@@ -32,6 +32,12 @@ describe('i18n', () => {
 		expect(m.t('nonexistent.key')).toBe('nonexistent.key');
 	});
 
+	it('t supports parameter interpolation', async () => {
+		const m = await loadI18n();
+		expect(m.t('profile.time_min_ago', { m: 15 })).toBe('15 menit yang lalu');
+		expect(m.t('profile.time_hour_ago', { j: 2 })).toBe('2 jam yang lalu');
+	});
+
 	it('setLang + getLang roundtrip', async () => {
 		const m = await loadI18n();
 		m.setLang('en');

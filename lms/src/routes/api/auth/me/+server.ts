@@ -1,4 +1,4 @@
-import { getBearerToken, getSession } from '$lib/server/auth';
+import { authenticateRequest, apiOk, apiError } from '$lib/server/api';
 import { getDB } from '$lib/server/d1';
 
 function corsHeaders() {
@@ -9,59 +9,43 @@ function corsHeaders() {
 	};
 }
 
-function json(data: unknown, status = 200): Response {
-	const body = JSON.stringify(data);
-	return new Response(body, {
-		status,
-		headers: { 'Content-Type': 'application/json', ...corsHeaders() },
-	});
-}
-
 export async function OPTIONS(): Promise<Response> {
 	return new Response(null, { headers: corsHeaders() });
 }
 
 /**
  * GET /api/auth/me
- *
- * Returns the currently authenticated user from the session token.
- * Accepts Authorization: Bearer <token> header.
+ * Returns the currently authenticated user with role and metadata.
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return json({ success: false, error: 'Not authenticated' }, 401);
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
+
+		const user = auth.user;
+		let role = user.role || 'student';
+
+		// If user.role isn't already fetched, query users table
+		if (!user.role && platform) {
+			const db = getDB(platform);
+			const userRow = await db
+				.prepare('SELECT role FROM users WHERE id = ?')
+				.bind(user.id)
+				.first<{ role: string }>();
+			if (userRow?.role) role = userRow.role;
 		}
 
-		const result = await getSession(platform, token);
-		if (!result) {
-			return json({ success: false, error: 'Session expired or invalid' }, 401);
-		}
-
-		const { user } = result;
-
-		// Get role from users table
-		const db = getDB(platform);
-		const userRow = await db
-			.prepare('SELECT role FROM users WHERE id = ?')
-			.bind(user.id)
-			.first<{ role: string }>();
-
-		return json({
-			success: true,
-			data: {
-				id: user.id,
-				name: user.display_name || user.name || user.username || 'User',
-				username: user.username || user.display_name || 'user',
-				email: user.email,
-				avatar: user.avatar_url || user.avatar || null,
-				provider: user.provider || 'local',
-				role: userRow?.role || user.role || 'student',
-			},
+		return apiOk({
+			id: user.id,
+			name: user.display_name || user.name || user.username || 'User',
+			username: user.username || user.display_name || 'user',
+			email: user.email,
+			avatar: user.avatar_url || user.avatar || null,
+			provider: user.provider || 'local',
+			role,
 		});
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return json({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }

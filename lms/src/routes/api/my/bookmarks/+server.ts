@@ -1,30 +1,26 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getSession, getBearerToken } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { authenticateRequest, apiOk, apiError, parseJson } from '$lib/server/api';
 
 /**
  * POST /api/my/bookmarks — toggle bookmark for a lesson
  * Body: { lessonId, moduleSlug?, sessionId? }
  * Returns { bookmarked: boolean }
  */
-export async function POST({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function POST({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
-		const db = getDB(platform);
-		const body: { lessonId?: string; moduleSlug?: string; sessionId?: string } = await request.json();
-		const { lessonId, moduleSlug, sessionId } = body;
+		const userId = auth.user.id;
+		const parsed = await parseJson<{ lessonId?: string; moduleSlug?: string; sessionId?: string }>(request);
+		if (parsed.response) return parsed.response;
 
+		const { lessonId, moduleSlug, sessionId } = parsed.data || {};
 		if (!lessonId) {
-			return jsonResponse({ success: false, error: 'lessonId is required' }, 400);
+			return apiError('lessonId is required', 400);
 		}
+
+		const db = getDB(platform);
 
 		// Check if bookmark exists
 		const existing = await db
@@ -35,7 +31,7 @@ export async function POST({ request, platform }: { request: Request; platform: 
 		if (existing) {
 			// Toggle off — delete
 			await db.prepare('DELETE FROM bookmarks WHERE id = ?').bind(existing.id).run();
-			return jsonResponse({ success: true, data: { bookmarked: false } });
+			return apiOk({ bookmarked: false });
 		}
 
 		// Toggle on — insert
@@ -50,10 +46,10 @@ export async function POST({ request, platform }: { request: Request; platform: 
 			.bind(id, userId, lessonId, modSlug, slug, now)
 			.run();
 
-		return jsonResponse({ success: true, data: { bookmarked: true } });
+		return apiOk({ bookmarked: true });
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
 
@@ -61,18 +57,12 @@ export async function POST({ request, platform }: { request: Request; platform: 
  * GET /api/my/bookmarks — list bookmarked lessons
  * Query: ?offeringId=X (optional filter)
  */
-export async function GET({ request, platform }: { request: Request; platform: App.Platform }): Promise<Response> {
+export async function GET({ request, platform, locals }: { request: Request; platform: App.Platform; locals: App.Locals }): Promise<Response> {
 	try {
-		const token = getBearerToken(request);
-		if (!token) {
-			return jsonResponse({ success: false, error: 'Unauthorized — Bearer token required' }, 401);
-		}
-		const session = await getSession(platform, token);
-		if (!session) {
-			return jsonResponse({ success: false, error: 'Unauthorized — invalid or expired token' }, 401);
-		}
+		const auth = await authenticateRequest(locals, request, platform);
+		if (auth.response) return auth.response;
 
-		const userId = session.user.id;
+		const userId = auth.user.id;
 		const db = getDB(platform);
 		const url = new URL(request.url);
 		const offeringId = url.searchParams.get('offeringId');
@@ -105,9 +95,9 @@ export async function GET({ request, platform }: { request: Request; platform: A
 		}
 
 		const { results } = await db.prepare(query).bind(...bindings).all();
-		return jsonResponse({ success: true, data: results || [] });
+		return apiOk(results || []);
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : 'Unknown error';
-		return jsonResponse({ success: false, error: msg }, 500);
+		return apiError(msg, 500);
 	}
 }
