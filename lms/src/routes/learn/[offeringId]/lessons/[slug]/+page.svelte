@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
+	import { api } from '$lib/utils/api';
 	import LockedLesson from '$lib/components/LockedLesson.svelte';
 	import LessonDiscussions from '$lib/components/LessonDiscussions.svelte';
 	import ContentRenderer from '$lib/components/content/ContentRenderer.svelte';
@@ -146,7 +148,7 @@
 	}
 
 	function navigateTo(slug: string) {
-		window.location.href = `/learn/${params.offeringId}/lessons/${slug}`;
+		goto(`/learn/${params.offeringId}/lessons/${slug}`);
 	}
 
 	function handleScroll() {
@@ -236,9 +238,7 @@
 		try {
 			const subject = offering?.name || course?.title || lesson?.subject || '';
 			const grade = offering?.grade || '';
-			const res = await fetch('/api/aiedu/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+			const res = await api.post<any>('/api/aiedu/chat', {
 				body: JSON.stringify({
 					title: `Tanya: ${lesson?.title || 'Materi'}`,
 					subject,
@@ -246,14 +246,13 @@
 					lesson_id: lesson?.id || null,
 				}),
 			});
-			const json = await res.json();
-			if (json.success && json.data?.id) {
-				window.location.href = `/aiedu/chat?thread=${json.data.id}`;
+			if (res.success && res.data?.id) {
+				goto(`/aiedu/chat?thread=${res.data.id}`);
 			} else {
-				window.location.href = '/aiedu/chat';
+				goto('/aiedu/chat');
 			}
 		} catch {
-			window.location.href = '/aiedu/chat';
+			goto('/aiedu/chat');
 		}
 	}
 
@@ -545,7 +544,7 @@
 							if (nextLesson) {
 								navigateTo(nextLesson.slug);
 							} else {
-								window.location.href = `/learn/${params.offeringId}`;
+								goto(`/learn/${params.offeringId}`);
 							}
 						}}
 					/>

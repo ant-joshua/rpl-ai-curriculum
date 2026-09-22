@@ -1,24 +1,20 @@
-import { getDB, jsonResponse } from '$lib/server/d1';
-import { getBearerToken, getSession, getTokenFromRequest } from '$lib/server/auth';
+import { getDB } from '$lib/server/d1';
+import { getSession, getTokenFromRequest } from '$lib/server/auth';
 import { cachedDbQuery, cachedDbFirst } from '$lib/server/cache';
 
-export async function load({ request, platform, url }) {
-	const token = getTokenFromRequest(request);
-	if (!token || !platform) {
-		return {
-			enrollments: [],
-			activeCourses: [],
-			completedCount: 0,
-			totalEnrollments: 0,
-			averageProgress: 0,
-			gamification: null,
-			upcomingDeadlines: [],
-			recentActivity: [],
-		};
-	}
+export async function load({ request, platform, locals }: {
+	request: Request;
+	platform: App.Platform;
+	locals: App.Locals;
+}) {
+	const user = locals.user || (await (async () => {
+		const token = getTokenFromRequest(request);
+		if (!token || !platform) return null;
+		const s = await getSession(platform, token);
+		return s?.user || null;
+	})());
 
-	const session = await getSession(platform, token);
-	if (!session) {
+	if (!user || !platform) {
 		return {
 			enrollments: [],
 			activeCourses: [],
@@ -32,7 +28,7 @@ export async function load({ request, platform, url }) {
 	}
 
 	const db = getDB(platform);
-	const userId = session.user.id;
+	const userId = user.id;
 
 	// ─── Gamification stats ───
 	const xpRow = await cachedDbFirst<any>(db, 'SELECT * FROM user_xp WHERE user_id = ?', [userId]);
@@ -118,7 +114,7 @@ export async function load({ request, platform, url }) {
 		const completedSessions = completedPerOffering.get(offeringId) || [];
 		const completedCount2 = completedSessions.length;
 
-		const lastCompleted = (progressRows || []).find(p => p.course_offering_id === offeringId);
+		const lastCompleted = (progressRows || []).find((p: any) => p.course_offering_id === offeringId);
 		const completedSlugs = new Set(completedSessions);
 		let nextSlug: string | null = null;
 		for (const lesson of offeringLessons) {

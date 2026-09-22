@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { api } from '$lib/utils/api';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import CourseCard from '$lib/components/catalog/CourseCard.svelte';
 	import { EmptyState, Spinner } from '$lib/components/ui';
@@ -19,9 +21,8 @@
 	async function loadWishlist() {
 		loading = true;
 		try {
-			const res = await fetch('/api/wishlist');
-			const json = await res.json();
-			if (json.success) items = json.data || [];
+			const res = await api.get<any>('/api/wishlist');
+			if (res.success) items = res.data || [];
 		} catch { /* ignore */ } finally {
 			loading = false;
 		}
@@ -29,9 +30,8 @@
 
 	async function handleWishlist(id: string) {
 		try {
-			const res = await fetch(`/api/wishlist/${id}/toggle`, { method: 'POST' });
-			const json = await res.json();
-			if (json.success && !json.data.wishlisted) {
+			const res = await api.post<any>(`/api/wishlist/${id}/toggle`);
+			if (res.success && !res.data?.wishlisted) {
 				items = items.filter((i: any) => i.id !== id);
 				addToast('Removed from wishlist', 'info');
 			}
@@ -41,18 +41,12 @@
 	async function handleEnroll(offeringId: string) {
 		enrollingId = offeringId;
 		try {
-			const res = await fetch('/api/my/enroll', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ offeringId }),
-			});
-			const body = await res.json();
-			if (body.success) {
+			const res = await api.post<any>('/api/my/enroll', { offeringId });
+			if (res.success) {
 				addToast('Successfully enrolled! 🎉', 'success');
-				const { goto } = await import('$app/navigation');
 				goto('/my/courses');
 			} else {
-				addToast(body.error || 'Enrollment failed', 'error');
+				addToast(res.error || 'Enrollment failed', 'error');
 			}
 		} catch {
 			addToast('Failed to connect to server', 'error');
