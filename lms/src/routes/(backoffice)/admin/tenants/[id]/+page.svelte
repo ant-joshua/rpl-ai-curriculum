@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { Badge, Button, Textarea } from '$lib/components/ui';
+	import { Badge, Button, Card, Textarea } from '$lib/components/ui';
 
 	let tenant: any = null;
 	let loading = true;
@@ -104,9 +104,9 @@
 
 <div class="page">
 	{#if loading}
-		<div class="card"><div class="skeleton"></div></div>
+		<Card><div class="skeleton"></div></Card>
 	{:else if error}
-		<div class="card"><div class="error">{error}</div></div>
+		<Card><div class="error">{error}</div></Card>
 	{:else if tenant}
 		<div class="header">
 			<div>
@@ -125,7 +125,7 @@
 			</div>
 		</div>
 
-		<div class="card">
+		<Card>
 			<h2>Konfigurasi Grade</h2>
 			<div class="config-grid">
 				<div class="config-item">
@@ -133,9 +133,9 @@
 					<input type="number" bind:value={gradeWeights.ph} min="0" max="100" />
 				</div>
 			</div>
-		</div>
+		</Card>
 
-		<div class="card">
+		<Card>
 			<h2>Fitur Tenant</h2>
 			<p class="feature-hint">Aktifkan/nonaktifkan modul untuk tenant ini. Sekolah yang gak mau gamification bisa matiin di sini.</p>
 			<div class="feature-grid">
@@ -156,21 +156,21 @@
 				<Button variant="primary" onclick={saveFeatures}>Simpan Fitur</Button>
 				{#if saved}<span class="saved">✓ Tersimpan</span>{/if}
 			</div>
-		</div>
+		</Card>
 
-		<div class="card">
+		<Card>
 			<h2>Raw Config (JSON)</h2>
 <Textarea bind:value={config} rows={12} class="config-json" />
 			<div class="actions">
 				<Button variant="primary" onclick={saveConfig}>Simpan Config</Button>
 				{#if saved}<span class="saved">✓ Tersimpan</span>{/if}
 			</div>
-		</div>
+		</Card>
 
-		<div class="card">
+		<Card>
 			<h2>Preview Tenant</h2>
 			<p>Kunjungi <a href="/t/{tenant.slug}/dashboard" target="_blank">/t/{tenant.slug}/dashboard</a> untuk melihat halaman tenant.</p>
-		</div>
+		</Card>
 	{/if}
 </div>
 
@@ -184,9 +184,6 @@
 	h1 { margin: 0; font-size: 1.5rem; color: var(--text-primary); }
 	.meta { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); }
 	code { background: var(--bg-code); padding: 0.2rem 0.5rem; border-radius: 4px; }
-	.badge { padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-	.badge-lms { background: var(--accent); color: white; }
-	.badge-academic_k13 { background: var(--success); color: white; }
 	.status { display: inline-flex; align-items: center; gap: 0.35rem; }
 	.status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); }
 	.status.active::before { background: var(--success); }

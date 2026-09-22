@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable } from '$lib/components/ui';
+	import { Button, Card, DataTable } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -177,7 +177,7 @@
 	{:else if items.length === 0}
 		<div class="empty-state"><p>Belum ada antrian notifikasi</p></div>
 	{:else}
-		<div class="card">
+		<Card>
 			<div class="table-container">
 				<DataTable
 					{columns}
@@ -187,7 +187,7 @@
 					emptyMessage="Tidak ada data"
 				/>
 			</div>
-		</div>
+		</Card>
 
 		{#if pagination.totalPages > 1}
 			<div class="pagination">

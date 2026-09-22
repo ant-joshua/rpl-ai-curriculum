@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/user.svelte';
-	import { Button } from '$lib/components/ui';
+	import { Button, Card } from '$lib/components/ui';
 
 	let projects = $state<any[]>([]);
 	let loading = $state(true);
@@ -81,7 +81,7 @@
 	{:else}
 		<div class="projects-grid">
 			{#each projects as project}
-				<div class="project-card">
+				<Card class="project-card" hover>
 					<div class="card-header">
 						<span class="project-status">{statusBadge(project.status)}</span>
 						<span class="project-date">
@@ -109,7 +109,7 @@
 					<div class="card-footer">
 						<a href="/api/capstone/{project.id}" target="_blank" class="btn-link">Detail</a>
 					</div>
-				</div>
+				</Card>
 			{/each}
 		</div>
 	{/if}
@@ -170,15 +170,8 @@
 	}
 
 	.project-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 12px;
 		padding: 20px;
 		transition: border-color 0.15s;
-	}
-
-	.project-card:hover {
-		border-color: var(--accent-dim);
 	}
 
 	.card-header {

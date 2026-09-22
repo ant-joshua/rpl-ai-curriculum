@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { Button, Card, Input, Select } from '$lib/components/ui';
 
 	let name = '';
 	let slug = '';
@@ -52,40 +53,43 @@
 <div class="page">
 	<h1>Buat Tenant Baru</h1>
 
-	<form class="card" on:submit={submit}>
-		{#if error}
-			<div class="form-error">{error}</div>
-		{/if}
+	<Card>
+		<form on:submit={submit}>
+			{#if error}
+				<div class="form-error">{error}</div>
+			{/if}
 
-		<div class="field">
+			<div class="field">
 <Input label="Nama Tenant" bind:value={name} placeholder="Cth: SMA Kembang" required />
-		</div>
+			</div>
 
-		<div class="field">
+			<div class="field">
 <Input label="Slug (URL path)" bind:value={slug} placeholder="sma-kembang" required class="slug-preview" />
-		</div>
+			</div>
 
-		<div class="field">
+			<div class="field">
 <Select label="Tipe Tenant" bind:value={type} options={types.map((t) => ({ value: t.value, label: t.label }))} />
-		</div>
+			</div>
 
-		<div class="field">
+			<div class="field">
 <Input type="email" label="Email Admin" bind:value={email} placeholder="admin@smakembang.sch.id" />
-		</div>
+			</div>
 
-		<div class="actions">
-			<a href="/admin/tenants" class="btn-cancel">{t('common.cancel')}</a>
-			<Button variant="primary" type="submit" disabled={saving}>
-				{saving ? 'Menyimpan...' : 'Buat Tenant'}
-			</Button>
-		</div>
-	</form>
+			<div class="actions">
+				<a href="/admin/tenants" class="btn-cancel">{t('common.cancel')}</a>
+				<Button variant="primary" type="submit" disabled={saving}>
+					{saving ? 'Menyimpan...' : 'Buat Tenant'}
+				</Button>
+			</div>
+		</form>
+	</Card>
 </div>
 
 <style>
 	.page { padding: 2rem; max-width: 640px; margin: 0 auto; }
 	h1 { margin: 0 0 1.5rem; font-size: 1.25rem; color: var(--text-primary); }
-	.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+	.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+	form { display: flex; flex-direction: column; gap: 1.25rem; }
 	.field { display: flex; flex-direction: column; gap: 0.4rem; }
 	label { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
 	input, select { padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-input); color: var(--text-primary); font-size: 0.9rem; }

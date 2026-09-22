@@ -170,11 +170,11 @@
 							</tbody>
 						</table>
 					</div>
-					</Card>
-					{/if}
-					{/if}
+				</Card>
+			{/if}
+		{/if}
 
-					<!-- Rooms Tab -->
+		<!-- Rooms Tab -->
 		{#if activeTab === 'rooms'}
 			{#if loading}
 				<div class="loading">Memuat data ruangan...</div>
@@ -217,11 +217,11 @@
 							</tbody>
 						</table>
 					</div>
-					</Card>
-					{/if}
-					{/if}
+				</Card>
+			{/if}
+		{/if}
 
-					<!-- Types Tab -->
+		<!-- Types Tab -->
 		{#if activeTab === 'types'}
 			{#if loading}
 				<div class="loading">Memuat data tipe ujian...</div>
@@ -255,8 +255,8 @@
 							</tbody>
 						</table>
 					</div>
-				</div>
-			</Card>
+				</Card>
+			{/if}
 		{/if}
 	{/if}
 </div>

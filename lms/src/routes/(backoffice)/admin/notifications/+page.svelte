@@ -152,10 +152,10 @@ const queueColumns: ColumnDef<any, any>[] = [
 						</table>
 					</div>
 				{/if}
-				</Card>
+			</Card>
 
-				<!-- Quick links -->
-				<Card>
+			<!-- Quick links -->
+			<Card>
 				<div class="card-header"><h3>{t('admin.menu_cepat')}</h3></div>
 				<div class="quick-links">
 					<a href="/admin/notifications/templates" class="quick-link">
@@ -171,9 +171,9 @@ const queueColumns: ColumnDef<any, any>[] = [
 						<span class="ql-text">{t('admin.broadcast_baru')}</span>
 					</Button>
 				</div>
-				</Card>
-				</div>
-				{/if}
+			</Card>
+		</div>
+	{/if}
 
 	<!-- Broadcast Modal -->
 	{#if showBroadcast}
@@ -214,12 +214,12 @@ const queueColumns: ColumnDef<any, any>[] = [
 						{broadcasting ? 'Mengirim...' : 'Kirim Broadcast'}
 					</Button>
 				</div>
-				</Card>
-				</div>
-				{/if}
-				</div>
+			</div>
+		</div>
+	{/if}
+</div>
 
-				<style>
+<style>
 	.page { max-width: 1100px; }
 	.header-actions { display: flex; gap: 8px; }
 	.btn-primary { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }

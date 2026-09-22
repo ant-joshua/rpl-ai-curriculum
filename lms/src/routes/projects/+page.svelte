@@ -129,6 +129,7 @@
 							</div>
 						</div>
 					</a>
+					</Card>
 				{/each}
 			</div>
 		</div>
@@ -188,20 +189,20 @@
 	}
 
 	.project-card {
-		background: var(--gradient-card);
-		border: 1px solid var(--border);
-		border-radius: 14px;
 		padding: 1.5rem;
-		text-decoration: none;
-		color: var(--text);
-		transition: all 0.25s ease;
-		display: flex;
-		flex-direction: column;
 		gap: 0.75rem;
 		position: relative;
 		overflow: hidden;
 	}
-	.project-card::before {
+
+	.project-card-link {
+		text-decoration: none;
+		color: var(--text);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.project-card-link::before {
 		content: '';
 		position: absolute;
 		inset: 0;

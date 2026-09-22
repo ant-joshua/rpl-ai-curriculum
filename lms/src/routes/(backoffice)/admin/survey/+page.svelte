@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Button, StatCard } from '$lib/components/ui';
+	import { Button, Card, StatCard } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -125,7 +125,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 
 		<div class="grid-2col">
 			<!-- Recent Instances -->
-			<div class="card">
+			<Card>
 				<div class="card-header">
 					<h3>{t('admin.survei_terbaru')}</h3>
 					<a href="/admin/survey/instances" class="link-btn">{t('admin.lihat_semua')}</a>
@@ -139,10 +139,10 @@ const instanceColumns: ColumnDef<any, any>[] = [
 				{:else}
 					<DataTable columns={instanceColumns} data={recentInstances} pageSize={10} showSearch={false} showPagination={false} emptyMessage="Belum ada survei" emptyIcon="📊" />
 				{/if}
-			</div>
+			</Card>
 
 			<!-- Templates Summary -->
-			<div class="card">
+			<Card>
 				<div class="card-header">
 					<h3>{t('admin.templates')}</h3>
 					<a href="/admin/survey/templates" class="link-btn">{t('admin.kelola_arrow')}</a>
@@ -168,7 +168,7 @@ const instanceColumns: ColumnDef<any, any>[] = [
 						{/each}
 					</div>
 				{/if}
-			</div>
+			</Card>
 		</div>
 	{/if}
 </div>

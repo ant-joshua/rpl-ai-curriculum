@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { DataTable, PageHeader } from '$lib/components/ui';
+	import { Card, DataTable, PageHeader } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let tenants: any[] = $state([]);
@@ -71,7 +71,7 @@
 		{/snippet}
 	</PageHeader>
 
-	<div class="card">
+	<Card>
 		{#if loading}
 			<div class="skeleton-list">
 				<div class="skeleton-row"></div>
@@ -90,7 +90,7 @@
 				<DataTable {columns} data={tenants} pageSize={20} showSearch={true} searchPlaceholder="Cari tenant..." />
 			</div>
 		{/if}
-	</div>
+	</Card>
 </div>
 
 <style>
