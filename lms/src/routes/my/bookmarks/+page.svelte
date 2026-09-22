@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
-	import { page } from '$app/stores';
-	import { Badge, Card, Button, EmptyState, PageHeader } from '$lib/components/ui';
+	import { Badge, Card, Button, EmptyState, PageHeader, Skeleton } from '$lib/components/ui';
+	import { createQuery } from '$lib/composables/query.svelte';
+	import { api } from '$lib/utils/api';
 
-	let { data } = $props();
-	let bookmarks = $derived(data.bookmarks ?? []);
+	const bookmarksQuery = createQuery(async () => {
+		const res = await api.get<{ bookmarks: any[] }>('/api/my/bookmarks');
+		if (!res.success) throw new Error(res.error || 'Failed to fetch bookmarks');
+		return (res.data as any)?.bookmarks || [];
+	}, { initialData: [] });
+
+	let bookmarks = $derived(bookmarksQuery.data || []);
+	let loading = $derived(bookmarksQuery.loading);
 
 	function offeringLink(bookmark: any): string {
 		return `/learn/${bookmark.offering_id}/lessons/${bookmark.lesson_slug}`;
@@ -25,7 +32,19 @@
 <div class="bookmarks-page">
 	<PageHeader title="My Bookmarks" subtitle="{bookmarks.length} bookmarked lesson{bookmarks.length !== 1 ? 's' : ''}" />
 
-	{#if bookmarks.length === 0}
+	{#if loading}
+		<div class="bookmarks-list">
+			{#each [1, 2, 3] as _}
+				<div class="bookmark-card skeleton-card">
+					<Skeleton class="h-9 w-9 rounded-lg" />
+					<div class="card-body">
+						<Skeleton class="h-4 w-48 mb-2" />
+						<Skeleton class="h-3 w-32" />
+					</div>
+				</div>
+			{/each}
+		</div>
+	{:else if bookmarks.length === 0}
 		<EmptyState
 			icon="🔖"
 			title="No bookmarks yet"

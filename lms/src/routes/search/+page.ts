@@ -1,4 +1,4 @@
-import type { PageServerLoad } from './$types';
+import type { PageLoad } from './$types';
 
 interface SearchResult {
 	type: 'lesson' | 'course' | 'offering';
@@ -8,7 +8,7 @@ interface SearchResult {
 	icon: string;
 }
 
-export const load: PageServerLoad = async ({ url, fetch }) => {
+export const load: PageLoad = async ({ url, fetch }) => {
 	const q = url.searchParams.get('q')?.trim() || '';
 
 	if (q.length < 2) {

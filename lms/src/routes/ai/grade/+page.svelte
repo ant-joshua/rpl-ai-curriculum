@@ -2,7 +2,6 @@
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 
-	let { data } = $props();
 
 	type Submission = {
 		id: string;

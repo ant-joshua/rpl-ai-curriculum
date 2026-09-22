@@ -64,7 +64,16 @@ async function baseApi<T = any>(path: string, options?: RequestInit): Promise<Ap
 	}
 }
 
-export const api = Object.assign(baseApi, {
+export interface ApiClient {
+	<T = any>(path: string, options?: RequestInit): Promise<ApiResponse<T>>;
+	get: <T = any>(path: string, options?: RequestInit) => Promise<ApiResponse<T>>;
+	post: <T = any>(path: string, body?: unknown, options?: RequestInit) => Promise<ApiResponse<T>>;
+	put: <T = any>(path: string, body?: unknown, options?: RequestInit) => Promise<ApiResponse<T>>;
+	patch: <T = any>(path: string, body?: unknown, options?: RequestInit) => Promise<ApiResponse<T>>;
+	delete: <T = any>(path: string, options?: RequestInit) => Promise<ApiResponse<T>>;
+}
+
+export const api: ApiClient = Object.assign(baseApi, {
 	get: <T = any>(path: string, options?: RequestInit) =>
 		baseApi<T>(path, { ...options, method: 'GET' }),
 
