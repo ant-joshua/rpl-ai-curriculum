@@ -189,7 +189,7 @@
   .badge-high { background: var(--danger-light); color: var(--danger); }
   .badge-normal { background: var(--accent-dim); color: var(--accent); }
   .badge-low { background: var(--surface-hover); color: var(--text-secondary); }
-.ann-content { font-size: 0.9rem; color: var(--text); line-height: 1.6; white-space: pre-wrap; margin-bottom: 0.75rem; }
+  .ann-content { font-size: 0.9rem; color: var(--text); line-height: 1.6; white-space: pre-wrap; margin-bottom: 0.75rem; }
   .ann-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; color: var(--text-secondary); }
   .ann-path { background: var(--accent-dim); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 4px; }
   .empty { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }

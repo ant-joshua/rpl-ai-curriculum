@@ -6,7 +6,7 @@
   import { user } from '$lib/stores/user.svelte';
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
-  import { Skeleton } from '$lib/components/ui/index.js';
+  import { Skeleton, Button } from '$lib/components/ui/index.js';
 
   const BLOCK_SIZE = 5;
   const totalModules = modules.length;
@@ -156,9 +156,9 @@
                 <span class="block-stats">{block.tries}x coba · Terbaik {block.bestScore}/10 ({block.bestPct}%)</span>
               {/if}
             {:else}
-              <button class="btn-start" onclick={() => goto(`/progress-quiz/${block.id}`)}>
+              <Button variant="primary" onclick={() => goto(`/progress-quiz/${block.id}`)}>
                 Mulai Quiz →
-              </button>
+              </Button>
             {/if}
           </div>
           {#if !block.locked && block.tries > 0 && !block.completed}
@@ -280,18 +280,7 @@
   .block-stats { font-size: 11px; color: var(--text-secondary); margin-top: 4px; display: block; }
   .block-footer-stats { text-align: center; margin-top: 10px; font-size: 11px; color: var(--text-secondary); padding-top: 8px; border-top: 1px solid var(--border); }
 
-  .btn-start {
-    padding: 10px 20px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .btn-start:hover { opacity: 0.9; }
+
 
   .all-done-banner {
     margin-top: 24px;

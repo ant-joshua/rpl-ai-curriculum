@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { onMount } from 'svelte';
 	import { parseMarkdown } from '$lib/utils/markdown';
-	import { Skeleton, EmptyState } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Button } from '$lib/components/ui/index.js';
 
 	let items = $state<{ title: string; content: string; slug: string }[]>([]);
 	let activeSlug = $state<string | null>(null);
@@ -52,13 +52,14 @@
 			<ul class="item-list">
 				{#each filteredItems as item}
 					<li>
-						<button
+						<Button
+							variant="ghost"
 							class="item-link"
 							class:active={activeSlug === item.slug}
 							onclick={() => toggleItem(item.slug)}
 						>
 							{item.title.replace(/^#\s*/, '')}
-						</button>
+						</Button>
 					</li>
 				{/each}
 			</ul>
@@ -159,30 +160,29 @@
 		gap: 2px;
 	}
 
-	.item-link {
-		display: block;
-		width: 100%;
-		text-align: left;
-		padding: 8px 10px;
-		border-radius: 8px;
-		border: none;
-		background: transparent;
+	:global(.item-link) {
+		display: block !important;
+		width: 100% !important;
+		text-align: left !important;
+		padding: 8px 10px !important;
+		border-radius: 8px !important;
+		background: transparent !important;
 		color: var(--text-secondary);
-		font-size: 13px;
+		font-size: 13px !important;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.15s ease;
 		line-height: 1.3;
 	}
 
-	.item-link:hover {
-		background: var(--hover);
-		color: var(--text);
+	:global(.item-link:hover) {
+		background: var(--hover) !important;
+		color: var(--text) !important;
 	}
 
-	.item-link.active {
-		background: var(--accent-dim);
-		color: var(--accent);
+	:global(.item-link.active) {
+		background: var(--accent-dim) !important;
+		color: var(--accent) !important;
 		font-weight: 600;
 	}
 

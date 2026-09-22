@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/stores/i18n';
+	import { Button } from '$lib/components/ui';
 	let { data }: { data: import('./$types').PageData } = $props();
 
 	let cert = $state(data.cert);

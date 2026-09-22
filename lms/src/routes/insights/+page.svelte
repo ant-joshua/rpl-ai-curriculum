@@ -6,7 +6,7 @@
   import { progress } from '$lib/stores/progress.svelte';
   import { modules } from '$lib/stores/modules';
   import { api } from '$lib/utils/api';
-  import { StatCard, Skeleton } from '$lib/components/ui';
+  import { StatCard, Skeleton, Button } from '$lib/components/ui';
   import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 
   let loading = $state(true);
@@ -191,7 +191,7 @@
             <label>{t('insights.pred_if_study')}</label>
             <input type="number" min="1" max="20" bind:value={customSessions} class="pred-input" />
             <label>{t('insights.pred_sessions_per_day')}</label>
-            <button class="pred-btn" onclick={computeCustomPredictions}>{t('insights.pred_calculate')}</button>
+            <Button variant="primary" size="sm" onclick={computeCustomPredictions}>{t('insights.pred_calculate')}</Button>
           </div>
           <div class="prediction-list">
             {#each (customPredictions.length ? customPredictions : predictions.slice(0, 5)) as pred}
@@ -405,20 +405,7 @@
     text-align: center;
     font-family: inherit;
   }
-  .pred-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 4px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .pred-btn:hover {
-    opacity: 0.9;
-  }
+
   .prediction-list {
     display: flex;
     flex-direction: column;

@@ -206,7 +206,7 @@ ${html}
 					<div class="score-row">
 						<input type="text" bind:value={scoreNames[i]} />
 						<input type="number" min="0" max="100" bind:value={scoreVals[i]} />
-						<button class="del-btn" onclick={() => removeScore(i)} title="Hapus">✕</button>
+						<Button variant="ghost" size="sm" class="del-btn" onclick={() => removeScore(i)} title="Hapus">✕</Button>
 					</div>
 				{/each}
 				<Button size="sm" variant="secondary" onclick={addScore}>+ Aspek Nilai</Button>
@@ -276,8 +276,8 @@ ${html}
 	.scores-head { display: grid; grid-template-columns: 1fr 100px 24px; gap: 6px; font-size: 12px; margin: 8px 0 4px; }
 	.score-row { display: grid; grid-template-columns: 1fr 100px 24px; gap: 6px; margin-bottom: 6px; align-items: center; }
 	.score-row input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; width: 100%; box-sizing: border-box; }
-	.del-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; }
-	.del-btn:hover { color: var(--danger); }
+	:global(.del-btn) { background: none !important; border: none !important; cursor: pointer; color: var(--text-muted); font-size: 13px; padding: 0 !important; min-width: auto !important; }
+	:global(.del-btn):hover { color: var(--danger); }
 	.form-actions { margin-top: 12px; }
 	.center { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 32px; color: var(--text-secondary); font-size: 13px; }
 	.result-card { min-height: 300px; }
