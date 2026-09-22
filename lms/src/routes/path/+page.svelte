@@ -322,7 +322,7 @@
 
 	.level-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 4px 16px var(--border);
 		border-color: var(--level-color);
 	}
 
@@ -571,7 +571,7 @@
 
 	.timeline-module:hover .timeline-card {
 		border-color: var(--level-color);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+		box-shadow: 0 4px 16px var(--border);
 		transform: translateY(-1px);
 	}
 

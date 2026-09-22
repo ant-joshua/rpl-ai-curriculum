@@ -94,8 +94,8 @@
 
 <style>
 	.deadlines-section {
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 20px;
 	}
@@ -123,7 +123,7 @@
 		justify-content: space-between;
 		gap: 10px;
 		padding: 10px 0;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 		transition: all 0.15s ease;
 		animation: fadeSlideIn 0.3s ease both;
 		opacity: 0;

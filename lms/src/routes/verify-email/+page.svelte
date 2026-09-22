@@ -72,7 +72,7 @@
 		max-width: 420px;
 		width: 100%;
 		text-align: center;
-		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+		box-shadow: 0 4px 24px var(--border);
 	}
 	.icon { font-size: 48px; margin-bottom: 16px; }
 	h2 { margin: 0 0 8px; color: var(--text); }

@@ -286,7 +286,7 @@
 		padding: 4px;
 		box-shadow:
 			0 0 40px rgba(245, 158, 11, 0.15),
-			0 8px 32px rgba(0, 0, 0, 0.3);
+			0 8px 32px rgba(26, 26, 46, 0.5);
 	}
 
 	.cert-border-inner {

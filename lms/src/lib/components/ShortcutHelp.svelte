@@ -49,7 +49,7 @@
 	.shortcut-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.6);
+		background: rgba(26, 26, 46, 0.6);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -66,7 +66,7 @@
 		max-width: 480px;
 		max-height: 80vh;
 		overflow-y: auto;
-		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 16px 48px rgba(26, 26, 46, 0.6);
 	}
 
 	.shortcut-header {

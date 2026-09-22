@@ -83,19 +83,19 @@
 
 	/* Inline code */
 	.prose :global(code) {
-		background: rgba(0, 0, 0, 0.08);
+		background: var(--border);
 		padding: 2px 6px;
 		border-radius: 4px;
 		font-size: 0.875em;
 		font-family: var(--font-mono, 'JetBrains Mono', monospace);
 		color: #e2e4e7;
-		border: 1px solid rgba(0, 0, 0, 0.04);
+		border: 1px solid var(--surface-alt);
 	}
 
 	/* Code blocks — dark bg with syntax highlight */
 	.prose :global(pre) {
 		background: #0d0e17;
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 20px;
 		overflow-x: auto;
@@ -136,7 +136,7 @@
 		border-radius: 8px;
 		margin: 20px auto;
 		display: block;
-		border: 1px solid rgba(0, 0, 0, 0.04);
+		border: 1px solid var(--surface-alt);
 	}
 
 	/* Blockquotes */
@@ -168,7 +168,7 @@
 	/* Horizontal rule */
 	.prose :global(hr) {
 		border: none;
-		border-top: 1px solid rgba(0, 0, 0, 0.08);
+		border-top: 1px solid var(--border);
 		margin: 32px 0;
 	}
 
@@ -180,12 +180,12 @@
 		font-size: 14px;
 	}
 	.prose :global(th), .prose :global(td) {
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		border: 1px solid var(--border);
 		padding: 10px 14px;
 		text-align: left;
 	}
 	.prose :global(th) {
-		background: rgba(0, 0, 0, 0.04);
+		background: var(--surface-alt);
 		font-weight: 600;
 		color: #1a1a2e;
 	}
@@ -193,7 +193,7 @@
 		color: #d0d6e0;
 	}
 	.prose :global(tr:nth-child(even) td) {
-		background: rgba(0, 0, 0, 0.02);
+		background: var(--surface-alt);
 	}
 
 	/* Video embeds */
@@ -205,7 +205,7 @@
 		margin: 20px 0;
 		aspect-ratio: 16 / 9;
 		background: #000;
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		border: 1px solid var(--border);
 	}
 	.prose :global(.video-embed-wrapper iframe) {
 		position: absolute;

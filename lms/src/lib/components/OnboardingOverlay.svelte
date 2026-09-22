@@ -107,7 +107,7 @@
 	.onboarding-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
+		background: rgba(26, 26, 46, 0.7);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -123,7 +123,7 @@
 		width: 90%;
 		max-width: 420px;
 		text-align: center;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 20px 60px rgba(26, 26, 46, 0.6);
 	}
 
 	.onboarding-step {

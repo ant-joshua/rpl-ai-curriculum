@@ -40,13 +40,13 @@
 <style>
 	.quest-popup-overlay {
 		position: fixed; inset: 0; z-index: 9999;
-		background: rgba(0, 0, 0, 0.45);
+		background: rgba(26, 26, 46, 0.6);
 		display: flex; align-items: center; justify-content: center;
 	}
 	.quest-popup {
 		background: white; border-radius: 20px;
 		padding: 32px 40px; max-width: 360px; width: 90%;
-		text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+		text-align: center; box-shadow: 0 20px 60px rgba(26, 26, 46, 0.4);
 		animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	@keyframes pop-in {

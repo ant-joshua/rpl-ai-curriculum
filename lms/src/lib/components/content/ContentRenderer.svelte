@@ -81,8 +81,8 @@
 	}
 
 	.content-block-quiz {
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 12px;
 		padding: 24px;
 	}
@@ -97,7 +97,7 @@
 		border-radius: 8px;
 		display: block;
 		margin: 0 auto;
-		border: 1px solid rgba(0, 0, 0, 0.04);
+		border: 1px solid var(--surface-alt);
 	}
 
 	.image-caption {

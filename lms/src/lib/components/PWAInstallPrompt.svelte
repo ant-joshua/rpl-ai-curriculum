@@ -61,7 +61,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1.5rem;
-		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 4px 24px rgba(26, 26, 46, 0.6);
 		z-index: 1000;
 		max-width: 90vw;
 		animation: slideUp 0.3s ease;

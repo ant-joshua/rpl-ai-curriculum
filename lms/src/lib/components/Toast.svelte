@@ -58,7 +58,7 @@
 		font-size: 14px;
 		font-weight: 500;
 		line-height: 1.4;
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+		box-shadow: 0 6px 20px rgba(26, 26, 46, 0.5);
 		border: 1px solid var(--border, #2d2d4e);
 		cursor: pointer;
 		transition: box-shadow 0.15s ease;
@@ -67,7 +67,7 @@
 		max-width: 400px;
 	}
 	.toast:hover {
-		box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+		box-shadow: 0 8px 28px rgba(26, 26, 46, 0.6);
 	}
 	.toast:focus-visible {
 		outline: 2px solid var(--accent, #6c5ce7);

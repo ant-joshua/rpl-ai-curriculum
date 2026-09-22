@@ -317,13 +317,13 @@
 		font-family: inherit;
 		cursor: pointer;
 		transition: all 0.15s ease;
-		box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 0 rgba(var(--accent-rgb), 0.15);
 		user-select: none;
 		text-decoration: none;
 	}
 	.btn:active:not(:disabled) {
 		transform: translateY(2px);
-		box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 2px 0 rgba(var(--accent-rgb), 0.15);
 	}
 	.btn-primary {
 		background: var(--accent, var(--accent));
@@ -332,12 +332,12 @@
 	.btn-primary:hover:not(:disabled) {
 		background: var(--accent-hover);
 		transform: translateY(-1px);
-		box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 5px 0 rgba(var(--accent-rgb), 0.15);
 	}
 	.btn-primary:disabled {
 		background: var(--accent-light);
 		cursor: not-allowed;
-		box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+		box-shadow: 0 4px 0 var(--border);
 	}
 	.btn-check { width: 100%; }
 	.btn-continue { width: 100%; }
@@ -358,7 +358,7 @@
 	}
 	.progress-bar {
 		height: 12px;
-		background: rgba(0, 0, 0, 0.06);
+		background: var(--border);
 		border-radius: 6px;
 		overflow: hidden;
 	}
@@ -496,7 +496,7 @@
 		border-radius: 20px;
 		padding: 48px 32px;
 		text-align: center;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 4px 12px var(--surface-alt);
 		position: relative;
 		overflow: hidden;
 	}

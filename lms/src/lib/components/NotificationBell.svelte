@@ -133,7 +133,7 @@
 	.notif-dropdown {
 		position: absolute; right: 0; top: 40px; width: 340px; max-width: 90vw;
 		background: white; border: 1px solid var(--border); border-radius: 12px;
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); z-index: 100; overflow: hidden;
+		box-shadow: 0 12px 40px rgba(var(--accent-rgb), 0.15); z-index: 100; overflow: hidden;
 	}
 	.notif-header {
 		display: flex; align-items: center; justify-content: space-between;

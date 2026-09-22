@@ -347,7 +347,7 @@
 	.link-dialog-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(26, 26, 46, 0.6);
 		display: flex;
 		align-items: center;
 		justify-content: center;

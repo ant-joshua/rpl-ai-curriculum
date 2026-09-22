@@ -184,7 +184,7 @@
 		background: var(--surface, #ffffff);
 		border: 1px solid var(--border, #e2e8f0);
 		border-radius: var(--radius, 12px);
-		box-shadow: var(--shadow, 0 1px 3px rgba(0, 0, 0, 0.08));
+		box-shadow: var(--shadow, 0 1px 3px var(--border));
 		padding: 20px;
 	}
 

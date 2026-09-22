@@ -263,8 +263,8 @@
 		top: 12px;
 		left: 12px;
 		z-index: 100;
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 6px;
 		padding: 10px;
 		cursor: pointer;
@@ -272,7 +272,7 @@
 		transition: all 0.15s ease;
 	}
 	.sidebar-toggle:hover {
-		background: rgba(0, 0, 0, 0.08);
+		background: var(--border);
 		color: var(--text);
 	}
 	.overlay { display: none; }
@@ -284,7 +284,7 @@
 		position: sticky;
 		top: 0;
 		background: var(--text);
-		border-right: 1px solid rgba(0, 0, 0, 0.05);
+		border-right: 1px solid var(--border);
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
@@ -292,7 +292,7 @@
 
 	.sidebar-header {
 		padding: 20px 16px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 	}
 	.logo {
 		display: flex;
@@ -346,7 +346,7 @@
 		position: relative;
 	}
 	.nav-item:hover {
-		background: rgba(0, 0, 0, 0.04);
+		background: var(--surface-alt);
 		color: var(--text);
 	}
 	.nav-item.active {
@@ -369,11 +369,11 @@
 
 		.sidebar-footer {
 			padding: 12px 8px;
-			border-top: 1px solid rgba(0, 0, 0, 0.05);
+			border-top: 1px solid var(--border);
 		}
 		.tenant-switcher {
 			padding: 8px 12px 4px;
-			border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+			border-bottom: 1px solid var(--border);
 			margin-bottom: 4px;
 		}
 		.tenant-label {
@@ -392,8 +392,8 @@
 			width: 100%;
 			padding: 6px 28px 6px 10px;
 			font-size: 12.5px;
-			background: rgba(0, 0, 0, 0.04);
-			border: 1px solid rgba(0, 0, 0, 0.06);
+			background: var(--surface-alt);
+			border: 1px solid var(--border);
 			border-radius: 6px;
 			color: var(--text-secondary);
 			cursor: pointer;
@@ -425,7 +425,7 @@
 		transition: all 0.15s ease;
 	}
 	.back-link:hover {
-		background: rgba(0, 0, 0, 0.04);
+		background: var(--surface-alt);
 		color: var(--text);
 	}
 

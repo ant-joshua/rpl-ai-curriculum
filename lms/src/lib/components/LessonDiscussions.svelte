@@ -577,7 +577,7 @@
   .reply-form-inline {
     margin-top: 12px;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--surface-alt);
     border-radius: 8px;
   }
 

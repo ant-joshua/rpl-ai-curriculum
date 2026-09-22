@@ -106,7 +106,7 @@
 		min-width: 280px;
 		height: 100%;
 		background: #0f1011;
-		border-right: 1px solid rgba(0, 0, 0, 0.08);
+		border-right: 1px solid var(--border);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -120,7 +120,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 16px 12px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.sidebar-title {
@@ -173,7 +173,7 @@
 	}
 
 	.sidebar-item:hover:not(.locked) {
-		background: rgba(0, 0, 0, 0.04);
+		background: var(--surface-alt);
 		color: #1a1a2e;
 	}
 

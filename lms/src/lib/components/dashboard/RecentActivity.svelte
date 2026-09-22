@@ -93,8 +93,8 @@
 
 <style>
 	.activity-section {
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		padding: 20px;
 	}
@@ -121,7 +121,7 @@
 		align-items: flex-start;
 		gap: 10px;
 		padding: 10px 0;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1px solid var(--border);
 		transition: all 0.15s ease;
 		animation: fadeSlideIn 0.3s ease both;
 		opacity: 0;
@@ -147,7 +147,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.04);
+		background: var(--surface-alt);
 		border-radius: 6px;
 		color: #64748b;
 	}

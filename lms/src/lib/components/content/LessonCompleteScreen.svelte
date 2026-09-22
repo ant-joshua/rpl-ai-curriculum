@@ -156,7 +156,7 @@
 		border-radius: 24px;
 		padding: 40px 32px 32px;
 		text-align: center;
-		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+		box-shadow: 0 24px 60px rgba(26, 26, 46, 0.4);
 		animation: card-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 	}
 

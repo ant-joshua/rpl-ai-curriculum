@@ -317,7 +317,7 @@
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
-		box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 0 rgba(var(--accent-rgb), 0.15);
 		transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s;
 	}
 	.check-btn:hover:not(:disabled) {
@@ -325,7 +325,7 @@
 	}
 	.check-btn:active:not(:disabled) {
 		transform: translateY(2px);
-		box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 2px 0 rgba(var(--accent-rgb), 0.15);
 	}
 	.check-btn:disabled {
 		opacity: 0.45;
@@ -369,12 +369,12 @@
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
-		box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 4px 0 rgba(var(--accent-rgb), 0.15);
 		transition: transform 0.08s ease, box-shadow 0.08s ease;
 	}
 	.continue-btn:active {
 		transform: translateY(2px);
-		box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+		box-shadow: 0 2px 0 rgba(var(--accent-rgb), 0.15);
 	}
 	.empty-note {
 		font-size: 14px;

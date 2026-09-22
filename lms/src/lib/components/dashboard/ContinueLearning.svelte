@@ -96,8 +96,8 @@
 	  display: flex;
 	  flex-direction: column;
 	  gap: 12px;
-	  background: rgba(0, 0, 0, 0.02);
-	  border: 1px solid rgba(0, 0, 0, 0.06);
+	  background: var(--surface-alt);
+	  border: 1px solid var(--border);
 	  border-radius: 8px;
 	  padding: 16px;
 	  text-decoration: none;
@@ -108,9 +108,9 @@
 
 	.course-card:hover {
 	  border-color: rgba(113, 112, 255, 0.4);
-	  background: rgba(0, 0, 0, 0.03);
+	  background: var(--surface-alt);
 	  transform: translateY(-1px);
-	  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	  box-shadow: 0 4px 12px var(--border);
 	}
 
 	.course-card-header {

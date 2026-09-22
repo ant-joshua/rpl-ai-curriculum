@@ -417,7 +417,7 @@
 			display: block;
 			position: fixed;
 			inset: 0;
-			background: rgba(0, 0, 0, 0.5);
+			background: rgba(26, 26, 46, 0.6);
 			z-index: 55;
 		}
 

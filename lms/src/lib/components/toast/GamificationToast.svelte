@@ -66,7 +66,7 @@
 		border-radius: var(--radius, 12px);
 		background: var(--surface, #ffffff);
 		color: var(--text, #1a1a2e);
-		box-shadow: var(--shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.08));
+		box-shadow: var(--shadow-lg, 0 4px 12px var(--border));
 		border: 1px solid rgba(245, 158, 11, 0.2);
 		pointer-events: auto;
 		cursor: pointer;
@@ -78,7 +78,7 @@
 	}
 
 	.xp-toast:hover {
-		box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+		box-shadow: 0 8px 28px rgba(26, 26, 46, 0.6);
 	}
 
 	.xp-toast:focus-visible {

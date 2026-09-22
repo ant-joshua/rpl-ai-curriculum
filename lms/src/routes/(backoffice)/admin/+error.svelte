@@ -137,8 +137,8 @@
 		font-size: 11px;
 		font-family: 'SF Mono', SFMono-Regular, ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 		color: var(--text-secondary);
-		background: rgba(0, 0, 0, 0.02);
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: var(--surface-alt);
+		border: 1px solid var(--border);
 		border-radius: 8px;
 		white-space: pre-wrap;
 		word-break: break-all;

@@ -296,7 +296,7 @@
 
 	.badge-card:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 6px 20px rgba(26, 26, 46, 0.4);
 	}
 
 	/* Locked state */
@@ -339,7 +339,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.15);
+		background: rgba(var(--accent-rgb), 0.15);
 		border-radius: 12px;
 		z-index: 1;
 		opacity: 0;
