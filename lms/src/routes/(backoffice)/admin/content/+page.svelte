@@ -56,8 +56,10 @@
 	import {
 		SearchInput, Select, Button, Badge, SearchBar, PageHeader, StatCard,
 		Table, TableHeader, TableBody, TableRow, TableCell, TableHead,
-		Modal, Input, Alert
+		Modal, Input, Alert, ConfirmDialog, toast
 	} from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let { data }: {
 		data: {
@@ -197,25 +199,21 @@
 		linkSubmitting = false;
 	}
 
-	async function unlinkBlock(cb: ContentBlock) {
-		if (!cb.lesson_id) return;
-		if (!confirm(`Putuskan link content block "${cb.title}" dari lesson "${cb.lesson_title}"?`)) return;
-		try {
-			const res = await fetch(`/api/admin/lessons/${cb.lesson_id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ content_block_id: null }),
-			});
-			const json = await res.json();
-			if (json.success) {
+	const unlinkConfirm = useConfirmDialog<ContentBlock>({
+		title: 'Putuskan Link Content Block?',
+		message: (cb) => `Putuskan link content block "${cb.title}" dari lesson "${cb.lesson_title}"?`,
+		confirmText: 'Putuskan Link',
+		variant: 'danger',
+		onConfirm: async (cb) => {
+			if (!cb.lesson_id) return;
+			const res = await api.put(`/api/admin/lessons/${cb.lesson_id}`, { content_block_id: null });
+			if (res.success) {
 				window.location.reload();
 			} else {
-				alert('Gagal: ' + (json.error || 'Unknown'));
+				throw new Error(res.error || 'Gagal memutuskan link');
 			}
-		} catch {
-			alert('Gagal terhubung ke server');
-		}
-	}
+		},
+	});
 
 	// Edit metadata
 	function openEditModal(cb: ContentBlock) {
@@ -238,24 +236,19 @@
 		editError = '';
 		editSuccess = '';
 		try {
-			const res = await fetch(`/api/admin/content-blocks/${editingBlock.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					title: editTitle.trim(),
-					type: editType,
-					visibility: editVisibility,
-				}),
+			const res = await api.put(`/api/admin/content-blocks/${editingBlock.id}`, {
+				title: editTitle.trim(),
+				type: editType,
+				visibility: editVisibility,
 			});
-			const json = await res.json();
-			if (json.success) {
+			if (res.success) {
 				editSuccess = 'Metadata berhasil diupdate';
 				setTimeout(() => {
 					showEditModal = false;
 					window.location.reload();
 				}, 800);
 			} else {
-				editError = json.error || 'Gagal update';
+				editError = res.error || 'Gagal update';
 			}
 		} catch {
 			editError = 'Gagal terhubung ke server';
@@ -263,22 +256,20 @@
 		editSubmitting = false;
 	}
 
-	async function deleteBlock(cb: ContentBlock) {
-		if (!confirm(`Hapus content block "${cb.title}"? Tindakan ini tidak bisa dibatalkan.`)) return;
-		try {
-			const res = await fetch(`/api/admin/content-blocks/${cb.id}`, {
-				method: 'DELETE',
-			});
-			const json = await res.json();
-			if (json.success) {
+	const deleteBlockConfirm = useConfirmDialog<ContentBlock>({
+		title: 'Hapus Content Block?',
+		message: (cb) => `Hapus content block "${cb.title}"? Tindakan ini tidak bisa dibatalkan.`,
+		confirmText: '🗑️ Hapus Block',
+		variant: 'danger',
+		onConfirm: async (cb) => {
+			const res = await api.delete(`/api/admin/content-blocks/${cb.id}`);
+			if (res.success) {
 				window.location.reload();
 			} else {
-				alert('Gagal: ' + (json.error || 'Unknown'));
+				throw new Error(res.error || 'Gagal menghapus');
 			}
-		} catch {
-			alert('Gagal terhubung ke server');
-		}
-	}
+		},
+	});
   import { t } from '$lib/stores/i18n';
 </script>
 
@@ -397,7 +388,7 @@
 									<div class="linked-lesson">
 										<span class="lesson-name">{cb.lesson_title}</span>
 										<code class="lesson-status {cb.lesson_status}">{cb.lesson_status}</code>
-										<Button variant="ghost" size="sm" onclick={() => unlinkBlock(cb)}>✕</Button>
+										<Button variant="ghost" size="sm" onclick={() => unlinkConfirm.ask(cb)}>✕</Button>
 									</div>
 								{:else}
 									<Button variant="outline" size="sm" onclick={() => openLinkModal(cb)}>🔗 Link ke lesson</Button>
@@ -406,7 +397,7 @@
 							<TableCell class="cell-order">{cb.order_index}</TableCell>
 							<TableCell class="cell-actions">
 								<Button size="sm" onclick={() => openEditModal(cb)}>✏️ Edit</Button>
-								<Button variant="danger" size="sm" onclick={() => deleteBlock(cb)}>🗑️</Button>
+								<Button variant="danger" size="sm" onclick={() => deleteBlockConfirm.ask(cb)}>🗑️</Button>
 							</TableCell>
 						</TableRow>
 					{/each}
@@ -519,6 +510,9 @@
 		{/snippet}
 	</Modal>
 {/if}
+
+<ConfirmDialog {...unlinkConfirm.dialogProps} />
+<ConfirmDialog {...deleteBlockConfirm.dialogProps} />
 
 <style>
 	.content-page { max-width: 1200px; }

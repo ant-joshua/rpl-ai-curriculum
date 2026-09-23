@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Button, Card, CardContent, Badge, EmptyState, Spinner, Alert, Select } from '$lib/components/ui';
+	import { Button, Card, CardContent, Badge, EmptyState, Alert, Select, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let curricula = $state<any[]>([]);
 	let loading = $state(true);
@@ -16,14 +18,30 @@
 	let formDefault = $state(false);
 	let saving = $state(false);
 
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (c) => 'Hapus Kurikulum?',
+		message: (c) => `Hapus kurikulum "${c.name}"? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus Kurikulum',
+		variant: 'danger',
+		onConfirm: async (c) => {
+			const res = await api.delete(`/api/curricula/${c.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus kurikulum');
+			await load();
+		},
+		successMessage: 'Kurikulum berhasil dihapus',
+	});
+
 	async function load() {
 		loading = true;
 		try {
-			const res = await fetch('/api/curricula');
-			const json = await res.json();
-			if (json.success) curricula = json.data || [];
-			else error = json.error || 'Gagal load';
-		} catch { error = 'Gagal load'; } finally { loading = false; }
+			const res = await api.get<any[]>('/api/curricula');
+			if (res.success) curricula = res.data || [];
+			else error = res.error || 'Gagal load';
+		} catch {
+			error = 'Gagal load';
+		} finally {
+			loading = false;
+		}
 	}
 
 	onMount(() => { if (browser) load(); });
@@ -32,52 +50,36 @@
 		if (!formName.trim()) return;
 		saving = true;
 		try {
-			const res = await fetch('/api/curricula', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					name: formName.trim(), type: formType, authority: formAuthority,
-					description: formDesc, is_default: formDefault,
-				}),
+			const res = await api.post('/api/curricula', {
+				name: formName.trim(), type: formType, authority: formAuthority,
+				description: formDesc, is_default: formDefault,
 			});
-			const json = await res.json();
-			if (json.success) {
+			if (res.success) {
+				toast.success('Kurikulum berhasil dibuat');
 				showForm = false; formName = ''; formDesc = ''; formDefault = false;
 				load();
-			} else error = json.error || 'Gagal simpan';
-		} catch { error = 'Gagal simpan'; } finally { saving = false; }
+			} else {
+				error = res.error || 'Gagal simpan';
+			}
+		} catch {
+			error = 'Gagal simpan';
+		} finally {
+			saving = false;
+		}
 	}
 
 	async function setActive(c: any) {
 		try {
-			await fetch(`/api/curricula/${c.id}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ is_active: c.is_active ? 0 : 1 }),
-			});
+			await api.patch(`/api/curricula/${c.id}`, { is_active: c.is_active ? 0 : 1 });
 			load();
 		} catch { /* ignore */ }
 	}
 
 	async function setDefault(c: any) {
 		try {
-			await fetch(`/api/curricula/${c.id}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ is_default: true }),
-			});
+			await api.patch(`/api/curricula/${c.id}`, { is_default: true });
 			load();
 		} catch { /* ignore */ }
-	}
-
-	async function remove(c: any) {
-		if (!confirm(`Hapus kurikulum "${c.name}"?`)) return;
-		try {
-			const res = await fetch(`/api/curricula/${c.id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (!json.success) error = json.error || 'Gagal hapus';
-			else load();
-		} catch { error = 'Gagal hapus'; }
 	}
 
 	const typeLabels: Record<string, string> = {
@@ -142,7 +144,7 @@
 {/if}
 
 {#if loading}
-	<div class="center"><Spinner /></div>
+	<Skeleton variant="card" count={3} />
 {:else if curricula.length === 0}
 	<EmptyState icon="layers" title="Belum ada kurikulum" />
 {:else}
@@ -171,7 +173,7 @@
 								{c.is_active ? 'Nonaktifkan' : 'Aktifkan'}
 							</Button>
 							{#if !c.is_default}
-								<Button size="sm" variant="danger" onclick={() => remove(c)}>Hapus</Button>
+								<Button size="sm" variant="danger" onclick={() => deleteConfirm.ask(c)}>Hapus</Button>
 							{/if}
 						</div>
 					</div>
@@ -180,6 +182,8 @@
 		{/each}
 	</div>
 {/if}
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.page-head { margin-bottom: 20px; }

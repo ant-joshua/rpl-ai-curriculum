@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { t } from '$lib/stores/i18n';
-	import { Button, Badge, Card, CardContent, Modal, Input, Textarea, Alert, EmptyState, Skeleton, SearchInput, Select, Pagination, FilterBar, ConfirmDialog } from '$lib/components/ui';
+	import { Button, Badge, Card, CardContent, Modal, Input, Textarea, Alert, EmptyState, Skeleton, SearchInput, Select, Pagination, FilterBar, ConfirmDialog, toast } from '$lib/components/ui';
 
 	interface Course {
 		id: string;
@@ -170,11 +170,12 @@
 			if (json.success) {
 				courses = courses.filter(c => c.id !== courseToDelete!.id);
 				total--;
+				toast.success('Kursus berhasil dihapus');
 			} else {
-				alert(json.error || 'Gagal hapus');
+				toast.error(json.error || 'Gagal hapus');
 			}
 		} catch {
-			alert('Gagal terhubung ke server');
+			toast.error('Gagal terhubung ke server');
 		} finally {
 			deletingId = null;
 			courseToDelete = null;

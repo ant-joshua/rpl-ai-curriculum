@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Tabs } from '$lib/components/ui';
+	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Tabs, ConfirmDialog, toast } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -154,12 +154,40 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		} catch { /* ignore */ }
 	}
 
+	let confirmModal = $state<{
+		open: boolean;
+		title: string;
+		message: string;
+		confirmText: string;
+		action: () => Promise<void>;
+	}>({
+		open: false,
+		title: '',
+		message: '',
+		confirmText: '',
+		action: async () => {}
+	});
+
 	async function deleteBoost(b: any) {
-		if (!confirm(`Hapus event "${b.title}"?`)) return;
-		try {
-			await fetch(`/api/admin/gamification/boosts/${b.id}`, { method: 'DELETE', headers: authHeaders() });
-			loadBoosts();
-		} catch { /* ignore */ }
+		confirmModal = {
+			open: true,
+			title: 'Hapus Event Boost?',
+			message: `Hapus event boost "${b.title}"? Tindakan ini tidak dapat dibatalkan.`,
+			confirmText: '🗑️ Hapus Boost',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/admin/gamification/boosts/${b.id}`, { method: 'DELETE', headers: authHeaders() });
+					if (res.ok) {
+						toast.success('Event boost berhasil dihapus');
+						loadBoosts();
+					} else {
+						toast.error('Gagal menghapus event boost');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
 	onMount(() => {
@@ -212,11 +240,26 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		} catch (e) { error = 'Gagal menyimpan badge'; }
 	}
 	async function deleteBadge(id: string) {
-		if (!confirm('Hapus badge ini?')) return;
-		try {
-			await fetch(`/api/admin/badges/${id}`, { method: 'DELETE', headers: authHeaders() });
-			await loadBadges();
-		} catch { error = 'Gagal menghapus badge'; }
+		const targetBadge = badges.find(b => b.id === id);
+		confirmModal = {
+			open: true,
+			title: 'Hapus Badge?',
+			message: `Hapus badge "${targetBadge?.name || id}"? Tindakan ini tidak dapat dibatalkan.`,
+			confirmText: '🗑️ Hapus Badge',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/admin/badges/${id}`, { method: 'DELETE', headers: authHeaders() });
+					if (res.ok) {
+						toast.success('Badge berhasil dihapus');
+						await loadBadges();
+					} else {
+						toast.error('Gagal menghapus badge');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
 	// ============= XP RULES =============
@@ -253,15 +296,34 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				});
 			}
 			xpRuleEditModal = null;
+			toast.success('Aturan XP berhasil disimpan');
 			await loadXpRules();
-		} catch { error = 'Gagal menyimpan aturan XP'; }
+		} catch (e) {
+			error = 'Gagal menyimpan aturan XP';
+			toast.error('Gagal menyimpan aturan XP');
+		}
 	}
 	async function deleteXpRule(id: string) {
-		if (!confirm('Hapus aturan XP ini?')) return;
-		try {
-			await fetch(`/api/admin/gamification/xp-rules/${id}`, { method: 'DELETE', headers: authHeaders() });
-			await loadXpRules();
-		} catch { error = 'Gagal menghapus aturan XP'; }
+		const targetRule = xpRules.find(r => r.id === id);
+		confirmModal = {
+			open: true,
+			title: 'Hapus Aturan XP?',
+			message: `Hapus aturan XP "${targetRule?.action_type || targetRule?.description || id}"? Tindakan ini tidak dapat dibatalkan.`,
+			confirmText: '🗑️ Hapus Aturan',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/admin/gamification/xp-rules/${id}`, { method: 'DELETE', headers: authHeaders() });
+					if (res.ok) {
+						toast.success('Aturan XP berhasil dihapus');
+						await loadXpRules();
+					} else {
+						toast.error('Gagal menghapus aturan XP');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
 	// ============= SETTINGS =============
@@ -954,6 +1016,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			</div>
 			{/if}
 		</div>
+
+<ConfirmDialog
+	open={confirmModal.open}
+	title={confirmModal.title}
+	message={confirmModal.message}
+	confirmText={confirmModal.confirmText}
+	onconfirm={confirmModal.action}
+	oncancel={() => confirmModal.open = false}
+/>
 
 <style>
 			/* Quests admin */

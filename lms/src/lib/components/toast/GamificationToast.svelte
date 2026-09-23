@@ -14,10 +14,11 @@
 
 <div class="xp-toast-container">
 	{#each visible as toast (toast.id)}
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_no_noninteractive_element_interactions -->
 		<div
 			class="xp-toast"
 			class:levelup={toast.type === 'levelup'}
-			role="alert"
+			role="button"
 			aria-live="polite"
 			onclick={() => dismissToast(toast.id)}
 			onkeydown={(e) => {

@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
-
-	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
-	function authHeaders() {
-		return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
-	}
+	import { Card, CardContent, Alert, Button, Input, Modal, Select, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -14,6 +11,19 @@
 	let offerings = $state<any[]>([]);
 	let modal = $state<any>(null);
 	let saving = $state(false);
+
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (s) => 'Hapus Kelas Live?',
+		message: (s) => `Hapus kelas live "${s.title}"? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus Sesi',
+		variant: 'danger',
+		onConfirm: async (s) => {
+			const res = await api.delete(`/api/admin/live-classes/${s.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus');
+			await loadSessions();
+		},
+		successMessage: 'Kelas live berhasil dihapus',
+	});
 
 	onMount(async () => {
 		if (!browser) return;
@@ -23,9 +33,8 @@
 	async function loadSessions() {
 		loading = true;
 		try {
-			const res = await fetch('/api/admin/live-classes', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) sessions = json.data || [];
+			const res = await api.get<any[]>('/api/admin/live-classes');
+			if (res.success) sessions = res.data || [];
 		} catch { /* ignore */ } finally {
 			loading = false;
 		}
@@ -33,9 +42,8 @@
 
 	async function loadOfferings() {
 		try {
-			const res = await fetch('/api/admin/offerings?limit=100', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) offerings = json.data || [];
+			const res = await api.get<any[]>('/api/admin/offerings?limit=100');
+			if (res.success) offerings = res.data || [];
 		} catch { /* ignore */ }
 	}
 
@@ -43,38 +51,22 @@
 		if (!modal?.course_offering_id || !modal?.title || !modal?.start_at) return;
 		saving = true;
 		try {
-			const res = await fetch('/api/admin/live-classes', {
-				method: 'POST',
-				headers: authHeaders(),
-				body: JSON.stringify(modal),
-			});
-			if (res.ok) {
-				modal = null;
-				loadSessions();
-			} else {
-				const j = await res.json().catch(() => null);
-				error = j?.error || 'Gagal simpan';
-			}
-		} catch { /* ignore */ } finally {
+			const res = await api.post('/api/admin/live-classes', modal);
+			if (!res.success) throw new Error(res.error || 'Gagal menyimpan');
+			modal = null;
+			toast.success('Kelas live berhasil dijadwalkan');
+			loadSessions();
+		} catch (e: any) {
+			error = e.message;
+			toast.error(e.message);
+		} finally {
 			saving = false;
 		}
 	}
 
 	async function setStatus(s: any, status: string) {
 		try {
-			await fetch(`/api/admin/live-classes/${s.id}`, {
-				method: 'PATCH',
-				headers: authHeaders(),
-				body: JSON.stringify({ status }),
-			});
-			loadSessions();
-		} catch { /* ignore */ }
-	}
-
-	async function remove(s: any) {
-		if (!confirm(`Hapus kelas live "${s.title}"?`)) return;
-		try {
-			await fetch(`/api/admin/live-classes/${s.id}`, { method: 'DELETE', headers: authHeaders() });
+			await api.patch(`/api/admin/live-classes/${s.id}`, { status });
 			loadSessions();
 		} catch { /* ignore */ }
 	}
@@ -126,7 +118,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading"><Spinner /> Memuat...</div>
+		<Skeleton variant="table-row" count={5} />
 	{:else if sessions.length === 0}
 		<EmptyState title="Belum ada kelas live" description="Buat kelas live pertama" />
 	{:else}
@@ -166,7 +158,7 @@
 											{#if s.join_url}
 												<a class="join-link" href={s.join_url} target="_blank" rel="noopener">Link</a>
 											{/if}
-											<Button variant="danger" size="sm" onclick={() => remove(s)}>Hapus</Button>
+											<Button variant="danger" size="sm" onclick={() => deleteConfirm.ask(s)}>Hapus</Button>
 										</div>
 									</TableCell>
 								</TableRow>
@@ -178,6 +170,8 @@
 		</Card>
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.live-admin { max-width: 900px; margin: 0 auto; padding: 24px 16px; }

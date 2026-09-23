@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, PageHeader, Card } from '$lib/components/ui';
+	import { Button, DataTable, Input, PageHeader, Card, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let fakultasList: any[] = $state([]);
 	let loading = $state(true);
@@ -15,17 +17,32 @@
 	let saving = $state(false);
 	let saveError = $state('');
 
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (f) => 'Hapus Fakultas?',
+		message: (f) => `Hapus fakultas "${f.name}"? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus Fakultas',
+		variant: 'danger',
+		onConfirm: async (f) => {
+			const res = await api.delete(`/api/admin/faculties/${f.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus');
+			fakultasList = fakultasList.filter(item => item.id !== f.id);
+		},
+		successMessage: 'Fakultas berhasil dihapus',
+	});
+
 	onMount(() => { if (browser) loadData(); });
 
 	async function loadData() {
 		loading = true; error = '';
 		try {
-			const res = await fetch('/api/admin/faculties');
-			const json = await res.json();
-			if (json.success) fakultasList = json.data;
-			else error = json.error || 'Gagal memuat data';
-		} catch { error = 'Gagal terhubung ke server'; }
-		finally { loading = false; }
+			const res = await api.get<any[]>('/api/admin/faculties');
+			if (res.success) fakultasList = res.data || [];
+			else error = res.error || 'Gagal memuat data';
+		} catch {
+			error = 'Gagal terhubung ke server';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function openCreate() {
@@ -42,35 +59,27 @@
 		if (!formName.trim()) { saveError = 'Nama fakultas wajib diisi'; return; }
 		saving = true; saveError = '';
 		try {
-			const method = formId ? 'PUT' : 'POST';
-			const url = formId ? `/api/admin/faculties/${formId}` : '/api/admin/faculties';
-			const res = await fetch(url, {
-				method,
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ name: formName.trim(), code: formCode.trim() }),
-			});
-			const json = await res.json();
-			if (json.success) {
+			const payload = { name: formName.trim(), code: formCode.trim() };
+			const res = formId
+				? await api.put(`/api/admin/faculties/${formId}`, payload)
+				: await api.post('/api/admin/faculties', payload);
+			if (res.success) {
 				if (formId) {
-					fakultasList = fakultasList.map(f => f.id === formId ? json.data : f);
+					fakultasList = fakultasList.map(f => f.id === formId ? res.data : f);
+					toast.success('Fakultas berhasil diperbarui');
 				} else {
-					fakultasList = [...fakultasList, json.data];
+					fakultasList = [...fakultasList, res.data];
+					toast.success('Fakultas berhasil dibuat');
 				}
 				closeForm();
-			} else saveError = json.error || 'Gagal menyimpan';
-		} catch { saveError = 'Terjadi kesalahan'; }
-		finally { saving = false; }
-	}
-
-	async function deleteFakultas(id: string) {
-		if (!confirm('Hapus fakultas ini?')) return;
-		try {
-			const res = await fetch(`/api/admin/faculties/${id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (json.success) {
-				fakultasList = fakultasList.filter(f => f.id !== id);
-			} else alert(json.error || 'Gagal menghapus');
-		} catch { alert('Terjadi kesalahan'); }
+			} else {
+				saveError = res.error || 'Gagal menyimpan';
+			}
+		} catch {
+			saveError = 'Terjadi kesalahan';
+		} finally {
+			saving = false;
+		}
 	}
   import { t } from '$lib/stores/i18n';
 </script>
@@ -88,7 +97,7 @@
 	</PageHeader>
 
 	{#if loading}
-		<div class="loading">{t('admin.memuat_data')}</div>
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -122,7 +131,7 @@
 						{:else if column.key === 'actions'}
 							<div class="cell-actions">
 								<Button class="btn-edit" onclick={() => openEdit(row)}>{t('common.edit')}</Button>
-								<Button class="btn-delete" onclick={() => deleteFakultas(row.id)}>{t('common.delete')}</Button>
+								<Button class="btn-delete" onclick={() => deleteConfirm.ask(row)}>{t('common.delete')}</Button>
 							</div>
 						{/if}
 					{/snippet}
@@ -172,21 +181,23 @@
 			<div class="modal-body">
 				{#if saveError}<div class="form-error">{saveError}</div>{/if}
 				<div class="field">
-<Input label={t('admin.nama_fakultas')} bind:value={formName} />
+<Input label={t('admin.nama_fakultas')} bind:value={formName} placeholder="Cth: Fakultas Ilmu Komputer" />
 				</div>
 				<div class="field">
-<Input label={t('common.code')} bind:value={formCode} />
+<Input label="Kode (opsional)" bind:value={formCode} placeholder="FIK" />
 				</div>
 			</div>
 			<div class="modal-footer">
 				<Button variant="secondary" onclick={closeForm}>{t('common.cancel')}</Button>
 				<Button variant="primary" onclick={submitForm} disabled={saving}>
-					{saving ? 'Menyimpan...' : 'Simpan'}
+					{saving ? 'Menyimpan...' : 'Simpan Perubahan'}
 				</Button>
 			</div>
 		</div>
 	</div>
 {/if}
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.page { max-width: 960px; }

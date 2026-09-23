@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, DataTable, Input, Select, Card } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Card, Skeleton, ConfirmDialog, FilterBar, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let exams: any[] = $state([]);
@@ -29,8 +31,21 @@
 	let saveError = $state('');
 
 	// Rooms & types for selects
-	let rooms: any[] = $state([]);
+	let rooms = $state<any[]>([]);
 	let examTypes: any[] = $state([]);
+
+	const deleteConfirm = useConfirmDialog<string>({
+		title: 'Hapus Jadwal Ujian?',
+		message: 'Hapus jadwal ujian ini? Tindakan ini tidak dapat dibatalkan.',
+		confirmText: '🗑️ Hapus Ujian',
+		variant: 'danger',
+		onConfirm: async (id) => {
+			const res = await api.delete(`/api/admin/exam-scheduler/exams/${id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus');
+			exams = exams.filter(e => e.id !== id);
+		},
+		successMessage: 'Ujian berhasil dihapus',
+	});
 
 	onMount(() => {
 		if (browser) {
@@ -122,19 +137,6 @@
 		finally { saving = false; }
 	}
 
-	async function deleteExam(id: string) {
-		if (!confirm('Hapus jadwal ujian ini?')) return;
-		try {
-			const res = await fetch(`/api/admin/exam-scheduler/exams/${id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (json.success) {
-				exams = exams.filter(e => e.id !== id);
-				success = 'Ujian berhasil dihapus';
-				setTimeout(() => success = '', 3000);
-			} else alert(json.error || 'Gagal menghapus');
-		} catch { alert('Terjadi kesalahan'); }
-	}
-
 	function statusColor(status: string): string {
 		switch (status) {
 			case 'draft': return 'status-draft';
@@ -155,7 +157,9 @@
 
 	// Expose delete handler for DataTable inline HTML buttons
 	$effect(() => {
-		(window as any).__deleteExam = deleteExam;
+		(window as any).__deleteExam = (id: string) => {
+			deleteConfirm.ask(id);
+		};
 		return () => { delete (window as any).__deleteExam; };
 	});
 
@@ -242,7 +246,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading">Memuat data ujian...</div>
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p class="error-msg">{error}</p>
@@ -250,16 +254,17 @@
 		</div>
 	{:else}
 		<!-- Filters -->
-		<div class="filters">
-<Input  />
+		<FilterBar>
+			<Input
 				type="text"
-				class="filter-input"
 				placeholder="🔍 Cari ujian..."
 				bind:value={filterSearch}
 			/>
-<Select bind:value={filterStatus} options={[{ value: "", label: "Semua Status" }, { value: "draft", label: t('admin.draft') }, { value: "published", label: t('admin.published') }, { value: "ongoing", label: t('admin.ongoing') }, { value: "completed", label: t('admin.completed') }, { value: "cancelled", label: t('admin.cancelled') }]} />
-			<span class="filter-count">{filteredExams.length} ujian</span>
-		</div>
+			<Select bind:value={filterStatus} options={[{ value: "", label: "Semua Status" }, { value: "draft", label: t('admin.draft') }, { value: "published", label: t('admin.published') }, { value: "ongoing", label: t('admin.ongoing') }, { value: "completed", label: t('admin.completed') }, { value: "cancelled", label: t('admin.cancelled') }]} />
+			{#snippet actions()}
+				<span class="filter-count">{filteredExams.length} ujian</span>
+			{/snippet}
+		</FilterBar>
 
 		{#if filteredExams.length === 0}
 			<div class="empty-state">
@@ -279,6 +284,8 @@
 		{/if}
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <!-- Create Modal -->
 {#if showModal}

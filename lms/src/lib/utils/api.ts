@@ -14,7 +14,18 @@ export function getDeviceId(): string {
 
 export function getAuthToken(): string | null {
 	if (!browser || typeof localStorage === 'undefined') return null;
-	return localStorage.getItem('lms-auth-token');
+	return localStorage.getItem('lms-auth-token') || localStorage.getItem('token');
+}
+
+export function getAuthHeaders(): Record<string, string> {
+	const token = getAuthToken();
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/json',
+	};
+	if (token) {
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+	return headers;
 }
 
 export interface ApiResponse<T = any> {

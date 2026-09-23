@@ -2,11 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { getToasts, dismissToast, type Toast, type ToastType } from '$lib/stores/toast.svelte';
 
-	let toasts = $state<Toast[]>([]);
-
-	$effect(() => {
-		toasts = getToasts();
-	});
+	const toasts = $derived(getToasts());
 
 	function icon(type: ToastType): string {
 		switch (type) {

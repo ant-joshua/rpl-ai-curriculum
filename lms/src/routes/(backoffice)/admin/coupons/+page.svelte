@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
-
-	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
-	function authHeaders() {
-		return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
-	}
+	import { Card, CardContent, Alert, Button, Input, Modal, Select, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -14,6 +11,19 @@
 	let bundles = $state<any[]>([]);
 	let modal = $state<any>(null);
 	let saving = $state(false);
+
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (c) => 'Hapus Kupon?',
+		message: (c) => `Hapus kupon "${c.code}"? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus Kupon',
+		variant: 'danger',
+		onConfirm: async (c) => {
+			const res = await api.delete(`/api/admin/coupons/${c.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus kupon');
+			await loadCoupons();
+		},
+		successMessage: 'Kupon berhasil dihapus',
+	});
 
 	onMount(async () => {
 		if (!browser) return;
@@ -23,9 +33,8 @@
 	async function loadCoupons() {
 		loading = true;
 		try {
-			const res = await fetch('/api/admin/coupons', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) coupons = json.data || [];
+			const res = await api.get<any[]>('/api/admin/coupons');
+			if (res.success) coupons = res.data || [];
 		} catch { /* ignore */ } finally {
 			loading = false;
 		}
@@ -33,9 +42,8 @@
 
 	async function loadBundles() {
 		try {
-			const res = await fetch('/api/admin/bundles', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) bundles = json.data || [];
+			const res = await api.get<any[]>('/api/admin/bundles');
+			if (res.success) bundles = res.data || [];
 		} catch { /* ignore */ }
 	}
 
@@ -43,38 +51,22 @@
 		if (!modal?.code || !modal?.discount_value) return;
 		saving = true;
 		try {
-			const res = await fetch('/api/admin/coupons', {
-				method: 'POST',
-				headers: authHeaders(),
-				body: JSON.stringify(modal),
-			});
-			if (res.ok) {
-				modal = null;
-				loadCoupons();
-			} else {
-				const j = await res.json().catch(() => null);
-				error = j?.error || 'Gagal simpan';
-			}
-		} catch { /* ignore */ } finally {
+			const res = await api.post('/api/admin/coupons', modal);
+			if (!res.success) throw new Error(res.error || 'Gagal menyimpan kupon');
+			modal = null;
+			toast.success('Kupon berhasil disimpan');
+			loadCoupons();
+		} catch (e: any) {
+			error = e.message;
+			toast.error(e.message);
+		} finally {
 			saving = false;
 		}
 	}
 
 	async function toggle(c: any) {
 		try {
-			await fetch(`/api/admin/coupons/${c.id}`, {
-				method: 'PATCH',
-				headers: authHeaders(),
-				body: JSON.stringify({ is_active: c.is_active == 1 ? 0 : 1 }),
-			});
-			loadCoupons();
-		} catch { /* ignore */ }
-	}
-
-	async function remove(c: any) {
-		if (!confirm(`Hapus kupon "${c.code}"?`)) return;
-		try {
-			await fetch(`/api/admin/coupons/${c.id}`, { method: 'DELETE', headers: authHeaders() });
+			await api.patch(`/api/admin/coupons/${c.id}`, { is_active: c.is_active == 1 ? 0 : 1 });
 			loadCoupons();
 		} catch { /* ignore */ }
 	}
@@ -133,7 +125,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading"><Spinner /> Memuat...</div>
+		<Skeleton variant="table-row" count={5} />
 	{:else if coupons.length === 0}
 		<EmptyState title="Belum ada kupon" description="Buat kupon promo pertama" />
 	{:else}
@@ -164,7 +156,7 @@
 								</TableCell>
 								<TableCell>
 									<Button variant="secondary" size="sm" onclick={() => toggle(c)}>{c.is_active == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
-									<Button variant="danger" size="sm" onclick={() => remove(c)}>Hapus</Button>
+									<Button variant="danger" size="sm" onclick={() => deleteConfirm.ask(c)}>Hapus</Button>
 								</TableCell>
 							</TableRow>
 						{/each}
@@ -174,6 +166,8 @@
 		</Card>
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.coupons-admin { max-width: 900px; margin: 0 auto; padding: 24px 16px; }

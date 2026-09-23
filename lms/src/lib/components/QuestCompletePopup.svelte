@@ -24,8 +24,10 @@
 </script>
 
 {#if ev}
-	<div class="quest-popup-overlay" onclick={dismissQuestComplete}>
-		<div class="quest-popup" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus a11y_no_noninteractive_element_interactions -->
+	<div class="quest-popup-overlay" onclick={dismissQuestComplete} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div class="quest-popup" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="quest-popup-confetti">🎉</div>
 			<h3 class="quest-popup-title">Quest Selesai!</h3>
 			<p class="quest-popup-desc">{ev.description || ev.title}</p>

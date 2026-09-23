@@ -39,3 +39,11 @@ export { default as Tabs } from './Tabs.svelte';
 export { default as Pagination } from './Pagination.svelte';
 export { default as ConfirmDialog } from './ConfirmDialog.svelte';
 export { default as FilterBar } from './FilterBar.svelte';
+import { addToast, dismissToast, getToasts } from '$lib/stores/toast.svelte';
+export { addToast, dismissToast, getToasts };
+export const toast = {
+	success: (message: string) => addToast(message, 'success'),
+	error: (message: string) => addToast(message, 'error'),
+	warning: (message: string) => addToast(message, 'warning'),
+	info: (message: string) => addToast(message, 'info')
+};

@@ -21,5 +21,8 @@ describe('UI Component Library System', () => {
 		expect(ui.Switch).toBeDefined();
 		expect(ui.Toggle).toBeDefined();
 		expect(ui.Switch).toBe(ui.Toggle);
+		expect(ui.toast).toBeDefined();
+		expect(typeof ui.toast.success).toBe('function');
+		expect(typeof ui.toast.error).toBe('function');
 	});
 });

@@ -2,14 +2,34 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import RichEditor from '$lib/components/RichEditor.svelte';
-import { Button } from '$lib/components/ui';
-import { addToast } from '$lib/stores/toast.svelte';
+	import { Button, Tabs, Skeleton, ConfirmDialog, toast, Input, Select } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let projects: any[] = $state([]);
 	let loading = $state(true);
 	let error = $state('');
 	let editModal = $state<{ type: string; data: any } | null>(null);
 	let tab = $state<'all' | 'draft' | 'published'>('all');
+
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (p) => 'Delete Project?',
+		message: (p) => `Delete project "${p.title || p.key}"? This action cannot be undone.`,
+		confirmText: '🗑️ Delete Project',
+		variant: 'danger',
+		onConfirm: async (p) => {
+			const res = await api.delete(`/api/admin/projects/${p.key}`);
+			if (!res.success) throw new Error(res.error || 'Failed to delete project');
+			await loadProjects();
+		},
+		successMessage: 'Project deleted',
+	});
+
+	const projectTabs = $derived([
+		{ id: 'all', label: 'All', count: projects.length },
+		{ id: 'published', label: 'Published', count: projects.filter(p => p.status === 'published').length },
+		{ id: 'draft', label: 'Drafts', count: projects.filter(p => p.status === 'draft' || !p.status).length }
+	]);
 
 	onMount(() => {
 		if (!browser) return;
@@ -20,47 +40,44 @@ import { addToast } from '$lib/stores/toast.svelte';
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch('/api/admin/projects');
-			const json = await res.json();
-			if (json.success) projects = json.data;
-			else error = json.error || 'Failed';
-		} catch { error = 'Failed to load'; }
-		finally { loading = false; }
+			const res = await api.get<any[]>('/api/admin/projects');
+			if (res.success) projects = res.data || [];
+			else error = res.error || 'Failed';
+		} catch {
+			error = 'Failed to load';
+		} finally {
+			loading = false;
+		}
 	}
 
 	async function saveProject(data: any) {
 		try {
-			const res = await fetch('/api/admin/projects', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
-			});
-			const json = await res.json();
-			if (json.success) { editModal = null; loadProjects(); addToast('Project created', 'success'); }
-			else addToast('Error: ' + (json.error || 'Unknown'), 'error');
-		} catch { addToast('Error saving', 'error'); }
+			const res = await api.post('/api/admin/projects', data);
+			if (res.success) {
+				editModal = null;
+				loadProjects();
+				toast.success('Project created');
+			} else {
+				toast.error('Error: ' + (res.error || 'Unknown'));
+			}
+		} catch {
+			toast.error('Error saving');
+		}
 	}
 
 	async function updateProject(slug: string, data: any) {
 		try {
-			const res = await fetch(`/api/admin/projects/${slug}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
-			});
-			const json = await res.json();
-			if (json.success) { editModal = null; loadProjects(); addToast('Project updated', 'success'); }
-			else addToast('Error: ' + (json.error || 'Unknown'), 'error');
-		} catch { addToast('Error updating', 'error'); }
-	}
-
-	async function deleteProject(slug: string) {
-		if (!confirm(`Delete project "${slug}"?`)) return;
-		try {
-			await fetch(`/api/admin/projects/${slug}`, { method: 'DELETE' });
-			loadProjects();
-			addToast('Project deleted', 'success');
-		} catch { addToast('Error deleting', 'error'); }
+			const res = await api.put(`/api/admin/projects/${slug}`, data);
+			if (res.success) {
+				editModal = null;
+				loadProjects();
+				toast.success('Project updated');
+			} else {
+				toast.error('Error: ' + (res.error || 'Unknown'));
+			}
+		} catch {
+			toast.error('Error updating');
+		}
 	}
 
 	async function toggleStatus(slug: string, current: string) {
@@ -101,16 +118,12 @@ import { addToast } from '$lib/stores/toast.svelte';
 	</div>
 
 	{#if loading}
-		<div class="loading">Loading projects...</div>
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div><p>{error}</p><Button class="error-state" onclick={loadProjects}>{t('common.retry')}</Button></div>
 	{:else}
 		<div class="section-header">
-			<div class="tabs">
-				<Button variant="ghost" class="tab {tab === 'all' ? 'active' : ''}" onclick={() => tab = 'all'}>All ({projects.length})</Button>
-				<Button variant="ghost" class="tab {tab === 'published' ? 'active' : ''}" onclick={() => tab = 'published'}>Published ({projects.filter(p => p.status === 'published').length})</Button>
-				<Button variant="ghost" class="tab {tab === 'draft' ? 'active' : ''}" onclick={() => tab = 'draft'}>Drafts ({projects.filter(p => p.status === 'draft' || !p.status).length})</Button>
-			</div>
+			<Tabs items={projectTabs} bind:value={tab} />
 			<Button variant="primary" class="btn" onclick={openNew}>{t('admin.new_project')}</Button>
 		</div>
 
@@ -137,7 +150,7 @@ import { addToast } from '$lib/stores/toast.svelte';
 						<Button size="sm" class="btn" onclick={() => toggleStatus(p.key, p.status || 'draft')}>
 							{p.status === 'published' ? '📥 Unpublish' : '📤 Publish'}
 						</Button>
-						<Button variant="danger" size="sm" class="btn" onclick={() => deleteProject(p.key)}>🗑️</Button>
+						<Button variant="danger" size="sm" class="btn" onclick={() => deleteConfirm.ask(p)}>🗑️</Button>
 					</div>
 				</div>
 			{/each}
@@ -147,6 +160,8 @@ import { addToast } from '$lib/stores/toast.svelte';
 		</div>
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <!-- Edit Modal -->
 {#if editModal}

@@ -2,7 +2,9 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { addToast } from '$lib/stores/toast.svelte';
-	import { Button, Select, Textarea } from '$lib/components/ui/index.js';
+	import { Button, Select, Textarea, Skeleton, ConfirmDialog, toast } from '$lib/components/ui/index.js';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	type CalEvent = {
 		id: string;
@@ -44,16 +46,28 @@
 	let formColor = $state('var(--accent)');
 	let saving = $state(false);
 
+	const deleteConfirm = useConfirmDialog<CalEvent>({
+		title: (ev) => 'Hapus Event Kalender?',
+		message: (ev) => `Hapus "${ev.title}" dari kalender akademik? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus Event',
+		variant: 'danger',
+		onConfirm: async (ev) => {
+			const res = await api.delete(`/api/admin/academic-calendar/${ev.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus event');
+			events = events.filter((e) => e.id !== ev.id);
+		},
+		successMessage: 'Event berhasil dihapus',
+	});
+
 	async function loadEvents() {
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch('/api/admin/academic-calendar');
-			const json = await res.json();
-			if (json.success) {
-				events = json.data || [];
+			const res = await api.get<CalEvent[]>('/api/admin/academic-calendar');
+			if (res.success) {
+				events = res.data || [];
 			} else {
-				error = json.error || 'Gagal memuat';
+				error = res.error || 'Gagal memuat';
 			}
 		} catch {
 			error = 'Gagal terhubung ke server';
@@ -84,42 +98,26 @@
 		saving = true;
 		error = '';
 		try {
-			const res = await fetch('/api/admin/academic-calendar', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					title: formTitle.trim(),
-					event_type: formType,
-					start_date: formStart,
-					end_date: formEnd || null,
-					description: formDesc.trim() || null,
-					color: formColor || TYPE_COLORS[formType],
-					all_day: true,
-				}),
+			const res = await api.post('/api/admin/academic-calendar', {
+				title: formTitle.trim(),
+				event_type: formType,
+				start_date: formStart,
+				end_date: formEnd || null,
+				description: formDesc.trim() || null,
+				color: formColor || TYPE_COLORS[formType],
+				all_day: true,
 			});
-			const json = await res.json();
-			if (json.success) {
-				addToast('Event kalender ditambahkan');
+			if (res.success) {
+				toast.success('Event kalender ditambahkan');
 				resetForm();
 				loadEvents();
 			} else {
-				error = json.error || 'Gagal menyimpan';
+				error = res.error || 'Gagal menyimpan';
 			}
 		} catch {
 			error = 'Gagal terhubung ke server';
 		} finally {
 			saving = false;
-		}
-	}
-
-	async function deleteEvent(id: string) {
-		if (!confirm('Hapus event ini?')) return;
-		try {
-			await fetch(`/api/admin/academic-calendar/${id}`, { method: 'DELETE' });
-			events = events.filter((e) => e.id !== id);
-			addToast('Event dihapus');
-		} catch {
-			error = 'Gagal menghapus';
 		}
 	}
 
@@ -202,7 +200,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading">Memuat...</div>
+		<Skeleton variant="card" count={3} />
 	{:else if events.length === 0}
 		<div class="empty-state">
 			<div class="empty-icon">🗓️</div>
@@ -233,7 +231,7 @@
 									<span class="event-range">s/d {formatDate(ev.end_date)}</span>
 								{/if}
 							</div>
-							<Button variant="danger" class="btn-del" onclick={() => deleteEvent(ev.id)} title="Hapus">🗑️</Button>
+							<Button variant="danger" class="btn-del" onclick={() => deleteConfirm.ask(ev)} title="Hapus">🗑️</Button>
 						</div>
 					{/each}
 				</div>
@@ -241,6 +239,8 @@
 		{/each}
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.page { max-width: 780px; }

@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { user } from '$lib/stores/user.svelte';
-	import { Input, Textarea, Button, ConfirmDialog } from '$lib/components/ui';
+	import { Input, Textarea, Button, ConfirmDialog, toast } from '$lib/components/ui';
 
 	let showCreateForm = $state(false);
 	let newName = $state('');
@@ -54,17 +54,19 @@
 			const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
 			const json = await res.json();
 			if (json.success) {
+				toast.success('Berhasil keluar dari grup');
 				await groupsStore.loadGroups();
 			} else {
-				alert(json.error || 'Gagal keluar grup');
+				toast.error(json.error || 'Gagal keluar grup');
 			}
 		} else if (type === 'delete') {
 			const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
 			const json = await res.json();
 			if (json.success) {
+				toast.success('Grup berhasil dihapus');
 				await groupsStore.loadGroups();
 			} else {
-				alert(json.error || 'Gagal menghapus grup');
+				toast.error(json.error || 'Gagal menghapus grup');
 			}
 		}
 		confirmAction = null;

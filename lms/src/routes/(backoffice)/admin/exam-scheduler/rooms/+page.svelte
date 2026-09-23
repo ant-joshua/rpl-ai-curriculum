@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { Button, DataTable, Input, Select, Card, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
+	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let rooms: any[] = $state([]);
 	let loading = $state(true);
@@ -13,6 +17,19 @@
 
 	let form = $state({
 		name: '', code: '', capacity: 40, building: '', floor: 1, facilities: '', is_active: 1
+	});
+
+	const deleteConfirm = useConfirmDialog<string>({
+		title: 'Hapus Ruangan?',
+		message: 'Hapus ruangan ini? Tindakan ini tidak dapat dibatalkan.',
+		confirmText: '🗑️ Hapus Ruangan',
+		variant: 'danger',
+		onConfirm: async (id) => {
+			const res = await api.delete(`/api/admin/exam-scheduler/rooms/${id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus');
+			await loadRooms();
+		},
+		successMessage: 'Ruangan berhasil dihapus',
 	});
 
 	let filteredRooms = $derived.by(() => {
@@ -32,12 +49,14 @@
 	async function loadRooms() {
 		loading = true; error = '';
 		try {
-			const res = await fetch('/api/admin/exam-scheduler/rooms');
-			const json = await res.json();
-			if (json.success) rooms = json.data || [];
-			else error = json.error || 'Gagal memuat data';
-		} catch { error = 'Gagal terhubung ke server'; }
-		finally { loading = false; }
+			const res = await api.get<any[]>('/api/admin/exam-scheduler/rooms');
+			if (res.success) rooms = res.data || [];
+			else error = res.error || 'Gagal memuat data';
+		} catch {
+			error = 'Gagal terhubung ke server';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function openCreate() {
@@ -69,28 +88,27 @@
 			const url = editingId
 				? `/api/admin/exam-scheduler/rooms/${editingId}`
 				: '/api/admin/exam-scheduler/rooms';
-			const method = editingId ? 'PUT' : 'POST';
-			const res = await fetch(url, {
-				method,
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(form)
-			});
-			const json = await res.json();
-			if (json.success) { closeModal(); loadRooms(); }
-			else saveError = json.error || 'Gagal menyimpan';
-		} catch { saveError = 'Gagal terhubung ke server'; }
-		finally { saving = false; }
+			const res = editingId ? await api.put(url, form) : await api.post(url, form);
+			if (res.success) {
+				toast.success(editingId ? 'Ruangan berhasil diperbarui' : 'Ruangan berhasil dibuat');
+				closeModal();
+				loadRooms();
+			} else {
+				saveError = res.error || 'Gagal menyimpan';
+			}
+		} catch {
+			saveError = 'Gagal terhubung ke server';
+		} finally {
+			saving = false;
+		}
 	}
 
-	async function deleteRoom(id: string) {
-		if (!confirm('Hapus ruangan ini?')) return;
-		try {
-			const res = await fetch(`/api/admin/exam-scheduler/rooms/${id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (json.success) loadRooms();
-			else alert(json.error || 'Gagal menghapus');
-		} catch { alert('Terjadi kesalahan'); }
-	}
+	$effect(() => {
+		(window as any).__deleteRoom = (id: string) => {
+			deleteConfirm.ask(id);
+		};
+		return () => { delete (window as any).__deleteRoom; };
+	});
 
 	function parseFacilities(raw: any): string {
 		if (!raw) return '—';
@@ -173,7 +191,7 @@ const roomColumns: ColumnDef<any, any>[] = [
 	{/if}
 
 	{#if loading}
-		<div class="loading">{t('admin.memuat_data')}</div>
+		<Skeleton variant="card" count={3} />
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
@@ -192,6 +210,8 @@ const roomColumns: ColumnDef<any, any>[] = [
 		<DataTable columns={roomColumns} data={rooms} pageSize={20} showSearch={false} searchPlaceholder="Cari ruangan..." emptyMessage="Belum ada ruangan" />
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 {#if showModal}
 	<div class="modal-overlay" onclick={closeModal} role="dialog">

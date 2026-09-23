@@ -3,7 +3,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { page } from '$app/stores';
-	import Button from '$lib/components/ui/Button.svelte';
+	import { Button, ConfirmDialog, toast } from '$lib/components/ui';
 
 	let { data } = $props();
 
@@ -14,6 +14,22 @@
 	let groupName = $state('');
 	let myRole = $state<string | null>(null);
 	let groupCreatedBy = $state('');
+
+	let confirmModal = $state<{
+		open: boolean;
+		title: string;
+		message: string;
+		confirmText: string;
+		variant: 'primary' | 'danger';
+		action: () => Promise<void>;
+	}>({
+		open: false,
+		title: '',
+		message: '',
+		confirmText: '',
+		variant: 'primary',
+		action: async () => {}
+	});
 
 	let pollInterval: ReturnType<typeof setInterval> | undefined;
 
@@ -49,52 +65,103 @@
 		return m.display_name || m.username || m.user_id.slice(0, 8);
 	}
 
-	async function changeRole(memberId: string, role: string) {
-		if (!confirm(role === 'admin' ? 'Jadikan admin?' : 'Turunkan jadi anggota?')) return;
-		const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ role }),
-		});
-		const json = await res.json();
-		if (json.success) {
-			await loadGroup();
-		} else {
-			alert(json.error || 'Gagal mengubah role');
-		}
+	function promptChangeRole(memberId: string, role: string) {
+		const isToAdmin = role === 'admin';
+		confirmModal = {
+			open: true,
+			title: isToAdmin ? 'Jadikan Admin?' : 'Turunkan Jadi Anggota?',
+			message: isToAdmin ? 'Anggota ini akan memiliki akses admin grup.' : 'Hak akses admin anggota ini akan dicabut.',
+			confirmText: isToAdmin ? '⭐ Jadikan Admin' : 'Turunkan Role',
+			variant: 'primary',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, {
+						method: 'PATCH',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ role }),
+					});
+					const json = await res.json();
+					if (json.success) {
+						toast.success('Role berhasil diubah');
+						await loadGroup();
+					} else {
+						toast.error(json.error || 'Gagal mengubah role');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
-	async function kickMember(memberId: string) {
-		if (!confirm('Keluarkan anggota ini dari grup?')) return;
-		const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, { method: 'DELETE' });
-		const json = await res.json();
-		if (json.success) {
-			await loadGroup();
-		} else {
-			alert(json.error || 'Gagal mengeluarkan anggota');
-		}
+	function promptKickMember(memberId: string) {
+		confirmModal = {
+			open: true,
+			title: 'Keluarkan Anggota?',
+			message: 'Anggota ini akan dikeluarkan dari grup diskusi.',
+			confirmText: '✕ Keluarkan',
+			variant: 'danger',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/groups/${groupId}/members/${memberId}`, { method: 'DELETE' });
+					const json = await res.json();
+					if (json.success) {
+						toast.success('Anggota berhasil dikeluarkan');
+						await loadGroup();
+					} else {
+						toast.error(json.error || 'Gagal mengeluarkan anggota');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
-	async function leaveGroup() {
-		if (!confirm('Keluar dari grup ini?')) return;
-		const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
-		const json = await res.json();
-		if (json.success) {
-			window.location.href = '/groups';
-		} else {
-			alert(json.error || 'Gagal keluar grup');
-		}
+	function promptLeaveGroup() {
+		confirmModal = {
+			open: true,
+			title: 'Keluar dari Grup?',
+			message: 'Anda tidak akan menerima pesan baru dari grup ini lagi.',
+			confirmText: 'Keluar Grup',
+			variant: 'danger',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
+					const json = await res.json();
+					if (json.success) {
+						window.location.href = '/groups';
+					} else {
+						toast.error(json.error || 'Gagal keluar grup');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
-	async function deleteGroup() {
-		if (!confirm('Hapus grup ini? Semua pesan dan anggota akan hilang. Tindakan ini tidak bisa dibatalkan.')) return;
-		const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
-		const json = await res.json();
-		if (json.success) {
-			window.location.href = '/groups';
-		} else {
-			alert(json.error || 'Gagal menghapus grup');
-		}
+	function promptDeleteGroup() {
+		confirmModal = {
+			open: true,
+			title: 'Hapus Grup Diskusi?',
+			message: 'Semua pesan dan riwayat diskusi akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.',
+			confirmText: '🗑️ Hapus Grup',
+			variant: 'danger',
+			action: async () => {
+				try {
+					const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
+					const json = await res.json();
+					if (json.success) {
+						window.location.href = '/groups';
+					} else {
+						toast.error(json.error || 'Gagal menghapus grup');
+					}
+				} catch {
+					toast.error('Gagal terhubung ke server');
+				}
+			}
+		};
 	}
 
 	async function handleSend() {
@@ -164,11 +231,11 @@
 							{#if myRole === 'admin' && m.user_id !== groupCreatedBy}
 								<div class="member-actions">
 									{#if m.role === 'member'}
-										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => changeRole(m.id, 'admin')} title="Jadikan admin">⭐</Button>
+										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => promptChangeRole(m.id, 'admin')} title="Jadikan admin">⭐</Button>
 									{:else}
-										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => changeRole(m.id, 'member')} title="Turunkan jadi anggota">⬇</Button>
+										<Button variant="ghost" size="sm" class="mini-btn" onclick={() => promptChangeRole(m.id, 'member')} title="Turunkan jadi anggota">⬇</Button>
 									{/if}
-									<Button variant="danger" size="sm" class="mini-btn" onclick={() => kickMember(m.id)} title="Keluarkan">✕</Button>
+									<Button variant="danger" size="sm" class="mini-btn" onclick={() => promptKickMember(m.id)} title="Keluarkan">✕</Button>
 								</div>
 							{/if}
 						</div>
@@ -177,15 +244,25 @@
 			</div>
 			<div class="group-actions">
 				{#if myRole !== null}
-					<Button variant="outline" class="action-btn leave" onclick={leaveGroup}>Keluar Grup</Button>
+					<Button variant="outline" class="action-btn leave" onclick={promptLeaveGroup}>Keluar Grup</Button>
 				{/if}
 				{#if myRole === 'admin'}
-					<Button variant="danger" class="action-btn delete" onclick={deleteGroup}>Hapus Grup</Button>
+					<Button variant="danger" class="action-btn delete" onclick={promptDeleteGroup}>Hapus Grup</Button>
 				{/if}
 			</div>
 		</aside>
 	</div>
 </div>
+
+<ConfirmDialog
+	open={confirmModal.open}
+	title={confirmModal.title}
+	message={confirmModal.message}
+	confirmText={confirmModal.confirmText}
+	confirmVariant={confirmModal.variant}
+	onconfirm={confirmModal.action}
+	oncancel={() => confirmModal.open = false}
+/>
 
 <style>
 	.chat-page {

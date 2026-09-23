@@ -39,7 +39,14 @@
 
 	let sorting = $state<any[]>([]);
 	let globalFilter = $state('');
-	let pagination = $state({ pageIndex: 0, pageSize });
+	let desiredPageSize = $derived(pageSize ?? 10);
+	let pagination = $state({ pageIndex: 0, pageSize: 10 });
+
+	$effect(() => {
+		if (pagination.pageSize !== desiredPageSize) {
+			pagination.pageSize = desiredPageSize;
+		}
+	});
 
 	const features: TableFeatures = {
 		...stockFeatures
@@ -67,8 +74,10 @@
 		getSortedRowModel: createSortedRowModel(),
 		getFilteredRowModel: createFilteredRowModel(),
 		getPaginationRowModel: createPaginatedRowModel(),
-		initialState: {
-			pagination: { pageIndex: 0, pageSize }
+		get initialState() {
+			return {
+				pagination: { pageIndex: 0, pageSize }
+			};
 		}
 	});
 </script>

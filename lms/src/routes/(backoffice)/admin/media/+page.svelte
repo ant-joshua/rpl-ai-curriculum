@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Modal, Input, Alert, EmptyState, Skeleton, SearchInput, Select } from '$lib/components/ui';
+	import { Button, Badge, Modal, Input, Alert, EmptyState, Skeleton, SearchInput, Select, Pagination, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	interface MediaFile {
 		id: string;
@@ -29,8 +31,6 @@
 	let uploadError = $state('');
 	let uploadSuccess = $state('');
 	let showUploadModal = $state(false);
-	let deleteId = $state<string | null>(null);
-	let deleting = $state(false);
 	let previewFile = $state<MediaFile>(null!);
 	let showPreviewModal = $state(false);
 	let copiedId = $state<string>('');
@@ -43,6 +43,20 @@
 		{ value: 'video', label: 'Video' },
 		{ value: 'document', label: 'Dokumen' },
 	];
+
+	const deleteConfirm = useConfirmDialog<MediaFile>({
+		title: (f) => 'Hapus Media?',
+		message: (f) => `Hapus file "${f.original_name || f.filename}"? Tindakan ini tidak dapat dibatalkan.`,
+		confirmText: '🗑️ Hapus File',
+		variant: 'danger',
+		onConfirm: async (f) => {
+			const res = await api.delete(`/api/admin/media/${f.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus file');
+			files = files.filter(item => item.id !== f.id);
+			total = Math.max(0, total - 1);
+		},
+		successMessage: 'Media berhasil dihapus',
+	});
 
 	onMount(() => {
 		if (browser) loadFiles();
@@ -57,16 +71,15 @@
 			params.set('limit', String(limit));
 			if (searchQuery) params.set('search', searchQuery);
 			if (typeFilter) params.set('type', typeFilter);
-			const res = await fetch(`/api/admin/media?${params}`);
-			const json = await res.json();
-			if (json.success) {
-				files = json.data || [];
-				total = json.total || 0;
-				if (json.pagination) {
-					totalPages = json.pagination.totalPages || 1;
+			const res = await api.get<any>(`/api/admin/media?${params}`);
+			if (res.success) {
+				files = res.data?.data || res.data || [];
+				total = res.data?.total || res.total || 0;
+				if (res.data?.pagination || res.pagination) {
+					totalPages = (res.data?.pagination || res.pagination).totalPages || 1;
 				}
 			} else {
-				error = json.error || 'Gagal memuat media';
+				error = res.error || 'Gagal memuat media';
 			}
 		} catch {
 			error = 'Gagal terhubung ke server';
@@ -134,36 +147,18 @@
 			const json = await res.json();
 			if (json.success) {
 				uploadSuccess = `File "${fileList[0].name}" berhasil diupload`;
+				toast.success(uploadSuccess);
 				loadFiles();
 				input.value = '';
 			} else {
 				uploadError = json.error || 'Gagal upload';
+				toast.error(uploadError);
 			}
 		} catch {
 			uploadError = 'Gagal terhubung ke server';
+			toast.error(uploadError);
 		} finally {
 			uploading = false;
-		}
-	}
-
-	async function confirmDelete(id: string) {
-		if (!confirm('Hapus file ini? Tindakan tidak bisa dibatalkan.')) return;
-		deleting = true;
-		deleteId = id;
-		try {
-			const res = await fetch(`/api/admin/media/${id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (json.success) {
-				files = files.filter(f => f.id !== id);
-				total--;
-			} else {
-				alert(json.error || 'Gagal hapus');
-			}
-		} catch {
-			alert('Gagal terhubung ke server');
-		} finally {
-			deleting = false;
-			deleteId = null;
 		}
 	}
 
@@ -257,7 +252,7 @@
 						<Button size="sm" variant="ghost" onclick={() => copyUrl(getPreviewUrl(file), file.id)}>
 							{copiedId === file.id ? '✅' : '📋'}
 						</Button>
-						<Button size="sm" variant="danger" onclick={() => confirmDelete(file.id)} loading={deleting && deleteId === file.id}>
+						<Button size="sm" variant="danger" onclick={() => deleteConfirm.ask(file)}>
 							🗑️
 						</Button>
 					</div>
@@ -266,14 +261,12 @@
 		</div>
 
 		{#if totalPages > 1}
-			<div class="pagination">
-				<Button size="sm" onclick={prevPage} disabled={page <= 1}>{t('admin.prev')}</Button>
-				<span class="page-info">Halaman {page} dari {totalPages} ({total} total)</span>
-				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>{t('admin.next_page')}</Button>
-			</div>
+			<Pagination bind:page {totalPages} totalItems={total} pageSize={limit} onchange={loadFiles} />
 		{/if}
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 {#if showPreviewModal && previewFile}
 	<Modal

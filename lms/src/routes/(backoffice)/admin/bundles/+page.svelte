@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
-
-	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
-	function authHeaders() {
-		return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
-	}
+	import { Card, CardContent, Alert, Button, Input, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Skeleton, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let loading = $state(true);
 	let error = $state('');
@@ -14,6 +11,19 @@
 	let offerings = $state<any[]>([]);
 	let modal = $state<any>(null);
 	let saving = $state(false);
+
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (b) => 'Hapus Paket Kursus?',
+		message: (b) => `Hapus paket "${b.title}"? Kursus di dalamnya tidak akan terhapus.`,
+		confirmText: '🗑️ Hapus Paket',
+		variant: 'danger',
+		onConfirm: async (b) => {
+			const res = await api.delete(`/api/admin/bundles/${b.id}`);
+			if (!res.success) throw new Error(res.error || 'Gagal menghapus paket');
+			await loadBundles();
+		},
+		successMessage: 'Paket berhasil dihapus',
+	});
 
 	onMount(async () => {
 		if (!browser) return;
@@ -23,9 +33,8 @@
 	async function loadBundles() {
 		loading = true;
 		try {
-			const res = await fetch('/api/admin/bundles', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) bundles = json.data || [];
+			const res = await api.get<any[]>('/api/admin/bundles');
+			if (res.success) bundles = res.data || [];
 		} catch { /* ignore */ } finally {
 			loading = false;
 		}
@@ -33,48 +42,31 @@
 
 	async function loadOfferings() {
 		try {
-			const res = await fetch('/api/admin/offerings?limit=100', { headers: authHeaders() });
-			const json = await res.json();
-			if (json.success) offerings = json.data || [];
+			const res = await api.get<any[]>('/api/admin/offerings?limit=100');
+			if (res.success) offerings = res.data || [];
 		} catch { /* ignore */ }
 	}
 
 	async function save() {
-		if (!modal?.title || !modal?.offering_ids?.length) return;
+		if (!modal?.title || !modal?.slug) return;
 		saving = true;
 		try {
-			const res = await fetch('/api/admin/bundles', {
-				method: 'POST',
-				headers: authHeaders(),
-				body: JSON.stringify(modal),
-			});
-			if (res.ok) {
-				modal = null;
-				loadBundles();
-			} else {
-				const j = await res.json().catch(() => null);
-				error = j?.error || 'Gagal simpan';
-			}
-		} catch { /* ignore */ } finally {
+			const res = await api.post('/api/admin/bundles', modal);
+			if (!res.success) throw new Error(res.error || 'Gagal menyimpan paket');
+			modal = null;
+			toast.success('Paket kursus berhasil disimpan');
+			loadBundles();
+		} catch (e: any) {
+			error = e.message;
+			toast.error(e.message);
+		} finally {
 			saving = false;
 		}
 	}
 
 	async function toggle(b: any) {
 		try {
-			await fetch(`/api/admin/bundles/${b.id}`, {
-				method: 'PATCH',
-				headers: authHeaders(),
-				body: JSON.stringify({ is_active: b.is_active == 1 ? 0 : 1 }),
-			});
-			loadBundles();
-		} catch { /* ignore */ }
-	}
-
-	async function remove(b: any) {
-		if (!confirm(`Hapus paket "${b.title}"?`)) return;
-		try {
-			await fetch(`/api/admin/bundles/${b.id}`, { method: 'DELETE', headers: authHeaders() });
+			await api.patch(`/api/admin/bundles/${b.id}`, { is_active: b.is_active == 1 ? 0 : 1 });
 			loadBundles();
 		} catch { /* ignore */ }
 	}
@@ -135,7 +127,7 @@
 	{/if}
 
 	{#if loading}
-		<div class="loading"><Spinner /> Memuat...</div>
+		<Skeleton variant="table-row" count={5} />
 	{:else if bundles.length === 0}
 		<EmptyState title="Belum ada paket" description="Buat paket kursus pertama" />
 	{:else}
@@ -164,7 +156,7 @@
 								</TableCell>
 								<TableCell>
 									<Button variant="secondary" size="sm" onclick={() => toggle(b)}>{b.is_active == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
-									<Button variant="danger" size="sm" onclick={() => remove(b)}>Hapus</Button>
+									<Button variant="danger" size="sm" onclick={() => deleteConfirm.ask(b)}>Hapus</Button>
 								</TableCell>
 							</TableRow>
 						{/each}
@@ -174,6 +166,8 @@
 		</Card>
 	{/if}
 </div>
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.bundles-admin { max-width: 900px; margin: 0 auto; padding: 24px 16px; }

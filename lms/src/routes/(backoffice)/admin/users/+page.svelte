@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, Card, EmptyState, Input, Skeleton, Modal, PageHeader, SearchBar, SearchInput, Select, Table, Textarea } from '$lib/components/ui/index.js';
+	import { Badge, Button, Card, EmptyState, Input, Skeleton, Modal, PageHeader, SearchBar, SearchInput, Select, Table, Textarea, ConfirmDialog, toast } from '$lib/components/ui';
+	import { api } from '$lib/utils/api';
+	import { useConfirmDialog } from '$lib/composables';
 
 	let users: any[] = $state([]);
 	let loading = $state(true);
@@ -119,26 +121,22 @@
 		}
 	}
 
-	async function deleteUser() {
-		if (!editUser) return;
-		if (!confirm(`Hapus user "${editUser.username}"? Tindakan ini tidak bisa dibatalkan.`)) return;
-		saving = true;
-		saveError = '';
-		try {
-			const res = await fetch(`/api/admin/users/${editUser.id}`, { method: 'DELETE' });
-			const json = await res.json();
-			if (json.success) {
-				users = users.filter(u => u.id !== editUser.id);
+	const deleteConfirm = useConfirmDialog<any>({
+		title: (u) => 'Hapus User?',
+		message: (u) => `Hapus user "${u.username}"? Tindakan ini tidak bisa dibatalkan.`,
+		confirmText: '🗑️ Hapus User',
+		variant: 'danger',
+		onConfirm: async (u) => {
+			const res = await api.delete(`/api/admin/users/${u.id}`);
+			if (res.success) {
+				users = users.filter((x) => x.id !== u.id);
 				closeEdit();
+				toast.success('User berhasil dihapus');
 			} else {
-				saveError = json.error || 'Failed to delete';
+				throw new Error(res.error || 'Failed to delete user');
 			}
-		} catch {
-			saveError = 'Failed to delete';
-		} finally {
-			saving = false;
 		}
-	}
+	});
 
 	async function resetPassword(userId: string, username: string) {
 		const newPass = prompt(`Reset password untuk "${username}"\nMasukkan password baru (min 6 karakter):`);
@@ -342,7 +340,7 @@
 	{#snippet footer()}
 		<div class="modal-footer">
 			<div class="footer-left">
-				<Button variant="danger" onclick={deleteUser}>🗑️ Hapus User</Button>
+				<Button variant="danger" onclick={() => deleteConfirm.ask(editUser)}>🗑️ Hapus User</Button>
 			</div>
 			<div class="footer-right">
 				<Button onclick={closeEdit} variant="secondary">Batal</Button>
@@ -354,6 +352,8 @@
 	{/snippet}
 </Modal>
 {/if}
+
+<ConfirmDialog {...deleteConfirm.dialogProps} />
 
 <style>
 	.users-page { max-width: 1200px; }
