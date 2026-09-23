@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, DataTable } from '$lib/components/ui';
+	import { Button, Card, DataTable, Pagination } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -190,11 +190,13 @@
 		</Card>
 
 		{#if pagination.totalPages > 1}
-			<div class="pagination">
-				<Button disabled={pagination.page <= 1} onclick={() => { pagination.page--; loadQueue(); }}>←</Button>
-				<span class="page-info">{pagination.page}/{pagination.totalPages}</span>
-				<Button disabled={pagination.page >= pagination.totalPages} onclick={() => { pagination.page++; loadQueue(); }}>→</Button>
-			</div>
+			<Pagination
+				bind:page={pagination.page}
+				totalPages={pagination.totalPages}
+				totalItems={pagination.total}
+				pageSize={50}
+				onchange={() => loadQueue()}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -221,7 +223,4 @@
 	.error-msg { color: var(--danger); margin-bottom: 8px; }
 	.empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
 	.empty-state p { margin-bottom: 16px; }
-
-	.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 20px; }
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 </style>

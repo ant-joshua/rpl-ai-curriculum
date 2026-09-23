@@ -1,6 +1,6 @@
 <script lang="ts">
 	let {
-		checked = false,
+		checked = $bindable(false),
 		disabled = false,
 		label = '',
 		id,

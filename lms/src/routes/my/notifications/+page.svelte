@@ -4,7 +4,7 @@
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
-	import { Button } from '$lib/components/ui';
+	import { Button, Pagination } from '$lib/components/ui';
 
 	const TYPE_LABELS: Record<string, string> = {
 		assessment: 'Penilaian',
@@ -274,11 +274,13 @@
 
 		<!-- Pagination -->
 		{#if pagination.totalPages > 1}
-			<div class="pagination">
-				<Button variant="outline" disabled={pagination.page <= 1} onclick={() => changePage(-1)}>← Sebelumnya</Button>
-				<span class="page-info">Halaman {pagination.page} dari {pagination.totalPages}</span>
-				<Button variant="outline" disabled={pagination.page >= pagination.totalPages} onclick={() => changePage(1)}>Selanjutnya →</Button>
-			</div>
+			<Pagination
+				bind:page={pagination.page}
+				totalPages={pagination.totalPages}
+				totalItems={pagination.total}
+				pageSize={pagination.limit}
+				onchange={() => loadNotifications()}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -342,10 +344,6 @@
 	.notif-time { font-size: 11px; color: var(--muted); }
 	.notif-channel { font-size: 11px; color: var(--muted); }
 	.notif-actions { display: flex; gap: 4px; flex-shrink: 0; }
-
-	/* Pagination */
-	.pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 24px; }
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 
 	@media (max-width: 600px) {
 		.page { padding: 16px; }

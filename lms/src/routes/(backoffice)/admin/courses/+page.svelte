@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Badge, Card, CardContent, Modal, Input, Textarea, Alert, EmptyState, Skeleton, SearchInput, Select } from '$lib/components/ui';
+	import { t } from '$lib/stores/i18n';
+	import { Button, Badge, Card, CardContent, Modal, Input, Textarea, Alert, EmptyState, Skeleton, SearchInput, Select, Pagination, FilterBar, ConfirmDialog } from '$lib/components/ui';
 
 	interface Course {
 		id: string;
@@ -44,6 +45,7 @@
 
 	// Delete
 	let deletingId = $state<string | null>(null);
+	let courseToDelete = $state<Course | null>(null);
 
 	onMount(() => {
 		if (browser) loadCourses();
@@ -159,14 +161,14 @@
 		}
 	}
 
-	async function deleteCourse(course: Course) {
-		if (!confirm(`Hapus kursus "${course.title}"? Semua offering dan lesson terkait akan kehilangan referensi.`)) return;
-		deletingId = course.id;
+	async function confirmDeleteCourse() {
+		if (!courseToDelete) return;
+		deletingId = courseToDelete.id;
 		try {
-			const res = await fetch(`/api/admin/courses/${course.slug}`, { method: 'DELETE' });
+			const res = await fetch(`/api/admin/courses/${courseToDelete.slug}`, { method: 'DELETE' });
 			const json = await res.json();
 			if (json.success) {
-				courses = courses.filter(c => c.id !== course.id);
+				courses = courses.filter(c => c.id !== courseToDelete!.id);
 				total--;
 			} else {
 				alert(json.error || 'Gagal hapus');
@@ -175,6 +177,7 @@
 			alert('Gagal terhubung ke server');
 		} finally {
 			deletingId = null;
+			courseToDelete = null;
 		}
 	}
 
@@ -187,7 +190,6 @@
 			formSlug = generateSlug(formTitle);
 		}
 	}
-  import { t } from '$lib/stores/i18n';
 </script>
 
 <svelte:head>
@@ -203,9 +205,9 @@
 		<Button onclick={openCreate}>{t('admin.kursus_baru')}</Button>
 	</div>
 
-	<div class="filter-bar">
+	<FilterBar>
 		<SearchInput bind:value={searchQuery} placeholder="Cari kursus..." oninput={doSearch} />
-	</div>
+	</FilterBar>
 
 	{#if loading}
 		<Skeleton variant="card" count={3} />
@@ -241,18 +243,20 @@
 					<div class="course-actions">
 						<Button size="sm" variant="secondary" href="/admin/courses/{course.slug}">{t('admin.kelola')}</Button>
 						<Button size="sm" variant="ghost" onclick={() => openEdit(course)}>✏️</Button>
-						<Button size="sm" variant="danger" onclick={() => deleteCourse(course)} loading={deletingId === course.id}>🗑️</Button>
+						<Button size="sm" variant="danger" onclick={() => courseToDelete = course} loading={deletingId === course.id}>🗑️</Button>
 					</div>
 				</div>
 			{/each}
 		</div>
 
 		{#if totalPages > 1}
-			<div class="pagination">
-				<Button size="sm" onclick={prevPage} disabled={page <= 1}>{t('admin.prev')}</Button>
-				<span class="page-info">Hal {page}/{totalPages} ({total})</span>
-				<Button size="sm" onclick={nextPage} disabled={page >= totalPages}>{t('admin.next_page')}</Button>
-			</div>
+			<Pagination
+				bind:page={page}
+				totalPages={totalPages}
+				totalItems={total}
+				pageSize={limit}
+				onchange={loadCourses}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -284,6 +288,15 @@
 	</Modal>
 {/if}
 
+<ConfirmDialog
+	open={!!courseToDelete}
+	title="Hapus Kursus?"
+	message={`Hapus kursus "${courseToDelete?.title || ''}"? Semua offering dan lesson terkait akan kehilangan referensi.`}
+	confirmText="🗑️ Hapus"
+	onconfirm={confirmDeleteCourse}
+	oncancel={() => courseToDelete = null}
+/>
+
 <style>
 	.courses-page { max-width: 1100px; }
 	.page-header {
@@ -296,7 +309,6 @@
 	}
 	.page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
 	.page-desc { color: var(--text-secondary); font-size: 14px; margin: 0; }
-	.filter-bar { margin-bottom: 20px; }
 	.error-state { text-align: center; padding: 40px; color: var(--danger); }
 	.error-state p { margin-bottom: 12px; }
 
@@ -327,12 +339,4 @@
 	.course-slug { font-size: 12px; color: var(--text-muted); }
 	.course-desc { font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px; }
 	.course-actions { display: flex; gap: 4px; flex-shrink: 0; }
-	.pagination {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 16px;
-		margin-top: 24px;
-	}
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 </style>

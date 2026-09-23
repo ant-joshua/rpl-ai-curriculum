@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, Card, CardContent, DataTable, EmptyState, PageHeader, SearchBar, Select } from '$lib/components/ui';
+	import { Badge, Button, Card, CardContent, DataTable, EmptyState, PageHeader, SearchBar, Select, Pagination, FilterBar } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let enrollments: any[] = $state([]);
@@ -250,12 +250,10 @@
 	</PageHeader>
 
 	<!-- Filters -->
-	<div class="filters">
+	<FilterBar>
 		<SearchBar bind:value={searchQuery} placeholder="Cari nama/email siswa..." onSearch={doSearch} />
-		<div class="filter-selects">
-<Select bind:value={selectedOfferingId} onchange={() => { page = 1; loadData(); }} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
-		</div>
-	</div>
+		<Select bind:value={selectedOfferingId} onchange={() => { page = 1; loadData(); }} options={offerings.map((o) => ({ value: o.id, label: o.name }))} />
+	</FilterBar>
 
 	<!-- Table -->
 	{#if loading}
@@ -277,11 +275,13 @@
 
 		<!-- Pagination -->
 		{#if totalPages > 1}
-			<div class="pagination">
-				<Button variant="secondary" size="sm" disabled={page <= 1} onclick={() => changePage(-1)}>{t('admin.prev')}</Button>
-				<span class="page-info">Halaman {page} dari {totalPages}</span>
-				<Button variant="secondary" size="sm" disabled={page >= totalPages} onclick={() => changePage(1)}>{t('admin.berikutnya')}</Button>
-			</div>
+			<Pagination
+				bind:page={page}
+				totalPages={totalPages}
+				totalItems={totalEnrollments}
+				pageSize={limit}
+				onchange={() => loadData()}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -328,29 +328,9 @@
 	}
 	.header-actions { display: flex; gap: 8px; }
 
-	.filters {
-		display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;
-	}
-	.search-box {
-		display: flex; gap: 8px; flex: 1; min-width: 200px;
-	}
-	.search-input, .select-input {
-		padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
-		background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
-	}
-	.search-input { flex: 1; }
-	.search-input:focus, .select-input:focus { border-color: var(--accent); outline: none; }
-	.filter-selects { display: flex; gap: 8px; }
-
 	.table-wrapper {
 		overflow-x: auto; border: 1px solid var(--border); border-radius: 10px;
 	}
-
-	.pagination {
-		display: flex; justify-content: center; align-items: center;
-		gap: 16px; margin-top: 16px;
-	}
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 
 	.loading-state, .error-state, .empty-state {
 		padding: 40px 20px; text-align: center; color: var(--text-secondary); font-size: 14px;

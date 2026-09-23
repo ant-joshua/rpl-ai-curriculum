@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { Button, DataTable, Input, Select, Textarea } from '$lib/components/ui';
+	import { Button, DataTable, Input, Select, Textarea, Pagination, FilterBar } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Session = {
@@ -248,9 +248,9 @@
 	</div>
 
 	<!-- Filters -->
-	<div class="filters">
+	<FilterBar>
 		<div class="filter-group">
-<Select label={t('common.status')} bind:value={filterStatus} onchange={loadSessions} options={[{ value: "", label: t('common.all') }, { value: "active", label: t('common.active') }, { value: "closed", label: t('admin.selesai') }]} />
+			<Select label={t('common.status')} bind:value={filterStatus} onchange={loadSessions} options={[{ value: "", label: t('common.all') }, { value: "active", label: t('common.active') }, { value: "closed", label: t('admin.selesai') }]} />
 		</div>
 		<div class="filter-group">
 			<label for="filter-date">{t('admin.tanggal')}</label>
@@ -262,7 +262,7 @@
 				Filter
 			</Button>
 		</div>
-	</div>
+	</FilterBar>
 
 	{#if loading}
 		<div class="loading-state">
@@ -296,19 +296,13 @@
 
 		<!-- Pagination -->
 		{#if total > 20}
-			<div class="pagination">
-				<Button
-					class="btn-outline btn-sm"
-					disabled={currentPage <= 1}
-					onclick={() => { currentPage--; loadSessions(); }}
-				>{t('admin.prev')}</Button>
-				<span class="page-info">Halaman {currentPage} / {Math.ceil(total / 20)}</span>
-				<Button
-					class="btn-outline btn-sm"
-					disabled={currentPage * 20 >= total}
-					onclick={() => { currentPage++; loadSessions(); }}
-				>{t('admin.next_page')}</Button>
-			</div>
+			<Pagination
+				bind:page={currentPage}
+				totalPages={Math.ceil(total / 20)}
+				totalItems={total}
+				pageSize={20}
+				onchange={() => loadSessions()}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -417,7 +411,6 @@
 	}
 	.btn-outline:hover { border-color: var(--accent); background: var(--accent-dim); }
 
-	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
 	.filter-group { display: flex; flex-direction: column; gap: 4px; }
 	.filter-group label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
 	.filter-group select, .filter-group input {
@@ -457,12 +450,6 @@
 	.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
 	.btn-sm.btn-close { color: var(--danger); border-color: rgba(239,68,68,0.3); }
 	.btn-sm.btn-close:hover { background: rgba(239,68,68,0.1); border-color: var(--danger); }
-
-	.pagination {
-		display: flex; justify-content: center; align-items: center; gap: 12px;
-		margin-top: 16px;
-	}
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 
 	/* Modal */
 	.modal-overlay {

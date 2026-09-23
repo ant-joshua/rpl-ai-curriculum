@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton, EmptyState, Badge, DataTable, Button } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, DataTable, Button, Tabs } from '$lib/components/ui/index.js';
 	import { page } from '$app/stores';
 	import type { ColumnDef } from '@tanstack/svelte-table';
-import { t } from '$lib/stores/i18n';
+	import { t } from '$lib/stores/i18n';
 
 	type Session = {
 		id: string;
@@ -29,6 +29,11 @@ import { t } from '$lib/stores/i18n';
 	let sessions: Session[] = $state([]);
 	let progressNotes: ProgressNote[] = $state([]);
 	let activeTab = $state<string>('sessions');
+
+	const studentTabs = $derived([
+		{ id: 'sessions', label: `${t('tutor.riwayat_sesi')} (${sessions.length})` },
+		{ id: 'notes', label: `${t('tutor.catatan_progres')} (${progressNotes.length})` }
+	]);
 
 	const studentId = $derived($page.params.studentId);
 
@@ -135,14 +140,7 @@ import { t } from '$lib/stores/i18n';
 				</div>
 			</div>
 
-			<div class="tabs">
-				<Button variant={activeTab === 'sessions' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'sessions'}>
-					{t('tutor.riwayat_sesi')}
-				</Button>
-				<Button variant={activeTab === 'notes' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'notes'}>
-					{t('tutor.catatan_progres')}
-				</Button>
-			</div>
+			<Tabs items={studentTabs} bind:value={activeTab} />
 
 			{#if activeTab === 'sessions'}
 				{#if sessions.length === 0}
@@ -181,15 +179,6 @@ import { t } from '$lib/stores/i18n';
 	.student-info h1 { font-size: 24px; margin: 0 0 8px; }
 	.subtitle { font-size: 14px; color: var(--text-secondary); margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 	.sep { color: var(--text-quaternary); }
-
-	.tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-	.tab {
-		padding: 10px 20px; font-size: 14px; font-weight: 500; color: var(--text-secondary);
-		background: transparent; border: none; border-bottom: 2px solid transparent;
-		cursor: pointer; font-family: inherit; transition: all 0.15s;
-	}
-	.tab:hover { color: var(--text); }
-	.tab--active { color: var(--accent); border-bottom-color: var(--accent); }
 
 	.notes-list { display: flex; flex-direction: column; gap: 8px; }
 	.note-card {

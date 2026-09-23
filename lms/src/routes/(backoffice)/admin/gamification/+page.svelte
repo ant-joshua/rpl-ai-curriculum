@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
+	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Tabs } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -18,6 +18,15 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	// Tab
 	type AdminTab = 'leaderboard' | 'badges' | 'xp-rules' | 'levels' | 'settings' | 'quests' | 'boosts';
 	let activeTab = $state<AdminTab>('badges');
+	const adminTabs = [
+		{ id: 'badges', label: 'Badge', icon: '🎖️' },
+		{ id: 'xp-rules', label: 'Aturan XP', icon: '⚡' },
+		{ id: 'levels', label: 'Level', icon: '📊' },
+		{ id: 'leaderboard', label: 'Papan Skor', icon: '🏆' },
+		{ id: 'settings', label: 'Pengaturan', icon: '⚙️' },
+		{ id: 'quests', label: 'Quest Harian', icon: '📜' },
+		{ id: 'boosts', label: 'XP Boost', icon: '🚀' },
+	];
 
 	// Badges
 	let badges: any[] = $state([]);
@@ -492,29 +501,7 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 <div class="gamification-page">
 	<div class="header-row">
 		<h1>🏆 Gamification</h1>
-		<div class="tabs">
-			<Button variant="ghost" class="tab {activeTab === 'badges' ? 'tab--active' : ''}" onclick={() => activeTab = 'badges'}>
-				🎖️ Badge
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'xp-rules' ? 'tab--active' : ''}" onclick={() => activeTab = 'xp-rules'}>
-				⚡ Aturan XP
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'levels' ? 'tab--active' : ''}" onclick={() => activeTab = 'levels'}>
-				📊 Level
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'leaderboard' ? 'tab--active' : ''}" onclick={() => activeTab = 'leaderboard'}>
-				🏆 Papan Skor
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'settings' ? 'tab--active' : ''}" onclick={() => activeTab = 'settings'}>
-				⚙️ Pengaturan
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'quests' ? 'tab--active' : ''}" onclick={() => activeTab = 'quests'}>
-				📜 Quest Harian
-			</Button>
-			<Button variant="ghost" class="tab {activeTab === 'boosts' ? 'tab--active' : ''}" onclick={() => activeTab = 'boosts'}>
-				🚀 XP Boost
-			</Button>
-		</div>
+		<Tabs items={adminTabs} bind:value={activeTab} />
 	</div>
 
 	{#if error}
@@ -1026,31 +1013,6 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	h1 { font-size: 26px; font-weight: 700; margin-bottom: 0; }
 	.header-row { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
 	.loading { text-align: center; padding: 60px; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; gap: 8px; }
-
-	/* Tabs */
-	.tabs {
-		display: flex;
-		gap: 4px;
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 4px;
-		overflow-x: auto;
-	}
-	.tab {
-		padding: 8px 16px;
-		border: none;
-		background: transparent;
-		color: var(--text-secondary);
-		font-size: 13px;
-		font-weight: 500;
-		border-radius: 8px;
-		cursor: pointer;
-		white-space: nowrap;
-		transition: all 0.15s;
-	}
-	.tab:hover { background: var(--bg-secondary); color: var(--text); }
-	.tab--active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 
 	.section-header {
 		display: flex;

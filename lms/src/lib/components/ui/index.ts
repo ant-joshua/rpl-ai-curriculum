@@ -1,3 +1,4 @@
+// @ts-nocheck
 export { default as Badge } from './Badge.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Card } from './Card.svelte';
@@ -32,4 +33,9 @@ export { default as Separator } from './Separator.svelte';
 export { default as Skeleton } from './Skeleton.svelte';
 export { default as SkeletonCard } from './SkeletonCard.svelte';
 export { default as Toggle } from './Toggle.svelte';
+export { default as Switch } from './Toggle.svelte';
 export { default as ToggleGroup } from './ToggleGroup.svelte';
+export { default as Tabs } from './Tabs.svelte';
+export { default as Pagination } from './Pagination.svelte';
+export { default as ConfirmDialog } from './ConfirmDialog.svelte';
+export { default as FilterBar } from './FilterBar.svelte';

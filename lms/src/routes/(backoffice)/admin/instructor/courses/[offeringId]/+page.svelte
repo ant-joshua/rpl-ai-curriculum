@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Badge, Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Modal, Input, Textarea, EmptyState, Skeleton } from '$lib/components/ui';
+	import { Button, Badge, Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Modal, Input, Textarea, EmptyState, Skeleton, Tabs } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let course: any = $state(null);
@@ -13,6 +13,11 @@
 	let loading = $state(true);
 	let error = $state('');
 	let activeTab = $state<'overview' | 'assignments' | 'roster'>('overview');
+	const instructorTabs = [
+		{ id: 'overview', label: 'Overview', icon: '📋' },
+		{ id: 'assignments', label: 'Assignments & Grading', icon: '📝' },
+		{ id: 'roster', label: 'Roster', icon: '👥' }
+	];
 	let searchQuery = $state('');
 
 	// Grade modal
@@ -249,11 +254,7 @@
 		</div>
 
 		<!-- Tabs -->
-		<div class="tabs">
-			<Button variant={activeTab === 'overview' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'overview'}>📋 Overview</Button>
-			<Button variant={activeTab === 'assignments' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'assignments'}>📝 Assignments & Grading</Button>
-			<Button variant={activeTab === 'roster' ? 'primary' : 'ghost'} size="sm" onclick={() => activeTab = 'roster'}>👥 Roster</Button>
-		</div>
+		<Tabs items={instructorTabs} bind:value={activeTab} variant="underline" />
 
 		<!-- Tab: Overview -->
 		{#if activeTab === 'overview'}
@@ -511,31 +512,6 @@
 		flex-wrap: wrap;
 	}
 	.qs-item strong { font-size: 18px; color: var(--accent); margin-right: 4px; }
-
-	/* Tabs */
-	.tabs {
-		display: flex;
-		gap: 4px;
-		border-bottom: 1px solid var(--border);
-		margin-bottom: 20px;
-	}
-	.tab {
-		padding: 10px 18px;
-		background: none;
-		border: none;
-		border-bottom: 2px solid transparent;
-		color: var(--text-secondary);
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		font-family: inherit;
-		transition: color 0.15s, border-color 0.15s;
-	}
-	.tab:hover { color: var(--text); }
-	.tab--active {
-		color: var(--accent);
-		border-bottom-color: var(--accent);
-	}
 
 	.tab-content { min-height: 300px; }
 

@@ -3,7 +3,8 @@
 	import { onMount } from 'svelte';
 	import {
 		Button, Badge, Modal, Input, Textarea, Select, Alert, Skeleton, EmptyState,
-		DataTable, Table, TableHeader, TableHead, TableBody, TableRow, TableCell
+		DataTable, Table, TableHeader, TableHead, TableBody, TableRow, TableCell,
+		Pagination, ConfirmDialog, FilterBar
 	} from '$lib/components/ui';
 	import { PageHeader, SearchBar } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
@@ -418,17 +419,17 @@
 	{/if}
 
 	<!-- Filters -->
-	<div class="filter-bar">
-		<div class="filter-row">
-			<Select options={typeOptions} bind:value={filterType} />
-			<Select options={difficultyOptions} bind:value={filterDifficulty} />
-			<Select options={offeringFilterOptions} bind:value={filterOffering} />
-			<Select options={statusOptions} bind:value={filterStatus} />
-			<SearchBar bind:value={searchText} placeholder="Cari soal atau tag..." onSearch={applyFilters} />
-			<Button onclick={applyFilters}>{t('nav.search')}</Button>
-		</div>
-		<span class="filter-count">{total} soal</span>
-	</div>
+	<FilterBar>
+		<Select options={typeOptions} bind:value={filterType} />
+		<Select options={difficultyOptions} bind:value={filterDifficulty} />
+		<Select options={offeringFilterOptions} bind:value={filterOffering} />
+		<Select options={statusOptions} bind:value={filterStatus} />
+		<SearchBar bind:value={searchText} placeholder="Cari soal atau tag..." onSearch={applyFilters} />
+		<Button onclick={applyFilters}>{t('nav.search')}</Button>
+		{#snippet actions()}
+			<span class="filter-count">{total} soal</span>
+		{/snippet}
+	</FilterBar>
 
 	<!-- Table -->
 	{#if loading}
@@ -483,11 +484,13 @@
 
 		<!-- Pagination -->
 		{#if totalPages > 1}
-			<div class="pagination">
-				<Button variant="secondary" disabled={page <= 1} onclick={() => { page--; loadData(); }}>{t('admin.prev')}</Button>
-				<span class="page-info">Halaman {page} dari {totalPages} ({total} soal)</span>
-				<Button variant="secondary" disabled={page >= totalPages} onclick={() => { page++; loadData(); }}>{t('admin.next_page')}</Button>
-			</div>
+			<Pagination
+				bind:page={page}
+				totalPages={totalPages}
+				totalItems={total}
+				pageSize={limit}
+				onchange={() => loadData()}
+			/>
 		{/if}
 	{/if}
 </div>
@@ -592,16 +595,14 @@
 {/if}
 
 <!-- Delete Confirmation -->
-{#if deleteId}
-	<Modal open={!!deleteId} title="Hapus Soal?" onclose={() => deleteId = null}>
-		<p>Soal yang dihapus tidak dapat dikembalikan.</p>
-
-		{#snippet footer()}
-			<Button variant="secondary" onclick={() => deleteId = null}>{t('common.cancel')}</Button>
-			<Button variant="danger" onclick={doDelete}>🗑️ Hapus</Button>
-		{/snippet}
-	</Modal>
-{/if}
+<ConfirmDialog
+	open={!!deleteId}
+	title="Hapus Soal?"
+	message="Soal yang dihapus tidak dapat dikembalikan."
+	confirmText="🗑️ Hapus"
+	onconfirm={doDelete}
+	oncancel={() => deleteId = null}
+/>
 
 <style>
 	.page { max-width: 1100px; }
@@ -660,15 +661,6 @@
 	:global(.cell-points) { text-align: center; font-weight: 600; }
 	:global(.cell-date) { white-space: nowrap; font-size: 12px; color: var(--text-secondary); }
 	:global(.cell-actions) { white-space: nowrap; display: flex; gap: 4px; }
-
-	.pagination {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 16px;
-		margin-top: 20px;
-	}
-	.page-info { font-size: 13px; color: var(--text-secondary); }
 
 	.form-label {
 		font-size: 12px;

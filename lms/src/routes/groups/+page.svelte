@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { groupsStore } from '$lib/stores/groups.svelte';
 	import { user } from '$lib/stores/user.svelte';
-	import { Input, Textarea, Button } from '$lib/components/ui';
+	import { Input, Textarea, Button, ConfirmDialog } from '$lib/components/ui';
 
 	let showCreateForm = $state(false);
 	let newName = $state('');
@@ -11,6 +11,13 @@
 	let newDesc = $state('');
 	let creating = $state(false);
 	let createError = $state('');
+	let confirmAction = $state<{
+		type: 'leave' | 'delete';
+		groupId: string;
+		title: string;
+		message: string;
+		confirmText: string;
+	} | null>(null);
 
 	function isMember(group: any): boolean {
 		return group.is_member > 0;
@@ -40,26 +47,27 @@
 		await groupsStore.joinGroup(groupId);
 	}
 
-	async function handleLeave(groupId: string) {
-		if (!confirm('Keluar dari grup ini?')) return;
-		const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
-		const json = await res.json();
-		if (json.success) {
-			await groupsStore.loadGroups();
-		} else {
-			alert(json.error || 'Gagal keluar grup');
+	async function executeConfirmAction() {
+		if (!confirmAction) return;
+		const { type, groupId } = confirmAction;
+		if (type === 'leave') {
+			const res = await fetch(`/api/groups/${groupId}/join`, { method: 'DELETE' });
+			const json = await res.json();
+			if (json.success) {
+				await groupsStore.loadGroups();
+			} else {
+				alert(json.error || 'Gagal keluar grup');
+			}
+		} else if (type === 'delete') {
+			const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
+			const json = await res.json();
+			if (json.success) {
+				await groupsStore.loadGroups();
+			} else {
+				alert(json.error || 'Gagal menghapus grup');
+			}
 		}
-	}
-
-	async function handleDelete(groupId: string) {
-		if (!confirm('Hapus grup ini? Semua pesan dan anggota akan hilang.')) return;
-		const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
-		const json = await res.json();
-		if (json.success) {
-			await groupsStore.loadGroups();
-		} else {
-			alert(json.error || 'Gagal menghapus grup');
-		}
+		confirmAction = null;
 	}
 </script>
 
@@ -105,9 +113,25 @@
 					{#if user.isLoggedIn}
 						{#if isMember(group)}
 							<a href="/groups/{group.id}" class="enter-btn">Masuk</a>
-							<Button variant="outline" size="sm" onclick={() => handleLeave(group.id)}>Keluar</Button>
+							<Button variant="outline" size="sm" onclick={() => {
+								confirmAction = {
+									type: 'leave',
+									groupId: group.id,
+									title: 'Keluar Grup',
+									message: 'Apakah Anda yakin ingin keluar dari grup ini?',
+									confirmText: 'Keluar'
+								};
+							}}>Keluar</Button>
 							{#if group.is_admin === 1 || group.created_by === user.userId}
-								<Button variant="danger" size="sm" onclick={() => handleDelete(group.id)}>🗑</Button>
+								<Button variant="danger" size="sm" onclick={() => {
+									confirmAction = {
+										type: 'delete',
+										groupId: group.id,
+										title: 'Hapus Grup',
+										message: 'Hapus grup ini? Semua pesan dan anggota akan hilang.',
+										confirmText: '🗑️ Hapus'
+									};
+								}}>🗑</Button>
 							{/if}
 						{:else}
 							<Button variant="primary" size="sm" onclick={() => handleJoin(group.id)}>Gabung</Button>
@@ -122,6 +146,16 @@
 		{/each}
 	</div>
 </div>
+
+<ConfirmDialog
+	open={!!confirmAction}
+	title={confirmAction?.title || 'Konfirmasi'}
+	message={confirmAction?.message || ''}
+	confirmText={confirmAction?.confirmText || 'Konfirmasi'}
+	variant={confirmAction?.type === 'delete' ? 'danger' : 'primary'}
+	onconfirm={executeConfirmAction}
+	oncancel={() => confirmAction = null}
+/>
 
 <style>
 	.groups-page {
