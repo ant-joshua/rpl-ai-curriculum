@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Badge, Button, Card, CardContent, EmptyState, Input, PageHeader, Select, StatCard, TableHeader, Textarea } from '$lib/components/ui';
+	import { Badge, Button, Card, CardContent, EmptyState, Input, PageHeader, Select, StatCard, Table, TableHeader, TableHead, TableBody, TableRow, TableCell, Textarea } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -287,28 +287,28 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 		<EmptyState icon="📝" title="Belum ada tugas" description="Klik &quot;Buat Tugas&quot; untuk membuat baru." />
 	{:else}
 		<div class="table-wrapper">
-			<table class="assign-table">
-				<thead>
-					<tr>
-						<th>{t('admin.judul')}</th>
-						<th>{t('admin.kursus')}</th>
-						<th>{t('admin.tipe')}</th>
-						<th>{t('admin.nilai')}</th>
-						<th>Tenggat</th>
-						<th>{t('common.status')}</th>
-						<th>{t('common.action')}</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table class="assign-table">
+				<TableHeader>
+					<TableRow>
+						<TableHead>{t('admin.judul')}</TableHead>
+						<TableHead>{t('admin.kursus')}</TableHead>
+						<TableHead>{t('admin.tipe')}</TableHead>
+						<TableHead>{t('admin.nilai')}</TableHead>
+						<TableHead>Tenggat</TableHead>
+						<TableHead>{t('common.status')}</TableHead>
+						<TableHead>{t('common.action')}</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{#each assignments as a}
-						<tr>
-							<td class="title-cell">{a.title || '-'}</td>
-							<td class="offering-cell">{offeringName(a.course_offering_id)}</td>
-							<td><Badge>{typeLabel[a.submission_type] || a.submission_type}</Badge></td>
-							<td class="center-cell">{a.max_score || '-'}</td>
-							<td class="date-cell">{formatDate(a.due_date)}</td>
-							<td><Badge variant={statusVariant[a.status] || 'default'}>{a.status}</Badge></td>
-							<td class="actions-cell">
+						<TableRow>
+							<TableCell class="title-cell">{a.title || '-'}</TableCell>
+							<TableCell class="offering-cell">{offeringName(a.course_offering_id)}</TableCell>
+							<TableCell><Badge>{typeLabel[a.submission_type] || a.submission_type}</Badge></TableCell>
+							<TableCell class="center-cell">{a.max_score || '-'}</TableCell>
+							<TableCell class="date-cell">{formatDate(a.due_date)}</TableCell>
+							<TableCell><Badge variant={statusVariant[a.status] || 'default'}>{a.status}</Badge></TableCell>
+							<TableCell class="actions-cell">
 								<Button variant="ghost" size="sm" onclick={() => loadSubmissions(a.id)}>
 									📥 ({a.submission_count ?? '-'})
 								</Button>
@@ -321,11 +321,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 								{:else}
 									<Button variant="ghost" size="sm" onclick={() => confirmDelete = a.id}>🗑️</Button>
 								{/if}
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 						{#if showSubmissions === a.id}
-							<tr class="submissions-row">
-								<td colspan="7">
+							<TableRow class="submissions-row">
+								<TableCell colspan={7}>
 									<div class="submissions-panel">
 										<h4>{t('admin.submissions')}</h4>
 										{#if submissionsLoading}
@@ -333,34 +333,42 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 										{:else if submissions.length === 0}
 											<p class="empty-sub">{t('admin.belum_ada_submission')}</p>
 										{:else}
-											<table class="sub-table">
-												<thead><tr><th>{t('admin.siswa')}</th><th>{t('common.status')}</th><th>{t('admin.nilai_soal')}</th><th>Dikirim</th><th>{t('admin.aksi')}</th></tr></thead>
-												<tbody>
+											<Table class="sub-table">
+												<TableHeader>
+													<TableRow>
+														<TableHead>{t('admin.siswa')}</TableHead>
+														<TableHead>{t('common.status')}</TableHead>
+														<TableHead>{t('admin.nilai_soal')}</TableHead>
+														<TableHead>Dikirim</TableHead>
+														<TableHead>{t('admin.aksi')}</TableHead>
+													</TableRow>
+												</TableHeader>
+												<TableBody>
 													{#each submissions as s}
-														<tr>
-															<td>{s.user_name || s.user_id}</td>
-															<td><Badge variant={s.status === 'graded' ? 'success' : 'warning'}>{s.status}</Badge></td>
-															<td>{s.score !== null ? `${s.score}/${a.max_score}` : '-'}</td>
-															<td class="date-cell">{formatDate(s.submitted_at)}</td>
-															<td>
+														<TableRow>
+															<TableCell>{s.user_name || s.user_id}</TableCell>
+															<TableCell><Badge variant={s.status === 'graded' ? 'success' : 'warning'}>{s.status}</Badge></TableCell>
+															<TableCell>{s.score !== null ? `${s.score}/${a.max_score}` : '-'}</TableCell>
+															<TableCell class="date-cell">{formatDate(s.submitted_at)}</TableCell>
+															<TableCell>
 																{#if s.status !== 'graded'}
 																	<Button size="sm" onclick={() => { gradeId = s.id; gradeScore = 0; gradeFeedback = ''; }}>{t('admin.nilai_soal')}</Button>
 																{:else}
 																	<Button size="sm" variant="ghost" onclick={() => { gradeId = s.id; gradeScore = s.score; gradeFeedback = s.feedback || ''; }}>{t('common.edit')}</Button>
 																{/if}
-															</td>
-														</tr>
+															</TableCell>
+														</TableRow>
 													{/each}
-												</tbody>
-											</table>
+												</TableBody>
+											</Table>
 										{/if}
 									</div>
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						{/if}
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 	{/if}
 </div>
@@ -490,24 +498,16 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 	.select-input, .input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; width: 100%; box-sizing: border-box; }
 	.select-input:focus, .input:focus { border-color: var(--accent); outline: none; }
 
-	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
-	.assign-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-	.assign-table th { padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface); border-bottom: 1px solid var(--border); }
-	.assign-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-	.assign-table tr:last-child td { border-bottom: none; }
-	.assign-table tr:hover { background: rgba(0,0,0,0.02); }
-	.title-cell { font-weight: 500; }
-	.offering-cell { color: var(--text-secondary); font-size: 13px; }
-	.date-cell { color: var(--text-secondary); font-size: 13px; }
-	.center-cell { text-align: center; }
-	.actions-cell { white-space: nowrap; display: flex; gap: 4px; align-items: center; }
+	.table-wrapper { overflow-x: auto; }
+	:global(.title-cell) { font-weight: 500; }
+	:global(.offering-cell) { color: var(--text-secondary); font-size: 13px; }
+	:global(.date-cell) { color: var(--text-secondary); font-size: 13px; }
+	:global(.center-cell) { text-align: center; }
+	:global(.actions-cell) { white-space: nowrap; display: flex; gap: 4px; align-items: center; }
 	.confirm-group { display: flex; gap: 4px; align-items: center; }
 
-	.submissions-row td { background: rgba(0,0,0,0.02); padding: 12px 16px; }
+	:global(.submissions-row td) { background: rgba(0,0,0,0.02); padding: 12px 16px; }
 	.submissions-panel h4 { margin: 0 0 8px; font-size: 14px; }
-	.sub-table { width: 100%; font-size: 13px; border-collapse: collapse; }
-	.sub-table th { padding: 6px 10px; text-align: left; font-size: 11px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-	.sub-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
 	.loading-sub, .empty-sub { padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px; }
 
 	.loading-state, .error-state, .empty-state { padding: 40px 20px; text-align: center; color: var(--text-secondary); font-size: 14px; }

@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, EmptyState, Input, PageHeader, SearchBar, Textarea } from '$lib/components/ui';
+	import { Button, EmptyState, Input, PageHeader, SearchBar, Textarea, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -252,31 +252,31 @@
 									<div class="empty-state">Tidak ada mahasiswa yang cocok</div>
 								{:else}
 									<div class="table-wrapper">
-										<table class="submissions-table">
-											<thead>
-												<tr>
-													<th>{t('kaprodi.col_student')}</th>
-													<th>{t('common.status')}</th>
-													<th>Submission</th>
-													<th>Score</th>
-													<th>Submitted</th>
-													<th>{t('reviews.feedback_label')}</th>
-													<th>{t('common.action')}</th>
-												</tr>
-											</thead>
-											<tbody>
+										<Table class="submissions-table">
+											<TableHeader>
+												<TableRow>
+													<TableHead>{t('kaprodi.col_student')}</TableHead>
+													<TableHead>{t('common.status')}</TableHead>
+													<TableHead>Submission</TableHead>
+													<TableHead>Score</TableHead>
+													<TableHead>Submitted</TableHead>
+													<TableHead>{t('reviews.feedback_label')}</TableHead>
+													<TableHead>{t('common.action')}</TableHead>
+												</TableRow>
+											</TableHeader>
+											<TableBody>
 												{#each filtered as sub}
-													<tr class:row--late={isLate(sub, a.due_date)}>
-														<td class="student-cell">
+													<TableRow class={isLate(sub, a.due_date) ? 'row--late' : ''}>
+														<TableCell class="student-cell">
 															<span class="student-name">{sub.user_name || '-'}</span>
-														</td>
-														<td>
+														</TableCell>
+														<TableCell>
 															<span class="status-badge {statusBadge(sub.status)}">{statusLabel(sub.status)}</span>
 															{#if isLate(sub, a.due_date)}
 																<span class="late-badge">{t('admin.terlambat')}</span>
 															{/if}
-														</td>
-														<td>
+														</TableCell>
+														<TableCell>
 															{#if sub.file_urls}
 																<span class="submission-info">{fileCount(sub.file_urls)} file(s)</span>
 															{:else if sub.submission_text}
@@ -284,25 +284,25 @@
 															{:else}
 																<span class="submission-info">-</span>
 															{/if}
-														</td>
-														<td class="score-cell">
+														</TableCell>
+														<TableCell class="score-cell">
 															{#if sub.score != null}
 																<span class="score-value">{sub.score}</span>
 																<span class="score-max">/ {sub.max_score}</span>
 															{:else}
 																<span class="score-na">-</span>
 															{/if}
-														</td>
-														<td class="date-cell">{formatDate(sub.submitted_at)}</td>
-														<td class="feedback-preview">{sub.feedback ? sub.feedback.slice(0, 40) + (sub.feedback.length > 40 ? '…' : '') : '-'}</td>
-														<td class="actions-cell">
+														</TableCell>
+														<TableCell class="date-cell">{formatDate(sub.submitted_at)}</TableCell>
+														<TableCell class="feedback-preview">{sub.feedback ? sub.feedback.slice(0, 40) + (sub.feedback.length > 40 ? '…' : '') : '-'}</TableCell>
+														<TableCell class="actions-cell">
 															<Button class="btn btn--grade" onclick={() => openGradeModal(sub, a.max_score)}>
 																{sub.score != null ? 'Edit' : 'Nilai'}
 															</Button>
 															{#if sub.status === 'graded'}
 																<Button class="btn btn--return" onclick={() => markAsReturned(sub)}>
-																										↩
-																									</Button>
+																	↩
+																</Button>
 															{/if}
 															{#if sub.file_urls || sub.submission_text}
 																<Button
@@ -312,11 +312,11 @@
 																	👁
 																</Button>
 															{/if}
-														</td>
-													</tr>
+														</TableCell>
+													</TableRow>
 												{/each}
-											</tbody>
-										</table>
+											</TableBody>
+										</Table>
 									</div>
 								{/if}
 							</div>

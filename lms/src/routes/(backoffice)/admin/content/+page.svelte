@@ -312,23 +312,23 @@
 					</summary>
 					<div class="module-sessions">
 						<p class="mod-desc">{mod.description}</p>
-						<table class="session-table">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th>{t('module.sessions')}</th>
-									<th>Content Block</th>
-									<th>{t('common.status')}</th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table class="session-table">
+							<TableHeader>
+								<TableRow>
+									<TableHead>#</TableHead>
+									<TableHead>{t('module.sessions')}</TableHead>
+									<TableHead>Content Block</TableHead>
+									<TableHead>{t('common.status')}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each mod.sessions as sess, i}
 									{@const cbId = `cb-${sess.id}`}
 									{@const cb = data.contentBlocks.find(c => c.id === cbId)}
-									<tr>
-										<td>{i + 1}</td>
-										<td>{sess.title}<br><code class="sess-id">{sess.id}</code></td>
-										<td>
+									<TableRow>
+										<TableCell>{i + 1}</TableCell>
+										<TableCell>{sess.title}<br><code class="sess-id">{sess.id}</code></TableCell>
+										<TableCell>
 											{#if cb}
 												<span class="cb-link">{cb.id}</span>
 												{#if cb.lesson_id}
@@ -339,16 +339,16 @@
 											{:else}
 												<span class="no-cb">—</span>
 											{/if}
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											{#if cb}
 												<Badge variant={cb.visibility === 'published' ? 'success' : cb.visibility === 'draft' ? 'warning' : 'default'}>{cb.visibility}</Badge>
 											{/if}
-										</td>
-									</tr>
+										</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</div>
 				</details>
 			{/each}

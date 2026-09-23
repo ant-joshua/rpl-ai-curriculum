@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Spinner, EmptyState } from '$lib/components/ui';
+	import { Card, CardContent, Alert, Button, Input, Modal, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
 	function authHeaders() {
@@ -141,35 +141,35 @@
 	{:else}
 		<Card>
 			<CardContent>
-				<table class="bundle-table">
-					<thead>
-						<tr>
-							<th>Judul</th>
-							<th>Kursus</th>
-							<th>Harga</th>
-							<th>Status</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Judul</TableHead>
+							<TableHead>Kursus</TableHead>
+							<TableHead>Harga</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Aksi</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each bundles as b}
-							<tr>
-								<td><strong>{b.cover_icon || '📦'} {b.title}</strong></td>
-								<td>{b.item_count} kursus</td>
-								<td>Rp {Number(b.price || 0).toLocaleString('id-ID')}</td>
-								<td>
+							<TableRow>
+								<TableCell><strong>{b.cover_icon || '📦'} {b.title}</strong></TableCell>
+								<TableCell>{b.item_count} kursus</TableCell>
+								<TableCell>Rp {Number(b.price || 0).toLocaleString('id-ID')}</TableCell>
+								<TableCell>
 									<span class:st-active={b.is_active == 1} class:st-inactive={b.is_active == 0}>
 										{b.is_active == 1 ? 'Aktif' : 'Nonaktif'}
 									</span>
-								</td>
-								<td>
+								</TableCell>
+								<TableCell>
 									<Button variant="secondary" size="sm" onclick={() => toggle(b)}>{b.is_active == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
 									<Button variant="danger" size="sm" onclick={() => remove(b)}>Hapus</Button>
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						{/each}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</CardContent>
 		</Card>
 	{/if}
@@ -183,8 +183,6 @@
 	.modal-form { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; max-height: 70vh; overflow-y: auto; }
 	.modal-form label { font-size: 13px; font-weight: 600; margin-top: 6px; }
 	.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-	.bundle-table { width: 100%; border-collapse: collapse; }
-	.bundle-table th, .bundle-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
 	.st-active { color: var(--success); font-weight: 600; }
 	.st-inactive { color: var(--danger); font-weight: 600; }
 	.offering-picker { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }

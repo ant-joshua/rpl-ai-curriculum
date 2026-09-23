@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState } from '$lib/components/ui';
+	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
 	function authHeaders() {
@@ -139,37 +139,37 @@
 	{:else}
 		<Card>
 			<CardContent>
-				<table class="coupon-table">
-					<thead>
-						<tr>
-							<th>Kode</th>
-							<th>Diskon</th>
-							<th>Target</th>
-							<th>Pemakaian</th>
-							<th>Status</th>
-							<th>Aksi</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Kode</TableHead>
+							<TableHead>Diskon</TableHead>
+							<TableHead>Target</TableHead>
+							<TableHead>Pemakaian</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Aksi</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each coupons as c}
-							<tr>
-								<td><strong>{c.code}</strong>{#if c.title}<div class="sub">{c.title}</div>{/if}</td>
-								<td>{c.discount_type === 'percent' ? `${c.discount_value}%` : `Rp ${Number(c.discount_value).toLocaleString('id-ID')}`}</td>
-								<td>{c.bundle_title || 'Semua'}</td>
-								<td>{c.redemption_count}/{c.max_uses > 0 ? c.max_uses : '∞'}</td>
-								<td>
+							<TableRow>
+								<TableCell><strong>{c.code}</strong>{#if c.title}<div class="sub">{c.title}</div>{/if}</TableCell>
+								<TableCell>{c.discount_type === 'percent' ? `${c.discount_value}%` : `Rp ${Number(c.discount_value).toLocaleString('id-ID')}`}</TableCell>
+								<TableCell>{c.bundle_title || 'Semua'}</TableCell>
+								<TableCell>{c.redemption_count}/{c.max_uses > 0 ? c.max_uses : '∞'}</TableCell>
+								<TableCell>
 									<span class:st-active={c.is_active == 1 && !isExpired(c)} class:st-inactive={c.is_active == 0 || isExpired(c)}>
 										{c.is_active == 0 ? 'Nonaktif' : isExpired(c) ? 'Kedaluwarsa' : 'Aktif'}
 									</span>
-								</td>
-								<td>
+								</TableCell>
+								<TableCell>
 									<Button variant="secondary" size="sm" onclick={() => toggle(c)}>{c.is_active == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
 									<Button variant="danger" size="sm" onclick={() => remove(c)}>Hapus</Button>
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						{/each}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</CardContent>
 		</Card>
 	{/if}
@@ -183,8 +183,6 @@
 	.modal-form { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; max-height: 70vh; overflow-y: auto; }
 	.modal-form label { font-size: 13px; font-weight: 600; margin-top: 6px; }
 	.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-	.coupon-table { width: 100%; border-collapse: collapse; }
-	.coupon-table th, .coupon-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
 	.sub { font-size: 11px; color: var(--text-muted); }
 	.st-active { color: var(--success); font-weight: 600; }
 	.st-inactive { color: var(--danger); font-weight: 600; }

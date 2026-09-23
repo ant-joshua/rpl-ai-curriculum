@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Skeleton, EmptyState, Select } from '$lib/components/ui/index.js';
+	import { Button, Skeleton, EmptyState, Select, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -211,56 +211,56 @@
 			<EmptyState icon="👨‍🎓" message={t('nilai.belum_ada_siswa')} />
 		{:else}
 			<div class="table-wrapper">
-				<table class="skill-table">
-					<thead>
-						<tr>
-							<th class="sticky-col name-col">{t('rapor.siswa')}</th>
+				<Table class="skill-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="sticky-col name-col">{t('rapor.siswa')}</TableHead>
 							{#each visibleKds as kd}
-								<th class="kd-col">{kd.code || `KD ${kd.no}`}</th>
+								<TableHead class="kd-col">{kd.code || `KD ${kd.no}`}</TableHead>
 							{/each}
-							<th class="avg-col">{t('dosen.average_label')}</th>
-						</tr>
-					</thead>
-					<tbody>
+							<TableHead class="avg-col">{t('dosen.average_label')}</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each students as student}
 							{@const sid = student.id || student.user_id}
-							<tr>
-								<td class="sticky-col name-col">
+							<TableRow>
+								<TableCell class="sticky-col name-col">
 									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
-								</td>
+								</TableCell>
 								{#each visibleKds as kd}
 									{@const val = getScore(sid, kd.id)}
-									<td class="score-cell">
+									<TableCell class="score-cell">
 										<input type="number" step="0.5" min="0" max="100"
 											class="score-input" class:score-input--filled={val !== null}
 											value={val ?? ''}
 											oninput={(e) => setScore(sid, kd.id, (e.target as HTMLInputElement).value)}
 											placeholder="-"
 										/>
-									</td>
+									</TableCell>
 								{/each}
-								<td class="avg-cell">
+								<TableCell class="avg-cell">
 									{#if studentAvg(sid) !== null}
 										{studentAvg(sid)?.toFixed(1)}
 									{:else}
 										<span class="avg-na">-</span>
 									{/if}
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						{/each}
-					</tbody>
+					</TableBody>
 					<tfoot>
-						<tr>
-							<td class="sticky-col name-col">Rata-rata Kelas</td>
+						<TableRow>
+							<TableCell class="sticky-col name-col">Rata-rata Kelas</TableCell>
 							{#each visibleKds as kd}
-								<td class="avg-cell">
+								<TableCell class="avg-cell">
 									{#if calcKdAvg(kd.id) !== null}{calcKdAvg(kd.id)?.toFixed(1)}{:else}<span class="avg-na">-</span>{/if}
-								</td>
+								</TableCell>
 							{/each}
-							<td class="avg-cell">-</td>
-						</tr>
+							<TableCell class="avg-cell">-</TableCell>
+						</TableRow>
 					</tfoot>
-				</table>
+				</Table>
 			</div>
 		{/if}
 	{/if}
@@ -292,19 +292,19 @@
 	.kd-chip--active { background: var(--accent); color: white; border-color: var(--accent); }
 
 	.table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-	.skill-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-	.skill-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.skill-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-	.sticky-col { position: sticky; left: 0; background: var(--surface); z-index: 2; }
-	.name-col { min-width: 160px; }
+	:global(.skill-table) { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
+	:global(.skill-table th) { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
+	:global(.skill-table td) { padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+	:global(.sticky-col) { position: sticky; left: 0; background: var(--surface); z-index: 2; }
+	:global(.name-col) { min-width: 160px; }
 	.student-name { font-weight: 600; font-size: 13px; }
-	.kd-col { min-width: 90px; text-align: center; }
-	.score-cell { text-align: center; }
+	:global(.kd-col) { min-width: 90px; text-align: center; }
+	:global(.score-cell) { text-align: center; }
 	.score-input { width: 56px; padding: 6px 4px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--text); font-size: 13px; font-weight: 500; text-align: center; font-family: inherit; outline: none; transition: all 0.1s; }
 	.score-input:hover { border-color: var(--border); background: var(--bg-secondary); }
 	.score-input:focus { border-color: var(--accent); background: var(--bg-secondary); }
 	.score-input--filled { border-color: rgba(0,0,0,0.08); }
-	.avg-cell { text-align: center; font-weight: 600; font-size: 13px; }
+	:global(.avg-cell) { text-align: center; font-weight: 600; font-size: 13px; }
 	.avg-na { color: var(--text-quaternary); }
-	tfoot td { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
+	:global(tfoot td) { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
 </style>

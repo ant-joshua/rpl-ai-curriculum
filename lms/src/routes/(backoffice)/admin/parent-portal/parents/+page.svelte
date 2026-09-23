@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-import { Button, DataTable, Input, Select } from '$lib/components/ui';
+import { Button, DataTable, Input, Select, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Parent = {
@@ -200,36 +200,36 @@ const parentColumns: ColumnDef<any, any>[] = [
 		</div>
 	{:else}
 		<div class="pp-table-wrap">
-			<table class="pp-table">
-				<thead>
-					<tr>
-						<th>{t('common.name')}</th>
-						<th>Hubungan</th>
-						<th>Kontak</th>
-						<th>Primer</th>
-						<th>Tautan Siswa</th>
-						<th>{t('admin.dibuat')}</th>
-						<th>{t('common.action')}</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table class="pp-table">
+				<TableHeader>
+					<TableRow>
+						<TableHead>{t('common.name')}</TableHead>
+						<TableHead>Hubungan</TableHead>
+						<TableHead>Kontak</TableHead>
+						<TableHead>Primer</TableHead>
+						<TableHead>Tautan Siswa</TableHead>
+						<TableHead>{t('admin.dibuat')}</TableHead>
+						<TableHead>{t('common.action')}</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{#each parents as p}
-						<tr>
-							<td class="pp-name-cell">
+						<TableRow>
+							<TableCell class="pp-name-cell">
 								<a href="/admin/parent-portal/parents/{p.id}" class="pp-link">{p.name}</a>
-							</td>
-							<td>{relationshipLabel[p.relationship] || p.relationship}</td>
-							<td class="pp-mono">{p.phone || p.email || '-'}</td>
-							<td>{p.isPrimary === 1 ? 'Ya' : '-'}</td>
-							<td>{p.linkedStudents} siswa</td>
-							<td>{formatDate(p.createdAt)}</td>
-							<td>
+							</TableCell>
+							<TableCell>{relationshipLabel[p.relationship] || p.relationship}</TableCell>
+							<TableCell class="pp-mono">{p.phone || p.email || '-'}</TableCell>
+							<TableCell>{p.isPrimary === 1 ? 'Ya' : '-'}</TableCell>
+							<TableCell>{p.linkedStudents} siswa</TableCell>
+							<TableCell>{formatDate(p.createdAt)}</TableCell>
+							<TableCell>
 								<Button variant="ghost" size="sm" class="pp-btn pp-pp-" onclick={() => openEdit(p)}>{t('common.edit')}</Button>
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 	{/if}
 </div>
@@ -298,14 +298,10 @@ const parentColumns: ColumnDef<any, any>[] = [
 	.pp-error { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; color: var(--danger); text-align: center; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; }
 
 	.pp-table-wrap { background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; overflow: hidden; }
-	.pp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	.pp-table th { text-align: left; padding: 10px 20px; font-size: 11px; font-weight: 600; color: var(--text-secondary, var(--text-secondary)); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); white-space: nowrap; }
-	.pp-table td { padding: 12px 20px; color: var(--text-primary, var(--border)); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04)); }
-	.pp-table tbody tr:hover { background: rgba(0,0,0,0.02); }
-	.pp-name-cell { font-weight: 500; }
+	:global(.pp-name-cell) { font-weight: 500; }
 	.pp-link { color: var(--accent, var(--accent)); text-decoration: none; }
 	.pp-link:hover { text-decoration: underline; }
-	.pp-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+	:global(.pp-mono) { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
 
 	.pp-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 60px 20px; color: var(--text-secondary, var(--text-secondary)); background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; }
 

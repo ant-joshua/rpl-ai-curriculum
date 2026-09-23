@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState } from '$lib/components/ui';
-	import { DataTable } from '$lib/components/ui';
-	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { Card, CardContent, Alert, Button, Input, Modal, Select, Spinner, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	const token = $derived(browser ? localStorage.getItem('token') || '' : '');
 	function authHeaders() {
@@ -80,23 +78,6 @@
 			loadSessions();
 		} catch { /* ignore */ }
 	}
-
-	const columns: ColumnDef<any, any>[] = [
-		{ header: 'Judul', accessorKey: 'title', cell: ({ getValue }) => `<strong>${getValue() || ''}</strong>` },
-		{ header: 'Kursus', accessorKey: 'offering_name', cell: ({ getValue }) => getValue() || '-' },
-		{ header: 'Mulai', accessorKey: 'start_at', cell: ({ getValue }) => String(getValue() || '').replace('T', ' ').slice(0, 16) },
-		{ header: 'Durasi', accessorKey: 'duration_minutes', cell: ({ getValue }) => `${getValue() || 0}m` },
-		{
-			header: 'Status', accessorKey: 'status',
-			cell: ({ getValue }) => {
-				const v = getValue() as string;
-				const colors: Record<string, string> = {
-					scheduled: 'var(--accent)', live: 'var(--danger)', ended: 'var(--text-muted)', cancelled: 'var(--text-muted)'
-				};
-				return `<span style="color:${colors[v] || 'var(--text-muted)'};font-weight:600">${v}</span>`;
-			}
-		},
-	];
 </script>
 
 <svelte:head>
@@ -152,30 +133,30 @@
 		<Card>
 			<CardContent>
 				<div class="table-wrap">
-					<table class="live-table">
-						<thead>
-							<tr>
-								<th>Judul</th>
-								<th>Kursus</th>
-								<th>Mulai</th>
-								<th>Durasi</th>
-								<th>Status</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Judul</TableHead>
+								<TableHead>Kursus</TableHead>
+								<TableHead>Mulai</TableHead>
+								<TableHead>Durasi</TableHead>
+								<TableHead>Status</TableHead>
+								<TableHead>Aksi</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
 							{#each sessions as s}
-								<tr>
-									<td><strong>{s.title}</strong></td>
-									<td>{s.offering_name || '-'}</td>
-									<td>{String(s.start_at || '').replace('T', ' ').slice(0, 16)}</td>
-									<td>{s.duration_minutes}m</td>
-									<td>
+								<TableRow>
+									<TableCell><strong>{s.title}</strong></TableCell>
+									<TableCell>{s.offering_name || '-'}</TableCell>
+									<TableCell>{String(s.start_at || '').replace('T', ' ').slice(0, 16)}</TableCell>
+									<TableCell>{s.duration_minutes}m</TableCell>
+									<TableCell>
 										<span class="status-pill" class:st-live={s.status === 'live'} class:st-scheduled={s.status === 'scheduled'}>
 											{s.status}
 										</span>
-									</td>
-									<td>
+									</TableCell>
+									<TableCell>
 										<div class="row-actions">
 											{#if s.status === 'scheduled'}
 												<Button variant="secondary" size="sm" onclick={() => setStatus(s, 'live')}>Mulai</Button>
@@ -187,11 +168,11 @@
 											{/if}
 											<Button variant="danger" size="sm" onclick={() => remove(s)}>Hapus</Button>
 										</div>
-									</td>
-								</tr>
+									</TableCell>
+								</TableRow>
 							{/each}
-						</tbody>
-					</table>
+						</TableBody>
+					</Table>
 				</div>
 			</CardContent>
 		</Card>

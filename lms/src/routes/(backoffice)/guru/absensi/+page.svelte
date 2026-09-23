@@ -2,7 +2,7 @@
 	import { t } from '$lib/stores/i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton, EmptyState, Badge, Select, Button } from '$lib/components/ui/index.js';
+	import { Skeleton, EmptyState, Badge, Select, Button, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 	import { page } from '$app/stores';
 
 	type Student = {
@@ -218,25 +218,25 @@
 		<EmptyState icon="👤" title="Tidak Ada Data" description="Tidak ada siswa ditemukan untuk kelas dan tanggal ini." />
 	{:else}
 		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th class="col-no">{t('rapor.no')}</th>
-						<th class="col-name">{t('rapor.nama_siswa')}</th>
-						<th class="col-nis">{t('batch.col_nis')}</th>
-						<th class="col-status">{t('rapor.status')}</th>
-						<th class="col-reason">{t('rapor.keterangan')}</th>
-						<th class="col-time">Jam Masuk</th>
-						<th class="col-late">Telat (mnt)</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead class="col-no">{t('rapor.no')}</TableHead>
+						<TableHead class="col-name">{t('rapor.nama_siswa')}</TableHead>
+						<TableHead class="col-nis">{t('batch.col_nis')}</TableHead>
+						<TableHead class="col-status">{t('rapor.status')}</TableHead>
+						<TableHead class="col-reason">{t('rapor.keterangan')}</TableHead>
+						<TableHead class="col-time">Jam Masuk</TableHead>
+						<TableHead class="col-late">Telat (mnt)</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{#each students as student, i}
-						<tr>
-							<td class="col-no">{i + 1}</td>
-							<td class="col-name">{student.name}</td>
-							<td class="col-nis">{student.nis || '—'}</td>
-							<td class="col-status">
+						<TableRow>
+							<TableCell class="col-no">{i + 1}</TableCell>
+							<TableCell class="col-name">{student.name}</TableCell>
+							<TableCell class="col-nis">{student.nis || '—'}</TableCell>
+							<TableCell class="col-status">
 								<div class="status-group">
 									{#each statusOptions as opt}
 										<label class="status-radio" style:border-color={student.status === opt.value ? opt.color : 'transparent'}>
@@ -252,36 +252,36 @@
 										</label>
 									{/each}
 								</div>
-							</td>
-							<td class="col-reason">
+							</TableCell>
+							<TableCell class="col-reason">
 								<input
 									type="text"
 									bind:value={student.reason}
 									placeholder={student.status === 'sakit' ? 'Cth: Demam' : student.status === 'izin' ? 'Cth: Acara keluarga' : student.status === 'dispensasi' ? 'Cth: Tugas sekolah' : student.status === 'terlambat' ? 'Alasan terlambat' : '—'}
 									disabled={student.status === 'hadir' || student.status === 'alpha'}
 								/>
-							</td>
-							<td class="col-time">
+							</TableCell>
+							<TableCell class="col-time">
 								<input
 									type="time"
 									bind:value={student.time_in}
 									disabled={student.status === 'alpha'}
 								/>
-							</td>
-							<td class="col-late">
+							</TableCell>
+							<TableCell class="col-late">
 								<input
 									type="number"
 									bind:value={student.mnt_late}
 									min="0"
 									max="999"
 									disabled={student.status !== 'terlambat'}
-									class:input-hidden={student.status !== 'terlambat'}
+									class={student.status !== 'terlambat' ? 'input-hidden' : ''}
 								/>
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 
 		<div class="summary-bar">
@@ -322,31 +322,23 @@
 	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
 	.filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 180px; }
 	.filter-group label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
-	.filter-group select, .filter-group input {
+	.filter-group input {
 		padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
 		background: var(--bg-secondary); color: var(--text); font-size: 13px; font-family: inherit;
 	}
-	.filter-group select:focus, .filter-group input:focus {
+	.filter-group input:focus {
 		outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim);
 	}
 
 	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); margin-bottom: 12px; }
-	table { width: 100%; border-collapse: collapse; min-width: 800px; }
-	th {
-		text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; white-space: nowrap; background: var(--bg-secondary); position: sticky; top: 0;
-	}
-	td { padding: 8px 10px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(0,0,0,0.02); }
-	.col-no { width: 40px; text-align: center; }
-	.col-name { min-width: 160px; font-weight: 500; }
-	.col-nis { width: 100px; color: var(--text-tertiary); font-size: 12px; }
-	.col-status { min-width: 480px; }
-	.col-reason { min-width: 140px; }
-	.col-time { width: 100px; }
-	.col-late { width: 90px; }
+
+	:global(.col-no) { width: 40px; text-align: center; }
+	:global(.col-name) { min-width: 160px; font-weight: 500; }
+	:global(.col-nis) { width: 100px; color: var(--text-tertiary); font-size: 12px; }
+	:global(.col-status) { min-width: 480px; }
+	:global(.col-reason) { min-width: 140px; }
+	:global(.col-time) { width: 100px; }
+	:global(.col-late) { width: 90px; }
 
 	.status-group { display: flex; flex-wrap: wrap; gap: 4px; }
 	.status-radio {
@@ -359,12 +351,14 @@
 	.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 	.status-label { white-space: nowrap; }
 
-	td input[type="text"], td input[type="time"], td input[type="number"] {
+	:global(.table-cell input[type="text"]),
+	:global(.table-cell input[type="time"]),
+	:global(.table-cell input[type="number"]) {
 		width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
 		background: var(--bg); color: var(--text); font-size: 12px; font-family: inherit; box-sizing: border-box;
 	}
-	td input:focus { outline: none; border-color: var(--accent); }
-	td input:disabled { opacity: 0.4; cursor: not-allowed; }
+	:global(.table-cell input:focus) { outline: none; border-color: var(--accent); }
+	:global(.table-cell input:disabled) { opacity: 0.4; cursor: not-allowed; }
 	.input-hidden { opacity: 0.3 !important; }
 
 	.summary-bar { display: flex; gap: 16px; padding: 10px 14px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 12px; flex-wrap: wrap; }

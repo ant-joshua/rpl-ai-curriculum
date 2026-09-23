@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState } from '$lib/components/ui';
+	import { Card, CardContent, Alert, Badge, Spinner, Button, Input, Select, Modal, EmptyState, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 import { DataTable } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
@@ -785,27 +785,27 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 				<CardContent>
 					{#if questDetail.length > 0}
 						<div class="quest-table-wrap">
-							<table class="quest-table">
-								<thead>
-									<tr>
-										<th>User</th>
-										<th>Quest</th>
-										<th>Progress</th>
-										<th>XP</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
+							<Table class="quest-table">
+								<TableHeader>
+									<TableRow>
+										<TableHead>User</TableHead>
+										<TableHead>Quest</TableHead>
+										<TableHead>Progress</TableHead>
+										<TableHead>XP</TableHead>
+										<TableHead>Status</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
 									{#each questDetail as row (row.user_id + row.quest_key)}
-										<tr>
-											<td>
+										<TableRow>
+											<TableCell>
 												<div class="quest-user">{row.display_name || '—'}</div>
 												<div class="quest-user-email">{row.email || ''}</div>
-											</td>
-											<td>{questIcon(row.quest_key)} {row.title}</td>
-											<td>{row.progress}/{row.target}</td>
-											<td>+{row.xp_reward}</td>
-											<td>
+											</TableCell>
+											<TableCell>{questIcon(row.quest_key)} {row.title}</TableCell>
+											<TableCell>{row.progress}/{row.target}</TableCell>
+											<TableCell>+{row.xp_reward}</TableCell>
+											<TableCell>
 												{#if row.claimed}
 													<span class="quest-status claimed">✓ Diklaim</span>
 												{:else if row.progress >= row.target}
@@ -813,11 +813,11 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 												{:else}
 													<span class="quest-status pending">Dalam Proses</span>
 												{/if}
-											</td>
-										</tr>
+											</TableCell>
+										</TableRow>
 									{/each}
-								</tbody>
-							</table>
+								</TableBody>
+							</Table>
 						</div>
 					{:else}
 						<p class="quest-empty">Belum ada data quest untuk tanggal ini.</p>
@@ -844,44 +844,44 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 					<p class="quest-empty">Memuat konfigurasi...</p>
 				{:else}
 					<div class="quest-table-wrap">
-						<table class="quest-table">
-							<thead>
-								<tr>
-									<th>Quest</th>
-									<th>Target</th>
-									<th>XP Reward</th>
-									<th>Aktif</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table class="quest-table">
+							<TableHeader>
+								<TableRow>
+									<TableHead>Quest</TableHead>
+									<TableHead>Target</TableHead>
+									<TableHead>XP Reward</TableHead>
+									<TableHead>Aktif</TableHead>
+									<TableHead></TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each questConfigs as q (q.quest_key)}
-									<tr>
-										<td>
+									<TableRow>
+										<TableCell>
 											<div class="quest-user">
 												{QUEST_META[q.quest_key]?.icon ?? '⭐'} {QUEST_META[q.quest_key]?.label ?? q.quest_key}
 											</div>
 											<div class="quest-user-email">{q.quest_key}</div>
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											<input type="number" min="1" max="100" class="quest-config-input" bind:value={q.target} />
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											<input type="number" min="0" max="500" class="quest-config-input" bind:value={q.xp_reward} />
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											<input type="checkbox" bind:checked={q.enabled} class="quest-config-check" />
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											<Button variant="secondary" size="sm" onclick={() => saveQuestConfig(q)} disabled={savingQuestKey === q.quest_key}>
 												{savingQuestKey === q.quest_key ? 'Menyimpan...' : 'Simpan'}
 											</Button>
-										</td>
-									</tr>
-									{/each}
-									</tbody>
-									</table>
-									</div>
+										</TableCell>
+									</TableRow>
+								{/each}
+							</TableBody>
+						</Table>
+					</div>
 									{/if}
 									</CardContent>
 									</Card>
@@ -932,35 +932,35 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 			{:else}
 				<Card>
 					<CardContent>
-						<table class="boost-table">
-							<thead>
-								<tr>
-									<th>Judul</th>
-									<th>Multiplier</th>
-									<th>Periode</th>
-									<th>Status</th>
-									<th>Aksi</th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table class="boost-table">
+							<TableHeader>
+								<TableRow>
+									<TableHead>Judul</TableHead>
+									<TableHead>Multiplier</TableHead>
+									<TableHead>Periode</TableHead>
+									<TableHead>Status</TableHead>
+									<TableHead>Aksi</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each boosts as b}
-									<tr>
-										<td><strong>{b.title}</strong></td>
-										<td><span class="boost-mult">{b.multiplier}×</span></td>
-										<td class="boost-period">{b.start_at} → {b.end_at}</td>
-										<td>
+									<TableRow>
+										<TableCell><strong>{b.title}</strong></TableCell>
+										<TableCell><span class="boost-mult">{b.multiplier}×</span></TableCell>
+										<TableCell class="boost-period">{b.start_at} → {b.end_at}</TableCell>
+										<TableCell>
 											<span class:boost-active={b.enabled == 1} class:boost-inactive={b.enabled == 0}>
 												{b.enabled == 1 ? 'Aktif' : 'Nonaktif'}
 											</span>
-										</td>
-										<td>
+										</TableCell>
+										<TableCell>
 											<Button variant="secondary" size="sm" onclick={() => toggleBoost(b)}>{b.enabled == 1 ? 'Nonaktifkan' : 'Aktifkan'}</Button>
 											<Button variant="danger" size="sm" onclick={() => deleteBoost(b)}>Hapus</Button>
-										</td>
-									</tr>
+										</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</CardContent>
 				</Card>
 			{/if}

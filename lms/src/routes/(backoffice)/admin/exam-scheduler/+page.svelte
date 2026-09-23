@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, StatCard, Card, CardHeader } from '$lib/components/ui';
-	import { DataTable } from '$lib/components/ui';
+	import { Button, StatCard, Card, CardHeader, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
 
 	type Tab = 'exams' | 'rooms' | 'types';
@@ -149,26 +148,26 @@
 						<a href="/admin/exam-scheduler/exams" class="link-btn">{t('admin.lihat_semua')}</a>
 					</CardHeader>
 					<div class="table-container">
-						<table>
-							<thead>
-								<tr>
-									<th>{t('admin.nama_ujian')}</th>
-									<th>{t('admin.tanggal')}</th>
-									<th>Jam</th>
-									<th>{t('common.status')}</th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t('admin.nama_ujian')}</TableHead>
+									<TableHead>{t('admin.tanggal')}</TableHead>
+									<TableHead>Jam</TableHead>
+									<TableHead>{t('common.status')}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each exams.slice(0, 5) as exam}
-									<tr>
-										<td class="cell-name">{exam.name}</td>
-										<td>{formatDate(exam.date)}</td>
-										<td>{exam.start_time || '—'} - {exam.end_time || '—'}</td>
-										<td><span class="status-badge {statusColor(exam.status)}">{exam.status}</span></td>
-									</tr>
+									<TableRow>
+										<TableCell class="cell-name">{exam.name}</TableCell>
+										<TableCell>{formatDate(exam.date)}</TableCell>
+										<TableCell>{exam.start_time || '—'} - {exam.end_time || '—'}</TableCell>
+										<TableCell><span class="status-badge {statusColor(exam.status)}">{exam.status}</span></TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</div>
 				</Card>
 			{/if}
@@ -190,32 +189,32 @@
 						<a href="/admin/exam-scheduler/rooms" class="link-btn">{t('admin.lihat_semua')}</a>
 					</CardHeader>
 					<div class="table-container">
-						<table>
-							<thead>
-								<tr>
-									<th>{t('admin.nama_ruangan')}</th>
-									<th>{t('admin.kapasitas')}</th>
-									<th>{t('admin.lokasi')}</th>
-									<th>{t('common.status')}</th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t('admin.nama_ruangan')}</TableHead>
+									<TableHead>{t('admin.kapasitas')}</TableHead>
+									<TableHead>{t('admin.lokasi')}</TableHead>
+									<TableHead>{t('common.status')}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each rooms.slice(0, 5) as room}
-									<tr>
-										<td class="cell-name">{room.name}</td>
-										<td>{room.capacity ?? '—'}</td>
-										<td>{room.location || '—'}</td>
-										<td>
+									<TableRow>
+										<TableCell class="cell-name">{room.name}</TableCell>
+										<TableCell>{room.capacity ?? '—'}</TableCell>
+										<TableCell>{room.location || '—'}</TableCell>
+										<TableCell>
 											{#if room.is_available !== false}
 												<span class="status-badge status-published">{t('admin.tersedia')}</span>
 											{:else}
 												<span class="status-badge status-cancelled">{t('admin.tidak_tersedia')}</span>
 											{/if}
-										</td>
-									</tr>
+										</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</div>
 				</Card>
 			{/if}
@@ -236,24 +235,24 @@
 						<h3>{t('admin.tipe_ujian')}</h3>
 					</CardHeader>
 					<div class="table-container">
-						<table>
-							<thead>
-								<tr>
-									<th>Nama Tipe</th>
-									<th>{t('common.description')}</th>
-									<th>Durasi Default</th>
-								</tr>
-							</thead>
-							<tbody>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Nama Tipe</TableHead>
+									<TableHead>{t('common.description')}</TableHead>
+									<TableHead>Durasi Default</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each examTypes as tipe}
-									<tr>
-										<td class="cell-name">{tipe.name}</td>
-										<td>{tipe.description || '—'}</td>
-										<td>{tipe.default_duration ? `${tipe.default_duration} menit` : '—'}</td>
-									</tr>
+									<TableRow>
+										<TableCell class="cell-name">{tipe.name}</TableCell>
+										<TableCell>{tipe.description || '—'}</TableCell>
+										<TableCell>{tipe.default_duration ? `${tipe.default_duration} menit` : '—'}</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</div>
 				</Card>
 			{/if}

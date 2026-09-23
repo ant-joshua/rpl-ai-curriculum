@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Skeleton, Badge, Button, DataTable, Textarea } from '$lib/components/ui/index.js';
+	import { Skeleton, Badge, Button, DataTable, Textarea, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 import { t } from '$lib/stores/i18n';
 
@@ -196,41 +196,41 @@ import { t } from '$lib/stores/i18n';
 		<div class="section">
 			<h3 class="section-title">{t('rapor.pengetahuan')}</h3>
 			<div class="table-wrapper">
-				<table class="grade-detail-table">
-					<thead>
-						<tr>
-							<th class="no-col">{t('rapor.no')}</th>
-							<th class="mapel-col">{t('rapor.mapel')}</th>
-							<th class="score-col">{t('rapor.na')}</th>
-							<th class="pred-col">{t('rapor.predikat')}</th>
-							<th class="score-col">{t('rapor.kkm')}</th>
-							<th class="desc-col">{t('rapor.keterangan')}</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table class="grade-detail-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="no-col">{t('rapor.no')}</TableHead>
+							<TableHead class="mapel-col">{t('rapor.mapel')}</TableHead>
+							<TableHead class="score-col">{t('rapor.na')}</TableHead>
+							<TableHead class="pred-col">{t('rapor.predikat')}</TableHead>
+							<TableHead class="score-col">{t('rapor.kkm')}</TableHead>
+							<TableHead class="desc-col">{t('rapor.keterangan')}</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each (rapor.subject_grades || []) as sg, i}
 							{#if sg.na_pengetahuan != null}
-								<tr>
-									<td class="no-col">{i + 1}</td>
-									<td class="mapel-col">{sg.subject_name || sg.mapel || '-'}</td>
-									<td class="score-col">{formatNa(sg.na_pengetahuan)}</td>
-									<td class="pred-col">
+								<TableRow>
+									<TableCell class="no-col">{i + 1}</TableCell>
+									<TableCell class="mapel-col">{sg.subject_name || sg.mapel || '-'}</TableCell>
+									<TableCell class="score-col">{formatNa(sg.na_pengetahuan)}</TableCell>
+									<TableCell class="pred-col">
 										<span class="predikat" style="color: {predikatColor(sg.predikat_pengetahuan)}">
 											{sg.predikat_pengetahuan || '-'}
 										</span>
-									</td>
-									<td class="score-col">{sg.kkm || sg.kkm_pengetahuan || '-'}</td>
-									<td class="desc-col">{sg.deskripsi_pengetahuan || '-'}</td>
-								</tr>
+									</TableCell>
+									<TableCell class="score-col">{sg.kkm || sg.kkm_pengetahuan || '-'}</TableCell>
+									<TableCell class="desc-col">{sg.deskripsi_pengetahuan || '-'}</TableCell>
+								</TableRow>
 							{/if}
 						{/each}
 						{#if !(rapor.subject_grades || []).some((s: any) => s.na_pengetahuan != null)}
-							<tr>
-								<td class="empty-col" colspan="6">{t('rapor.belum_ada_pengetahuan')}</td>
-							</tr>
+							<TableRow>
+								<TableCell class="empty-col" colspan={6}>{t('rapor.belum_ada_pengetahuan')}</TableCell>
+							</TableRow>
 						{/if}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</div>
 		</div>
 
@@ -238,41 +238,41 @@ import { t } from '$lib/stores/i18n';
 		<div class="section">
 			<h3 class="section-title">{t('rapor.keterampilan')}</h3>
 			<div class="table-wrapper">
-				<table class="grade-detail-table">
-					<thead>
-						<tr>
-							<th class="no-col">{t('rapor.no')}</th>
-							<th class="mapel-col">{t('rapor.mapel')}</th>
-							<th class="score-col">{t('rapor.na')}</th>
-							<th class="pred-col">{t('rapor.predikat')}</th>
-							<th class="score-col">{t('rapor.kkm')}</th>
-							<th class="desc-col">{t('rapor.keterangan')}</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table class="grade-detail-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="no-col">{t('rapor.no')}</TableHead>
+							<TableHead class="mapel-col">{t('rapor.mapel')}</TableHead>
+							<TableHead class="score-col">{t('rapor.na')}</TableHead>
+							<TableHead class="pred-col">{t('rapor.predikat')}</TableHead>
+							<TableHead class="score-col">{t('rapor.kkm')}</TableHead>
+							<TableHead class="desc-col">{t('rapor.keterangan')}</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each (rapor.subject_grades || []) as sg, i}
 							{#if sg.na_keterampilan != null}
-								<tr>
-									<td class="no-col">{i + 1}</td>
-									<td class="mapel-col">{sg.subject_name || sg.mapel || '-'}</td>
-									<td class="score-col">{formatNa(sg.na_keterampilan)}</td>
-									<td class="pred-col">
+								<TableRow>
+									<TableCell class="no-col">{i + 1}</TableCell>
+									<TableCell class="mapel-col">{sg.subject_name || sg.mapel || '-'}</TableCell>
+									<TableCell class="score-col">{formatNa(sg.na_keterampilan)}</TableCell>
+									<TableCell class="pred-col">
 										<span class="predikat" style="color: {predikatColor(sg.predikat_keterampilan)}">
 											{sg.predikat_keterampilan || '-'}
 										</span>
-									</td>
-									<td class="score-col">{sg.kkm || sg.kkm_keterampilan || '-'}</td>
-									<td class="desc-col">{sg.deskripsi_keterampilan || '-'}</td>
-								</tr>
+									</TableCell>
+									<TableCell class="score-col">{sg.kkm || sg.kkm_keterampilan || '-'}</TableCell>
+									<TableCell class="desc-col">{sg.deskripsi_keterampilan || '-'}</TableCell>
+								</TableRow>
 							{/if}
 						{/each}
 						{#if !(rapor.subject_grades || []).some((s: any) => s.na_keterampilan != null)}
-							<tr>
-								<td class="empty-col" colspan="6">{t('rapor.belum_ada_keterampilan')}</td>
-							</tr>
+							<TableRow>
+								<TableCell class="empty-col" colspan={6}>{t('rapor.belum_ada_keterampilan')}</TableCell>
+							</TableRow>
 						{/if}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</div>
 		</div>
 
@@ -280,35 +280,35 @@ import { t } from '$lib/stores/i18n';
 		<div class="section">
 			<h3 class="section-title">{t('rapor.sikap')}</h3>
 			<div class="table-wrapper">
-				<table class="sikap-table">
-					<thead>
-						<tr>
-							<th class="aspek-col">{t('rapor.aspek')}</th>
-							<th class="pred-col">{t('rapor.predikat')}</th>
-							<th class="desc-col-wide">{t('rapor.deskripsi')}</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="aspek-col">{t('rapor.spiritual')}</td>
-							<td class="pred-col">
+				<Table class="sikap-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="aspek-col">{t('rapor.aspek')}</TableHead>
+							<TableHead class="pred-col">{t('rapor.predikat')}</TableHead>
+							<TableHead class="desc-col-wide">{t('rapor.deskripsi')}</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						<TableRow>
+							<TableCell class="aspek-col">{t('rapor.spiritual')}</TableCell>
+							<TableCell class="pred-col">
 								<span class="predikat" style="color: {predikatColor(rapor.attitude_spiritual)}">
 									{rapor.attitude_spiritual || '-'}
 								</span>
-							</td>
-							<td class="desc-col-wide">{rapor.attitude_spiritual_desc || '-'}</td>
-						</tr>
-						<tr>
-							<td class="aspek-col">{t('rapor.sosial')}</td>
-							<td class="pred-col">
+							</TableCell>
+							<TableCell class="desc-col-wide">{rapor.attitude_spiritual_desc || '-'}</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell class="aspek-col">{t('rapor.sosial')}</TableCell>
+							<TableCell class="pred-col">
 								<span class="predikat" style="color: {predikatColor(rapor.attitude_social)}">
 									{rapor.attitude_social || '-'}
 								</span>
-							</td>
-							<td class="desc-col-wide">{rapor.attitude_social_desc || '-'}</td>
-						</tr>
-					</tbody>
-				</table>
+							</TableCell>
+							<TableCell class="desc-col-wide">{rapor.attitude_social_desc || '-'}</TableCell>
+						</TableRow>
+					</TableBody>
+				</Table>
 			</div>
 		</div>
 
@@ -316,35 +316,35 @@ import { t } from '$lib/stores/i18n';
 		<div class="section">
 			<h3 class="section-title">{t('rapor.ekstrakurikuler')}</h3>
 			<div class="table-wrapper">
-				<table class="ekstra-table">
-					<thead>
-						<tr>
-							<th class="no-col">{t('rapor.no')}</th>
-							<th class="mapel-col">{t('rapor.kegiatan')}</th>
-							<th class="pred-col">{t('rapor.predikat')}</th>
-							<th class="desc-col-wide">{t('rapor.keterangan')}</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table class="ekstra-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="no-col">{t('rapor.no')}</TableHead>
+							<TableHead class="mapel-col">{t('rapor.kegiatan')}</TableHead>
+							<TableHead class="pred-col">{t('rapor.predikat')}</TableHead>
+							<TableHead class="desc-col-wide">{t('rapor.keterangan')}</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each (rapor.extracurriculars || []) as ek, i}
-							<tr>
-								<td class="no-col">{i + 1}</td>
-								<td class="mapel-col">{ek.name || ek.kegiatan || '-'}</td>
-								<td class="pred-col">
+							<TableRow>
+								<TableCell class="no-col">{i + 1}</TableCell>
+								<TableCell class="mapel-col">{ek.name || ek.kegiatan || '-'}</TableCell>
+								<TableCell class="pred-col">
 									<span class="predikat" style="color: {predikatColor(ek.predikat)}">
 										{ek.predikat || '-'}
 									</span>
-								</td>
-								<td class="desc-col-wide">{ek.keterangan || ek.deskripsi || '-'}</td>
-							</tr>
+								</TableCell>
+								<TableCell class="desc-col-wide">{ek.keterangan || ek.deskripsi || '-'}</TableCell>
+							</TableRow>
 						{/each}
 						{#if !(rapor.extracurriculars || []).length}
-							<tr>
-								<td class="empty-col" colspan="4">{t('rapor.tidak_ada_ekstra')}</td>
-							</tr>
+							<TableRow>
+								<TableCell class="empty-col" colspan={4}>{t('rapor.tidak_ada_ekstra')}</TableCell>
+							</TableRow>
 						{/if}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</div>
 		</div>
 

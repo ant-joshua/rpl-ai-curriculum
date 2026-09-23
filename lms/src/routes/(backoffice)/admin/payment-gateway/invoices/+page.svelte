@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-import { Button, DataTable, Input, Select } from '$lib/components/ui';
+import { Button, DataTable, Input, Select, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let invoices: any[] = $state([]);
@@ -346,21 +346,26 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 					{#if selectedInvoice.items && selectedInvoice.items.length > 0}
 						<h3 class="pg-subsection">Item Invoice</h3>
-						<table class="pg-table pg-table-mini">
-							<thead>
-								<tr><th>{t('common.description')}</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr>
-							</thead>
-							<tbody>
+						<Table class="pg-table pg-table-mini">
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t('common.description')}</TableHead>
+									<TableHead>Harga</TableHead>
+									<TableHead>Qty</TableHead>
+									<TableHead>Subtotal</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each selectedInvoice.items as item}
-									<tr>
-										<td>{item.description}</td>
-										<td>{formatCurrency(item.amount)}</td>
-										<td>{item.quantity}</td>
-										<td class="pg-amount">{formatCurrency(item.amount * item.quantity)}</td>
-									</tr>
+									<TableRow>
+										<TableCell>{item.description}</TableCell>
+										<TableCell>{formatCurrency(item.amount)}</TableCell>
+										<TableCell>{item.quantity}</TableCell>
+										<TableCell class="pg-amount">{formatCurrency(item.amount * item.quantity)}</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					{/if}
 
 					{#if selectedInvoice.notes}
@@ -514,14 +519,8 @@ import type { ColumnDef } from '@tanstack/svelte-table';
 
 	/* Table */
 	.pg-table-wrap { overflow-x: auto; background: var(--bg-secondary, var(--text)); border: 1px solid var(--border-color, rgba(0,0,0,0.06)); border-radius: 10px; }
-	.pg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-	.pg-table th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 600; color: var(--text-secondary, var(--text-secondary)); text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.02); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); white-space: nowrap; }
-	.pg-table td { padding: 12px 16px; color: var(--text-primary, var(--border)); border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.04)); white-space: nowrap; }
-	.pg-table tbody tr:hover { background: rgba(0,0,0,0.02); }
-	.pg-table-mini th { padding: 8px 12px; font-size: 10px; }
-	.pg-table-mini td { padding: 8px 12px; font-size: 12px; }
 	.pg-mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
-	.pg-amount { font-weight: 600; color: var(--text-primary, var(--text)); }
+	:global(.pg-amount) { font-weight: 600; color: var(--text-primary, var(--text)); }
 	.pg-bold { font-weight: 700; }
 
 	/* Badge */

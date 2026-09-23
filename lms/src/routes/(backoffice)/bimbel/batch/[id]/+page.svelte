@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Skeleton, EmptyState, Badge, Input, Button } from '$lib/components/ui/index.js';
-	import { DataTable } from '$lib/components/ui';
-	import type { ColumnDef } from '@tanstack/svelte-table';
+	import { Skeleton, EmptyState, Badge, Input, Button, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 	import { page } from '$app/stores';
 	import { t } from '$lib/stores/i18n';
 
@@ -21,12 +19,6 @@
 	let loadingEnroll = $state(false);
 
 	const batchId = $derived($page.params.id);
-
-	const columns: ColumnDef<any, any>[] = [
-		{ header: t('batch.col_name'), accessorKey: 'name' },
-		{ header: t('batch.col_nis'), accessorFn: (row) => row.nis || '-', cell: ({ getValue }) => `<code>${getValue()}</code>` },
-		{ header: t('batch.col_date'), accessorKey: 'joinedAt', cell: ({ getValue }) => formatDate(getValue() as string) }
-	];
 
 	onMount(() => {
 		if (!browser) return;
@@ -71,6 +63,12 @@
 	let enrollSaving = $state(false);
 	let studentSearch = $state('');
 	function toggleEnroll() { showEnroll = !showEnroll; }
+
+	const filteredStudents = $derived(
+		studentSearch
+			? students.filter(s => s.name.toLowerCase().includes(studentSearch.toLowerCase()) || (s.nis && s.nis.includes(studentSearch)))
+			: students
+	);
 
 	async function enrollStudent() {
 		if (!enrollStudentId.trim()) return;
@@ -159,30 +157,30 @@
 				<EmptyState icon="🔍" title={t('common.not_found')} description={t('batch.no_students_match')} />
 			{:else}
 				<div class="table-wrap">
-					<table>
-						<thead>
-							<tr>
-								<th>{t('batch.col_no')}</th>
-								<th>{t('batch.col_name')}</th>
-								<th>{t('batch.col_nis')}</th>
-								<th>{t('batch.col_date')}</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead class="col-num">{t('batch.col_no')}</TableHead>
+								<TableHead class="col-name">{t('batch.col_name')}</TableHead>
+								<TableHead class="col-nis">{t('batch.col_nis')}</TableHead>
+								<TableHead class="col-date">{t('batch.col_date')}</TableHead>
+								<TableHead class="col-action"></TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
 							{#each filteredStudents as s, i}
-								<tr>
-									<td class="col-num">{i + 1}</td>
-									<td class="col-name">{s.name}</td>
-									<td class="col-nis">{s.nis || '-'}</td>
-									<td class="col-date">{formatDate(s.joinedAt)}</td>
-									<td class="col-action">
+								<TableRow>
+									<TableCell class="col-num">{i + 1}</TableCell>
+									<TableCell class="col-name">{s.name}</TableCell>
+									<TableCell class="col-nis">{s.nis || '-'}</TableCell>
+									<TableCell class="col-date">{formatDate(s.joinedAt)}</TableCell>
+									<TableCell class="col-action">
 										<Button variant="danger" size="sm" onclick={() => unenrollStudent(s.id)}>{t('batch.remove')}</Button>
-									</td>
-								</tr>
+									</TableCell>
+								</TableRow>
 							{/each}
-						</tbody>
-					</table>
+						</TableBody>
+					</Table>
 				</div>
 			{/if}
 		{/if}
@@ -216,20 +214,10 @@
 	.input-field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
 
 	.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
-	table { width: 100%; border-collapse: collapse; }
-	th {
-		text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase;
-		letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border);
-		font-weight: 600; background: var(--bg-secondary);
-	}
-	td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); }
-	tr:last-child td { border-bottom: none; }
-	tr:hover { background: rgba(0,0,0,0.02); }
 
-	.col-num { width: 40px; color: var(--text-tertiary); }
-	.col-name { font-weight: 500; }
-	.col-nis { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
-	.col-date { color: var(--text-tertiary); font-size: 12px; }
-	.col-action { text-align: right; }
-
+	:global(.col-num) { width: 40px; color: var(--text-tertiary); }
+	:global(.col-name) { font-weight: 500; }
+	:global(.col-nis) { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+	:global(.col-date) { color: var(--text-tertiary); font-size: 12px; }
+	:global(.col-action) { text-align: right; }
 </style>

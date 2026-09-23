@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Card, Badge, Input, Skeleton, EmptyState, ProgressBar } from '$lib/components/ui/index.js';
+	import { Button, Card, Badge, Input, Skeleton, EmptyState, ProgressBar, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui/index.js';
 
 	let offeringId = $state('');
 	let offering: any = $state(null);
@@ -508,30 +508,30 @@
 			<EmptyState icon="🔍" message="Tidak ada mahasiswa yang cocok." />
 		{:else}
 			<div class="table-wrapper">
-				<table class="gradebook-table">
-					<thead>
-						<tr>
-							<th class="sticky-col name-col">{t('kaprodi.col_student')}</th>
+				<Table class="gradebook-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="sticky-col name-col">{t('kaprodi.col_student')}</TableHead>
 							{#each items as item}
-								<th class="item-col" title="{item.title} (max: {item.maxScore})">
+								<TableHead class="item-col" title="{item.title} (max: {item.maxScore})">
 									<div class="item-header">
 										<span class="item-type">{item.type === 'assessment' ? '📝' : '📋'}</span>
 										<span class="item-title">{item.title}</span>
 										<span class="item-max">/{item.maxScore}</span>
 									</div>
-								</th>
+								</TableHead>
 							{/each}
-							<th class="total-col">{t('common.total')}</th>
-							<th class="pct-col">%</th>
-							<th class="grade-col">Grade</th>
-						</tr>
-					</thead>
-					<tbody>
+							<TableHead class="total-col">{t('common.total')}</TableHead>
+							<TableHead class="pct-col">%</TableHead>
+							<TableHead class="grade-col">Grade</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each students as e}
 							{@const grade = getStudentGrade(e.user_id)}
 							{@const isExpanded = expandedStudents.has(e.user_id)}
-							<tr class="student-row" class:row--expanded={isExpanded}>
-								<td class="sticky-col name-col">
+							<TableRow class="student-row {isExpanded ? 'row--expanded' : ''}">
+								<TableCell class="sticky-col name-col">
 									<div class="student-info">
 										<Button
 											class="expand-btn"
@@ -543,20 +543,17 @@
 										<span class="student-name">{displayName(e)}</span>
 										<span class="student-email">{e.email || ''}</span>
 									</div>
-								</td>
+								</TableCell>
 								{#each items as item}
 									{@const sc = getScore(e.user_id, item.id, item.type)}
 									{@const isEditing = editingCell?.userId === e.user_id && editingCell?.itemId === item.id && editingCell?.type === item.type}
-									<td
-										class="score-cell"
+									<TableCell
+										class="score-cell {isEditing ? 'cell--editing' : ''} {sc.score === null ? 'cell--empty' : 'cell--scored'}"
 										style="color: {sc.score != null ? gradeColor((sc.score / sc.max) * 100) : 'var(--text-secondary)'}"
-										class:cell--editing={isEditing}
-										class:cell--empty={sc.score === null}
-										class:cell--scored={sc.score !== null}
 									>
 										{#if isEditing}
 											<!-- svelte-ignore a11y_autofocus -->
-<Input  />
+											<Input
 												type="number"
 												step="0.5"
 												min="0"
@@ -582,9 +579,9 @@
 												{sc.score != null ? sc.score : '-'}
 											</span>
 										{/if}
-									</td>
+									</TableCell>
 								{/each}
-								<td class="total-col">
+								<TableCell class="total-col">
 									{#if grade && (grade.total_score > 0 || grade.total_max > 0)}
 										<span class="total-score">{grade.total_score.toFixed(1)}</span>
 										<span class="total-sep">/</span>
@@ -592,8 +589,8 @@
 									{:else}
 										<span class="total-na">-</span>
 									{/if}
-								</td>
-								<td class="pct-col" style="color: {grade?.percentage != null ? gradeColor(grade.percentage) : 'var(--text-secondary)'}">
+								</TableCell>
+								<TableCell class="pct-col" style="color: {grade?.percentage != null ? gradeColor(grade.percentage) : 'var(--text-secondary)'}">
 									{#if grade?.percentage != null}
 										{Math.round(grade.percentage)}%
 									{:else if grade && grade.total_max > 0}
@@ -601,21 +598,21 @@
 									{:else}
 										-
 									{/if}
-								</td>
-								<td class="grade-col" style="color: {letterGradeColor(grade?.letter_grade)}">
+								</TableCell>
+								<TableCell class="grade-col" style="color: {letterGradeColor(grade?.letter_grade)}">
 									{#if grade?.letter_grade}
 										<span class="letter-grade-badge">{grade.letter_grade}</span>
 									{:else}
 										<span class="grade-na">-</span>
 									{/if}
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 
 							<!-- Expandable breakdown row -->
 							{#if isExpanded}
 								{@const breakdown = getCategoryScores(e.user_id)}
-								<tr class="breakdown-row">
-									<td colspan={items.length + 4}>
+								<TableRow class="breakdown-row">
+									<TableCell colspan={items.length + 4}>
 										<div class="breakdown-content">
 											<div class="breakdown-title">Weighted Score Breakdown</div>
 											{#if breakdown.length === 0}
@@ -647,12 +644,12 @@
 												</div>
 											{/if}
 										</div>
-									</td>
-								</tr>
+									</TableCell>
+								</TableRow>
 							{/if}
 						{/each}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			</div>
 
 			<!-- Grade error toast -->

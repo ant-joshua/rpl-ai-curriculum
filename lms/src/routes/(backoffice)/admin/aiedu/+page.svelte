@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Spinner, Badge, Select } from '$lib/components/ui';
+	import { PageHeader, Card, CardContent, CardHeader, CardTitle, Button, Spinner, Badge, Select, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	let loading = $state(true);
 	let stats = $state<any>(null);
@@ -120,20 +120,20 @@
 	{/if}
 {:else if tab === 'gens'}
 	<div class="table-wrap">
-		<table>
-			<thead><tr><th>Waktu</th><th>User</th><th>Jenis</th><th>Mapel</th><th>Status</th></tr></thead>
-			<tbody>
+		<Table>
+			<TableHeader><TableRow><TableHead>Waktu</TableHead><TableHead>User</TableHead><TableHead>Jenis</TableHead><TableHead>Mapel</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+			<TableBody>
 				{#each gens as g (g.id)}
-					<tr>
-						<td class="muted">{g.created_at?.slice(0, 16)}</td>
-						<td>{g.user_name || g.user_id?.slice(0, 8)}</td>
-						<td>{typeLabels[g.doc_type] || g.doc_type}</td>
-						<td>{g.subject || '-'}</td>
-						<td><Badge variant={g.status === 'done' ? 'success' : 'warning'}>{g.status}</Badge></td>
-					</tr>
+					<TableRow>
+						<TableCell class="muted">{g.created_at?.slice(0, 16)}</TableCell>
+						<TableCell>{g.user_name || g.user_id?.slice(0, 8)}</TableCell>
+						<TableCell>{typeLabels[g.doc_type] || g.doc_type}</TableCell>
+						<TableCell>{g.subject || '-'}</TableCell>
+						<TableCell><Badge variant={g.status === 'done' ? 'success' : 'warning'}>{g.status}</Badge></TableCell>
+					</TableRow>
 				{/each}
-			</tbody>
-		</table>
+			</TableBody>
+		</Table>
 		{#if gens.length === 0}<p class="muted pad">Belum ada generasi</p>{/if}
 	</div>
 {:else}
@@ -149,22 +149,22 @@
 		<div class="center"><Spinner /></div>
 	{:else}
 		<div class="table-wrap">
-			<table>
-				<thead><tr><th>Waktu</th><th>Judul</th><th>Mapel</th><th>Jenis</th><th>Sumber</th><th>Owner</th><th></th></tr></thead>
-				<tbody>
+			<Table>
+				<TableHeader><TableRow><TableHead>Waktu</TableHead><TableHead>Judul</TableHead><TableHead>Mapel</TableHead><TableHead>Jenis</TableHead><TableHead>Sumber</TableHead><TableHead>Owner</TableHead><TableHead></TableHead></TableRow></TableHeader>
+				<TableBody>
 					{#each docs as d (d.id)}
-						<tr>
-							<td class="muted">{d.created_at?.slice(0, 16)}</td>
-							<td><a href="/aiedu/bank/{d.id}" target="_blank">{d.title}</a></td>
-							<td>{d.subject}</td>
-							<td>{typeLabels[d.doc_type] || d.doc_type}</td>
-							<td><Badge variant={d.source === 'seed' ? 'info' : 'primary'}>{d.source}</Badge></td>
-							<td>{d.owner_name || '-'}</td>
-							<td><Button size="sm" variant={'danger' as any} onclick={() => delDoc(d.id)}>🗑</Button></td>
-						</tr>
+						<TableRow>
+							<TableCell class="muted">{d.created_at?.slice(0, 16)}</TableCell>
+							<TableCell><a href="/aiedu/bank/{d.id}" target="_blank">{d.title}</a></TableCell>
+							<TableCell>{d.subject}</TableCell>
+							<TableCell>{typeLabels[d.doc_type] || d.doc_type}</TableCell>
+							<TableCell><Badge variant={d.source === 'seed' ? 'info' : 'primary'}>{d.source}</Badge></TableCell>
+							<TableCell>{d.owner_name || '-'}</TableCell>
+							<TableCell><Button size="sm" variant={'danger' as any} onclick={() => delDoc(d.id)}>🗑</Button></TableCell>
+						</TableRow>
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 			{#if docs.length === 0}<p class="muted pad">Tidak ada dokumen</p>{/if}
 		</div>
 	{/if}

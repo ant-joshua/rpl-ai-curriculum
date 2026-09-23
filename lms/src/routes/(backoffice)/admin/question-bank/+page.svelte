@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import {
 		Button, Badge, Modal, Input, Textarea, Select, Alert, Skeleton, EmptyState,
-		DataTable
+		DataTable, Table, TableHeader, TableHead, TableBody, TableRow, TableCell
 	} from '$lib/components/ui';
 	import { PageHeader, SearchBar } from '$lib/components/ui';
 	import type { ColumnDef } from '@tanstack/svelte-table';
@@ -440,22 +440,22 @@
 		/>
 	{:else}
 		<div class="table-wrapper">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>{t('admin.soal')}</th>
-						<th>{t('admin.tipe')}</th>
-						<th>{t('admin.tingkat')}</th>
-						<th>{t('common.status')}</th>
-						<th>{t('admin.nilai')}</th>
-						<th>{t('admin.dibuat')}</th>
-						<th>{t('common.action')}</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table class="data-table">
+				<TableHeader>
+					<TableRow>
+						<TableHead>{t('admin.soal')}</TableHead>
+						<TableHead>{t('admin.tipe')}</TableHead>
+						<TableHead>{t('admin.tingkat')}</TableHead>
+						<TableHead>{t('common.status')}</TableHead>
+						<TableHead>{t('admin.nilai')}</TableHead>
+						<TableHead>{t('admin.dibuat')}</TableHead>
+						<TableHead>{t('common.action')}</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{#each questions as q (q.id)}
-						<tr>
-							<td class="cell-question">
+						<TableRow>
+							<TableCell class="cell-question">
 								<a href="/admin/question-bank/{q.id}" class="question-link">{truncate(q.question)}</a>
 								{#if q.tags}
 								{@const tagList = q.tags.split(',').filter(Boolean).map(t => t.trim())}
@@ -465,20 +465,20 @@
 									{/each}
 								</div>
 							{/if}
-							</td>
-							<td><Badge variant="info">{typeLabelMap[q.type] || capitalize(q.type)}</Badge></td>
-							<td><Badge variant={difficultyBadgeMap[q.difficulty] || 'default'}>{capitalize(q.difficulty)}</Badge></td>
-							<td><Badge variant={statusBadgeMap[q.status] || 'default'}>{capitalize(q.status)}</Badge></td>
-							<td class="cell-points">{q.points}</td>
-							<td class="cell-date">{formatDate(q.created_at)}</td>
-							<td class="cell-actions">
+							</TableCell>
+							<TableCell><Badge variant="info">{typeLabelMap[q.type] || capitalize(q.type)}</Badge></TableCell>
+							<TableCell><Badge variant={difficultyBadgeMap[q.difficulty] || 'default'}>{capitalize(q.difficulty)}</Badge></TableCell>
+							<TableCell><Badge variant={statusBadgeMap[q.status] || 'default'}>{capitalize(q.status)}</Badge></TableCell>
+							<TableCell class="cell-points">{q.points}</TableCell>
+							<TableCell class="cell-date">{formatDate(q.created_at)}</TableCell>
+							<TableCell class="cell-actions">
 								<Button variant="ghost" onclick={() => openEdit(q)} title={t('common.edit')}>✏️</Button>
 								<Button variant="ghost" onclick={() => confirmDelete(q.id)} title={t('common.delete')}>🗑️</Button>
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 					{/each}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 
 		<!-- Pagination -->
@@ -638,32 +638,7 @@
 		border-radius: 10px;
 		background: var(--surface);
 	}
-	.data-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 13.5px;
-	}
-	.data-table th {
-		text-align: left;
-		padding: 12px 14px;
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		border-bottom: 1px solid var(--border);
-		background: var(--bg-secondary);
-		white-space: nowrap;
-	}
-	.data-table td {
-		padding: 12px 14px;
-		border-bottom: 1px solid var(--border);
-		vertical-align: middle;
-	}
-	.data-table tr:last-child td { border-bottom: none; }
-	.data-table tr:hover { background: rgba(0,0,0,0.02); }
-
-	.cell-question { min-width: 250px; max-width: 350px; }
+	:global(.cell-question) { min-width: 250px; max-width: 350px; }
 	.question-link {
 		color: var(--accent);
 		text-decoration: none;
@@ -682,9 +657,9 @@
 		border-radius: 10px;
 	}
 
-	.cell-points { text-align: center; font-weight: 600; }
-	.cell-date { white-space: nowrap; font-size: 12px; color: var(--text-secondary); }
-	.cell-actions { white-space: nowrap; display: flex; gap: 4px; }
+	:global(.cell-points) { text-align: center; font-weight: 600; }
+	:global(.cell-date) { white-space: nowrap; font-size: 12px; color: var(--text-secondary); }
+	:global(.cell-actions) { white-space: nowrap; display: flex; gap: 4px; }
 
 	.pagination {
 		display: flex;

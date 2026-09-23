@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { Button, Card, CardHeader, DataTable, Input, PageHeader, Select, StatCard, Textarea } from '$lib/components/ui';
+	import { Button, Card, CardHeader, DataTable, Input, PageHeader, Select, StatCard, Textarea, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 import type { ColumnDef } from '@tanstack/svelte-table';
 
 	let loading = $state(true);
@@ -138,18 +138,24 @@ const queueColumns: ColumnDef<any, any>[] = [
 					<div class="empty-state small"><p>{t('admin.belum_ada_antrian')}</p></div>
 				{:else}
 					<div class="table-container">
-						<table>
-							<thead><tr><th>{t('admin.channel')}</th><th>{t('common.status')}</th><th>{t('admin.waktu')}</th></tr></thead>
-							<tbody>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>{t('admin.channel')}</TableHead>
+									<TableHead>{t('common.status')}</TableHead>
+									<TableHead>{t('admin.waktu')}</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
 								{#each recentQueue as n}
-									<tr>
-										<td><span class="channel-badge">{n.channel}</span></td>
-										<td><span class="status-badge {statusColor(n.status)}">{n.status}</span></td>
-										<td>{formatDate(n.created_at)}</td>
-									</tr>
+									<TableRow>
+										<TableCell><span class="channel-badge">{n.channel}</span></TableCell>
+										<TableCell><span class="status-badge {statusColor(n.status)}">{n.status}</span></TableCell>
+										<TableCell>{formatDate(n.created_at)}</TableCell>
+									</TableRow>
 								{/each}
-							</tbody>
-						</table>
+							</TableBody>
+						</Table>
 					</div>
 				{/if}
 			</Card>
@@ -241,10 +247,6 @@ const queueColumns: ColumnDef<any, any>[] = [
 
 	/* Table */
 	.table-container { overflow-x: auto; }
-	table { width: 100%; border-collapse: collapse; }
-	th { text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-	td { padding: 12px 14px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
-	tr:last-child td { border-bottom: none; }
 
 	.status-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
 	.status-blue { background: rgba(59,130,246,0.1); color: var(--accent); }

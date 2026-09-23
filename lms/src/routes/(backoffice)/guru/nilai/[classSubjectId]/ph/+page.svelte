@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { Button, Skeleton, EmptyState, Select } from '$lib/components/ui/index.js';
+	import { Button, Skeleton, EmptyState, Select, Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '$lib/components/ui';
 
 	let classSubjectId = $state('');
 	let classSubject: any = $state(null);
@@ -228,36 +228,36 @@
 			<EmptyState icon="👨‍🎓" message={t('nilai.belum_ada_siswa')} />
 		{:else}
 			<div class="table-wrapper">
-				<table class="ph-table">
-					<thead>
-						<tr>
-							<th class="sticky-col name-col">{t('rapor.siswa')}</th>
+				<Table class="ph-table">
+					<TableHeader>
+						<TableRow>
+							<TableHead class="sticky-col name-col">{t('rapor.siswa')}</TableHead>
 							{#each visibleKds as kd}
-								<th class="kd-col">
+								<TableHead class="kd-col">
 									<div class="kd-header">
 										<span class="kd-code">{kd.code || `KD ${kd.no}`}</span>
 										{#if kd.description}
 											<span class="kd-desc">{kd.description}</span>
 										{/if}
 									</div>
-								</th>
+								</TableHead>
 							{/each}
-							<th class="avg-col">Rata-rata (NPH)</th>
-						</tr>
-					</thead>
-					<tbody>
+							<TableHead class="avg-col">Rata-rata (NPH)</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{#each students as student}
 							{@const sid = student.id || student.user_id}
-							<tr>
-								<td class="sticky-col name-col">
+							<TableRow>
+								<TableCell class="sticky-col name-col">
 									<span class="student-name">{student.name || student.display_name || 'Siswa'}</span>
 									{#if student.nisn}
 										<span class="student-nisn">{student.nisn}</span>
 									{/if}
-								</td>
+								</TableCell>
 								{#each visibleKds as kd}
 									{@const val = getScore(sid, kd.id)}
-									<td class="score-cell" class:cell--empty={val === null}>
+									<TableCell class={'score-cell' + (val === null ? ' cell--empty' : '')}>
 										<input
 											type="number"
 											step="0.5"
@@ -269,36 +269,36 @@
 											oninput={(e) => setScore(sid, kd.id, (e.target as HTMLInputElement).value)}
 											placeholder="-"
 										/>
-									</td>
+									</TableCell>
 								{/each}
-								<td class="avg-cell">
+								<TableCell class="avg-cell">
 									{#if kdAverage(sid) !== null}
 										<span class="avg-value">{kdAverage(sid)?.toFixed(1)}</span>
 									{:else}
 										<span class="avg-na">-</span>
 									{/if}
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						{/each}
-					</tbody>
+					</TableBody>
 					<tfoot>
-						<tr>
-							<td class="sticky-col name-col">Rata-rata Kelas</td>
+						<TableRow>
+							<TableCell class="sticky-col name-col">Rata-rata Kelas</TableCell>
 							{#each visibleKds as kd}
-								<td class="avg-cell">
+								<TableCell class="avg-cell">
 									{#if calcKdAvg(kd.id) !== null}
 										<span class="avg-value">{calcKdAvg(kd.id)?.toFixed(1)}</span>
 									{:else}
 										<span class="avg-na">-</span>
 									{/if}
-								</td>
+								</TableCell>
 							{/each}
-							<td class="avg-cell">
+							<TableCell class="avg-cell">
 								<span class="avg-value">{nphAverage.toFixed(1)}</span>
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 					</tfoot>
-				</table>
+				</Table>
 			</div>
 			<div class="table-footer">
 				<span class="cell-count">{totalCells} sel · auto-save aktif</span>
@@ -321,16 +321,6 @@
 
 	.sem-selector { display: flex; align-items: center; gap: 6px; }
 	.sem-label { font-size: 13px; color: var(--text-secondary); }
-	.sem-select {
-		padding: 6px 10px;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		background: var(--bg-secondary);
-		color: var(--text);
-		font-size: 13px;
-		font-family: inherit;
-		cursor: pointer;
-	}
 
 	.error-state { padding: 40px 20px; text-align: center; color: var(--danger); }
 
@@ -372,21 +362,19 @@
 		background: var(--surface);
 	}
 
-	.ph-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-	.ph-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; background: var(--surface); }
-	.ph-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+	:global(.ph-table) { min-width: 500px; }
 
-	.sticky-col { position: sticky; left: 0; background: var(--surface); z-index: 2; }
-	.name-col { min-width: 160px; max-width: 200px; }
+	:global(.sticky-col) { position: sticky; left: 0; background: var(--surface); z-index: 2; }
+	:global(.name-col) { min-width: 160px; max-width: 200px; }
 	.student-name { font-weight: 600; font-size: 13px; display: block; }
 	.student-nisn { font-size: 11px; color: var(--text-quaternary); }
 
-	.kd-col { min-width: 90px; max-width: 120px; text-align: center; }
+	:global(.kd-col) { min-width: 90px; max-width: 120px; text-align: center; }
 	.kd-header { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 	.kd-code { font-size: 12px; }
 	.kd-desc { font-size: 9px; color: var(--text-quaternary); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-	.score-cell { text-align: center; }
+	:global(.score-cell) { text-align: center; padding: 4px 6px; }
 	.score-input {
 		width: 56px;
 		padding: 6px 4px;
@@ -405,13 +393,13 @@
 	.score-input:focus { border-color: var(--accent); background: var(--bg-secondary); }
 	.score-input--filled { border-color: rgba(0,0,0,0.08); }
 
-	.cell--empty { opacity: 0.5; }
+	:global(.cell--empty) { opacity: 0.5; }
 
-	.avg-cell { text-align: center; font-weight: 600; font-size: 13px; }
+	:global(.avg-cell) { text-align: center; font-weight: 600; font-size: 13px; }
 	.avg-value { color: var(--accent); }
 	.avg-na { color: var(--text-quaternary); }
 
-	tfoot td { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
+	:global(tfoot .table-cell) { border-top: 2px solid var(--border); background: rgba(79, 70, 229, 0.04); font-weight: 500; color: var(--text-secondary); }
 
 	.table-footer { display: flex; justify-content: flex-end; padding: 8px 12px; font-size: 11px; color: var(--text-quaternary); }
 
